@@ -36,9 +36,9 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     }
     int ICoordsCustom.Range(ICoordsCustom coords) { return ((ICoordsCanon)this).Range(coords.Canon); }
 
-    public static void SetCustomMatrices(IntMatrix2D canonToCustom, IntMatrix2D customToCanon) {
-      MatrixCanonToCustom = canonToCustom;
-      MatrixCustomToCanon = customToCanon;
+    public static void SetCustomMatrices(IntMatrix2D userToCustom, IntMatrix2D customToUser) {
+      MatrixUserToCustom = userToCustom;
+      MatrixCustomToUser = customToUser;
     }
   }
 }

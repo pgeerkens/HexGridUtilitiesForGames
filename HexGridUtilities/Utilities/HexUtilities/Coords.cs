@@ -69,25 +69,25 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
 
     #region Conversions
     static readonly IntMatrix2D MatrixUserToCanon = new IntMatrix2D(2,1,  0,2, 0,0);
-    static IntMatrix2D MatrixCustomToCanon  = new IntMatrix2D(2,0, 0,2, 0,0);     
+    static IntMatrix2D MatrixCustomToUser  = new IntMatrix2D(2,0, 0,2, 0,0);     
     IntVector2D VectorCanon {
-      get { return !isCanonNull ? vectorCanon  
-                 : !isUserNull  ? VectorUser   * MatrixUserToCanon / 2
-                                : VectorCustom * MatrixCustomToCanon / 2; }
+      get { return !isCanonNull ? vectorCanon : VectorUser * MatrixUserToCanon / 2; }
       set { vectorCanon = value;  isUserNull = isCustomNull = true; }
     } IntVector2D vectorCanon;
     bool isCanonNull;
 
     static readonly IntMatrix2D MatrixCanonToUser  = new IntMatrix2D(2,-1, 0,2, 0,1);    
     IntVector2D VectorUser {
-      get { return !isUserNull ? vectorUser : vectorCanon * MatrixCanonToUser / 2; }
+      get { return !isUserNull  ? vectorUser 
+                 : !isCanonNull ? VectorCanon  * MatrixCanonToUser / 2
+                                : VectorCustom * MatrixCustomToUser / 2; }
       set { vectorUser  = value;  isCustomNull = isCanonNull = true; }
     } IntVector2D vectorUser;
     bool isUserNull;
 
-    static IntMatrix2D MatrixCanonToCustom  = new IntMatrix2D(2,0, 0,2, 0,0);    
+    static IntMatrix2D MatrixUserToCustom  = new IntMatrix2D(2,0, 0,2, 0,0);    
     IntVector2D VectorCustom {
-      get { return !isCustomNull ? vectorCustom : vectorCanon * MatrixCanonToCustom / 2; }
+      get { return !isCustomNull ? vectorCustom : VectorUser * MatrixUserToCustom / 2; }
       set { vectorCustom  = value;  isCanonNull = isUserNull = true; }
     } IntVector2D vectorCustom;
     bool isCustomNull;

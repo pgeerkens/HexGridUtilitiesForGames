@@ -39,7 +39,9 @@ namespace PG_Napoleonics.HexGridExample {
         new Point(GridSize.Width*1/3,                0)
       });
       CurrentHex = Coords.EmptyUser;
-      //Size = new Size(1525,1020);
+
+      var matrix = new IntMatrix2D(2,0, 0,-2, 0,2*BoardSizeHexes.Height-1);
+      Coords.SetCustomMatrices(matrix,matrix);
     }
     protected override CreateParams CreateParams { 
 			get { return this.SetCompositedStyle(base.CreateParams); }
@@ -216,6 +218,7 @@ namespace PG_Napoleonics.HexGridExample {
       HotSpotHex = hexgridPanel.GetHexCoords(e.Location).User;
       Range = CurrentHex.Range(HotSpotHex);
       statusLabel.Text = "HotHex: " + HotSpotHex.ToString() 
+                       + "/" + HotSpotHex.Canon.Custom.ToString()
                        + "; Range = " + Range
                        + "; Path Length = " + (Path==null ? 0 : Path.TotalCost);
     }
