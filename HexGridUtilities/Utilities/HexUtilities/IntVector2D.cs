@@ -18,15 +18,21 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
 
     public int X { get { return Vector[0]; } set { Vector[0] = value; } }
     public int Y { get { return Vector[1]; } set { Vector[1] = value; } }
+    public int Z { get { return Vector[2]; } set { Vector[2] = value; } }
 
-    public IntVector2D(Point p)       : this(p.X,p.Y) {}
-    public IntVector2D(Size s)        : this(s.Width, s.Height) {}
-    public IntVector2D(IntVector2D v) : this(v.X, v.Y) {}
-    public IntVector2D(int x, int y) {
+    public IntVector2D(Point p)       : this(p.X,p.Y, 1) {}
+    public IntVector2D(Size s)        : this(s.Width, s.Height, 1) {}
+    public IntVector2D(IntVector2D v) : this(v.X, v.Y, 1) {}
+    public IntVector2D(int x, int y)  : this(x,y,1) {}
+    public IntVector2D(int x, int y, int z) {
       Vector = new int[3];
       Vector[0] = x;
       Vector[1] = y;
-      Vector[2] = 1;
+      Vector[2] = z;
+    }
+
+    public IntVector2D Norm() {
+      return (Z==1) ? this :  new IntVector2D(X/Z, Y/Z);
     }
 
     #region Scalar operators
@@ -36,10 +42,13 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       return new IntVector2D(v.X*s, v.Y*s);
     }
     /// <summary>Scalar Division into a new IntegerVector2D.</summary>
-    public static IntVector2D operator / (IntVector2D v, int s) {
+    public static IntVector2D operator / (IntVector2D v, int i) {
+      return new IntVector2D(v.X/i, v.Y/i);
+    }
+    /// <summary>Scalar Division into a new IntegerVector2D.</summary>
+    public static IntVector2D operator / (IntVector2D v, float s) {
       return new IntVector2D((int)Math.Floor(v.X/(float)s), (int)Math.Floor(v.Y/(float)s));
     }
-
     #endregion
 
     #region Vector operators
@@ -79,9 +88,9 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     bool IEquatable<IntVector2D>.Equals(IntVector2D rhs) { return this == rhs; }
     public static bool operator != (IntVector2D lhs, IntVector2D rhs) { return ! (lhs == rhs); }
     public static bool operator == (IntVector2D lhs, IntVector2D rhs) {
-      return (lhs.X == rhs.X) && (lhs.Y == rhs.Y);
+      return (lhs.X == rhs.X) && (lhs.Y == rhs.Y) && (lhs.Z == rhs.Z);
     }
-    public override int GetHashCode() { return X ^ Y; }
+    public override int GetHashCode() { return X ^ Y ^ Z; }
     #endregion
 
     public override string ToString() { return string.Format("({0,3},{1,3})",X,Y); }

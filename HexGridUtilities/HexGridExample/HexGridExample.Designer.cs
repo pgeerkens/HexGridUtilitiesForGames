@@ -36,16 +36,16 @@ namespace PG_Napoleonics.HexGridExample {
       this.toolStrip1 = new System.Windows.Forms.ToolStrip();
       this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
       this.statusLabel = new System.Windows.Forms.ToolStripLabel();
-      this.toolStrip2 = new System.Windows.Forms.ToolStrip();
-      this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
       this.hexgridPanel = new PG_Napoleonics.Utilities.HexUtilities.HexgridPanel(this.components);
+      this.toolStrip2 = new System.Windows.Forms.ToolStrip();
+      this.buttonTransposeMap = new System.Windows.Forms.ToolStripButton();
       this.toolStripContainer1.BottomToolStripPanel.SuspendLayout();
       this.toolStripContainer1.ContentPanel.SuspendLayout();
       this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
       this.toolStripContainer1.SuspendLayout();
       this.toolStrip1.SuspendLayout();
-      this.toolStrip2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.hexgridPanel)).BeginInit();
+      this.toolStrip2.SuspendLayout();
       this.SuspendLayout();
       // 
       // toolStripContainer1
@@ -79,7 +79,7 @@ namespace PG_Napoleonics.HexGridExample {
             this.statusLabel});
       this.toolStrip1.Location = new System.Drawing.Point(3, 0);
       this.toolStrip1.Name = "toolStrip1";
-      this.toolStrip1.Size = new System.Drawing.Size(388, 25);
+      this.toolStrip1.Size = new System.Drawing.Size(382, 25);
       this.toolStrip1.TabIndex = 0;
       // 
       // toolStripLabel1
@@ -92,28 +92,9 @@ namespace PG_Napoleonics.HexGridExample {
       // 
       this.statusLabel.AutoSize = false;
       this.statusLabel.Name = "statusLabel";
-      this.statusLabel.Size = new System.Drawing.Size(300, 22);
+      this.statusLabel.Size = new System.Drawing.Size(325, 22);
       this.statusLabel.Text = "toolStripLabel2";
       this.statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
-      // toolStrip2
-      // 
-      this.toolStrip2.Dock = System.Windows.Forms.DockStyle.None;
-      this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButton1});
-      this.toolStrip2.Location = new System.Drawing.Point(3, 0);
-      this.toolStrip2.Name = "toolStrip2";
-      this.toolStrip2.Size = new System.Drawing.Size(35, 25);
-      this.toolStrip2.TabIndex = 0;
-      // 
-      // toolStripButton1
-      // 
-      this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-      this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.toolStripButton1.Name = "toolStripButton1";
-      this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
-      this.toolStripButton1.Text = "toolStripButton1";
       // 
       // hexgridPanel
       // 
@@ -121,7 +102,6 @@ namespace PG_Napoleonics.HexGridExample {
       this.hexgridPanel.Dock = System.Windows.Forms.DockStyle.Fill;
       this.hexgridPanel.Host = null;
       this.hexgridPanel.Location = new System.Drawing.Point(0, 0);
-      this.hexgridPanel.MapMargin = new System.Drawing.Size(5, 5);
       this.hexgridPanel.Name = "hexgridPanel";
       this.hexgridPanel.ScaleIndex = 1;
       this.hexgridPanel.Scales = new float[] {
@@ -130,8 +110,30 @@ namespace PG_Napoleonics.HexGridExample {
         1.414F};
       this.hexgridPanel.Size = new System.Drawing.Size(454, 366);
       this.hexgridPanel.TabIndex = 0;
-      this.hexgridPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.hexgridPanel_MouseClick);
+      //this.hexgridPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.hexgridPanel_MouseClick);
       this.hexgridPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.hexgridPanel_MouseMove);
+      // 
+      // toolStrip2
+      // 
+      this.toolStrip2.Dock = System.Windows.Forms.DockStyle.None;
+      this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.buttonTransposeMap});
+      this.toolStrip2.Location = new System.Drawing.Point(3, 0);
+      this.toolStrip2.Name = "toolStrip2";
+      this.toolStrip2.Size = new System.Drawing.Size(108, 25);
+      this.toolStrip2.TabIndex = 0;
+      // 
+      // buttonTransposeMap
+      // 
+      this.buttonTransposeMap.CheckOnClick = true;
+      this.buttonTransposeMap.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.buttonTransposeMap.Image = ((System.Drawing.Image)(resources.GetObject("buttonTransposeMap.Image")));
+      this.buttonTransposeMap.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.buttonTransposeMap.Name = "buttonTransposeMap";
+      this.buttonTransposeMap.Size = new System.Drawing.Size(65, 22);
+      this.buttonTransposeMap.Text = "Transpose";
+      this.buttonTransposeMap.ToolTipText = "Transpose Map";
+      this.buttonTransposeMap.Click += new System.EventHandler(this.buttonTransposeMap_Click);
       // 
       // HexGridExampleForm
       // 
@@ -153,9 +155,9 @@ namespace PG_Napoleonics.HexGridExample {
       this.toolStripContainer1.PerformLayout();
       this.toolStrip1.ResumeLayout(false);
       this.toolStrip1.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.hexgridPanel)).EndInit();
       this.toolStrip2.ResumeLayout(false);
       this.toolStrip2.PerformLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.hexgridPanel)).EndInit();
       this.ResumeLayout(false);
 
     }
@@ -167,7 +169,7 @@ namespace PG_Napoleonics.HexGridExample {
     private System.Windows.Forms.ToolStripLabel toolStripLabel1;
     private PG_Napoleonics.Utilities.HexUtilities.HexgridPanel hexgridPanel;
     private System.Windows.Forms.ToolStrip toolStrip2;
-    private System.Windows.Forms.ToolStripButton toolStripButton1;
+    private System.Windows.Forms.ToolStripButton buttonTransposeMap;
     private System.Windows.Forms.ToolStripLabel statusLabel;
   }
 }

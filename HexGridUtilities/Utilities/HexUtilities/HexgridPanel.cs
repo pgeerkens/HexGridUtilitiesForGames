@@ -18,18 +18,30 @@ using System.Windows.Forms;
 using PG_Napoleonics.Utilities.HexUtilities;
 
 namespace PG_Napoleonics.Utilities.HexUtilities {
-  public interface IMapPanelHost {
-    Size      GridSize           { get; }
-    Size      MapSizePixels      { get; }
+  public interface IMapBoard {
+    ICoordsUser         CurrentHex    { get; set; }
+    ICoordsUser         HotSpotHex    { get; set; }
+    IPath<ICoordsCanon> Path          { get; set; }
+    Size                SizeHexes     { get; }
+    char   this[ICoordsCanon coords]  { get; }
+    char   this[ICoordsUser coords]   { get; }
 
-    Rectangle GetClipCells(PointF point, SizeF size);
-    Rectangle GetClipCells(RectangleF visibleClipBounds);
+    string HexText(ICoordsUser coords);
+    bool   IsOnBoard(ICoordsUser coords);
+    int    StepCost(ICoordsCanon coords, Hexside hexSide);
+  }
 
-    void      PaintHighlight(Graphics g);
-    void      PaintMap(Graphics g);
-    void      PaintUnits(Graphics g);
+  public interface IMapDisplay : IMapBoard {
+    Size  GridSize      { get; }
+    Size  MapMargin     { get; set; }
+    Size  MapSizePixels { get; }
 
-    string    Name               { get; }   // only used in DebugTracing calls
+    UserCoordsRectangle GetClipCells(PointF point, SizeF size);
+    UserCoordsRectangle GetClipCells(RectangleF visibleClipBounds);
+
+    void  PaintHighlight(Graphics g);
+    void  PaintMap(Graphics g);
+    void  PaintUnits(Graphics g);
   }
 
   public partial class HexgridPanel : Panel, ISupportInitialize {
@@ -43,7 +55,10 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     }
 
     #region ISupportInitialize implementation
-    void ISupportInitialize.BeginInit() { }
+    void ISupportInitialize.BeginInit() { 
+      MapMargin = new System.Drawing.Size(5,5);
+      Scales    = new float[] {0.707F, 1.000F, 1.414F};
+    }
     void ISupportInitialize.EndInit() { }
     #endregion
 
@@ -51,17 +66,27 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     protected virtual void OnScaleChange(EventArgs e) {
       var handler = ScaleChange;
       if( handler != null ) handler(this, e);
+      if (IsHandleCreated) SetScroll();
     }
 
-    /// <summary>Form hosting this panel, which supplies various parameters and utilities.</summary>
-    public IMapPanelHost Host             { get; set; }
+    /// <summary>MapBoard hosting this panel.</summary>
+    public IMapDisplay Host          { get; set; }
+
+    public bool        IsTransposed  { 
+      get { return _isTransposed; }
+      set { _isTransposed = value; SetScroll(); }
+    } bool _isTransposed;
+
     /// <summary>Margin of map in pixels.</summary>
-    public Size          MapMargin        { get; set; }
-    public Size          MapSizePixels    { get {return Host.MapSizePixels + MapMargin.Scale(2);} }
+    public Size        MapMargin     { get; private set; }
+
+    public Size        MapSizePixels { get {return Host.MapSizePixels + MapMargin.Scale(2);} }
+
     /// <summary>Current scaling factor for map display.</summary>
-    public float         MapScale         { get { return DesignMode ? 1 : Scales[ScaleIndex]; } }
+    public float       MapScale      { get { return DesignMode ? 1 : Scales[ScaleIndex]; } }
+
     /// <summary>Index into <code>Scales</code> of current map scale.</summary>
-    public virtual int   ScaleIndex       { 
+    public virtual int ScaleIndex    { 
       get { return _scaleIndex; }
       set { var newValue = Math.Max(0, Math.Min(Scales.Length-1, value));
             if( _scaleIndex != newValue) {
@@ -70,16 +95,27 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
             }
       } 
     } int _scaleIndex;
+
     /// <summary>Array of supported map scales (float).</summary>
-    public float[]       Scales           { 
+    [Browsable(true)]
+    public float[]     Scales        { 
       get {return _scales;}
       set {_scales = value; if (_scaleIndex!=0) ScaleIndex = _scaleIndex;}
     } float[] _scales;
+
     /// <summary>Returns, as a Rectangle, the IUserCoords for the currently visible extent.</summary>
-    public Rectangle     VisibleRectangle {
+    public UserCoordsRectangle     VisibleRectangle {
       get { return Host.GetClipCells( AutoScrollPosition.Scale(-1.0F/MapScale), 
                                       ClientSize.Scale(1.0F/MapScale) );
       }
+    }
+
+    public void SetScroll() {
+      Size size                = TransposeSize(MapSizePixels);
+      AutoScrollMinSize        = size;
+      VerticalScroll.Maximum   = size.Height - ClientSize.Height;
+      HorizontalScroll.Maximum = size.Width  - ClientSize.Width;
+      Invalidate();
     }
 
     #region Grid Coordinates
@@ -114,12 +150,14 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     protected ICoordsCanon GetHexCoords(Point point, Size autoScroll) {
       if( Host == null ) return Coords.EmptyCanon;
 
+      autoScroll = TransposeSize(autoScroll);
+
       /// Adjust for origin not as assumed by GetCoordinate().
       var grid    = new Size((int)(GridSize.Width*2F/3F), (int)GridSize.Height);
       var margin  = new Size((int)(MapMargin.Width *MapScale), 
                              (int)(MapMargin.Height*MapScale));
-
       point      -= autoScroll + margin + grid;
+
       return Coords.NewCanonCoords( GetCoordinate(matrixX, point), 
                                     GetCoordinate(matrixY, point) );
     }
@@ -139,7 +177,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     /// <returns>Pixel coordinates in Client reference frame.</returns>
     protected Point ScrollPositionToCenterOnHex(ICoordsUser coordsNewCenterHex) {
       return HexCenterPoint(Coords.NewUserCoords(
-                coordsNewCenterHex.Vector - ( new IntVector2D(VisibleRectangle.Size) / 2 )
+                coordsNewCenterHex.Vector - ( new IntVector2D(VisibleRectangle.Size.Vector) / 2 )
       ));
     }
 
@@ -153,8 +191,8 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       var point  = new Point(
         (int)(GridSize.Width  * coordsNewULHex.X),
         (int)(GridSize.Height * coordsNewULHex.Y   + GridSize.Height/2 * (coordsNewULHex.X+1)%2)
-      );
-      return point + margin + offset ;
+      ) + margin + offset;
+      return TransposePoint(point);
     }
     #endregion
 
@@ -165,16 +203,19 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       if(IsHandleCreated)    PaintPanel(e.Graphics);
     }
     protected virtual void PaintPanel(Graphics g) {
+      var scroll = TransposePoint(AutoScrollPosition);
       if (DesignMode) { g.FillRectangle(Brushes.Gray, ClientRectangle);  return; }
 
+      if (IsTransposed) {
+        g.Transform = new Matrix(0F,1F, 1F,0F, 0F,0F);
+      }
       g.Clear(Color.White);
-      g.DrawRectangle(Pens.Black, ClientRectangle);
-
-      g.TranslateTransform(AutoScrollPosition.X, AutoScrollPosition.Y);
+      g.TranslateTransform(MapMargin.Width, MapMargin.Height);
+      g.TranslateTransform(scroll.X, scroll.Y);
       g.ScaleTransform(MapScale,MapScale);
 
       var state = g.Save();
-      g.DrawImageUnscaled(Buffer, Point.Empty);
+      g.DrawImageUnscaled(MapBuffer, Point.Empty);
 
       g.Restore(state); state = g.Save();
       Host.PaintUnits(g);
@@ -185,7 +226,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     #endregion
 
     #region Double-Buffering
-    Bitmap Buffer        { 
+    Bitmap MapBuffer        { 
       get { return _buffer ?? ( _buffer = PaintBuffer()); } 
     } Bitmap _buffer;
     Bitmap PaintBuffer() {
@@ -197,5 +238,32 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       return buffer;
     }
     #endregion
+
+    Point TransposePoint(Point point) { return IsTransposed ? new Point(point.Y,point.X) : point; }
+    Size  TransposeSize(Size  size)  { return IsTransposed ? new Size (size.Height, size.Width)  : size; }
+
+    protected override void OnMouseClick(MouseEventArgs e) {
+      if (e.Button == MouseButtons.Left) {
+        Host.CurrentHex = GetHexCoords(TransposePoint(e.Location)).User;
+      } else {
+        Host.HotSpotHex = GetHexCoords(TransposePoint(e.Location)).User;
+      }
+
+      Host.Path = PathFinder.FindPath(
+        Host.CurrentHex.Canon, 
+        Host.HotSpotHex.Canon, 
+        (c,hs) => Host.StepCost(c,hs),
+        c => Host.HotSpotHex.Canon.Range(c),
+        c => Host.IsOnBoard(c.User)
+      );
+
+      Refresh();
+    }
+
+    protected override void OnMouseMove(MouseEventArgs e) {
+      Host.HotSpotHex = GetHexCoords(TransposePoint(e.Location)).User;
+
+      base.OnMouseMove(e);
+    }
   }
 }

@@ -6,7 +6,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 namespace PG_Napoleonics.Utilities.HexUtilities {
-  partial class HexgridPanel {
+  public partial class HexgridPanel {
     /// <summary>
     /// Required designer variable.
     /// </summary>
@@ -32,9 +32,11 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     /// </summary>
     private void InitializeComponent() {
       this.SuspendLayout();
-      this.MapMargin = new System.Drawing.Size(5,5);
-      this.Scales    = new float[] {0.707F, 1.000F, 1.414F};
+      // 
+      // HexgridPanel
+      // 
       this.ResumeLayout(false);
+
     }
 
     #endregion

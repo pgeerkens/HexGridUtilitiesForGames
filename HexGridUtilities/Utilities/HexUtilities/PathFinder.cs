@@ -64,15 +64,17 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
 
         closed.Add(path.LastStep);
 
-        foreach(var neighbour in path.LastStep.GetNeighbours(~Hexside.None)) {
+        foreach (var neighbour in path.LastStep.GetNeighbours(~Hexside.None)) {
           if (isOnBoard(neighbour.Coords.Canon)) {
-            var preference  = (ushort)vectorGoal.VectorCross(goal.Vector - neighbour.Coords.Canon.Vector);
-            var cost        = (ushort)stepCost(path.LastStep, neighbour.Direction);
-            var newPath     = path.AddStep(neighbour.Coords.Canon, cost, neighbour.Direction); 
-            var newEstimate = ((uint)estimate(neighbour.Coords.Canon) + (uint)newPath.TotalCost) << 16;
-            queue.Enqueue(newEstimate + preference, newPath);
-            DebugTracing.Trace(TraceFlag.FindPath, "   Enqueue {0}: {1} / {2}; / {3}",
-              neighbour.Coords, newEstimate>>16, newEstimate & 0x0FFFF, preference);
+            var preference    = (ushort)vectorGoal.VectorCross(goal.Vector - neighbour.Coords.Canon.Vector);
+            var cost          = stepCost(path.LastStep, neighbour.Direction);
+            if (cost > 0) {
+              var newPath     = path.AddStep(neighbour.Coords.Canon, (ushort)cost, neighbour.Direction); 
+              var newEstimate = ((uint)estimate(neighbour.Coords.Canon) + (uint)newPath.TotalCost) << 16;
+              queue.Enqueue(newEstimate + preference, newPath);
+              DebugTracing.Trace(TraceFlag.FindPath, "   Enqueue {0}: {1} / {2}; / {3}",
+                      neighbour.Coords, newEstimate>>16, newEstimate & 0x0FFFF, preference);
+            }
           }
         }
       }
