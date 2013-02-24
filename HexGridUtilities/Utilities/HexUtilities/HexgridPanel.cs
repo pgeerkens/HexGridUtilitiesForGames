@@ -18,13 +18,15 @@ using System.Windows.Forms;
 using PG_Napoleonics.Utilities.HexUtilities;
 
 namespace PG_Napoleonics.Utilities.HexUtilities {
-  public interface IMapBoard {
-    ICoordsUser         CurrentHex    { get; set; }
+  public interface IMapBoard : IBoard<IGridHex>{
+    bool                ShowFov       { get; set; }
+    ICoordsUser         StartHex      { get; set; }
+    ICoordsUser         GoalHex       { get; set; }
     ICoordsUser         HotSpotHex    { get; set; }
     IPath<ICoordsCanon> Path          { get; set; }
     Size                SizeHexes     { get; }
-    char   this[ICoordsCanon coords]  { get; }
-    char   this[ICoordsUser coords]   { get; }
+    IGridHex this[ICoordsCanon coords]  { get; }
+    IGridHex this[ICoordsUser coords]   { get; }
 
     string HexText(ICoordsUser coords);
     bool   IsOnBoard(ICoordsUser coords);
@@ -72,11 +74,14 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     }
 
     /// <summary>MapBoard hosting this panel.</summary>
-    public IMapDisplay Host          { get; set; }
+    public IMapDisplay Host          { 
+      get { return _host; }
+      set { _host = value; MapBuffer = null; } //if(IsHandleCreated) PaintBuffer(); }
+    } IMapDisplay _host;
 
     public bool        IsTransposed  { 
       get { return _isTransposed; }
-      set { _isTransposed = value; SetScroll(); }
+      set { _isTransposed = value; if (IsHandleCreated) SetScroll(); }
     } bool _isTransposed;
 
     /// <summary>Margin of map in pixels.</summary>
@@ -241,6 +246,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     #region Double-Buffering
     Bitmap MapBuffer        { 
       get { return _buffer ?? ( _buffer = PaintBuffer()); } 
+      set { if (_buffer!=null) _buffer.Dispose(); _buffer = value; }
     } Bitmap _buffer;
     Bitmap PaintBuffer() {
       var size   = MapSizePixels + MapMargin.Scale(2);
@@ -259,18 +265,12 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
 
     protected override void OnMouseClick(MouseEventArgs e) {
       if (e.Button == MouseButtons.Left) {
-        Host.CurrentHex = GetHexCoords(TransposePoint(e.Location)).User;
+        Host.StartHex = GetHexCoords(TransposePoint(e.Location)).User;
       } else {
-        Host.HotSpotHex = GetHexCoords(TransposePoint(e.Location)).User;
+        Host.GoalHex  = GetHexCoords(TransposePoint(e.Location)).User;
       }
 
-      Host.Path = PathFinder.FindPath(
-        Host.CurrentHex.Canon, 
-        Host.HotSpotHex.Canon, 
-        (c,hs) => Host.StepCost(c,hs),
-        c => Host.HotSpotHex.Canon.Range(c),
-        c => Host.IsOnBoard(c.User)
-      );
+      base.OnMouseClick(e);
 
       Refresh();
     }
@@ -279,6 +279,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       Host.HotSpotHex = GetHexCoords(TransposePoint(e.Location)).User;
 
       base.OnMouseMove(e);
+      Refresh();
     }
   }
 }

@@ -12,10 +12,12 @@ using System.Text;
 
 namespace PG_Napoleonics.Utilities.HexUtilities {
   public interface IGridHex {
-    char             DefLetter      { get; }
+    char             Value      { get; }
     ICoordsUser      Coords         { get; }
     int              Elevation      { get; }
     int              ElevationASL   { get; }
+    int              HeightObserver { get; }
+    int              HeightTarget   { get; }
     int              HeightTerrain  { get; }
     IBoard<IGridHex> Board          { get; }
     IEnumerable<NeighbourHex> GetNeighbours();

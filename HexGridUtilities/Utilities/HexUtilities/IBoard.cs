@@ -16,7 +16,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     bool IsOnBoard(ICoordsUser coords);
 
     /// <summary>The rectangular extent of the board's hexagonal grid.</summary>
-    Size     BoardSizeHexes                { get; }
+    Size     SizeHexes                 { get; }
     TGridHex this[ICoordsUser coords]  { get; }
     TGridHex this[ICoordsCanon coords] { get; }
   }

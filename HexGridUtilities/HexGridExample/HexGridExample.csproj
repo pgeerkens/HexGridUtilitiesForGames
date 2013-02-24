@@ -108,6 +108,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TerrainMap.cs" />
     <Compile Include="HexGridExample.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -116,6 +117,7 @@
     </Compile>
     <Compile Include="MapBoard.cs" />
     <Compile Include="MapDisplay.cs" />
+    <Compile Include="MazeMap.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="HexGridExample.resx">

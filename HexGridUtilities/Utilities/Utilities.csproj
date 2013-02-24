@@ -133,6 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HexUtilities\IGridHex.cs" />
+    <Compile Include="HexUtilities\ShadowCastingFov\FieldOfView.cs" />
     <Compile Include="HexUtilities\UserCoordsRectangle.cs" />
     <Compile Include="PointExtensions.cs" />
     <Compile Include="HexUtilities\ICoordsCustom.cs" />

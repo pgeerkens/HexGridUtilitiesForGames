@@ -24,7 +24,10 @@ namespace PG_Napoleonics.HexGridExample {
       InitializeComponent();
 
       hexgridPanel.Host = 
-      MapBoard          = new MapDisplay();
+      MapBoard          = new TerrainMap();
+      MapBoard.ShowFov  = buttonFieldOfView.Checked
+                        = true;
+      toolStripComboBox1.SelectedIndex = 0;
       var matrix        = new IntMatrix2D(2,0, 0,-2, 0,2*MapBoard.SizeHexes.Height-1, 2);
       Coords.SetCustomMatrices(matrix,matrix);
     }
@@ -56,17 +59,41 @@ namespace PG_Napoleonics.HexGridExample {
       hexgridPanel.SetScroll();
     }
 
+    private void hexgridPanel_MouseClick(object sender, MouseEventArgs e) {
+      MapBoard.Path = PathFinder.FindPath(
+        MapBoard.StartHex.Canon, 
+        MapBoard.GoalHex.Canon, 
+        (c,hs) => MapBoard.StepCost(c,hs),
+        c => MapBoard.HotSpotHex.Canon.Range(c),
+        c => MapBoard.IsOnBoard(c.User)
+      );
+    }
     void hexgridPanel_MouseMove(object sender, MouseEventArgs e) {
       var hotHex       = MapBoard.HotSpotHex;
       statusLabel.Text = "HotHex: " + hotHex.ToString() 
                        + "/" + hotHex.Canon.Custom.ToString()
-                       + "; Range = " + MapBoard.CurrentHex.Range(hotHex)
+                       + "; Range = " + MapBoard.StartHex.Range(hotHex)
                        + "; Path Length = " + (MapBoard.Path==null ? 0 : MapBoard.Path.TotalCost);
     }
-    #endregion
 
     void buttonTransposeMap_Click(object sender, EventArgs e) {
       hexgridPanel.IsTransposed = buttonTransposeMap.Checked;
+    }
+    #endregion
+
+    private void toolStripComboBox1_Click(object sender, EventArgs e) {
+      var name = ((ToolStripItem)sender).Text;
+      switch (name) {
+        case "MazeMap":    hexgridPanel.Host = MapBoard = new MazeMap();    break;
+        case "TerrainMap": hexgridPanel.Host = MapBoard = new TerrainMap(); break;
+        default:  break;
+      }
+      MapBoard.ShowFov = buttonFieldOfView.Checked;
+      hexgridPanel.Refresh();
+    }
+
+    private void buttonFieldOfView_Click(object sender, EventArgs e) {
+      MapBoard.ShowFov = buttonFieldOfView.Checked;
     }
   }
 }
