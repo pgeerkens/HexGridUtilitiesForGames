@@ -59,7 +59,9 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       MapMargin = new System.Drawing.Size(5,5);
       Scales    = new float[] {0.707F, 1.000F, 1.414F};
     }
-    void ISupportInitialize.EndInit() { }
+    void ISupportInitialize.EndInit() { 
+      this.MakeDoubleBuffered(true);
+    }
     #endregion
 
     public event EventHandler<EventArgs>   ScaleChange;
@@ -112,10 +114,12 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
 
     public void SetScroll() {
       Size size                = TransposeSize(MapSizePixels);
-      AutoScrollMinSize        = size;
-      VerticalScroll.Maximum   = size.Height - ClientSize.Height;
-      HorizontalScroll.Maximum = size.Width  - ClientSize.Width;
-      Invalidate();
+      if (AutoScrollMinSize != size) {
+        AutoScrollMinSize        = size;
+        VerticalScroll.Maximum   = size.Height - ClientSize.Height;
+        HorizontalScroll.Maximum = size.Width  - ClientSize.Width;
+        Invalidate();
+      }
     }
 
     #region Grid Coordinates
@@ -209,18 +213,27 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       if (IsTransposed) {
         g.Transform = new Matrix(0F,1F, 1F,0F, 0F,0F);
       }
-      g.Clear(Color.White);
-      g.TranslateTransform(MapMargin.Width, MapMargin.Height);
       g.TranslateTransform(scroll.X, scroll.Y);
       g.ScaleTransform(MapScale,MapScale);
 
       var state = g.Save();
       g.DrawImageUnscaled(MapBuffer, Point.Empty);
+      if (ClientSize.Width > MapBuffer.Width) 
+        g.FillRectangle(Brushes.White,
+          MapBuffer.Width,0,
+          ClientSize.Width-MapBuffer.Width, Math.Max(ClientSize.Height, MapBuffer.Height));
+      if (ClientSize.Height > MapBuffer.Height) 
+        g.FillRectangle(Brushes.White, 
+          0,MapBuffer.Height, 
+          Math.Max(ClientSize.Width,MapBuffer.Width), ClientSize.Height - MapBuffer.Height);
+
 
       g.Restore(state); state = g.Save();
+      g.TranslateTransform(MapMargin.Width, MapMargin.Height);
       Host.PaintUnits(g);
 
       g.Restore(state); state = g.Save();
+      g.TranslateTransform(MapMargin.Width, MapMargin.Height);
       Host.PaintHighlight(g);
     }
     #endregion
@@ -230,9 +243,11 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       get { return _buffer ?? ( _buffer = PaintBuffer()); } 
     } Bitmap _buffer;
     Bitmap PaintBuffer() {
-      var size   = MapSizePixels;
+      var size   = MapSizePixels + MapMargin.Scale(2);
       var buffer = new Bitmap(size.Width,size.Height, PixelFormat.Format32bppPArgb);
       using(var g = Graphics.FromImage(buffer)) {
+        g.Clear(Color.White);
+        g.TranslateTransform(MapMargin.Width, MapMargin.Height);
         Host.PaintMap(g);
       }
       return buffer;

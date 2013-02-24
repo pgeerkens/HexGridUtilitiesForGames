@@ -41,9 +41,20 @@ namespace PG_Napoleonics.HexGridExample {
       Size = hexgridPanel.MapSizePixels + new Size(21,93);
     }
 
-    void HexGridExampleForm_Resize(object sender, EventArgs e) { hexgridPanel.Invalidate(); }
-
-    void HexGridExampleForm_ResizeEnd(object sender, EventArgs e) { hexgridPanel.SetScroll(); }
+    bool isPanelResizeSuppressed = false;
+    protected override void OnResizeBegin(EventArgs e) {
+      base.OnResizeBegin(e);
+      isPanelResizeSuppressed = true;
+    }
+    protected override void OnResize(EventArgs e) {
+      base.OnResize(e);
+      if (IsHandleCreated && ! isPanelResizeSuppressed) hexgridPanel.SetScroll();
+    }
+    protected override void OnResizeEnd(EventArgs e) {
+      base.OnResizeEnd(e);
+      isPanelResizeSuppressed = false;
+      hexgridPanel.SetScroll();
+    }
 
     void hexgridPanel_MouseMove(object sender, MouseEventArgs e) {
       var hotHex       = MapBoard.HotSpotHex;

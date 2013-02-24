@@ -73,7 +73,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
               var newEstimate = ((uint)estimate(neighbour.Coords.Canon) + (uint)newPath.TotalCost) << 16;
               queue.Enqueue(newEstimate + preference, newPath);
               DebugTracing.Trace(TraceFlag.FindPath, "   Enqueue {0}: {1} / {2}; / {3}",
-                      neighbour.Coords, newEstimate>>16, newEstimate & 0x0FFFF, preference);
+                  neighbour.Coords, newEstimate>>16, newEstimate & 0x0FFFF, preference);
             }
           }
         }

@@ -144,8 +144,8 @@ namespace PG_Napoleonics.HexGridExample {
       this.Name = "HexGridExampleForm";
       this.Text = "Hex Grid Example";
       this.Load += new System.EventHandler(this.HexGridExampleForm_Load);
-      this.ResizeEnd += new System.EventHandler(this.HexGridExampleForm_ResizeEnd);
-      this.Resize += new System.EventHandler(this.HexGridExampleForm_Resize);
+      //this.ResizeEnd += new System.EventHandler(this.HexGridExampleForm_ResizeEnd);
+      //this.Resize += new System.EventHandler(this.HexGridExampleForm_Resize);
       this.toolStripContainer1.BottomToolStripPanel.ResumeLayout(false);
       this.toolStripContainer1.BottomToolStripPanel.PerformLayout();
       this.toolStripContainer1.ContentPanel.ResumeLayout(false);
