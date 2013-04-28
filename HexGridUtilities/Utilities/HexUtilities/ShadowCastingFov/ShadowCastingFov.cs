@@ -1,8 +1,29 @@
-﻿#region License - Copyright (C) 2012-2013 Pieter Geerkens, all rights reserved.
+﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
-//
-// Use of this software is permitted only as described in the attached file: license.txt.
+/////////////////////////////////////////////////////////////////////////////////////////
+// The MIT License:
+// ----------------
+// 
+// Copyright (c) 2012-2013 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, 
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+// permit persons to whom the Software is furnished to do so, subject to the following 
+// conditions:
+//     The above copyright notice and this permission notice shall be 
+//     included in all copies or substantial portions of the Software.
+// 
+//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+//     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 #undef TraceFoV
@@ -29,6 +50,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities.ShadowCastingFov {
     /// <param name="observerCoords">Cordinates of observer;s hex.</param>
     /// <param name="radius">Maximum radius for Field-of-View.</param>
     /// <param name="observerHeight">Height (ASL) of the observer's eyes.</param>
+    /// <param name="isOnBoard">Is this hex on the baoard.</param>
     /// <param name="targetHeight">Returns ground level (ASL) of supplied hex.</param>
     /// <param name="terrainHeight">Returns height (ASL) of terrain in supplied hex.</param>
     /// <param name="setFoV">Sets a hex as visible in the Field-of-View.</param>
@@ -80,7 +102,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities.ShadowCastingFov {
         DebugTracing.EnabledFags |= TraceFlag.FieldOfView;
       #endif
 
-      var currentCoords = Coords.NewCanonCoords(0,1);
+      var currentCoords = HexCoords.NewCanonCoords(0,1);
       if ( ! isOnBoard(currentCoords) ) return;
 
       if (radius > 0) setFieldOfView(currentCoords);
@@ -141,7 +163,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities.ShadowCastingFov {
 
       do {
         while (overlapVector.GT(bottomVector)) {
-          var coordsCurrent   = Coords.NewCanonCoords(hexX,range);
+          var coordsCurrent   = HexCoords.NewCanonCoords(hexX,range);
           var hexVectorBottom = VectorHexBottom(coordsCurrent);
           if (isOnBoard(coordsCurrent)) { 
             #region Set current hex parameters

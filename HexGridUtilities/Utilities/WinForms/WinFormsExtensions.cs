@@ -26,39 +26,29 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows.Forms;
 
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyTitle("Utilities")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("PG Software Solutions Inc.")]
-[assembly: AssemblyProduct("Utilities")]
-[assembly: AssemblyCopyright("Copyright © PG Software Solutions Inc. 2013")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
-
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("59925f4a-6821-4d5a-9c7c-bd25fa573308")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("4.0.0.0")]
-[assembly: AssemblyFileVersion("4.0.0.0")]
+namespace PG_Napoleonics.Utilities.WinForms {
+  public static partial class WinFormsExtensions {
+    /// <summary>Reflect to set Double-Buffering on Control.</summary>
+    /// <param name="control">Control to operate on.</param>
+    /// <param name="setting">New value for parameter.</param>
+    public static void MakeDoubleBuffered(this Control control, bool setting)
+    {
+      control.GetType()
+             .GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic)
+             .SetValue(control, setting, null);
+    }
+    /// <summary>Use WS_EX_COMPOSITED to make a flicker-free form control.</summary>
+		/// See "http://social.msdn.microsoft.com/Forums/en-US/winforms/thread/aaed00ce-4bc9-424e-8c05-c30213171c2c"
+    public static CreateParams SetCompositedStyle(this Control control, CreateParams cp) {
+      cp.ExStyle |= (int)WindowStylesEx.WS_EX_COMPOSITED;
+      return cp;
+    }
+  }
+}

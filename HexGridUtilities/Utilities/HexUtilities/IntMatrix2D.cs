@@ -1,8 +1,29 @@
-﻿#region License - Copyright (C) 2012-2013 Pieter Geerkens, all rights reserved.
+﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
-//
-// Use of this software is permitted only as described in the attached file: license.txt.
+/////////////////////////////////////////////////////////////////////////////////////////
+// The MIT License:
+// ----------------
+// 
+// Copyright (c) 2012-2013 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, 
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+// permit persons to whom the Software is furnished to do so, subject to the following 
+// conditions:
+//     The above copyright notice and this permission notice shall be 
+//     included in all copies or substantial portions of the Software.
+// 
+//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+//     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
@@ -22,34 +43,34 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       return matrix * TransposeMatrix;
     }
 
-    public int M11 { get { return Matrix[0,0]; } }
-    public int M12 { get { return Matrix[0,1]; } }
-    public int M21 { get { return Matrix[1,0]; } }
-    public int M22 { get { return Matrix[1,1]; } }
-    public int M31 { get { return Matrix[2,0]; } }
-    public int M32 { get { return Matrix[2,1]; } }
-    public int M33 { get { return Matrix[2,2]; } }
+    public int M11 { get; private set; }
+    public int M12 { get; private set; }
+    public int M21 { get; private set; }
+    public int M22 { get; private set; }
+    public int M31 { get; private set; }
+    public int M32 { get; private set; }
+    public int M33 { get; private set; }
     public static IntMatrix2D Identity { get { return _identity; } }
     static IntMatrix2D _identity = new IntMatrix2D(1,0,0,1,0,0);
 
     #region Constructors
-    /// <summary> Initializes a new IntegerMatrix as the translation defined by the vector v.</summary>
+    /// <summary> Initializes a new <code>IntMatrix2D</code> as the translation defined by the vector v.</summary>
     /// <param name="v">the translation vector</param>
     public IntMatrix2D(IntVector2D v)  : this(1,0, 0,1, v.X,v.Y, 1) {}
-    /// <summary> Initializes a new IntegerMatrix as the translation (dx,dy).</summary>
+    /// <summary> Initializes a new <code>IntMatrix2D</code> as the translation (dx,dy).</summary>
     /// <param name="dx">X-translate component</param>
     /// <param name="dy">Y-translate component</param>
     public IntMatrix2D(int dx, int dy)  : this(1,0, 0,1, dx,dy,1) {}
-    /// <summary> Initialies a new IntegerMatrix with a rotation.</summary>
-    /// <param name="m00">X-scale component.</param>
-    /// <param name="m10">Y-shear component</param>
-    /// <param name="m01">X-shear component</param>
-    /// <param name="m11">Y-scale component</param>
+    /// <summary> Initialies a new <code>IntMatrix2D</code> with a rotation.</summary>
+    /// <param name="m11">X-scale component.</param>
+    /// <param name="m12">Y-shear component</param>
+    /// <param name="m21">X-shear component</param>
+    /// <param name="m22">Y-scale component</param>
     public IntMatrix2D(int m11, int m12, int m21, int m22) : this(m11,m12, m21,m22, 0,0, 1) {}
-    /// <summary>Copy Constructor for a new IntegerMatrix.</summary>
+    /// <summary>Copy Constructor for a new <code>IntMatrix2D</code>.</summary>
     /// <param name="m">Source IntegerMatrix</param>
     public IntMatrix2D(IntMatrix2D m) : this(m.M11,m.M21, m.M12,m.M22, m.M31,m.M32, m.M33) { }
-    /// <summary>Initializes a new fully-specificed IntegerMatrix .</summary>
+    /// <summary>Initializes a new fully-specificed <code>IntMatrix2D</code> .</summary>
     /// <param name="m11">X-scale component.</param>
     /// <param name="m12">Y-shear component</param>
     /// <param name="m21">X-shear component</param>
@@ -57,11 +78,18 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     /// <param name="dx">X-translate component</param>
     /// <param name="dy">Y-translate component</param>
     public IntMatrix2D(int m11, int m12, int m21, int m22, int dx, int dy) : this(m11,m12,m21,m22,dx,dy,1) {}
+    /// <summary>Initializes a new fully-specificed non-normed <code>IntMatrix2D</code>.</summary>
+    /// <param name="m11">X-scale component.</param>
+    /// <param name="m12">Y-shear component</param>
+    /// <param name="m21">X-shear component</param>
+    /// <param name="m22">Y-scale component</param>
+    /// <param name="dx">X-translate component</param>
+    /// <param name="dy">Y-translate component</param>
+    /// <param name="norm">Normalization component</param>
     public IntMatrix2D(int m11, int m12, int m21, int m22, int dx, int dy, int norm) : this() {
-      Matrix = new int[3,3];
-      Matrix[0,0] = m11;  Matrix[0,1] = m12;  Matrix[2,0] = 0;
-      Matrix[1,0] = m21;  Matrix[1,1] = m22;  Matrix[2,1] = 0;
-      Matrix[2,0] = dx;   Matrix[2,1] = dy;   Matrix[2,2] = norm;
+      M11 = m11;  M12 = m12;
+      M21 = m21;  M22 = m22;
+      M31 = dx;   M32 = dy;   M33 = norm;
     }
     #endregion
 
@@ -72,8 +100,8 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     /// <returns>New IntVector2D resulting from application of this matrix to vector v.</returns>
     public static IntVector2D operator * (IntVector2D v, IntMatrix2D m) {
       return new IntVector2D (
-        v.X * m.M11 + v.Y * m.M21 + m.M31,   v.X * m.M12 + v.Y * m.M22 + m.M32,  v.Z * m.M33
-      ).Norm();
+        v.X * m.M11 + v.Y * m.M21 + m.M31,   v.X * m.M12 + v.Y * m.M22 + m.M32,  v.W * m.M33
+      ).Normalize();
     }
     /// <summary>Matrix multiplication.</summary>
     /// <param name="m1">Prepended transformation.</param>
@@ -93,7 +121,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     /// <returns>New IntVector2D resulting from rotaion (only) of vector v by this matrix 
     /// (ignoring any translation components of this matrix).</returns>
     public IntVector2D Rotate(IntVector2D v) {
-      return new IntVector2D (v.X * M11 + v.Y * M12, v.X * M21 + v.Y * M22, v.Z * M33).Norm();
+      return new IntVector2D (v.X * M11 + v.Y * M12, v.X * M21 + v.Y * M22, v.W * M33).Normalize();
     }
 
     #region Value Equality
@@ -114,7 +142,5 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     public override string ToString() {
       return string.Format("(({0},{1]),({2},{3}),({4],{5}),{6})",M11,M12,M21,M22,M31,M32,M33);
     }
-
-    private int [,] Matrix  { get; set; }
   }
 }

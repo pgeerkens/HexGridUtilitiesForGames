@@ -16,10 +16,14 @@ using PG_Napoleonics.Utilities;
 using PG_Napoleonics.Utilities.HexUtilities;
 
 namespace PG_Napoleonics.HexGridExample {
-  public abstract class MapDisplay : MapBoard, IMapDisplay {
+  public interface IMapGridHex : IGridHex {
+    char             Value          { get; }
+  }
+
+  public abstract class MapDisplay : MapBoard, IMapDisplay, IBoard<IMapGridHex> {
     public MapDisplay() : base() {
       GridSize = new Size(27,30);
-      StartHex = GoalHex = HotSpotHex = Coords.EmptyUser;
+      StartHex = GoalHex = HotSpotHex = HexCoords.EmptyUser;
 
       HexgridPath = new GraphicsPath();
       HexgridPath.AddLines(new Point[] {
@@ -30,15 +34,17 @@ namespace PG_Napoleonics.HexGridExample {
         new Point(GridSize.Width*1/3,GridSize.Height  ),
         new Point(                 0,GridSize.Height/2),
         new Point(GridSize.Width*1/3,                0)
-      });
+      } );
       MapSizeMatrix = new IntMatrix2D(GridSize.Width,                0, 
                                                    0,  GridSize.Height, 
                                       GridSize.Width/3,GridSize.Height/2);
+
     }
 
     public Size            GridSize      { get; private set; }
     public Size            MapMargin     { get; set; }
     public Size            MapSizePixels { get {return SizeHexes * MapSizeMatrix;} }
+    public string          Name          { get { return "MapDisplay"; }}
     protected GraphicsPath HexgridPath   { get; set; }
     protected IntMatrix2D  MapSizeMatrix { get; set; }
 
@@ -83,7 +89,7 @@ namespace PG_Napoleonics.HexGridExample {
           var container = g.BeginContainer();
           g.TranslateTransform(0,  clipCells.Top*GridSize.Height + (x+1)%2 * (GridSize.Height)/2);
           for (int y=clipCells.Top; y<clipCells.Bottom; y++) {
-            var coords = Coords.NewUserCoords(x,y);
+            var coords = HexCoords.NewUserCoords(x,y);
             if (ShowFov && FOV!=null && ! FOV[coords]) { g.FillPath(shadeBrush, HexgridPath);  }
 
             g.TranslateTransform(0,GridSize.Height);

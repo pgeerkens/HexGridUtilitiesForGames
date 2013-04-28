@@ -28,31 +28,53 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
 namespace PG_Napoleonics.Utilities {
-  public static class SizeExtensions {
-    #region Size scaling functions
-    public static Size Scale(this Size @this, int scale) { 
-      return @this.Scale(scale,scale);
+  public interface IPriorityQueue<TPriority,TValue> 
+    where TPriority : struct, IComparable<TPriority>, IEquatable<TPriority>
+  {
+    bool IsEmpty { get; }
+
+    void                           Enqueue(TPriority priority, TValue value);
+    TValue                         Dequeue();
+    KeyValuePair<TPriority,TValue> Peek();
+  }
+
+  /// <summary>Stable (insertion-order preserving for equal-priority elements) PriorityQueue implementation.</summary>
+  /// <remarks>Eric Lippert's C# implementation of PrioirtyQueue for use by the A* algorithm.</remarks>
+  /// <cref>http://blogs.msdn.com/b/ericlippert/archive/2007/10/08/path-finding-using-a-in-c-3-0-part-three.aspx</cref>
+  /// <typeparam name="TPriority">Type of the queue-item prioirty.</typeparam>
+  /// <typeparam name="TValue">Type of the queue-item value.</typeparam>
+  public sealed class DictPriorityQueue<TPriority,TValue> : IPriorityQueue<TPriority,TValue>
+    where TPriority : struct, IComparable<TPriority>, IEquatable<TPriority> 
+  {
+    IDictionary<TPriority,Queue<TValue>> list = new SortedDictionary<TPriority,Queue<TValue>>();
+
+    public bool IsEmpty { get { return !list.Any(); } }
+
+    public void Enqueue(TPriority priority, TValue value) {
+      Queue<TValue> queue;
+      if( ! list.TryGetValue(priority, out queue) ) {
+        queue = new Queue<TValue>();
+        list.Add(priority, queue);
+      }
+      queue.Enqueue(value);
     }
-    public static Size Scale(this Size @this, int scaleX, int scaleY) {
-      return new Size(@this.Width * scaleX, @this.Height * scaleY);
+
+    public TValue Dequeue() {
+      var pair = list.First();
+      var v    = pair.Value.Dequeue();
+      if( pair.Value.Count == 0)  list.Remove(pair.Key);
+
+      return v;
     }
-    public static SizeF Scale(this Size @this, float scale) {
-      return @this.Scale(scale,scale);
+
+    public KeyValuePair<TPriority,TValue> Peek() { 
+      var peek = list.First();
+      return new KeyValuePair<TPriority,TValue>(peek.Key, peek.Value.Peek()); 
     }
-    public static SizeF Scale(this Size @this, float scaleX, float scaleY) {
-      return new SizeF(@this).Scale(scaleX,scaleY);
-    }
-    public static SizeF Scale(this SizeF @this, float scale) { 
-      return @this.Scale(scale,scale);
-    }
-    public static SizeF Scale(this SizeF @this, float scaleX, float scaleY) {
-      return new SizeF(@this.Width * scaleX, @this.Height * scaleY);
-    }
-    #endregion
   }
 }

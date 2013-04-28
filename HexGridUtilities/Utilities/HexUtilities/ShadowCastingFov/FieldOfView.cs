@@ -1,8 +1,29 @@
-﻿#region License - Copyright (C) 2012-2013 Pieter Geerkens, all rights reserved.
+﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
-//
-// Use of this software is permitted only as described in the attached file: license.txt.
+/////////////////////////////////////////////////////////////////////////////////////////
+// The MIT License:
+// ----------------
+// 
+// Copyright (c) 2012-2013 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, 
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+// permit persons to whom the Software is furnished to do so, subject to the following 
+// conditions:
+//     The above copyright notice and this permission notice shall be 
+//     included in all copies or substantial portions of the Software.
+// 
+//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+//     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
@@ -25,38 +46,39 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
   }
   public class FieldOfView : IFieldOfView {
     public static IFieldOfView GetFieldOfView(IBoard<IGridHex> board, ICoordsUser origin, int range) {
-      if ( ! board.IsOnBoard(origin)) return null;
       return GetFieldOfView(board, origin, range, FovTargetMode.EqualHeights);
     }
     public static IFieldOfView GetFieldOfView(IBoard<IGridHex> board, ICoordsUser origin, int range, FovTargetMode targetMode) {
       DebugTracing.LogTime(TraceFlag.FieldOfView,"FieldOfView - begin");
       var fov = new FieldOfView(board);
-      Func<ICoordsCanon,int> target;
-      int                    observer;
-      switch (targetMode) {
-        case FovTargetMode.EqualHeights: 
-          observer = board[origin].ElevationASL + 1;
-          target   = canon => board[canon.User].ElevationASL + 1;
-          break;
-        case FovTargetMode.TargetHeightEqualZero:
-          observer = board[origin].HeightObserver;
-          target   = canon => board[canon.User].ElevationASL;
-          break;
-        default:
-        case FovTargetMode.TargetHeightEqualActual:
-          observer = board[origin].HeightObserver;
-          target   = canon => board[canon.User].HeightTarget;
-          break;
+      if (board.IsPassable(origin)) {
+        Func<ICoordsCanon,int> target;
+        int                    observer;
+        switch (targetMode) {
+          case FovTargetMode.EqualHeights: 
+            observer = board[origin].ElevationASL + 1;
+            target   = canon => board[canon.User].ElevationASL + 1;
+            break;
+          case FovTargetMode.TargetHeightEqualZero:
+            observer = board[origin].HeightObserver;
+            target   = canon => board[canon.User].ElevationASL;
+            break;
+          default:
+          case FovTargetMode.TargetHeightEqualActual:
+            observer = board[origin].HeightObserver;
+            target   = canon => board[canon.User].HeightTarget;
+            break;
+        }
+        ShadowCasting.ComputeFieldOfView(
+          origin.Canon, 
+          range, 
+          observer,
+          canon=>board.IsOnBoard(canon.User),
+          target,
+          canon=>board[canon.User].HeightTerrain,
+          canon=>fov[canon.User] = true
+        );
       }
-      ShadowCasting.ComputeFieldOfView(
-        origin.Canon, 
-        range, 
-        observer,
-        canon=>board.IsOnBoard(canon.User),
-        target,
-        canon=>board[canon.User].HeightTerrain,
-        canon=>fov[canon.User] = true
-      );
       DebugTracing.LogTime(TraceFlag.FieldOfView,"FieldOfView - end");
       return fov;
     }

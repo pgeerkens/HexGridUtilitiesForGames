@@ -24,12 +24,15 @@ namespace PG_Napoleonics.HexGridExample {
         case '2': return  2;
         case '3': return  3;
         case 'F': return  5;
-        case 'R': return -1;
-        case 'W': return  8;
         case 'H': return  5;
         case 'M': return  6;
+        case 'R': return -1;
+        case 'W': return  8;
         default:  return  4;
       }
+    }
+    public override int    Range(ICoordsCanon goal, ICoordsCanon current) {
+      return goal.Range(current) * 2;
     }
 
     #region Painting
@@ -50,7 +53,7 @@ namespace PG_Napoleonics.HexGridExample {
           var container = g.BeginContainer();
           g.TranslateTransform(0,  clipCells.Top*GridSize.Height + (x+1)%2 * (GridSize.Height)/2);
           for (int y=clipCells.Top; y<clipCells.Bottom; y++) {
-            var coords = Coords.NewUserCoords(x,y);
+            var coords = HexCoords.NewUserCoords(x,y);
             switch (this[coords].Value) {
               case 'F': g.FillPath(Brushes.Brown,     HexgridPath); break;  // Ford
               case 'R': g.FillPath(Brushes.DarkBlue,  HexgridPath); break;  // River
@@ -111,19 +114,20 @@ namespace PG_Napoleonics.HexGridExample {
     };
     #endregion
 
-    public override IGridHex this[ICoordsCanon coords] { get {return this[coords.User];} }
-    public override IGridHex this[ICoordsUser  coords] { get {
+    public override IMapGridHex this[ICoordsCanon coords] { get {return this[coords.User];} }
+    public override IMapGridHex this[ICoordsUser  coords] { get {
       return new GridHex(Board[coords.Y][coords.X], coords);
     } }
 
-    public struct GridHex : IGridHex {
-      internal static IBoard<IGridHex> MyBoard { get; set; }
+    public struct GridHex : IMapGridHex {
+      internal static MapDisplay MyBoard { get; set; }
 
       public GridHex(char value, ICoordsUser coords) : this() { Value = value; Coords = coords; }
 
-      public IBoard<IGridHex> Board          { get { return MyBoard; } }
-      public ICoordsUser      Coords         { get; private set; }
-      public int              Elevation      {
+      IBoard<IGridHex> IGridHex.Board           { get { return MyBoard; } }
+      public IBoard<IMapGridHex> Board          { get { return MyBoard; } }
+      public ICoordsUser         Coords         { get; private set; }
+      public int                 Elevation      {
         get {
           switch (Value) {
             default:  return  0;

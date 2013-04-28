@@ -1,17 +1,43 @@
-﻿#region License - Copyright (C) 2012-2013 Pieter Geerkens, all rights reserved.
+﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
-//
-// Use of this software is permitted only as described in the attached file: license.txt.
+/////////////////////////////////////////////////////////////////////////////////////////
+// The MIT License:
+// ----------------
+// 
+// Copyright (c) 2012-2013 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, 
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+// permit persons to whom the Software is furnished to do so, subject to the following 
+// conditions:
+//     The above copyright notice and this permission notice shall be 
+//     included in all copies or substantial portions of the Software.
+// 
+//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+//     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
 namespace PG_Napoleonics.Utilities.HexUtilities {
-  public static partial class PathFinder {
+  public static class PathFinder {
+    public static int RangeCutoff { get; set; }
+    static PathFinder() { RangeCutoff = 80; }  // TODO: Set this to FOVRange perhaps?
+
     /// <summary>(Adapted) C# implementation of A* path-finding algorithm by Eric Lippert.</summary>
     /// <remarks><quote>
     /// A nice property of the A* algorithm is that it finds the optimal path in a reasonable 
@@ -35,54 +61,61 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     /// behaviour on a hexgrid.
     /// </remarks>
     /// <param name="start"></param>
-    /// <param name="destination"></param>
+    /// <param name="goal"></param>
     /// <param name="stepCost"></param>
-    /// <param name="estimate"></param>
+    /// <param name="range"></param>
+    /// <param name="isOnBoard"></param>
     /// <returns></returns>
     public static IPath<ICoordsCanon> FindPath( 
       ICoordsCanon start, 
       ICoordsCanon goal,
       Func<ICoordsCanon,Hexside,int> stepCost,
-      Func<ICoordsCanon,int>         estimate,
+      Func<ICoordsCanon,int>         range,
       Func<ICoordsCanon,bool>        isOnBoard
     ) {
-      var closed = new HashSet<ICoordsCanon>();
-      var queue  = new PriorityQueue<uint, Path<ICoordsCanon>>();
-      var vectorGoal = new IntVector2D(goal.Vector - start.Vector);
-      DebugTracing.Trace(TraceFlag.FindPath, true, "Find path from {0} to {1}; vectorGoal = {0}", 
-                                    start.User, goal.User.ToString(), vectorGoal);
+      var vectorGoal = goal.Vector - start.Vector;
+      var closed     = new HashSet<ICoordsUser>();
+      var queue      = goal.Range(start) > RangeCutoff
+          ? (IPriorityQueue<uint, Path<ICoordsCanon>>) new HeapPriorityQueue<uint, Path<ICoordsCanon>>()
+          : (IPriorityQueue<uint, Path<ICoordsCanon>>) new DictPriorityQueue<uint, Path<ICoordsCanon>>();
+      #if DEBUG
+        DebugTracing.Trace(TraceFlag.FindPath, true, "Find path from {0} to {1}; vectorGoal = {0}", 
+                                      start.User, goal.User, vectorGoal);
+      #endif
 
       queue.Enqueue (0, new Path<ICoordsCanon>(start));
 
       while (! queue.IsEmpty) {
+        var oldPref = queue.Peek().Key & 0xFFFF; 
         var path = queue.Dequeue();
-        if( closed.Contains(path.LastStep) ) continue;
+        if( closed.Contains(path.LastStep.User) ) continue;
 
-        DebugTracing.Trace(TraceFlag.FindPath, "Dequeue Path at {1} w/ cost={0}.", 
-          path.TotalCost, path.LastStep.User);
+        #if DEBUG
+          var previous = (path.PreviousSteps) == null ? HexCoords.EmptyCanon : path.PreviousSteps.LastStep;
+          DebugTracing.Trace(TraceFlag.FindPath, "Dequeue Path at {0} from {3} w/ cost={1,4}:{2,3}.", 
+            path.LastStep, path.TotalCost, oldPref, previous);
+        #endif
         if(path.LastStep!=null  &&  path.LastStep.Equals(goal)) return path;
 
-        closed.Add(path.LastStep);
+        closed.Add(path.LastStep.User);
 
         foreach (var neighbour in path.LastStep.GetNeighbours(~Hexside.None)) {
-          if (isOnBoard(neighbour.Coords.Canon)) {
-            var preference    = (ushort)vectorGoal.VectorCross(goal.Vector - neighbour.Coords.Canon.Vector);
-            var cost          = stepCost(path.LastStep, neighbour.Direction);
+          if (isOnBoard(neighbour.Coords)) {
+            var cost = stepCost(path.LastStep, neighbour.Direction);
             if (cost > 0) {
-              var newPath     = path.AddStep(neighbour.Coords.Canon, (ushort)cost, neighbour.Direction); 
-              var newEstimate = ((uint)estimate(neighbour.Coords.Canon) + (uint)newPath.TotalCost) << 16;
-              queue.Enqueue(newEstimate + preference, newPath);
-              DebugTracing.Trace(TraceFlag.FindPath, "   Enqueue {0}: {1} / {2}; / {3}",
-                  neighbour.Coords, newEstimate>>16, newEstimate & 0x0FFFF, preference);
+              var preference = (ushort)Math.Abs(vectorGoal ^ (goal.Vector - neighbour.Coords.Vector));
+              var newPath    = path.AddStep(neighbour.Coords.User.Canon, (ushort)cost, neighbour.Direction); 
+              var estimate   = ((uint)range(neighbour.Coords.User.Canon) + (uint)newPath.TotalCost) << 16;
+              queue.Enqueue(estimate + preference, newPath);
+              #if DEBUG
+                DebugTracing.Trace(TraceFlag.FindPath, "   Enqueue {0}: {1,4}:{2,3}",
+                        neighbour.Coords, estimate>>16, preference);
+              #endif
             }
           }
         }
       }
       return null;
-    }
-
-    public static int VectorCross (this IntVector2D lhs, IntVector2D rhs) {
-      return Math.Abs(lhs.X*rhs.Y - lhs.Y*rhs.X);
     }
   }
 }

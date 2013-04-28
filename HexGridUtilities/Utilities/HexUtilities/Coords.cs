@@ -1,8 +1,29 @@
-﻿#region License - Copyright (C) 2012-2013 Pieter Geerkens, all rights reserved.
+﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
-//
-// Use of this software is permitted only as described in the attached file: license.txt.
+/////////////////////////////////////////////////////////////////////////////////////////
+// The MIT License:
+// ----------------
+// 
+// Copyright (c) 2012-2013 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, 
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+// permit persons to whom the Software is furnished to do so, subject to the following 
+// conditions:
+//     The above copyright notice and this permission notice shall be 
+//     included in all copies or substantial portions of the Software.
+// 
+//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+//     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
@@ -13,34 +34,30 @@ using System.Text;
 namespace PG_Napoleonics.Utilities.HexUtilities {
   public enum CoordsType { Canon, User, Custom }
 
-  public partial struct Coords : ICoordsCanon, ICoordsUser, ICoordsCustom, IEquatable<Coords>, IEqualityComparer<Coords> {
-    public static Func<ICoordsUser,ICoordsUser>[] Directions = 
-      new Func<ICoordsUser,ICoordsUser>[] {
-        (c)=>c.Canon.StepNorthWest.User,
-        (c)=>c.Canon.StepNorth.User,
-        (c)=>c.Canon.StepNorthEast.User,
-        (c)=>c.Canon.StepSouthWest.User,
-        (c)=>c.Canon.StepSouth.User,
-        (c)=>c.Canon.StepSouthEast.User
-      };
-
-    static readonly ICoordsCanon _EmptyCanon = Coords.NewCanonCoords(0,0);
-    static readonly ICoordsUser  _EmptyUser  = Coords.NewUserCoords(0,0);
-    public static ICoordsCanon EmptyCanon { get { return _EmptyCanon; } }
-    public static ICoordsUser  EmptyUser  { get { return _EmptyUser; } }
+  public abstract partial class Coords : ICoordsCanon, ICoordsUser, ICoordsCustom,
+    IEquatable<Coords>, IEqualityComparer<Coords> {
+    #region Constructors
+    protected Coords(CoordsType coordsType, IntVector2D vector) {
+      switch(coordsType) {
+        default:
+        case CoordsType.Canon:   _vectorCanon  = vector;  isUserNull   = isCustomNull = true;  break;
+        case CoordsType.User:    _vectorUser   = vector;  isCustomNull = isCanonNull  = true;  break;
+        case CoordsType.Custom:  _vectorCustom = vector;  isCanonNull  = isUserNull   = true;  break;
+      }
+    }
+    #endregion
 
     /// <inheritDoc/>
     /// <remarks>Prefers Custom over User over Canon in choosing which values to present.</remarks>
     public override string ToString() {
-      return ! isCustomNull ? string.Format("Custom: {0}", vectorCustom)
-           : ! isUserNull   ? string.Format("User: {0}",  vectorUser)
-                            : string.Format("Canon: {0}",vectorCanon);
+      return ! isCustomNull ? string.Format("Custom: {0}", VectorCustom)
+                            : string.Format("User: {0}",   VectorUser);
     }
 
     #region Value Equality
     bool IEquatable<Coords>.Equals(Coords rhs) { return this == rhs; }
     public override bool Equals(object rhs) { return (rhs is Coords) && this == (Coords)rhs; }
-    public static bool operator == (Coords lhs, Coords rhs) { return lhs.VectorCanon == rhs.VectorCanon; }
+    public static bool operator == (Coords lhs, Coords rhs) { return lhs.VectorCanon.Equals(rhs.VectorCanon); }
     public static bool operator != (Coords lhs, Coords rhs) { return ! (lhs == rhs); }
     public override int GetHashCode() { return VectorUser.GetHashCode(); }
 
@@ -48,71 +65,34 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     int  IEqualityComparer<Coords>.GetHashCode(Coords coords) { return coords.GetHashCode(); }
     #endregion
 
-    #region Constructors
-    public static ICoordsCanon  NewCanonCoords (IntVector2D vector){ return new Coords(CoordsType.Canon, vector); }
-    public static ICoordsUser   NewUserCoords  (IntVector2D vector){ return new Coords(CoordsType.User,vector); }
-    public static ICoordsCustom NewCustomCoords(IntVector2D vector){ return new Coords(CoordsType.Custom,vector); }
-    public static ICoordsCanon  NewCanonCoords (int x, int y) { return new Coords(CoordsType.Canon, x,y); }
-    public static ICoordsUser   NewUserCoords  (int x, int y) { return new Coords(CoordsType.User,x,y); }
-    public static ICoordsUser   NewCustomCoords(int x, int y) { return new Coords(CoordsType.Custom,x,y); }
-
-    private Coords(CoordsType coordsType, int x, int y) : this(coordsType, new IntVector2D(x,y)) {}
-    private Coords(CoordsType coordsType, IntVector2D vector) : this() {
-      switch(coordsType) {
-        default:
-        case CoordsType.Canon:   vectorCanon  = vector;  isUserNull   = isCustomNull = true;  break;
-        case CoordsType.User:    vectorUser   = vector;  isCustomNull = isCanonNull  = true;  break;
-        case CoordsType.Custom:  vectorCustom = vector;  isCanonNull  = isUserNull   = true;  break;
-      }
-    }
-    #endregion
-
     #region Conversions
-    static readonly IntMatrix2D MatrixUserToCanon = new IntMatrix2D(2,1, 0,2, 0,0, 2);
-    static IntMatrix2D MatrixCustomToUser         = new IntMatrix2D(2,0, 0,2, 0,0, 2);     
-    IntVector2D VectorCanon {
-      get { return !isCanonNull ? vectorCanon : VectorUser * MatrixUserToCanon; }
-      set { vectorCanon = value;  isUserNull = isCustomNull = true; }
-    } IntVector2D vectorCanon;
+    protected static IntMatrix2D MatrixUserToCanon;
+    protected IntVector2D VectorCanon {
+      get { return !isCanonNull ? _vectorCanon : VectorUser * MatrixUserToCanon; }
+      set { _vectorCanon = value;  isUserNull = isCustomNull = true; }
+    } IntVector2D _vectorCanon;
     bool isCanonNull;
 
-    static readonly IntMatrix2D MatrixCanonToUser  = new IntMatrix2D(2,-1, 0,2, 0,1, 2);    
-    IntVector2D VectorUser {
-      get { return !isUserNull  ? vectorUser 
+    protected static IntMatrix2D MatrixCanonToUser;
+    protected IntVector2D VectorUser {
+      get { return !isUserNull  ? _vectorUser 
                  : !isCanonNull ? VectorCanon  * MatrixCanonToUser
                                 : VectorCustom * MatrixCustomToUser; }
-      set { vectorUser  = value;  isCustomNull = isCanonNull = true; }
-    } IntVector2D vectorUser;
+      set { _vectorUser  = value;  isCustomNull = isCanonNull = true; }
+    } IntVector2D _vectorUser;
     bool isUserNull;
 
-    static IntMatrix2D MatrixUserToCustom  = new IntMatrix2D(2,0, 0,2, 0,0, 2);
-    IntVector2D VectorCustom {
-      get { return !isCustomNull ? vectorCustom : VectorUser * MatrixUserToCustom; }
-      set { vectorCustom  = value;  isCanonNull = isUserNull = true; }
-    } IntVector2D vectorCustom;
+    protected static IntMatrix2D MatrixCustomToUser;
+    protected static IntMatrix2D MatrixUserToCustom;
+    protected IntVector2D VectorCustom {
+      get { return !isCustomNull ? _vectorCustom : VectorUser * MatrixUserToCustom; }
+      set { _vectorCustom  = value;  isCanonNull = isUserNull = true; }
+    } IntVector2D _vectorCustom;
     bool isCustomNull;
     #endregion
 
-    #region private internals
-    private IEnumerable<NeighbourCoords> GetNeighbours(Hexside hexsides) {
-      ICoordsCanon coords = this;
-      if(hexsides.HasFlag(Hexside.North))     yield return new NeighbourCoords(Hexside.North,     coords.StepNorth);
-      if(hexsides.HasFlag(Hexside.NorthEast)) yield return new NeighbourCoords(Hexside.NorthEast, coords.StepNorthEast);
-      if(hexsides.HasFlag(Hexside.SouthEast)) yield return new NeighbourCoords(Hexside.SouthEast, coords.StepSouthEast);
-      if(hexsides.HasFlag(Hexside.South))     yield return new NeighbourCoords(Hexside.South,     coords.StepSouth);
-      if(hexsides.HasFlag(Hexside.SouthWest)) yield return new NeighbourCoords(Hexside.SouthWest, coords.StepSouthWest);
-      if(hexsides.HasFlag(Hexside.NorthWest)) yield return new NeighbourCoords(Hexside.NorthWest, coords.StepNorthWest);
-    }
-
-    private int Range(ICoordsCanon coords) {
-      var deltaX = coords.X - VectorCanon.X;
-      var deltaY = coords.Y - VectorCanon.Y;
-      return (Math.Abs(deltaX) + Math.Abs(deltaY) + Math.Abs(deltaX-deltaY)) / 2;
-    }
-
-    private ICoordsCanon StepOut(IntVector2D vector) { 
-      return NewCanonCoords(VectorCanon + vector); 
-    }
-    #endregion
-  } 
+    protected abstract IEnumerable<NeighbourCoords> GetNeighbours(Hexside hexsides);
+    protected abstract int Range(ICoordsCanon coords);
+    protected abstract ICoordsCanon StepOut(IntVector2D vector);
+  }
 }

@@ -19,8 +19,15 @@ namespace PG_Napoleonics.HexGridExample {
   public sealed class MazeMap : MapDisplay {
     public MazeMap() : base() { GridHex.MyBoard = this; }
 
+    public override bool  IsPassable(ICoordsUser coords) { 
+      return IsOnBoard(coords)  &&  this[coords].Elevation == 0; 
+    }
+
     public override int    StepCost(ICoordsCanon coords, Hexside hexSide) {
       return ( IsOnBoard(coords.User) && this[coords.StepOut(hexSide)].Value=='.' ? 1 : -1 );
+    }
+    public override int    Range(ICoordsCanon goal, ICoordsCanon current) {
+      return goal.Range(current);
     }
 
     #region Painting
@@ -40,7 +47,7 @@ namespace PG_Napoleonics.HexGridExample {
           var container = g.BeginContainer();
           g.TranslateTransform(0,  clipCells.Top*GridSize.Height + (x+1)%2 * (GridSize.Height)/2);
           for (int y=clipCells.Top; y<clipCells.Bottom; y++) {
-            var coords = Coords.NewUserCoords(x,y);
+            var coords = HexCoords.NewUserCoords(x,y);
             if (this[coords].Value!='.') {
               g.FillPath(fillBrush, HexgridPath);
             }
@@ -91,24 +98,25 @@ namespace PG_Napoleonics.HexGridExample {
     };
     #endregion
 
-    public override IGridHex this[ICoordsCanon coords] { get {return this[coords.User];} }
-    public override IGridHex this[ICoordsUser  coords] { get {
+    public override IMapGridHex this[ICoordsCanon coords] { get {return this[coords.User];} }
+    public override IMapGridHex this[ICoordsUser  coords] { get {
       return new GridHex(Board[coords.Y][coords.X], coords);
     } }
 
-    public struct GridHex : IGridHex {
-      internal static IBoard<IGridHex> MyBoard { get; set; }
+    public struct GridHex : IMapGridHex {
+      internal static MapDisplay MyBoard { get; set; }
 
       public GridHex(char value, ICoordsUser coords) : this() { Value = value; Coords = coords; }
 
-      public IBoard<IGridHex> Board          { get { return MyBoard; } }
-      public ICoordsUser      Coords         { get; private set; }
-      public int              Elevation      { get { return Value == '.' ? 0 : 1; } }
-      public int              ElevationASL   { get { return Elevation * 10;   } }
-      public int              HeightObserver { get { return ElevationASL + 1; } }
-      public int              HeightTarget   { get { return ElevationASL + 1; } }
-      public int              HeightTerrain  { get { return ElevationASL + (Value == '.' ? 0 : 10); } }
-      public char             Value          { get; private set; }
+      IBoard<IGridHex> IGridHex.Board           { get { return MyBoard; } }
+      public IBoard<IMapGridHex> Board          { get { return MyBoard; } }
+      public ICoordsUser         Coords         { get; private set; }
+      public int                 Elevation      { get { return Value == '.' ? 0 : 1; } }
+      public int                 ElevationASL   { get { return Elevation * 10;   } }
+      public int                 HeightObserver { get { return ElevationASL + 1; } }
+      public int                 HeightTarget   { get { return ElevationASL + 1; } }
+      public int                 HeightTerrain  { get { return ElevationASL + (Value == '.' ? 0 : 10); } }
+      public char                Value          { get; private set; }
       public IEnumerable<NeighbourHex> GetNeighbours() {
         var @this = this;
         return NeighbourHex.GetNeighbours(@this).Where(n=>@this.Board.IsOnBoard(n.Hex.Coords));

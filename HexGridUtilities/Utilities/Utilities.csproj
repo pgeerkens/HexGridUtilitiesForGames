@@ -132,9 +132,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FastList.cs" />
+    <Compile Include="HeapPriorityQueue.cs" />
+    <Compile Include="HexUtilities\HexEventArgs.cs" />
+    <Compile Include="HexUtilities\Coords.cs" />
     <Compile Include="HexUtilities\IGridHex.cs" />
     <Compile Include="HexUtilities\ShadowCastingFov\FieldOfView.cs" />
+    <Compile Include="IHeap.cs" />
     <Compile Include="HexUtilities\UserCoordsRectangle.cs" />
+    <Compile Include="MinListHeap.cs" />
     <Compile Include="PointExtensions.cs" />
     <Compile Include="HexUtilities\ICoordsCustom.cs" />
     <Compile Include="HexUtilities\HexgridPanel.cs">
@@ -144,7 +150,7 @@
       <DependentUpon>HexgridPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="HexUtilities\IBoard.cs" />
-    <Compile Include="HexUtilities\Coords.cs" />
+    <Compile Include="HexUtilities\HexCoords.cs" />
     <Compile Include="HexUtilities\PathFinder.cs" />
     <Compile Include="HexUtilities\NeighbourCoords.cs" />
     <Compile Include="HexUtilities\ICoordsCanon.cs" />
@@ -164,7 +170,7 @@
     <Compile Include="SizeExtensions.cs" />
     <Compile Include="WinForms\Extensions.cs" />
     <Compile Include="HexUtilities\Path.cs" />
-    <Compile Include="PriorityQueue.cs" />
+    <Compile Include="DictPriorityQueue.cs" />
     <Compile Include="WinForms\WindowsMouseInput.cs" />
     <Compile Include="DebugTracing.cs" />
     <Compile Include="WinForms\ThreadExceptionHandler.cs" />
@@ -175,9 +181,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WinForms\WindowsMessages.cs" />
     <Compile Include="WinForms\WindowsStylesEx.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="HexUtilities\HexGridAlgorithm.mht" />
+    <Compile Include="WinForms\WinFormsExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="HexUtilities\HexGridPanel.resx">
@@ -188,6 +192,9 @@
     <None Include="license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Documentation\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

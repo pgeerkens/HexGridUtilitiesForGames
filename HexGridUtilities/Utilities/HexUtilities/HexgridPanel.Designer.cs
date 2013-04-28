@@ -19,7 +19,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     protected override void Dispose(bool disposing) {
       if (disposing && (components != null)) {
         components.Dispose();
-        if (_buffer!=null) _buffer.Dispose();
+        if (_mapBuffer!=null) _mapBuffer.Dispose();
       }
       base.Dispose(disposing);
     }

@@ -26,39 +26,41 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System;
+using System.Diagnostics;
+using System.Collections.Generic;
 
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyTitle("Utilities")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("PG Software Solutions Inc.")]
-[assembly: AssemblyProduct("Utilities")]
-[assembly: AssemblyCopyright("Copyright © PG Software Solutions Inc. 2013")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+namespace PG_Napoleonics.Utilities {
+  public struct KeyValuePair<TKey,TValue> : IComparable<KeyValuePair<TKey,TValue>>
+    where TKey : IComparable<TKey>
+  {
+    public TKey   Key;
+    public TValue Value;
 
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
+    public KeyValuePair(TKey key, TValue value) {
+      Key   = key;
+      Value = value;
+    }
+    int IComparable<KeyValuePair<TKey,TValue>>.CompareTo(KeyValuePair<TKey,TValue> rhs) { 
+      return this.Key.CompareTo(rhs.Key); 
+    }
+  }
 
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("59925f4a-6821-4d5a-9c7c-bd25fa573308")]
+  public interface IHeap<T> where T : struct, IComparable<T> {
+    /// <summary>Returns the number of elements in the heap.</summary>
+    int Count    { get; }
+    /// <summary>Return whether the heap is empty.</summary>
+    bool IsEmpty { get; }
 
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("4.0.0.0")]
-[assembly: AssemblyFileVersion("4.0.0.0")]
+    /// <summary>Add an element <c>item</c> to the heap.</summary>
+    void Add(T item);
+    /// <summary>???</summary>
+    void BuildHead();
+    /// <summary>Delete all elements from the heap.</summary>
+    void Clear();
+    /// <summary>Return top element, removing it from the heap.</summary>
+    T    ExtractFirst();
+    /// <summary>Return top element, leaving it on the heap.</summary>
+    T    Peek();
+  }
+}

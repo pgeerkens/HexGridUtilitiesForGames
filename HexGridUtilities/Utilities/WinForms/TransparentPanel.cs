@@ -1,8 +1,29 @@
-﻿#region License - Copyright (C) 2012-2013 Pieter Geerkens, all rights reserved.
+﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
-//
-// Use of this software is permitted only as described in the attached file: license.txt.
+/////////////////////////////////////////////////////////////////////////////////////////
+// The MIT License:
+// ----------------
+// 
+// Copyright (c) 2012-2013 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, 
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+// permit persons to whom the Software is furnished to do so, subject to the following 
+// conditions:
+//     The above copyright notice and this permission notice shall be 
+//     included in all copies or substantial portions of the Software.
+// 
+//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+//     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
@@ -12,8 +33,8 @@ using System.Windows.Forms;
 namespace System.Windows.Forms {
 	/// <summary> Transparent Panel control.</summary>
 	/// <remarks>
-	/// <see cref="http://componentfactory.blogspot.ca/2005/06/net2-transparent-controls.html"/>
-	/// <see cref="http://www.bobpowell.net/transcontrols.htm"/>
+	/// See "http://componentfactory.blogspot.ca/2005/06/net2-transparent-controls.html"
+	/// See "http://www.bobpowell.net/transcontrols.htm"
 	/// </remarks>
 	public class TransparentPanel : Panel {
 		public TransparentPanel() : base() {
@@ -22,7 +43,7 @@ namespace System.Windows.Forms {
 		}
 		/// <summary>Make a truly transparent Panel control.</summary>
 		/// <remarks>Change the behaviour of the window by giving it a WS_EX_TRANSPARENT style.
-		/// <see cref="http://www.bobpowell.net/transcontrols.htm"/></remarks>
+		/// See "http://www.bobpowell.net/transcontrols.htm"</remarks>
 		protected override CreateParams CreateParams { 
 			get { 
 				var cp=base.CreateParams; 
@@ -35,7 +56,7 @@ namespace System.Windows.Forms {
 		/// <remarks>Invalidate the parent of the control, not the control itself, whenever 
 		/// we need to update the graphics. This ensures that whatever is behind the control 
 		/// gets painted before we need to do our own graphics output.
-		/// <see cref="http://www.bobpowell.net/transcontrols.htm"/></remarks>
+		/// See "http://www.bobpowell.net/transcontrols.htm"</remarks>
 		public virtual void InvalidateEx() { 
 			InvalidateEx(new Rectangle(this.Location,this.Size));
 		} 

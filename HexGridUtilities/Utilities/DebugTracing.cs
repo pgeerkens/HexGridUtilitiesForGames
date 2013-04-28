@@ -1,8 +1,29 @@
-﻿#region License - Copyright (C) 2012-2013 Pieter Geerkens, all rights reserved.
+﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
-//
-// Use of this software is permitted only as described in the attached file: license.txt.
+/////////////////////////////////////////////////////////////////////////////////////////
+// The MIT License:
+// ----------------
+// 
+// Copyright (c) 2012-2013 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, 
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+// permit persons to whom the Software is furnished to do so, subject to the following 
+// conditions:
+//     The above copyright notice and this permission notice shall be 
+//     included in all copies or substantial portions of the Software.
+// 
+//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+//     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
@@ -28,20 +49,21 @@ namespace PG_Napoleonics.Utilities {
   }
   [Flags]
   public enum TraceFlag {
-    None         = 0x0000,
-    Painting     = 0x0001,
-    FieldOfView  = 0x0002,
-    Mouse        = 0x0004,
-    MouseMove    = 0x0008,
-    MainForm     = 0x0010,
-    FindPath     = 0x0020,
-    Docking      = 0x0040,
-    MenuEvents   = 0x0080,
-    KeyEvents    = 0x0100,
-    Sizing       = 0x0200,
-    ScrollEvents = 0x0400,
-    ToolTipEvents= 0x0800,
-    Caching      = 0x1000
+    None           = 0x0000,
+    Painting       = 0x0001,
+    FieldOfView    = 0x0002,
+    Mouse          = 0x0004,
+    MouseMove      = 0x0008,
+    MainForm       = 0x0010,
+    FindPath       = 0x0020,
+    Docking        = 0x0040,
+    MenuEvents     = 0x0080,
+    KeyEvents      = 0x0100,
+    Sizing         = 0x0200,
+    ScrollEvents   = 0x0400,
+    ToolTipEvents  = 0x0800,
+    Caching        = 0x1000,
+    Initialization = 0x2000
   }
 
   public sealed class DebugTracing {
@@ -70,14 +92,14 @@ namespace PG_Napoleonics.Utilities {
     }
 
     public static void LogTime(TraceFlag flags, string description) {
-#if DEBUG
-      LogTime(flags, false, description);
-#endif
+      #if DEBUG
+        LogTime(flags, false, description);
+      #endif
     }
     public static void LogTime(TraceFlag flags, string format, params object[] args) {
-#if DEBUG
-      LogTime(flags, false, string.Format(format,args));
-#endif
+      #if DEBUG
+        LogTime(flags, false, string.Format(format,args));
+      #endif
     }
     public static void LogTime(TraceFlag flags, bool newline, string description) {
       #if DEBUG
@@ -90,20 +112,20 @@ namespace PG_Napoleonics.Utilities {
     }
 
     public static void LogTime(TraceFlag flags, bool newline, string format, params object[] args) {
-#if DEBUG
-      LogTime(flags, newline, string.Format(format,args));
-#endif
+      #if DEBUG
+        LogTime(flags, newline, string.Format(format,args));
+      #endif
     }
 
-    private static string GetTimeString() {
+    public static string GetTimeString() {
       var st = new _SystemTime();
       GetSystemTime(st); 
       return st.ToString();
     }
-    private static _SystemTime GetTime() {
-      var st = new _SystemTime();
-      GetSystemTime(st); 
-      return st;;
-    }
+    //private static _SystemTime GetTime() {
+    //  var st = new _SystemTime();
+    //  GetSystemTime(st); 
+    //  return st;
+    //}
   }
 }
