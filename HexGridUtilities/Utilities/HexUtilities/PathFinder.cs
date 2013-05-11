@@ -79,7 +79,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
           ? (IPriorityQueue<uint, Path<ICoordsCanon>>) new HeapPriorityQueue<uint, Path<ICoordsCanon>>()
           : (IPriorityQueue<uint, Path<ICoordsCanon>>) new DictPriorityQueue<uint, Path<ICoordsCanon>>();
       #if DEBUG
-        DebugTracing.Trace(TraceFlag.FindPath, true, "Find path from {0} to {1}; vectorGoal = {0}", 
+        TraceFlag.FindPath.Trace(true, "Find path from {0} to {1}; vectorGoal = {0}", 
                                       start.User, goal.User, vectorGoal);
       #endif
 
@@ -92,7 +92,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
 
         #if DEBUG
           var previous = (path.PreviousSteps) == null ? HexCoords.EmptyCanon : path.PreviousSteps.LastStep;
-          DebugTracing.Trace(TraceFlag.FindPath, "Dequeue Path at {0} from {3} w/ cost={1,4}:{2,3}.", 
+          TraceFlag.FindPath.Trace("Dequeue Path at {0} from {3} w/ cost={1,4}:{2,3}.", 
             path.LastStep, path.TotalCost, oldPref, previous);
         #endif
         if(path.LastStep!=null  &&  path.LastStep.Equals(goal)) return path;
@@ -108,7 +108,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
               var estimate   = ((uint)range(neighbour.Coords.User.Canon) + (uint)newPath.TotalCost) << 16;
               queue.Enqueue(estimate + preference, newPath);
               #if DEBUG
-                DebugTracing.Trace(TraceFlag.FindPath, "   Enqueue {0}: {1,4}:{2,3}",
+                TraceFlag.FindPath.Trace("   Enqueue {0}: {1,4}:{2,3}",
                         neighbour.Coords, estimate>>16, preference);
               #endif
             }

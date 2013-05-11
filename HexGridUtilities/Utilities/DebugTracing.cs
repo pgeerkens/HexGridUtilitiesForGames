@@ -48,84 +48,112 @@ namespace PG_Napoleonics.Utilities {
     }
   }
   [Flags]
-  public enum TraceFlag {
-    None           = 0x0000,
-    Painting       = 0x0001,
-    FieldOfView    = 0x0002,
-    Mouse          = 0x0004,
-    MouseMove      = 0x0008,
-    MainForm       = 0x0010,
-    FindPath       = 0x0020,
-    Docking        = 0x0040,
-    MenuEvents     = 0x0080,
-    KeyEvents      = 0x0100,
-    Sizing         = 0x0200,
-    ScrollEvents   = 0x0400,
-    ToolTipEvents  = 0x0800,
-    Caching        = 0x1000,
-    Initialization = 0x2000
+  public enum TraceFlag  {
+     None           = 0x0000
+    ,Painting       = 0x0001
+    ,FieldOfView    = 0x0002
+    ,Mouse          = 0x0004
+    ,MouseMove      = 0x0008
+    ,MainForm       = 0x0010
+    ,FindPath       = 0x0020
+    ,Docking        = 0x0040
+    ,MenuEvents     = 0x0080
+    ,KeyEvents      = 0x0100
+    ,Sizing         = 0x0200
+    ,ScrollEvents   = 0x0400
+    ,ToolTipEvents  = 0x0800
+    ,Caching        = 0x1000
+    ,Initialization = 0x2000
+    ,Solo          = Int32.MinValue // 0x40000000
   }
 
-  public sealed class DebugTracing {
+  public sealed partial class DebugTracing {
     [DllImport("Kernel32.dll")]
     private static extern void GetSystemTime([In,Out] _SystemTime st);
 
     public static TraceFlag EnabledFags { get; set; }
-
-    public static void Trace(TraceFlag flags, string format, params object[] args) {
-      #if DEBUG
-        Trace(flags, false, string.Format(format,args));
-      #endif
-    }
-    public static void Trace(TraceFlag flags, bool newline, string format, params object[] args) {
-      #if DEBUG
-        Trace(flags, newline, string.Format(format,args));
-      #endif
-    }
-    public static void Trace(TraceFlag flags, bool newline, string description) {
-      #if DEBUG
-        if (EnabledFags.HasFlag(flags)) {
-          if(newline) Debug.WriteLine("");
-          Debug.WriteLine(description);
-        }
-      #endif
-    }
-
-    public static void LogTime(TraceFlag flags, string description) {
-      #if DEBUG
-        LogTime(flags, false, description);
-      #endif
-    }
-    public static void LogTime(TraceFlag flags, string format, params object[] args) {
-      #if DEBUG
-        LogTime(flags, false, string.Format(format,args));
-      #endif
-    }
-    public static void LogTime(TraceFlag flags, bool newline, string description) {
-      #if DEBUG
-        if (EnabledFags.HasFlag(flags)) {
-          if(newline) Debug.WriteLine("");
-          Debug.Write("{0} - ", GetTimeString());
-          Trace(flags, false, description);
-        }
-      #endif
-    }
-
-    public static void LogTime(TraceFlag flags, bool newline, string format, params object[] args) {
-      #if DEBUG
-        LogTime(flags, newline, string.Format(format,args));
-      #endif
-    }
 
     public static string GetTimeString() {
       var st = new _SystemTime();
       GetSystemTime(st); 
       return st.ToString();
     }
-    //private static _SystemTime GetTime() {
-    //  var st = new _SystemTime();
-    //  GetSystemTime(st); 
-    //  return st;
-    //}
+
+  #if DEBUG
+      public static void Trace(TraceFlag flags, string format, params object[] args) {
+        Trace(flags, false, string.Format(format,args));
+      }
+      public static void Trace(TraceFlag flags, bool newline, string format, params object[] args) {
+        Trace(flags, newline, string.Format(format,args));
+      }
+      public static void Trace(TraceFlag flags, bool newline, string description) {
+        if (EnabledFags.HasFlag(flags)) {
+          if(newline) Debug.WriteLine("");
+          Debug.WriteLine(description);
+        }
+      }
+
+      public static void LogTime(TraceFlag flags, string format, params object[] args) {
+        LogTime(flags, false, string.Format(format,args));
+      }
+      public static void LogTime(TraceFlag flags, bool newline, string format, params object[] args) {
+        LogTime(flags, newline, string.Format(format,args));
+      }
+      public static void LogTime(TraceFlag flags, string description) {
+        LogTime(flags, false, description);
+      }
+      public static void LogTime(TraceFlag flags, bool newline, string description) {
+        if (EnabledFags.HasFlag(flags)) {
+          if(newline) Debug.WriteLine("");
+          Debug.Write("{0} - ", GetTimeString());
+          Trace(flags, false, description);
+        }
+      }
+    #else
+      public static void Trace(TraceFlag flags, string format, params object[] args) {}
+      public static void Trace(TraceFlag flags, bool newline, string format, params object[] args) {}
+      public static void Trace(TraceFlag flags, bool newline, string description) {}
+
+      public static void LogTime(TraceFlag flags, string format, params object[] args) {}
+      public static void LogTime(TraceFlag flags, bool newline, string format, params object[] args) {}
+      public static void LogTime(TraceFlag flags, string description) {}
+      public static void LogTime(TraceFlag flags, bool newline, string description) {}
+    #endif
+  }
+
+  public static partial class Extensions {
+    #if DEBUG
+      public static void Trace(this TraceFlag @this, string format, params object[] args) {
+        DebugTracing.Trace(@this,format,args);
+      }
+      public static void Trace(this TraceFlag @this, bool newline, string format, params object[] args) {
+        DebugTracing.Trace(@this,newline,format,args);
+      }
+      public static void Trace(this TraceFlag @this, bool newline, string description) {
+        DebugTracing.Trace(@this,newline,description);
+      }
+
+      public static void LogTime(this TraceFlag @this, string format, params object[] args) {
+        DebugTracing.LogTime(@this,format,args);
+      }
+      public static void LogTime(this TraceFlag @this, bool newline, string format, params object[] args) {
+        DebugTracing.LogTime(@this,newline,format,args);
+      }
+      public static void LogTime(this TraceFlag @this, string description) {
+        DebugTracing.LogTime(@this,description);
+      }
+      public static void LogTime(this TraceFlag @this, bool newline, string description) {
+        DebugTracing.LogTime(@this,newline,description);
+      }
+    #else
+      public static void Trace(this TraceFlag @this, string format, params object[] args) {}
+      public static void Trace(this TraceFlag @this, bool newline, string format, params object[] args) {}
+      public static void Trace(this TraceFlag @this, bool newline, string description) {}
+
+      public static void LogTime(this TraceFlag @this, string format, params object[] args) {}
+      public static void LogTime(this TraceFlag @this, bool newline, string format, params object[] args) {}
+      public static void LogTime(this TraceFlag @this, string description) {}
+      public static void LogTime(this TraceFlag @this, bool newline, string description) {}
+    #endif
   }
 }

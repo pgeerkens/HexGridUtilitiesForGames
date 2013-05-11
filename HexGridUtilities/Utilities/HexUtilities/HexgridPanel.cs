@@ -285,8 +285,8 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     Size  TransposeSize(Size  size)   { return IsTransposed ? new Size (size.Height, size.Width) : size; }
 
     protected override void OnMouseClick(MouseEventArgs e) {
-      DebugTracing.Trace(TraceFlag.Mouse," - {0}.OnMouseClick - Shift: {1}; Ctl: {2}; Alt: {3}", 
-                                            Name, IsShiftKeyDown, IsCtlKeyDown, IsAltKeyDown);
+      TraceFlag.Mouse.Trace(" - {0}.OnMouseClick - Shift: {1}; Ctl: {2}; Alt: {3}", 
+                                      Name, IsShiftKeyDown, IsCtlKeyDown, IsAltKeyDown);
 
       var eventArgs = new HexEventArgs( GetHexCoords(TransposePoint(e.Location)).User, e, ModifierKeys);
 
@@ -305,7 +305,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       base.OnMouseMove(e);
     }
     protected override void OnMouseWheel(MouseEventArgs e) {
-      DebugTracing.Trace(TraceFlag.ScrollEvents," - {0}.OnMouseWheel: {1}", Host.Name, e.ToString()); 
+      TraceFlag.ScrollEvents.Trace(" - {0}.OnMouseWheel: {1}", Host.Name, e.ToString()); 
       if( Control.ModifierKeys.HasFlag(Keys.Control)) {
         ScaleIndex += Math.Sign(e.Delta);  
       } else {

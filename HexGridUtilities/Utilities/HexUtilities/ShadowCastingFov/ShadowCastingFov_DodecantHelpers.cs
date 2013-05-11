@@ -54,7 +54,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities.ShadowCastingFov {
         var vector_0_1 = new IntVector2D(0,1);
         var vector_1_2 = new IntVector2D(1,2);
         for(var dodecant=0; dodecant < matrices.Count; dodecant++) {
-            DebugTracing.Trace(TraceFlag.FieldOfView, true,
+            TraceFlag.FieldOfView.Trace(true,
               "Dodecant #{0,2} canons:  (0,1) to {1}; (1,2) to {2}", dodecant, 
                   (vector_0_1 * matrices[dodecant]).ToString(), 
                   (vector_1_2 * matrices[dodecant]).ToString());

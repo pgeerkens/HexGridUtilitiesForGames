@@ -64,14 +64,14 @@ namespace PG_Napoleonics.Utilities.HexUtilities.ShadowCastingFov {
       Action<ICoordsCanon>    setFoV
     ) {
       #if TraceFOV
-        DebugTracing.Trace(TraceFlag.FieldOfView, true, " - Coords = " + observerCoords.User.ToString());
+        TraceFlag.FieldOfView.Trace(true, " - Coords = " + observerCoords.User.ToString());
       #endif
       var matrixOrigin = new IntMatrix2D(observerCoords.Vector);
 
       setFoV(observerCoords);    // Always visible to self!
       #if TraceFoV
         for (int dodecant = 3; dodecant < 4; dodecant++) {
-          DebugTracing.Trace(TraceFlag.FieldOfView, true," - Dodecant: {0}", dodecant);
+          TraceFlag.FieldOfView.Trace(true," - Dodecant: {0}", dodecant);
       #else
         Parallel.For (0, matrices.Count, dodecant => {
       #endif
@@ -158,7 +158,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities.ShadowCastingFov {
       var overlapVector = cone.VectorTop;
       var hexX          = XFromVector(range, topVector, true);
       #if TraceFOV
-        DebugTracing.Trace(TraceFlag.FieldOfView, false, "DQ:   ({0}) from {1}", cone, hexX);
+        TraceFlag.FieldOfView.Trace(false, "DQ:   ({0}) from {1}", cone, hexX);
       #endif
 
       do {
@@ -180,7 +180,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities.ShadowCastingFov {
             ) {
               setFieldOfView(coordsCurrent);
               #if TraceFOV
-                DebugTracing.Trace(TraceFlag.FieldOfView,false,"    Set visible: {0} / {1}; {2} >= {3}", 
+                TraceFlag.FieldOfView.Trace(false,"    Set visible: {0} / {1}; {2} >= {3}", 
                     MapCoordsDodecant(coordsCurrent), coordsCurrent.ToString(), riseRun, cone.RiseRun);
               #endif
             }
@@ -216,7 +216,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities.ShadowCastingFov {
             break;
           }
           #if TraceFOV
-            DebugTracing.Trace(TraceFlag.FieldOfView, false, "DQ:   ({0}) from {1}", cone, hexX);
+            TraceFlag.FieldOfView.Trace(false, "DQ:   ({0}) from {1}", cone, hexX);
           #endif
         }
         #endregion

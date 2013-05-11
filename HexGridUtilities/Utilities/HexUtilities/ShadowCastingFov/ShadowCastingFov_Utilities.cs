@@ -43,7 +43,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities.ShadowCastingFov {
       if( top.GT(bottom)) {
         var cone = new FovCone(range+1, top, bottom, riseRun);
         #if TraceFOV
-          DebugTracing.Trace(TraceFlag.FieldOfView,false, "  EQ: ({0}) code: {1}",cone,code);
+          TraceFlag.FieldOfView.Trace(false, "  EQ: ({0}) code: {1}",cone,code);
         #endif
         enqueue(cone);
         return bottom;
