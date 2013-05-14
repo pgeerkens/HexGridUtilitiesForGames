@@ -45,7 +45,7 @@ namespace System.Threading {
       } else {
         try {
           var result = ShowThreadExceptionDialog(e.Exception);
-          Application.Exit();
+          Application.ExitThread();
         }
         catch {  // Fatal error, terminate program
           try {
