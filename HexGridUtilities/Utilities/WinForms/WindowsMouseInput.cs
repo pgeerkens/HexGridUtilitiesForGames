@@ -66,8 +66,8 @@ namespace System.Windows.Forms {
 		/// <summary> Determine (sign-extended for multiple monitors) screen coordinates at m.LParam.</summary>
 		/// <param name="lParam"></param>
 		/// <returns></returns>
-		public static Point GetPointLParam(IntPtr lParam) {
-			return new Point(
+		public static System.Drawing.Point GetPointLParam(IntPtr lParam) {
+			return new System.Drawing.Point(
 					 (int)(short)(lParam.ToInt64() & 0x0000ffff), 
 					 (int)(short)(lParam.ToInt64() >> 16)
 				);
