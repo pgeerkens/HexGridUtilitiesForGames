@@ -109,6 +109,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IMapBoard.cs" />
+    <Compile Include="MapGridHex.cs" />
+    <Compile Include="TerrainGridHex.cs" />
     <Compile Include="TerrainMap.cs" />
     <Compile Include="HexGridExample.cs">
       <SubType>Form</SubType>

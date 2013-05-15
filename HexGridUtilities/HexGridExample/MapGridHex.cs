@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 
@@ -36,39 +37,27 @@ using PG_Napoleonics.Utilities;
 using PG_Napoleonics.Utilities.HexUtilities;
 
 namespace PG_Napoleonics.HexGridExample {
-  public abstract class MapBoard :  IBoard<IGridHex> {
-    public static int FoVRange = 40;
+  public abstract class MapGridHex : IMapGridHex {
+    internal static MapDisplay MyBoard { get; set; }
 
-    public bool                ShowFov      { get; set; }
-    public ICoordsUser         StartHex     { get; set; }
-    public ICoordsUser         GoalHex      { get; set; }
-    public ICoordsUser         HotSpotHex   { 
-      get { return _hotSpotHex; }
-      set { _hotSpotHex = value; FOV = null; }
-    } ICoordsUser _hotSpotHex;
-    public IPath<ICoordsCanon> Path         { get; set; }
-    public Size                SizeHexes    { get {return new Size(Board[0].Length,Board.Length);} }
+    public MapGridHex(char value, ICoordsUser coords) { Value = value; Coords = coords; }
 
-    IGridHex IBoard<IGridHex>.this[ICoordsCanon coords] { get { return this[coords]; } }
-    IGridHex IBoard<IGridHex>.this[ICoordsUser coords]  { get { return this[coords]; } }
-    public abstract IMapGridHex this[ICoordsCanon coords] { get; }
-    public abstract IMapGridHex this[ICoordsUser coords]  { get; }
+    IBoard<IGridHex>   IGridHex.Board          { get { return MyBoard; } }
+    public IBoard<IMapGridHex>  Board          { get { return MyBoard; } }
 
-    public string        HexText(ICoordsUser coords)   { return HexText(coords.X, coords.Y); }
-    public bool          IsOnBoard(ICoordsUser coords) {
-      return 0<=coords.X && coords.X < SizeHexes.Width
-          && 0<=coords.Y && coords.Y < SizeHexes.Height;
+    public virtual  ICoordsUser Coords         { get; private set; }
+    public virtual  char        Value          { get; private set; }
+
+    public abstract int         Elevation      { get; }
+    public virtual  int         ElevationASL   { get { return Elevation * 10;   } }
+    public virtual  int         HeightObserver { get { return ElevationASL + 1; } }
+    public virtual  int         HeightTarget   { get { return ElevationASL + 1; } }
+    public abstract int         HeightTerrain  { get; }
+    public abstract int         StepCost       { get; }
+
+    public IEnumerable<NeighbourHex> GetNeighbours() {
+      var @this = this;
+      return NeighbourHex.GetNeighbours(@this).Where(n=>@this.Board.IsOnBoard(n.Hex.Coords));
     }
-    public virtual bool  IsPassable(ICoordsUser coords) { return IsOnBoard(coords); }
-    public abstract int  StepCost(ICoordsCanon coords, Hexside hexSide);
-    public abstract int  Range(ICoordsCanon goal, ICoordsCanon current);
-
-    protected abstract string[] Board  { get; }
-    protected IFieldOfView      FOV    {
-      get { return _fov ?? 
-                (_fov = FieldOfView.GetFieldOfView(this, HotSpotHex, FoVRange)); }
-      private set { _fov = value; }
-    } IFieldOfView _fov;
-    string HexText(int x, int y)       { return string.Format("{0,2}-{1,2}", x, y); }
-  } 
+  }
 }

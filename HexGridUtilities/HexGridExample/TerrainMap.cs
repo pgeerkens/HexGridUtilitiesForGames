@@ -1,8 +1,29 @@
-﻿#region License - Copyright (C) 2012-2013 Pieter Geerkens, all rights reserved.
+﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
-//
-// Use of this software is permitted only as described in the attached file: license.txt.
+/////////////////////////////////////////////////////////////////////////////////////////
+// The MIT License:
+// ----------------
+// 
+// Copyright (c) 2012-2013 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, 
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+// permit persons to whom the Software is furnished to do so, subject to the following 
+// conditions:
+//     The above copyright notice and this permission notice shall be 
+//     included in all copies or substantial portions of the Software.
+// 
+//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+//     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
@@ -17,19 +38,10 @@ using PG_Napoleonics.Utilities.HexUtilities;
 
 namespace PG_Napoleonics.HexGridExample {
   public sealed class TerrainMap : MapDisplay {
-    public TerrainMap() : base() { GridHex.MyBoard = this; }
+    public TerrainMap() : base() { TerrainGridHex.MyBoard = this; }
 
     public override int    StepCost(ICoordsCanon coords, Hexside hexSide) {
-      switch (this[coords.StepOut(hexSide)].Value) {
-        case '2': return  2;
-        case '3': return  3;
-        case 'F': return  5;
-        case 'H': return  5;
-        case 'M': return  6;
-        case 'R': return -1;
-        case 'W': return  8;
-        default:  return  4;
-      }
+      return this[coords].StepCost;
     }
     public override int    Range(ICoordsCanon goal, ICoordsCanon current) {
       return goal.Range(current) * 2;
@@ -60,9 +72,6 @@ namespace PG_Napoleonics.HexGridExample {
               case 'W': g.FillPath(Brushes.Green,     HexgridPath); break;  // Woods
               case 'H': g.FillPath(Brushes.Khaki,     HexgridPath); break;  // Hill
               case 'M': g.FillPath(Brushes.DarkKhaki, HexgridPath); break;  // Mountain
-              default:  g.FillPath(Brushes.White,     HexgridPath); break;  // Clear
-            }
-            switch (this[coords].Value) {
               case '2': g.FillPath(pikeBrush, HexgridPath); break;
               case '3': g.FillPath(roadBrush, HexgridPath); break;
               default:  break;
@@ -116,41 +125,19 @@ namespace PG_Napoleonics.HexGridExample {
 
     public override IMapGridHex this[ICoordsCanon coords] { get {return this[coords.User];} }
     public override IMapGridHex this[ICoordsUser  coords] { get {
-      return new GridHex(Board[coords.Y][coords.X], coords);
+      return GetGridHex(Board[coords.Y][coords.X], coords);
     } }
 
-    public struct GridHex : IMapGridHex {
-      internal static MapDisplay MyBoard { get; set; }
-
-      public GridHex(char value, ICoordsUser coords) : this() { Value = value; Coords = coords; }
-
-      IBoard<IGridHex> IGridHex.Board           { get { return MyBoard; } }
-      public IBoard<IMapGridHex> Board          { get { return MyBoard; } }
-      public ICoordsUser         Coords         { get; private set; }
-      public int                 Elevation      {
-        get {
-          switch (Value) {
-            default:  return  0;
-            case 'H': return  1;
-            case 'M': return  2;
-          }
-        }
-      }
-      public int              ElevationASL   { get { return Elevation * 10; } }
-      public int              HeightObserver { get { return ElevationASL + 1; } }
-      public int              HeightTarget   { get { return ElevationASL + 1; } }
-      public int              HeightTerrain  { 
-        get {
-          switch (Value) {
-            default:  return  ElevationASL;
-            case 'W': return  ElevationASL + 7;
-          }
-        }
-      }
-      public char             Value          { get; private set; }
-      public IEnumerable<NeighbourHex> GetNeighbours() {
-        var @this = this;
-        return NeighbourHex.GetNeighbours(@this).Where(n=>@this.Board.IsOnBoard(n.Hex.Coords));
+    public static TerrainGridHex GetGridHex(char value, ICoordsUser coords) {
+      switch(value) {
+      default:  return new ClearTerrainGridHex(value, coords);
+      case '2': return new RoadTerrainGridHex(value, coords);
+      case '3': return new TrailTerrainGridHex(value, coords);
+      case 'R': return new RiverTerrainGridHex(value, coords);
+      case 'W': return new WoodsTerrainGridHex(value, coords);
+      case 'F': return new FordTerrainGridHex(value, coords);
+      case 'H': return new HillTerrainGridHex(value, coords);
+      case 'M': return new MountainTerrainGridHex(value, coords);
       }
     }
   }
