@@ -42,7 +42,7 @@ namespace PG_Napoleonics.HexGridExample {
     char             Value          { get; }
   }
 
-  public abstract class MapDisplay : MapBoard, IMapDisplay, IBoard<IMapGridHex> {
+  public abstract class MapDisplay : MapBoard, IMapDisplay, IBoard<IMapGridHex>, INavigableBoard {
     public MapDisplay() : base() {
       GridSize = new Size(27,30);
       StartHex = GoalHex = HotSpotHex = HexCoords.EmptyUser;
