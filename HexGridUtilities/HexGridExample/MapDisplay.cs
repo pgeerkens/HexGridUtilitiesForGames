@@ -76,7 +76,7 @@ namespace PG_Napoleonics.HexGridExample {
     public UserCoordsRectangle GetClipCells(RectangleF visibleClipBounds) {
       return GetClipHexes(visibleClipBounds, SizeHexes);
     }
-    public virtual void PaintHighlight(Graphics g) { 
+    public virtual  void PaintHighlight(Graphics g) { 
       var state = g.Save();
       g.TranslateTransform(
         MapMargin.Width  + StartHex.X * GridSize.Width,
@@ -88,7 +88,7 @@ namespace PG_Napoleonics.HexGridExample {
         var path = Path;
         while (path != null) {
           g.Restore(state); state = g.Save();
-          var step = path.LastStep.User;
+          var step = path.LastStep;
 
           g.TranslateTransform(
             MapMargin.Width  + step.X * GridSize.Width,

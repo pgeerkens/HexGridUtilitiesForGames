@@ -44,11 +44,9 @@ namespace PG_Napoleonics.HexGridExample {
       return IsOnBoard(coords)  &&  this[coords].Elevation == 0; 
     }
 
+    public override int    Heuristic(int range) { return range; }
     public override int    StepCost(ICoordsCanon coords, Hexside hexSide) {
       return ( IsOnBoard(coords.User) && this[coords.StepOut(hexSide)].Value=='.' ? 1 : -1 );
-    }
-    public override int    Range(ICoordsCanon goal, ICoordsCanon current) {
-      return goal.Range(current);
     }
 
     #region Painting

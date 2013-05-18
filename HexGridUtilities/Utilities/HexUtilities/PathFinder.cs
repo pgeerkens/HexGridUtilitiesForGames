@@ -34,12 +34,6 @@ using System.Linq;
 using System.Text;
 
 namespace PG_Napoleonics.Utilities.HexUtilities {
-  public interface INavigableBoard {
-    int   StepCost(ICoordsCanon coords,Hexside hexside);
-    int   Range(ICoordsCanon hex, ICoordsCanon goal);
-    bool  IsOnBoard(ICoordsUser coords);
-  }
-
   public static class PathFinder {
     public static int RangeCutoff { get; set; }
     static PathFinder() { RangeCutoff = 80; }  // TODO: Set this to FOVRange perhaps?
@@ -68,16 +62,10 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     /// </remarks>
     /// <param name="start"></param>
     /// <param name="goal"></param>
-    /// <param name="board"></param>
+    /// <param name="stepCost"></param>
+    /// <param name="range"></param>
+    /// <param name="isOnBoard"></param>
     /// <returns></returns>
-    public static IPath<ICoordsCanon> FindPath(
-      ICoordsCanon    start,
-      ICoordsCanon    goal,
-      INavigableBoard board
-    ) {
-      return FindPath(start, goal, board.StepCost, h => board.Range(h, goal), c=>board.IsOnBoard(c.User));
-    }
-
     [System.Obsolete("Use FindPath(ICoordsCanon start,ICoordsCanon goal,INavigableBoard board) instead.")]
     public static IPath<ICoordsCanon> FindPath( 
       ICoordsCanon start, 

@@ -85,9 +85,9 @@ namespace PG_Napoleonics.HexGridExample {
     }
 
     private void hexgridPanel_MouseClick() {
-      MapBoard.Path = PathFinder.FindPath(
-        MapBoard.StartHex.Canon, 
-        MapBoard.GoalHex.Canon, 
+      MapBoard.Path = PathFinder2.FindPath(
+        MapBoard.StartHex, 
+        MapBoard.GoalHex, 
         MapBoard
       );
     }

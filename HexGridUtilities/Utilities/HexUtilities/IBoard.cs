@@ -33,13 +33,12 @@ using System.Linq;
 using System.Text;
 
 namespace PG_Napoleonics.Utilities.HexUtilities {
-  public interface IBoard<TGridHex> where TGridHex : class, IGridHex {
+  public interface IBoard<TGridHex> : INavigableBoard where TGridHex : class, IGridHex {
     /// <summary>The rectangular extent of the board's hexagonal grid.</summary>
     Size     SizeHexes                 { get; }
     TGridHex this[ICoordsUser coords]  { get; }
     TGridHex this[ICoordsCanon coords] { get; }
 
-    bool IsOnBoard(ICoordsUser coords);
     bool IsPassable(ICoordsUser coords);
   }
 

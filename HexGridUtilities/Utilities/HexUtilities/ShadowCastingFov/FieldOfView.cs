@@ -48,7 +48,8 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     public static IFieldOfView GetFieldOfView(IBoard<IGridHex> board, ICoordsUser origin, int range) {
       return GetFieldOfView(board, origin, range, FovTargetMode.EqualHeights);
     }
-    public static IFieldOfView GetFieldOfView(IBoard<IGridHex> board, ICoordsUser origin, int range, FovTargetMode targetMode) {
+    public static IFieldOfView GetFieldOfView(IBoard<IGridHex> board, ICoordsUser origin, int range, 
+      FovTargetMode targetMode) {
       DebugTracing.LogTime(TraceFlag.FieldOfView,"FieldOfView - begin");
       var fov = new FieldOfView(board);
       if (board.IsPassable(origin)) {

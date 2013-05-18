@@ -46,8 +46,8 @@ namespace PG_Napoleonics.HexGridExample {
       get { return _hotSpotHex; }
       set { _hotSpotHex = value; FOV = null; }
     } ICoordsUser _hotSpotHex;
-    public IPath<ICoordsCanon> Path         { get; set; }
-    public Size                SizeHexes    { get {return new Size(Board[0].Length,Board.Length);} }
+    public IPath2 Path         { get; set; }
+    public Size   SizeHexes    { get {return new Size(Board[0].Length,Board.Length);} }
 
     IGridHex IBoard<IGridHex>.this[ICoordsCanon coords] { get { return this[coords]; } }
     IGridHex IBoard<IGridHex>.this[ICoordsUser coords]  { get { return this[coords]; } }
@@ -61,7 +61,7 @@ namespace PG_Napoleonics.HexGridExample {
     }
     public virtual bool  IsPassable(ICoordsUser coords) { return IsOnBoard(coords); }
     public abstract int  StepCost(ICoordsCanon coords, Hexside hexSide);
-    public abstract int  Range(ICoordsCanon goal, ICoordsCanon current);
+    public abstract int Heuristic(int range);
 
     protected abstract string[] Board  { get; }
     protected IFieldOfView      FOV    {

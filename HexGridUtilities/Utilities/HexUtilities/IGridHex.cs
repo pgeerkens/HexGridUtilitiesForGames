@@ -40,6 +40,5 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     int              HeightTarget   { get; }
     int              HeightTerrain  { get; }
     IBoard<IGridHex> Board          { get; }
-    //IEnumerable<NeighbourHex> GetNeighbours();
   }
 }

@@ -138,6 +138,8 @@
     <Compile Include="HexUtilities\HexEventArgs.cs" />
     <Compile Include="HexUtilities\Coords.cs" />
     <Compile Include="HexUtilities\IGridHex.cs" />
+    <Compile Include="HexUtilities\Path2.cs" />
+    <Compile Include="HexUtilities\PathFInder2.cs" />
     <Compile Include="HexUtilities\ShadowCastingFov\FieldOfView.cs" />
     <Compile Include="IHeap.cs" />
     <Compile Include="HexUtilities\UserCoordsRectangle.cs" />

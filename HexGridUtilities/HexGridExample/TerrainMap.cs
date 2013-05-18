@@ -40,11 +40,9 @@ namespace PG_Napoleonics.HexGridExample {
   public sealed class TerrainMap : MapDisplay {
     public TerrainMap() : base() { TerrainGridHex.MyBoard = this; }
 
+    public override int    Heuristic(int range) { return 2 * range; }
     public override int    StepCost(ICoordsCanon coords, Hexside hexSide) {
       return this[coords].StepCost;
-    }
-    public override int    Range(ICoordsCanon goal, ICoordsCanon current) {
-      return goal.Range(current) * 2;
     }
 
     #region Painting
