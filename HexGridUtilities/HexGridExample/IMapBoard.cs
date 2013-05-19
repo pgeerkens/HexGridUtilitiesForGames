@@ -45,6 +45,5 @@ namespace PG_Napoleonics.HexGridExample {
 
     string HexText(ICoordsUser coords);
     int    Range(ICoordsCanon goal, ICoordsCanon current);
-    int    StepCost(ICoordsCanon coords, Hexside hexSide);
   }
 }
