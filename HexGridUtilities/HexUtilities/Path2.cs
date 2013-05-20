@@ -42,7 +42,6 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     public Hexside  LastDirection { get; private set; }
     public ICoords  LastStep      { get; private set; }
     public IPath2   PreviousSteps { get{ return _previousSteps;} } Path2 _previousSteps;
-    public int      Count         { get; private set; }
     public uint     TotalCost     { get; private set; }
     public uint     TotalSteps    { get; private set; }
 
@@ -57,20 +56,13 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       _previousSteps = previousSteps;
       LastDirection  = direction;
       LastStep       = thisStep;
-      Count          = count;
       TotalCost      = totalCost;
       TotalSteps     = previousSteps==null ? 0 : previousSteps.TotalSteps+1;
     }
 
     public IEnumerator<ICoords> GetEnumerator() {
-      for (var p = (IPath2)this; p != null; p = p.PreviousSteps) {
+      for (var p = (IPath2)this; p.LastStep != null; p = p.PreviousSteps) 
         yield return p.LastStep;
-        var step = p.LastStep;
-        for (var i=0; i<p.Count; i++) {
-          step = step.StepOut(p.LastDirection);
-          yield return step;
-        }
-      }
     }
 
     IEnumerator IEnumerable.GetEnumerator() { return this.GetEnumerator(); }

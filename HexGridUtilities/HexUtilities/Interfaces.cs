@@ -76,7 +76,6 @@ using System.Text;
       Hexside   LastDirection { get; }
       ICoords   LastStep      { get; }
       IPath2    PreviousSteps { get; }
-      int       Count         { get; }
       uint      TotalCost     { get; }
       uint      TotalSteps    { get; }
     }

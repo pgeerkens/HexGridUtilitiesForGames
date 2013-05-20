@@ -103,9 +103,6 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     public static ICoords operator + (ICoords coords, IntVector2D vector) {
       return HexCoords.NewCanonCoords(coords.Canon.X + vector.X, coords.Canon.Y + vector.Y);
     }
-    //public static ICoords operator + (ICoords coords, IntVector2D vector) {
-    //  return HexCoords.NewCanonCoords(coords.Vector.X + vector.X, coords.Vector.Y + vector.Y).User;
-    //}
     #endregion
 
     #region Casts
