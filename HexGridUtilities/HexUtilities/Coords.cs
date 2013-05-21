@@ -34,24 +34,22 @@ using System.Text;
 namespace PG_Napoleonics.Utilities.HexUtilities {
   public enum CoordsType { Canon, User, Custom }
 
-  public abstract partial class Coords : ICoords, // ICoordsCanon, ICoordsUser, ICoordsCustom,
+  public abstract partial class Coords : ICoords,
     IEquatable<Coords>, IEqualityComparer<Coords> {
     #region Constructors
     protected Coords(CoordsType coordsType, IntVector2D vector) {
       switch(coordsType) {
         default:
-        case CoordsType.Canon:   _vectorCanon  = vector;  isUserNull   = isCustomNull = true;  break;
-        case CoordsType.User:    _vectorUser   = vector;  isCustomNull = isCanonNull  = true;  break;
-        case CoordsType.Custom:  _vectorCustom = vector;  isCanonNull  = isUserNull   = true;  break;
+        case CoordsType.Canon:   _vectorCanon  = vector;  _vectorUser  = null;  break;
+        case CoordsType.User:    _vectorUser   = vector;  _vectorCanon = null;  break;
+        //case CoordsType.Custom:  _vectorCustom = vector;  _vectorCanon = _vectorUser   = null;  break;
       }
     }
     #endregion
 
     /// <inheritDoc/>
-    /// <remarks>Prefers Custom over User over Canon in choosing which values to present.</remarks>
     public override string ToString() {
-      return ! isCustomNull ? string.Format("Custom: {0}", VectorCustom)
-                            : string.Format("User: {0}",   VectorUser);
+      return string.Format("User: {0}", VectorUser);
     }
 
     #region Value Equality
@@ -67,28 +65,19 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
 
     #region Conversions
     protected static IntMatrix2D MatrixUserToCanon;
+
     protected IntVector2D VectorCanon {
-      get { return !isCanonNull ? _vectorCanon : VectorUser * MatrixUserToCanon; }
-      set { _vectorCanon = value;  isUserNull = isCustomNull = true; }
-    } IntVector2D _vectorCanon;
-    bool isCanonNull;
+      get { return ( _vectorCanon.HasValue ? _vectorCanon 
+                                           : _vectorCanon = VectorUser * MatrixUserToCanon
+                   ).Value; }
+    } protected Nullable<IntVector2D> _vectorCanon;
 
     protected static IntMatrix2D MatrixCanonToUser;
     protected IntVector2D VectorUser {
-      get { return !isUserNull  ? _vectorUser 
-                 : !isCanonNull ? VectorCanon  * MatrixCanonToUser
-                                : VectorCustom * MatrixCustomToUser; }
-      set { _vectorUser  = value;  isCustomNull = isCanonNull = true; }
-    } IntVector2D _vectorUser;
-    bool isUserNull;
-
-    protected static IntMatrix2D MatrixCustomToUser;
-    protected static IntMatrix2D MatrixUserToCustom;
-    protected IntVector2D VectorCustom {
-      get { return !isCustomNull ? _vectorCustom : VectorUser * MatrixUserToCustom; }
-      set { _vectorCustom  = value;  isCanonNull = isUserNull = true; }
-    } IntVector2D _vectorCustom;
-    bool isCustomNull;
+      get { return ( _vectorUser.HasValue  ? _vectorUser
+                                           : _vectorUser = VectorCanon * MatrixCanonToUser
+                   ).Value; }
+    } protected Nullable<IntVector2D> _vectorUser;
     #endregion
 
     protected abstract IEnumerable<NeighbourCoords> GetNeighbours(Hexside hexsides);

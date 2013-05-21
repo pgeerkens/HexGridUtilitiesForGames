@@ -52,7 +52,7 @@ namespace PG_Napoleonics.HexGridExample {
                         = true;
       toolStripComboBox1.SelectedIndex = 0;
       var matrix        = new IntMatrix2D(2,0, 0,-2, 0,2*MapBoard.SizeHexes.Height-1, 2);
-      HexCoords.SetCustomMatrices(matrix,matrix);
+      Custom = new CustomCoordsFactory(matrix);
 
 			Application.AddMessageFilter(this);
     }
@@ -60,7 +60,8 @@ namespace PG_Napoleonics.HexGridExample {
 			get { return this.SetCompositedStyle(base.CreateParams); }
 		}
 
-    MapDisplay MapBoard     { get; set; }
+    CustomCoordsFactory Custom   { get; set; }
+    MapDisplay          MapBoard { get; set; }
 
     #region Event handlers
     void HexGridExampleForm_Load(object sender, EventArgs e) {
@@ -87,8 +88,8 @@ namespace PG_Napoleonics.HexGridExample {
     void hexgridPanel_MouseMove(object sender, MouseEventArgs e) {
       var hotHex       = MapBoard.HotSpotHex;
       statusLabel.Text = "HotHex: " + hotHex.ToString() 
-                       + "/" + hotHex.Custom.ToString()
-                       + "/" + hotHex.Canon.ToString()
+                       + "/ Custom=" + Custom.Custom(hotHex.User).ToString()
+                       + "/ Canon=" + hotHex.Canon.ToString()
                        + "; Range = " + MapBoard.StartHex.Range(hotHex)
                        + "; Path Length = " + (MapBoard.Path==null ? 0 : MapBoard.Path.TotalCost);
     }

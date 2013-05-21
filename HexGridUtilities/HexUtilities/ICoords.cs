@@ -35,10 +35,9 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
   public partial class Coords : ICoords {
     IntVector2D ICoords.User   { get { return VectorUser;   } }
     IntVector2D ICoords.Canon  { get { return VectorCanon;  } }
-    IntVector2D ICoords.Custom { get { return VectorCustom; } }
 
-    int     ICoords.Range(ICoords coords)       { return Range(coords); }
-    ICoords ICoords.StepOut(ICoords coords) { return StepOut(coords); }
+    int     ICoords.Range(ICoords coords)    { return Range(coords); }
+    ICoords ICoords.StepOut(ICoords coords)  { return StepOut(coords); }
     ICoords ICoords.StepOut(Hexside hexside) {
       switch(hexside) {
         case Hexside.NorthWest:   return (ICoords) StepOut(HexCoords.NewCanonCoords(-1,-1));
@@ -50,7 +49,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
         default:                  throw new ArgumentOutOfRangeException();
       }
     }
-    string  ICoords.ToString()                  { return VectorUser.ToString(); }
+    string  ICoords.ToString()               { return VectorUser.ToString(); }
 
     IEnumerable<NeighbourCoords> ICoords.GetNeighbours(Hexside hexsides) { 
       return GetNeighbours(hexsides); 

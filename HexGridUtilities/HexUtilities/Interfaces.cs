@@ -36,7 +36,7 @@ using System.Text;
     public interface ICoords {
       IntVector2D User    { get; }
       IntVector2D Canon   { get; }
-      IntVector2D Custom  { get; }
+      //IntVector2D Custom  { get; }
 
       int         Range(ICoords coords);
       ICoords     StepOut(ICoords coords);

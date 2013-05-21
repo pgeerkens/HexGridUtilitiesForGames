@@ -57,7 +57,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     void  PaintUnits(Graphics g);
   }
 
-  public partial class HexgridPanel : Panel, ISupportInitialize {
+  public partial class HexgridPanel : Panel, ISupportInitialize, IHexGridHost {
     public HexgridPanel() {
       InitializeComponent();
     }
@@ -94,7 +94,11 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
 
     public bool        IsTransposed  { 
       get { return _isTransposed; }
-      set { _isTransposed = value; if (IsHandleCreated) SetScroll(); }
+      set { _isTransposed = value;  
+            HexGrid       = IsTransposed ? new TransposedHexGrid(this) 
+                                         : new HexGrid(this);  
+            if (IsHandleCreated) SetScroll();   
+          }
     } bool _isTransposed;
 
     /// <summary>Margin of map in pixels.</summary>
@@ -104,10 +108,10 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     public Size        MapSizePixels { get {return Host.MapSizePixels + MapMargin.Scale(2);} }
 
     /// <summary>Current scaling factor for map display.</summary>
-    public float       MapScale      { get { return DesignMode ? 1 : Scales[ScaleIndex]; } }
+    public float       MapScale      { get { return Scales[ScaleIndex]; } }
 
     /// <summary>Returns <code>ICoords</code> of the hex closest to the center of the current viewport.</summary>
-    public ICoords PanelCenterHex { 
+    public ICoords PanelCenterHex    { 
       get { return GetHexCoords( Location + Size.Round(ClientSize.Scale(0.50F)) ); }
     }
 
@@ -129,11 +133,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     } float[] _scales;
 
     /// <summary>Returns, as a Rectangle, the IUserCoords for the currently visible extent.</summary>
-    public UserCoordsRectangle     VisibleRectangle {
-      get { return Host.GetClipCells( AutoScrollPosition.Scale(-1.0F/MapScale), 
-                                      ClientSize.Scale(1.0F/MapScale) );
-      }
-    }
+    public UserCoordsRectangle VisibleRectangle { get { return HexGrid.VisibleRectangle; } }
 
     /// <summary>Set ScrollBar increments and bounds from map dimensions.</summary>
     public virtual void SetScroll() {
@@ -145,7 +145,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       HorizontalScroll.LargeChange = Math.Max(largeChange.Width,  smallChange.Width);
       VerticalScroll.LargeChange   = Math.Max(largeChange.Height, smallChange.Height);
 
-      var size                     = TransposeSize(Size.Ceiling(MapSizePixels.Scale(MapScale)));
+      var size                     = HexGrid.Size;
       if (AutoScrollMinSize != size) {
         AutoScrollMinSize          = size;
         HorizontalScroll.Maximum   = Math.Min(1, Math.Max(1, size.Width  - ClientSize.Width));
@@ -155,82 +155,34 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     }
 
     #region Grid Coordinates
-    /// <summary>Scaled <code>Size</code> of each hexagon in grid, being the 'full-width' and 'full-height'.</summary>
-    SizeF GridSize { get { return Host.GridSize.Scale(MapScale); } }
+    ///<inheritdoc/>
+    protected HexGrid    HexGrid        { get; private set; }
+    Size    IHexGridHost.ClientSize     { get { return ClientSize; } }
+    SizeF   IHexGridHost.GridSizeF      { get { return Host.GridSize.Scale(MapScale); } }
+    Point   IHexGridHost.ScrollPosition { get { return AutoScrollPosition; } }
 
-    /// Mathemagically (left as exercise for the reader) our 'picking' matrices are these, assuming: 
-    ///  - origin at upper-left corner of hex (0,0);
-    ///  - 'straight' hex-axis vertically down; and
-    ///  - 'oblique'  hex-axis up-and-to-right (at 120 degrees from 'straight').
-    private Matrix matrixX { 
-      get { return new Matrix((3.0F/2.0F)/GridSize.Width,  (3.0F/2.0F)/GridSize.Width,
-                                     1.0F/GridSize.Height,       -1.0F/GridSize.Height,  -0.5F,-0.5F); } 
-    }
-    private Matrix matrixY { 
-      get { return new Matrix(       0.0F,                 (3.0F/2.0F)/GridSize.Width,
-                                    2.0F/GridSize.Height,         1.0F/GridSize.Height,  -0.5F,-0.5F); } 
+    UserCoordsRectangle IHexGridHost.GetClipCells(PointF point, SizeF size) {
+      return Host.GetClipCells(point, size);
     }
 
-    /// <summary>Canonical coordinates for a selected hex.</summary>
+    /// <summary><c>ICoords</c> for a selected hex.</summary>
     /// <param name="point">Screen point specifying hex to be identified.</param>
-    /// <returns>Canonical coordinates for a hex specified by a screen point.</returns>
+    /// <returns>Coordinates for a hex specified by a screen point.</returns>
     /// <remarks>See "file://Documentation/HexGridAlgorithm.mht"</remarks>
     public ICoords GetHexCoords(Point point) {
-      return GetHexCoords(point, new Size(AutoScrollPosition));
+      return HexGrid.GetHexCoords(point, new Size(AutoScrollPosition));
     }
-    /// <summary>Canonical coordinates for a selected hex for a given AutoScroll position.</summary>
-    /// <param name="point">Screen point specifying hex to be identified.</param>
-    /// <param name="autoScroll">AutoScrollPosition for game-display Panel.</param>
-    /// <returns>Canonical coordinates for a hex specified by a screen point.</returns>
-    /// <remarks>See "file://Documentation/HexGridAlgorithm.mht"</remarks>
-    protected ICoords GetHexCoords(Point point, Size autoScroll) {
-      if( Host == null ) return HexCoords.EmptyCanon;
-
-      autoScroll = TransposeSize(autoScroll);
-
-      // Adjust for origin not as assumed by GetCoordinate().
-      var grid    = new Size((int)(GridSize.Width*2F/3F), (int)GridSize.Height);
-      var margin  = new Size((int)(MapMargin.Width *MapScale), 
-                             (int)(MapMargin.Height*MapScale));
-      point      -= autoScroll + margin + grid;
-
-      return HexCoords.NewCanonCoords( GetCoordinate(matrixX, point), 
-                                    GetCoordinate(matrixY, point) );
-    }
-
-    /// <summary>Calculates a (canonical X or Y) grid-coordinate for a point, from the supplied 'picking' matrix.</summary>
-    /// <param name="matrix">The 'picking' matrix</param>
-    /// <param name="point">The screen point identifying the hex to be 'picked'.</param>
-    /// <returns>A (canonical X or Y) grid coordinate of the 'picked' hex.</returns>
-	  private static int GetCoordinate (Matrix matrix, Point point){
-      var pts = new Point[] {point};
-      matrix.TransformPoints(pts);
-		  return (int) Math.Floor( (pts[0].X + pts[0].Y + 2F) / 3F );
-	  }
-
-    /// <summary>Returns the scroll position to center a specified hex in viewport.</summary>
-    /// <param name="coordsNewCenterHex">ICoords for the hex to be centered in viewport.</param>
-    /// <returns>Pixel coordinates in Client reference frame.</returns>
-    protected Point ScrollPositionToCenterOnHex(ICoords coordsNewCenterHex) {
-      return HexCenterPoint(HexCoords.NewUserCoords(
-                coordsNewCenterHex.User - ( new IntVector2D(VisibleRectangle.Size.User) / 2 )
-      ));
-    }
-
     /// <summary>Returns ScrollPosition that places given hex in the upper-Left of viewport.</summary>
-    /// <param name="coordsNewULHex">User (ie rectangular) hex-coordinates for new upper-left hex</param>
+    /// <param name="coordsNewULHex"><c>ICoords</c> for new upper-left hex</param>
     /// <returns>Pixel coordinates in Client reference frame.</returns>
     public Point HexCenterPoint(ICoords coordsNewULHex) {
-      if (coordsNewULHex == null) return new Point();
-      var offset = new Size((int)(GridSize.Width*2F/3F), (int)GridSize.Height);
-      var margin = Size.Round( MapMargin.Scale(MapScale) );
-      return TransposePoint(HexOrigin(GridSize,coordsNewULHex) + margin + offset);
+      return HexGrid.HexCenterPoint(coordsNewULHex);
     }
-    Point HexOrigin(SizeF gridSize, ICoords coords) {
-      return new Point(
-        (int)(GridSize.Width  * coords.User.X),
-        (int)(GridSize.Height * coords.User.Y   + GridSize.Height/2 * (coords.User.X+1)%2)
-      );
+    /// <summary>Returns the scroll position to center a specified hex in viewport.</summary>
+    /// <param name="coordsNewCenterHex"><c>ICoords</c> for the hex to be centered in viewport.</param>
+    /// <returns>Pixel coordinates in Client reference frame.</returns>
+    protected Point ScrollPositionToCenterOnHex(ICoords coordsNewCenterHex) {
+      return HexGrid.ScrollPositionToCenterOnHex(coordsNewCenterHex);
     }
     #endregion
 
@@ -241,7 +193,8 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       if(IsHandleCreated)    PaintPanel(e.Graphics);
     }
     protected virtual void PaintPanel(Graphics g) {
-      var scroll = TransposePoint(AutoScrollPosition);
+      //var scroll = TransposePoint(AutoScrollPosition);
+      var scroll = HexGrid.ScrollPosition;
       if (DesignMode) { g.FillRectangle(Brushes.Gray, ClientRectangle);  return; }
 
       g.Clear(Color.White);
@@ -285,14 +238,12 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     protected         bool        IsCtlKeyDown   { get {return ModifierKeys.HasFlag(Keys.Control);} }
     protected         bool        IsShiftKeyDown { get {return ModifierKeys.HasFlag(Keys.Shift);} }
 
-    Point TransposePoint(Point point) { return IsTransposed ? new Point(point.Y,point.X) : point; }
-    Size  TransposeSize(Size  size)   { return IsTransposed ? new Size (size.Height, size.Width) : size; }
-
+    #region Mouse & Scroll events
     protected override void OnMouseClick(MouseEventArgs e) {
       TraceFlag.Mouse.Trace(" - {0}.OnMouseClick - Shift: {1}; Ctl: {2}; Alt: {3}", 
                                       Name, IsShiftKeyDown, IsCtlKeyDown, IsAltKeyDown);
 
-      var eventArgs = new HexEventArgs( GetHexCoords(TransposePoint(e.Location)), e, ModifierKeys);
+      var eventArgs = new HexEventArgs( GetHexCoords(e.Location), e, ModifierKeys);
 
            if (e.Button == MouseButtons.Middle)   base.OnMouseClick(eventArgs);
       else if (e.Button == MouseButtons.Right)    OnMouseRightClick(eventArgs);
@@ -301,7 +252,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       else                                        OnMouseLeftClick(eventArgs);
     }
     protected override void OnMouseMove(MouseEventArgs e) {
-      var newHex = GetHexCoords(TransposePoint(e.Location));
+      var newHex = GetHexCoords(e.Location);
       if ( ! newHex.Equals(HotSpotHex))
         OnHotSpotHexChange(new HexEventArgs(newHex));
       HotSpotHex = newHex;
@@ -336,6 +287,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       var handler = MouseRightClick;
       if( handler != null ) handler(this, e);
     }
+
     protected virtual void OnHotSpotHexChange(HexEventArgs e) {
       var handler = HotSpotHexChange;
       if( handler != null ) handler(this, e);
@@ -390,5 +342,6 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
         OnScroll( new ScrollEventArgs(type, oldValue, scroll.Value, orientation) );
       }
     }
+    #endregion
   }
 }

@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 
@@ -45,15 +46,17 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
                 (_fov = FieldOfView.GetFieldOfView(this, HotSpotHex, FovRadius)); }
       protected set { _fov = value; }
     } IFov _fov;
-    public          ICoords    GoalHex        { 
+    public virtual  ICoords    GoalHex        { 
       get { return _goalHex??(_goalHex=HexCoords.EmptyUser); } 
       set { _goalHex=value; _path = null; } 
     } ICoords _goalHex;
-    public          ICoords    HotSpotHex     { 
+    public virtual  ICoords    HotSpotHex     { 
       get { return _hotSpotHex; }
       set { _hotSpotHex = value; FOV = null; }
     } ICoords _hotSpotHex;
-    public          IPath2     Path           { get {return _path ?? (_path = SetPath());} } IPath2 _path;
+    public          IPath2     Path           { 
+      get {return _path ?? (_path = SetPath());} 
+    } IPath2 _path;
     public virtual  Size       SizeHexes      { get; private set; }
     public virtual  ICoords    StartHex       { 
       get { return _startHex ?? (_startHex = HexCoords.EmptyUser); } 

@@ -32,12 +32,10 @@ using System.Linq;
 using System.Text;
 
 namespace PG_Napoleonics.Utilities.HexUtilities {
-  public sealed partial class HexCoords : Coords {
+  public partial class HexCoords : Coords {
     static HexCoords() {
       MatrixUserToCanon  = new IntMatrix2D(2, 1,  0,2,  0,0,  2);
       MatrixCanonToUser  = new IntMatrix2D(2,-1,  0,2,  0,1,  2);
-      MatrixCustomToUser = new IntMatrix2D(2, 0,  0,2,  0,0,  2); // default to identity transformation, and
-      MatrixUserToCustom = new IntMatrix2D(2, 0,  0,2,  0,0,  2); // its inverse, also the identity transformation
     }
 
     static readonly ICoords _EmptyCanon = HexCoords.NewCanonCoords(0,0);
@@ -48,13 +46,11 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     #region Constructors
     public static ICoords NewCanonCoords (IntVector2D vector){ return new HexCoords(CoordsType.Canon, vector); }
     public static ICoords NewUserCoords  (IntVector2D vector){ return new HexCoords(CoordsType.User,vector); }
-    public static ICoords NewCustomCoords(IntVector2D vector){ return new HexCoords(CoordsType.Custom,vector); }
     public static ICoords NewCanonCoords (int x, int y) { return new HexCoords(CoordsType.Canon, x,y); }
     public static ICoords NewUserCoords  (int x, int y) { return new HexCoords(CoordsType.User,x,y); }
-    public static ICoords NewCustomCoords(int x, int y) { return new HexCoords(CoordsType.Custom,x,y); }
 
-    HexCoords(CoordsType coordsType, IntVector2D vector) : base(coordsType, vector) {}
-    HexCoords(CoordsType coordsType, int x, int y) : base(coordsType, new IntVector2D(x,y)) {}
+    protected HexCoords(CoordsType coordsType, IntVector2D vector) : base(coordsType, vector) {}
+    protected HexCoords(CoordsType coordsType, int x, int y) : base(coordsType, new IntVector2D(x,y)) {}
     #endregion
 
     #region protected overrides
@@ -78,10 +74,39 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       return NewCanonCoords(VectorCanon + coords.Canon); 
     }
     #endregion
-
-    public static void SetCustomMatrices(IntMatrix2D userToCustom, IntMatrix2D customToUser) {
+  } 
+  public class CustomCoordsFactory {
+    public CustomCoordsFactory(IntMatrix2D matrix) : this(matrix,matrix) {}
+    public CustomCoordsFactory(IntMatrix2D userToCustom, IntMatrix2D customToUser) {
       MatrixUserToCustom = userToCustom;
       MatrixCustomToUser = customToUser;
     }
-  } 
+
+    protected IntMatrix2D MatrixCustomToUser { get; private set; }
+    protected IntMatrix2D MatrixUserToCustom { get; private set; }
+
+    public ICoords Coords(int x, int y) { return Coords(new IntVector2D(x,y)); }
+    public ICoords Coords(IntVector2D vector) {
+      return HexCoords.NewUserCoords(vector * MatrixCustomToUser);
+    }
+    public IntVector2D Custom(ICoords coords) {
+      return coords.User * MatrixUserToCustom;
+    }
+
+    public IntVector2D User(IntVector2D custom) { return custom * MatrixCustomToUser; }
+    public IntVector2D Custom(IntVector2D user) { return user * MatrixUserToCustom; }
+
+    public class CustomCoords : HexCoords {
+      private CustomCoords (CustomCoordsFactory factory, IntVector2D vector) 
+        : base(CoordsType.User, factory.User(vector)) {
+        Factory = factory;
+      }
+
+      private CustomCoordsFactory Factory { get; set; }
+
+      public IntVector2D Custom { get { return Factory.Custom(base.VectorUser); } }
+
+      public override string ToString() { return Custom.ToString(); }
+    }
+  }
 }

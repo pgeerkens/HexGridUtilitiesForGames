@@ -61,11 +61,11 @@ namespace PG_Napoleonics.HexGridExample {
       // 
       this.toolStripContainer1.ContentPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
       this.toolStripContainer1.ContentPanel.Controls.Add(this.hexgridPanel);
-      this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(558, 370);
+      this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(707, 370);
       this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
       this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
       this.toolStripContainer1.Name = "toolStripContainer1";
-      this.toolStripContainer1.Size = new System.Drawing.Size(558, 420);
+      this.toolStripContainer1.Size = new System.Drawing.Size(707, 420);
       this.toolStripContainer1.TabIndex = 0;
       this.toolStripContainer1.Text = "toolStripContainer1";
       // 
@@ -81,7 +81,7 @@ namespace PG_Napoleonics.HexGridExample {
             this.statusLabel});
       this.toolStrip1.Location = new System.Drawing.Point(3, 0);
       this.toolStrip1.Name = "toolStrip1";
-      this.toolStrip1.Size = new System.Drawing.Size(482, 25);
+      this.toolStrip1.Size = new System.Drawing.Size(613, 25);
       this.toolStrip1.TabIndex = 0;
       // 
       // toolStripLabel1
@@ -94,7 +94,7 @@ namespace PG_Napoleonics.HexGridExample {
       // 
       this.statusLabel.AutoSize = false;
       this.statusLabel.Name = "statusLabel";
-      this.statusLabel.Size = new System.Drawing.Size(425, 22);
+      this.statusLabel.Size = new System.Drawing.Size(525, 22);
       this.statusLabel.Text = "toolStripLabel2";
       this.statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
@@ -111,7 +111,7 @@ namespace PG_Napoleonics.HexGridExample {
         0.707F,
         1F,
         1.414F};
-      this.hexgridPanel.Size = new System.Drawing.Size(554, 366);
+      this.hexgridPanel.Size = new System.Drawing.Size(703, 366);
       this.hexgridPanel.TabIndex = 0;
       this.hexgridPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.hexgridPanel_MouseMove);
       this.hexgridPanel.MouseCtlClick += PanelBoard_GoalHexChange;
@@ -170,7 +170,7 @@ namespace PG_Napoleonics.HexGridExample {
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(558, 420);
+      this.ClientSize = new System.Drawing.Size(707, 420);
       this.Controls.Add(this.toolStripContainer1);
       this.Name = "HexGridExampleForm";
       this.Text = "HexGridExample2";

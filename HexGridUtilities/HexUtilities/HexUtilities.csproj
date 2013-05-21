@@ -85,6 +85,7 @@
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
     <DocumentationFile>
     </DocumentationFile>
+    <NoWarn>1607</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release32|AnyCPU'">
     <OutputPath>..\bin\HexUtilities\bin\Release32\</OutputPath>
@@ -129,6 +130,7 @@
     <Compile Include="FastList.cs" />
     <Compile Include="HeapPriorityQueue.cs" />
     <Compile Include="HexCoords.cs" />
+    <Compile Include="HexGrid.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="ICoords.cs" />
     <Compile Include="IGridHex.cs" />
