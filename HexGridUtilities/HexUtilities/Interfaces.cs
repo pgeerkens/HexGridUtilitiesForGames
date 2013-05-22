@@ -34,42 +34,43 @@ using System.Text;
 
   namespace PG_Napoleonics.Utilities.HexUtilities {
     public interface ICoords {
+      /// <summary>Returns rectangular (90 degree axes at E and S) coordinates for this hex</summary>
       IntVector2D User    { get; }
-      IntVector2D Canon   { get; }
-      //IntVector2D Custom  { get; }
 
+      /// <summary>Returns canonical (120 degree axes at NE and S) coordinates for this hex.</summary>
+      IntVector2D Canon   { get; }
+
+      /// <summary><i>Manhattan</i> distance of specified hex from this one.</summary>
       int         Range(ICoords coords);
-      ICoords     StepOut(ICoords coords);
+
+      /// <summary>Returns an <c>ICorods</c> for the hex in direction <c>hexside</c> from this one.</summary>
       ICoords     StepOut(Hexside hexside);
+
+      /// <summary>Formattted string of the rectangular coordiantes for this hex.</summary>
       string      ToString();
 
+      /// <summary>Returns set of hexes at direction(s) specified by <c>hexsides</c>, as IEnumerable<T>.</summary>
       IEnumerable<NeighbourCoords> GetNeighbours(Hexside hexsides);
     }
 
-    public interface IMapBoard : IBoard<IGridHex> {
-      /// <summary>Distance in hexes out to which Field-of-View is to be calculated.</summary>
-      int     FovRadius   { get; set; }
-      IFov    FOV         { get; }
-      ICoords GoalHex     { get; set; }
-      ICoords HotSpotHex  { get; set; }
-      IPath2  Path        { get; }
-      ICoords StartHex    { get; set; }
-    }
-    public interface IBoard<TGridHex> : INavigableBoard, IFovBoard<TGridHex> 
-      where TGridHex : class, IGridHex {
+    public interface IBoard<TGridHex> : INavigableBoard, IFovBoard 
+      where TGridHex : class, IHex {
       INavigableBoard     NavigableBoard { get; }
-      IFovBoard<TGridHex> FovBoard       { get; }
+      IFovBoard           FovBoard       { get; }
     }
 
     /// <summary>Interface required to make use of A-* Path Finding utility.</summary>
     public interface INavigableBoard {
-      /// <summary>The cost of leaving the hex with coordinates <c>coords</c>through <c>hexside</c>.</summary>
+      /// <summary>The cost of entering the hex at location <c>coords</c> heading  <c>hexside</c>.</summary>
       int   StepCost(ICoords coords, Hexside hexside);
+
       /// <summary>Returns an A_* heuristic value from a hexagonal Manhattan distance<c>range</c>.</summary>
       int   Heuristic(int range);
-      /// <summary>Returns whether the hex with coordinates <c>coords</c>is "on board".</summary>
+
+      /// <summary>Returns whether the hex at location <c>coords</c>is "on board".</summary>
       bool  IsOnBoard(ICoords coords);
     }
+
     /// <summary>Structure returned by the A-* Path Finding utility.</summary>
     public interface IPath2 : IEnumerable<ICoords>
     { 
@@ -81,23 +82,28 @@ using System.Text;
     }
 
     /// <summary>Interface required to make use of ShadowCasting Field-of-View calculation.</summary>
-    /// <typeparam name="TGridHex"></typeparam>
-    public interface IFovBoard<TGridHex> where TGridHex : class, IGridHex {
+//    public interface IFovBoard<TGridHex> where TGridHex : class, IGridHex {
+    public interface IFovBoard {
+      /// <summary>Distance in hexes out to which Field-of-View is to be calculated.</summary>
+      int      FovRadius             { get; set; }
+
       /// <summary>The rectangular extent of the board's hexagonal grid, in hexes.</summary>
       Size     SizeHexes             { get; }
-      /// <summary>Returns the <c>TGridHex</c> at location <c>coords</c>.</summary>
-      TGridHex this[ICoords  coords] { get; }
 
-      /// <summary>Returns whether the hex with coordinates <c>coords</c>is "on board".</summary>
+      /// <summary>Returns the <c>TGridHex</c> at location <c>coords</c>.</summary>
+      IHex this[ICoords  coords] { get; }
+
+      /// <summary>Returns whether the hex at location <c>coords</c>is "on board".</summary>
       bool     IsOnBoard(ICoords coords);
 
       /// <summary>Returns whether the hex at location <c>coords</c> is passable.</summary>
       /// <param name="coords"></param>
       bool     IsPassable(ICoords coords);
     }
+
     /// <summary>Structure returned by the Field-of-View utility.</summary>
     public interface IFov {
-      /// <summary>True if the hex at coordinates <c>coords> is visible in this field-of-view.</summary>
+      /// <summary>True if the hex at location <c>coords> is visible in this field-of-view.</summary>
       bool this[ICoords coords] { get; }
     }
   }

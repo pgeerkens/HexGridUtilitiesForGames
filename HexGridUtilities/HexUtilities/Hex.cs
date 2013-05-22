@@ -32,34 +32,53 @@ using System.Linq;
 using System.Text;
 
 namespace PG_Napoleonics.Utilities.HexUtilities {
-  public interface IGridHex {
-    IBoard<IGridHex> Board          { get; }
+  public interface IHex {
+    /// <summary>The <c>IBoard<T></c> on which this hex is located.</summary>
+    IBoard<IHex> Board          { get; }
+
+    /// <summary>The <c>ICoords</c> coordinates for this hex on <c>Board</c>.</summary>
     ICoords          Coords         { get; }
-    int              Elevation      { get; }
+
     int              ElevationASL   { get; }
     int              HeightObserver { get; }
     int              HeightTarget   { get; }
     int              HeightTerrain  { get; }
 
+    /// <summary>The <i>Manhattan</i> distance from this hex to that at <c>coords</c>.</summary>
     int              Range(ICoords target);
+
+    /// <summary>The cost to enter this hex heading in the direction <c>hexside</c>.</summary>
     int              StepCost(Hexside direction);
   }
 
-  public abstract class GridHex : IGridHex {
-    public GridHex(IBoard<IGridHex> board, ICoords coords) { 
+  public abstract class Hex : IHex {
+    public Hex(IBoard<IHex> board, ICoords coords) { 
       Coords = coords; 
       Board  = board;
     }
 
-    public virtual  IBoard<IGridHex> Board          { get; private set; }
-    public virtual  ICoords          Coords         { get; private set; }
-    public virtual  int              Elevation      { get; protected set; }
-    public virtual  int              ElevationASL   { get; protected set; }
-    public virtual  int              HeightObserver { get { return ElevationASL + 1; } }
-    public virtual  int              HeightTarget   { get { return ElevationASL + 1; } }
-    public abstract int              HeightTerrain  { get; }
+    ///  <inheritdoc/>
+    public virtual  IBoard<IHex> Board          { get; private set; }
 
-    public int                       Range(ICoords target) { return Coords.Range(target); }
-    public abstract int              StepCost(Hexside direction);
+    ///  <inheritdoc/>
+    public virtual  ICoords      Coords         { get; private set; }
+
+    ///  <inheritdoc/>
+    public virtual  int          ElevationASL   { get; protected set; }
+
+    ///  <inheritdoc/>
+    public virtual  int          HeightObserver { get { return ElevationASL + 1; } }
+
+    ///  <inheritdoc/>
+    public virtual  int          HeightTarget   { get { return ElevationASL + 1; } }
+
+    ///  <inheritdoc/>
+    public abstract int          HeightTerrain  { get; }
+
+    ///  <inheritdoc/>
+    public          int          Range(ICoords target) { return Coords.Range(target); }
+
+    ///  <inheritdoc/>
+    public abstract int          StepCost(Hexside direction);
   }
 }

@@ -39,18 +39,28 @@ using PG_Napoleonics.Utilities.HexUtilities;
 namespace PG_Napoleonics.Utilities.HexUtilities {
   public interface IHexGridHost {
     Size    ClientSize      { get; }
+
     /// <summary>Scaled <code>Size</code> of each hexagon in grid, being the 'full-width' and 'full-height'.</summary>
     SizeF   GridSizeF       { get; }
+
     /// <summary>Margin of map in pixels.</summary>
     Size    MapMargin       { get; }
+
     /// <summary>Current scaling factor for map display.</summary>
     float   MapScale        { get; }
+
+    /// <summary></summary>
     Size    MapSizePixels   { get; }
+
+    /// <summary></summary>
     Point   ScrollPosition  { get; }
 
-    UserCoordsRectangle GetClipCells(PointF point, SizeF size);
+    /// <summary>IUserCoords for the currently visible extent (location & size), as a Rectangle.</summary>
+    UserCoordsRectangle     VisibleRectangle { get; }
   }
 
+  /// <summary>C# implementation of the hex-picking algorithm noted  below.</summary>
+  /// <remarks>See "file://Documentation/HexGridAlgorithm.mht"</remarks>
   public class HexGrid {
     public HexGrid(IHexGridHost host) { Host = host; }
 
@@ -60,7 +70,6 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     /// <summary><c>ICoords</c> for the hex at the screen point, with the given AutoScroll position.</summary>
     /// <param name="point">Screen point specifying hex to be identified.</param>
     /// <param name="autoScroll">AutoScrollPosition for game-display Panel.</param>
-    /// <remarks>See "file://Documentation/HexGridAlgorithm.mht"</remarks>
     public virtual ICoords GetHexCoords(Point point, Size autoScroll) {
       if( Host == null ) return HexCoords.EmptyCanon;
 
@@ -79,7 +88,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     /// <returns>Pixel coordinates in Client reference frame.</returns>
     public virtual Point ScrollPositionToCenterOnHex(ICoords coordsNewCenterHex) {
       return HexCenterPoint(HexCoords.NewUserCoords(
-              coordsNewCenterHex.User - ( new IntVector2D(VisibleRectangle.Size.User) / 2 )
+              coordsNewCenterHex.User - ( new IntVector2D(Host.VisibleRectangle.Size.User) / 2 )
       ));
     }
 
@@ -91,13 +100,6 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       var offset = new Size((int)(Host.GridSizeF.Width*2F/3F), (int)Host.GridSizeF.Height);
       var margin = Size.Round( Host.MapMargin.Scale(Host.MapScale) );
       return HexOrigin(Host.GridSizeF,coordsNewULHex) + margin + offset;
-    }
-
-    /// <summary>Returns, as a Rectangle, the IUserCoords for the currently visible extent.</summary>
-    public virtual UserCoordsRectangle     VisibleRectangle {
-      get { return Host.GetClipCells( Host.ScrollPosition.Scale(-1.0F/Host.MapScale), 
-                                      Host.ClientSize.Scale(1.0F/Host.MapScale) );
-      }
     }
 
     /// <summary>Scrolling control hosting this HexGrid.</summary>
@@ -139,7 +141,10 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
   public class TransposedHexGrid : HexGrid {
     public TransposedHexGrid(IHexGridHost host) :base(host) {}
 
+    ///<inheritdoc/>
     public override Point ScrollPosition { get { return TransposePoint(base.ScrollPosition); } }
+
+    ///<inheritdoc/>
     public override Size  Size           { get { return TransposeSize(base.Size); } }
 
     ///<inheritdoc/>

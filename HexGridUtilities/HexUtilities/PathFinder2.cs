@@ -72,6 +72,15 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       return FindPath(start, goal, board.StepCost, board.Heuristic, board.IsOnBoard);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="goal"></param>
+    /// <param name="stepCost">Cost to enter hex at <c>coords</c> heading in direction <c>hexside</c>.</param>
+    /// <param name="heuristic"></param>
+    /// <param name="isOnBoard"></param>
+    /// <returns></returns>
     public static IPath2 FindPath(
       ICoords     start,
       ICoords     goal,

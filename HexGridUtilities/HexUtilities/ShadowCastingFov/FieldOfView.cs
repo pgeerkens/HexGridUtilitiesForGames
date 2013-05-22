@@ -42,10 +42,10 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     TargetHeightEqualActual
   }
   public class FieldOfView : IFov {
-    public static IFov GetFieldOfView(IFovBoard<IGridHex> board, ICoords origin, int range) {
-      return GetFieldOfView(board, origin, range, FovTargetMode.EqualHeights);
+    public static IFov GetFieldOfView(IFovBoard board, ICoords origin) {
+      return GetFieldOfView(board, origin, board.FovRadius, FovTargetMode.EqualHeights);
     }
-    public static IFov GetFieldOfView(IFovBoard<IGridHex> board, ICoords origin, int range, 
+    public static IFov GetFieldOfView(IFovBoard board, ICoords origin, int range, 
       FovTargetMode targetMode) {
       DebugTracing.LogTime(TraceFlag.FieldOfView,"FieldOfView - begin");
       var fov = new FieldOfView(board);
@@ -69,7 +69,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
         }
         ShadowCasting.ComputeFieldOfView(
           origin, 
-          range, 
+          board.FovRadius, 
           observer,
           coords => board.IsOnBoard(coords),
           target,
@@ -81,7 +81,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       return fov;
     }
 
-    public FieldOfView(IFovBoard<IGridHex> board) {
+    public FieldOfView(IFovBoard board) {
       Board      = board;
       FovBacking = new bool[board.SizeHexes.Width, board.SizeHexes.Height];
     }
@@ -91,6 +91,6 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       set { if (Board.IsOnBoard(coords)) { FovBacking[coords.User.X,coords.User.Y] = value; } }
     } bool[,] FovBacking;
 
-    IFovBoard<IGridHex> Board;
+    IFovBoard           Board;
   }
 }

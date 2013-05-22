@@ -34,16 +34,16 @@ using System.Text;
 
 namespace PG_Napoleonics.Utilities.HexUtilities {
   public interface INeighbourHex {
-    IGridHex  Hex        { get; }
+    IHex  Hex        { get; }
     Hexside   Direction  { get; }
     int       SequenceNo { get; }
   }
   public struct NeighbourHex : INeighbourHex, IEquatable<NeighbourHex> {
-    public IGridHex  Hex        { get; private set; }
+    public IHex  Hex        { get; private set; }
     public Hexside   Direction  { get; private set; }
     public int       SequenceNo { get; private set; }
-    public NeighbourHex(IGridHex hex, Hexside direction) : this(hex,direction,0) {}
-    public NeighbourHex(IGridHex hex, Hexside direction, int seqNo) : this() {
+    public NeighbourHex(IHex hex, Hexside direction) : this(hex,direction,0) {}
+    public NeighbourHex(IHex hex, Hexside direction, int seqNo) : this() {
       Hex        = hex;
       Direction  = direction;
       SequenceNo = seqNo;
@@ -53,7 +53,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       return string.Format("NeighbourHex: {0} at {1}",Hex.Coords,Direction);
     }
 
-    public static IEnumerable<NeighbourHex> GetNeighbours(IGridHex hex) {
+    public static IEnumerable<NeighbourHex> GetNeighbours(IHex hex) {
       return hex.Coords.GetNeighbours(~Hexside.None)
                 .Select((nn,seq)=>new NeighbourHex(hex.Board[nn.Coords], nn.Direction, seq))
                 .Where(n=>n.Hex!=null)

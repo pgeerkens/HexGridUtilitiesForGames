@@ -41,9 +41,6 @@ namespace PG_Napoleonics.HexGridExample {
     public TerrainMap() : base() {}
 
     public override int    Heuristic(int range) { return 2 * range; }
-    public override int    StepCost(ICoords coords, Hexside hexSide) {
-      return GetMapGridHex(coords).StepCost(hexSide);
-    }
 
     #region Painting
     public override void PaintMap(Graphics g) { 
@@ -109,7 +106,7 @@ namespace PG_Napoleonics.HexGridExample {
     };
     #endregion
 
-    protected override IGridHex GetGridHex(ICoords coords) { return GetMapGridHex(coords); }
+    protected override IHex GetGridHex(ICoords coords) { return GetMapGridHex(coords); }
     private IMapGridHex GetMapGridHex(ICoords coords) {
       char value = Board[coords.User.Y][coords.User.X];
       switch(value) {

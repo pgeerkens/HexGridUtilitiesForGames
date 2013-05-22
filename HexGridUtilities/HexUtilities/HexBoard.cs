@@ -37,46 +37,64 @@ using PG_Napoleonics.Utilities;
 using PG_Napoleonics.Utilities.HexUtilities;
 
 namespace PG_Napoleonics.Utilities.HexUtilities {
-  public abstract class MapBoard : IMapBoard {
-    public MapBoard(Size sizeHexes) { SizeHexes = sizeHexes; }
+  public abstract class HexBoard : IBoard<IHex> {
+    public HexBoard(Size sizeHexes) { SizeHexes = sizeHexes; }
 
-    public          int        FovRadius      { get; set; }
-    public virtual  IFov       FOV            {
-      get { return _fov ?? 
-                (_fov = FieldOfView.GetFieldOfView(this, HotSpotHex, FovRadius)); }
-      protected set { _fov = value; }
-    } IFov _fov;
-    public virtual  ICoords    GoalHex        { 
-      get { return _goalHex??(_goalHex=HexCoords.EmptyUser); } 
-      set { _goalHex=value; _path = null; } 
-    } ICoords _goalHex;
-    public virtual  ICoords    HotSpotHex     { 
-      get { return _hotSpotHex; }
-      set { _hotSpotHex = value; FOV = null; }
-    } ICoords _hotSpotHex;
-    public          IPath2     Path           { 
-      get {return _path ?? (_path = SetPath());} 
-    } IPath2 _path;
+    ///  <inheritdoc/>
+    public virtual  int        FovRadius      { get; set; }
+
+    ///  <inheritdoc/>
     public virtual  Size       SizeHexes      { get; private set; }
-    public virtual  ICoords    StartHex       { 
-      get { return _startHex ?? (_startHex = HexCoords.EmptyUser); } 
-      set { if (IsOnBoard(value)) _startHex = value; _path = null; } 
-    } ICoords _startHex;
-    public INavigableBoard     NavigableBoard { get { return this; } }
-    public IFovBoard<IGridHex> FovBoard       { get { return this; } }
 
-    public abstract int    Heuristic(int range);
-    public          bool   IsOnBoard(ICoords coords)  {
+    /// <summary>Returns this instance as a <c>IFovBoard<IGridHex></c>.</summary>
+    public virtual  IFovBoard  FovBoard       { get { return this; } }
+
+    /// <summary>Returns this instance as a <c>INavigableBoard</c>.</summary>
+    public INavigableBoard     NavigableBoard { get { return this; } }
+
+    ///  <inheritdoc/>
+    public virtual  int    Heuristic(int range) { return range; }
+
+    ///  <inheritdoc/>
+    public virtual  bool   IsOnBoard(ICoords coords)  {
       return 0<=coords.User.X && coords.User.X < SizeHexes.Width
           && 0<=coords.User.Y && coords.User.Y < SizeHexes.Height;
     }
+
+    ///  <inheritdoc/>
     public virtual  bool   IsPassable(ICoords coords) { return IsOnBoard(coords); }
-    public abstract int    StepCost(ICoords coords, Hexside hexSide);
 
-    IGridHex IFovBoard<IGridHex>.this[ICoords coords]  { get { return GetGridHex(coords); } }
+    ///  <inheritdoc/>
+    public virtual  int    StepCost(ICoords coords, Hexside hexSide) {
+      return IsOnBoard(coords) ? GetGridHex(coords.StepOut(hexSide)).StepCost(hexSide) : -1;
+    }
 
-    protected abstract IGridHex GetGridHex(ICoords coords);
+    ///  <inheritdoc/>
+    IHex IFovBoard.this[ICoords coords]  { get { return GetGridHex(coords); } }
 
-    private         IPath2 SetPath() { return PathFinder2.FindPath(StartHex, GoalHex, this); }
-  } 
+    /// <summary>Returns the hex at coordinates specified by <c>coords</c>.</summary>
+    protected abstract IHex GetGridHex(ICoords coords);
+  }
+
+  public static partial class Extensions {
+    /// <summary>Returns the field-of-view on <c>board</c> from the hex specified by coordinates <c>coords</c>.</summary>
+    public static IFov GetFov(this IFovBoard @this, ICoords origin) {
+      return FieldOfView.GetFieldOfView(@this,origin);
+    }
+
+    /// <summary>Returns the field-of-view from this hex.</summary>
+    public static IFov GetFov(this IHex @this) {
+      return FieldOfView.GetFieldOfView(@this.Board, @this.Coords);
+    }
+
+    /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
+    public static IPath2 GetPath(this INavigableBoard board, ICoords start, ICoords goal) {
+      return PathFinder2.FindPath(start, goal, board);
+    }
+
+    /// <summary>Returns a least-cost path from this hex to the hex <c>goal.</c></summary>
+    public static IPath2 GetPath(this IHex @this, ICoords goal) {
+      return PathFinder2.FindPath( @this.Coords, goal, @this.Board);
+    }
+  }
 }

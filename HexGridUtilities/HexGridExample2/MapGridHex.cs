@@ -37,14 +37,16 @@ using PG_Napoleonics.Utilities;
 using PG_Napoleonics.Utilities.HexUtilities;
 
 namespace PG_Napoleonics.HexGridExample {
-  public interface IMapGridHex : IGridHex {
+  public interface IMapGridHex : IHex {
+    int              Elevation      { get; }
     void Paint(Graphics g);
   }
 
-  public abstract class MapGridHex : GridHex, IMapGridHex {
+  public abstract class MapGridHex : Hex, IMapGridHex {
     public MapGridHex(MapDisplay board, ICoords coords) : base(board, coords) { 
     }
 
+    public virtual  int              Elevation      { get; protected set; }
     public abstract void Paint(Graphics g);
 
     public IEnumerable<NeighbourHex> GetNeighbours() {

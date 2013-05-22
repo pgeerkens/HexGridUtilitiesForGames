@@ -70,7 +70,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     #region ISupportInitialize implementation
     public virtual void BeginInit() { 
       MapMargin = new System.Drawing.Size(5,5);
-      Scales    = new float[] {0.707F, 1.000F, 1.414F};
+      Scales    = new float[] {1.000F};
     }
     public virtual void EndInit() { 
       this.MakeDoubleBuffered(true);
@@ -132,9 +132,6 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
       set {_scales = value; if (_scaleIndex!=0) ScaleIndex = _scaleIndex;}
     } float[] _scales;
 
-    /// <summary>Returns, as a Rectangle, the IUserCoords for the currently visible extent.</summary>
-    public UserCoordsRectangle VisibleRectangle { get { return HexGrid.VisibleRectangle; } }
-
     /// <summary>Set ScrollBar increments and bounds from map dimensions.</summary>
     public virtual void SetScroll() {
       var smallChange              = Size.Ceiling(Host.GridSize.Scale(MapScale));
@@ -161,8 +158,15 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     SizeF   IHexGridHost.GridSizeF      { get { return Host.GridSize.Scale(MapScale); } }
     Point   IHexGridHost.ScrollPosition { get { return AutoScrollPosition; } }
 
-    UserCoordsRectangle IHexGridHost.GetClipCells(PointF point, SizeF size) {
+    UserCoordsRectangle GetClipCells(PointF point, SizeF size) {
       return Host.GetClipCells(point, size);
+    }
+
+    /// <summary>Returns, as a Rectangle, the IUserCoords for the currently visible extent.</summary>
+    public virtual UserCoordsRectangle     VisibleRectangle {
+      get { return GetClipCells( AutoScrollPosition.Scale(-1.0F/MapScale), 
+                                      ClientSize.Scale(1.0F/MapScale) );
+      }
     }
 
     /// <summary><c>ICoords</c> for a selected hex.</summary>

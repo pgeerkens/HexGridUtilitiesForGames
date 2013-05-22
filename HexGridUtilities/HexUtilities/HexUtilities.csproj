@@ -133,9 +133,9 @@
     <Compile Include="HexGrid.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="ICoords.cs" />
-    <Compile Include="IGridHex.cs" />
+    <Compile Include="Hex.cs" />
     <Compile Include="IHeap.cs" />
-    <Compile Include="MapBoard.cs" />
+    <Compile Include="HexBoard.cs" />
     <Compile Include="ImmutableStack.cs" />
     <Compile Include="IntMatrix2D.cs" />
     <Compile Include="IntVector2D.cs" />

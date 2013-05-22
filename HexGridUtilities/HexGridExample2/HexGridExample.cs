@@ -65,8 +65,11 @@ namespace PG_Napoleonics.HexGridExample {
 
     #region Event handlers
     void HexGridExampleForm_Load(object sender, EventArgs e) {
-      hexgridPanel.ScaleIndex = 1; 
-
+      hexgridPanel.Scales = new float[] {0.707F,  0.841F, 1.000F, 1.189F, 1.414F};
+      hexgridPanel.ScaleIndex = hexgridPanel.Scales
+                              .Select((f,i) => new {value=f, index=i})
+                              .Where(s => s.value==1.0F)
+                              .Select(s => s.index).FirstOrDefault(); 
       Size = hexgridPanel.MapSizePixels + new Size(21,93);
     }
 

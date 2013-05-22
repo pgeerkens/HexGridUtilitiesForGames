@@ -41,15 +41,10 @@ namespace PG_Napoleonics.HexGridExample {
     public MazeMap() : base() {}
 
     public override bool  IsPassable(ICoords coords) { 
-      return IsOnBoard(coords)  &&  GetHex(coords).Elevation == 0; 
+      return IsOnBoard(coords)  &&  GetMapGridHex(coords).Elevation == 0; 
     }
 
     public override int    Heuristic(int range) { return range; }
-    public override int    StepCost(ICoords coords, Hexside hexSide) {
-      return IsOnBoard(coords) 
-          ? GetHex(coords.StepOut(hexSide)).StepCost(hexSide) 
-          : -1;
-    }
 
     #region Painting
     public override void PaintMap(Graphics g) { 
@@ -67,7 +62,7 @@ namespace PG_Napoleonics.HexGridExample {
           var container = g.BeginContainer();
           g.TranslateTransform(0,  clipCells.Top*GridSize.Height + (x+1)%2 * (GridSize.Height)/2);
           for (int y=clipCells.Top; y<clipCells.Bottom; y++) {
-            GetHex(HexCoords.NewUserCoords(x,y)).Paint(g);
+            GetMapGridHex(HexCoords.NewUserCoords(x,y)).Paint(g);
             g.DrawPath(Pens.Black, HexgridPath);
 
             g.TranslateTransform(0,GridSize.Height);
@@ -115,8 +110,8 @@ namespace PG_Napoleonics.HexGridExample {
     };
     #endregion
 
-    protected override IGridHex GetGridHex(ICoords coords) { return GetHex(coords); }
-    private IMapGridHex GetHex(ICoords coords) {
+    protected override IHex GetGridHex(ICoords coords) { return GetMapGridHex(coords); }
+    private IMapGridHex GetMapGridHex(ICoords coords) {
       switch (Board[coords.User.Y][coords.User.X]) {
         case '.':   return new PathMazeGridHex(this,coords,GridSize);
         default:    return new WallMazeGridHex(this,coords,GridSize);

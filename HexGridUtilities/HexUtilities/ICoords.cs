@@ -37,7 +37,6 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     IntVector2D ICoords.Canon  { get { return VectorCanon;  } }
 
     int     ICoords.Range(ICoords coords)    { return Range(coords); }
-    ICoords ICoords.StepOut(ICoords coords)  { return StepOut(coords); }
     ICoords ICoords.StepOut(Hexside hexside) {
       switch(hexside) {
         case Hexside.NorthWest:   return (ICoords) StepOut(HexCoords.NewCanonCoords(-1,-1));
