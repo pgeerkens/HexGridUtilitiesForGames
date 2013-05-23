@@ -82,7 +82,6 @@ using System.Text;
     }
 
     /// <summary>Interface required to make use of ShadowCasting Field-of-View calculation.</summary>
-//    public interface IFovBoard<TGridHex> where TGridHex : class, IGridHex {
     public interface IFovBoard {
       /// <summary>Distance in hexes out to which Field-of-View is to be calculated.</summary>
       int      FovRadius             { get; set; }

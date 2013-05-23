@@ -34,14 +34,14 @@ using System.Text;
 
 namespace PG_Napoleonics.Utilities.HexUtilities {
   public interface INeighbourHex {
-    IHex  Hex        { get; }
-    Hexside   Direction  { get; }
-    int       SequenceNo { get; }
+    IHex    Hex        { get; }
+    Hexside Direction  { get; }
+    int     SequenceNo { get; }
   }
   public struct NeighbourHex : INeighbourHex, IEquatable<NeighbourHex> {
-    public IHex  Hex        { get; private set; }
-    public Hexside   Direction  { get; private set; }
-    public int       SequenceNo { get; private set; }
+    public IHex    Hex        { get; private set; }
+    public Hexside Direction  { get; private set; }
+    public int     SequenceNo { get; private set; }
     public NeighbourHex(IHex hex, Hexside direction) : this(hex,direction,0) {}
     public NeighbourHex(IHex hex, Hexside direction, int seqNo) : this() {
       Hex        = hex;

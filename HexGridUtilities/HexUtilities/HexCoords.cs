@@ -34,10 +34,13 @@ using System.Text;
 namespace PG_Napoleonics.Utilities.HexUtilities {
   public partial class HexCoords : Coords {
     static HexCoords() {
+      HexsideList        = Utils.EnumGetValues<Hexside>().Where(h=>h!=Hexside.None).ToList();
+
       MatrixUserToCanon  = new IntMatrix2D(2, 1,  0,2,  0,0,  2);
       MatrixCanonToUser  = new IntMatrix2D(2,-1,  0,2,  0,1,  2);
     }
 
+    static readonly List<Hexside> HexsideList;
     static readonly ICoords _EmptyCanon = HexCoords.NewCanonCoords(0,0);
     static readonly ICoords _EmptyUser  = HexCoords.NewUserCoords(0,0);
     public static   ICoords EmptyCanon { get { return _EmptyCanon; } }
@@ -56,9 +59,8 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     #region protected overrides
     protected override IEnumerable<NeighbourCoords> GetNeighbours(Hexside hexsides) {
       ICoords coords = this;
-      foreach (Hexside hexside in Enum.GetValues(typeof(Hexside)))
-        if (hexside != Hexside.None  &&  hexsides.HasFlag(hexside)) 
-          yield return new NeighbourCoords(hexside, coords.StepOut(hexside));
+      foreach (var hexside in HexsideList.Where(h=>hexsides.HasFlag(h)))
+        yield return new NeighbourCoords(hexside, coords.StepOut(hexside));
     }
 
     protected override int Range(ICoords coords) {
