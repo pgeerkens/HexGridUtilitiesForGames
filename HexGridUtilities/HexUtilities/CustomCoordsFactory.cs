@@ -28,31 +28,44 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 
-namespace PG_Napoleonics.Utilities {
-  public static class PointExtensions {
-    #region Point scaling functions
-    public static Point Scale(this Point @this, int scale) { 
-      return @this.Scale(scale,scale);
+using PG_Napoleonics.HexUtilities.Common;
+
+namespace PG_Napoleonics.HexUtilities {
+  public class CustomCoordsFactory {
+    public CustomCoordsFactory(IntMatrix2D matrix) : this(matrix,matrix) {}
+    public CustomCoordsFactory(IntMatrix2D userToCustom, IntMatrix2D customToUser) {
+      MatrixUserToCustom = userToCustom;
+      MatrixCustomToUser = customToUser;
     }
-    public static Point Scale(this Point @this, int scaleX, int scaleY) {
-      return new Point(@this.X * scaleX, @this.Y * scaleY);
+
+    protected IntMatrix2D MatrixCustomToUser { get; private set; }
+    protected IntMatrix2D MatrixUserToCustom { get; private set; }
+
+    public ICoords Coords(int x, int y) { return Coords(new IntVector2D(x,y)); }
+    public ICoords Coords(IntVector2D vector) {
+      return HexCoords.NewUserCoords(vector * MatrixCustomToUser);
     }
-    public static PointF Scale(this Point @this, float scale) {
-      return @this.Scale(scale,scale);
+    public IntVector2D Custom(ICoords coords) {
+      return coords.User * MatrixUserToCustom;
     }
-    public static PointF Scale(this Point @this, float scaleX, float scaleY) {
-      return new PointF(@this.X,@this.Y).Scale(scaleX,scaleY);
+
+    public IntVector2D User(IntVector2D custom) { return custom * MatrixCustomToUser; }
+    public IntVector2D Custom(IntVector2D user) { return user * MatrixUserToCustom; }
+
+    public class CustomCoords : HexCoords {
+      private CustomCoords (CustomCoordsFactory factory, IntVector2D vector) 
+        : base(false, factory.User(vector)) {
+        Factory = factory;
+      }
+
+      private CustomCoordsFactory Factory { get; set; }
+
+      public IntVector2D Custom { get { return Factory.Custom(base.VectorUser); } }
+
+      public override string ToString() { return Custom.ToString(); }
     }
-    public static PointF Scale(this PointF @this, float scale) { 
-      return @this.Scale(scale,scale);
-    }
-    public static PointF Scale(this PointF @this, float scaleX, float scaleY) {
-      return new PointF(@this.X * scaleX, @this.Y * scaleY);
-    }
-    #endregion
   }
 }

@@ -37,11 +37,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-using PG_Napoleonics.Utilities;
-using PG_Napoleonics.Utilities.HexUtilities;
-using PG_Napoleonics.Utilities.WinForms;
+using PG_Napoleonics;
+using PG_Napoleonics.HexgridPanel;
+using PG_Napoleonics.HexUtilities;
+using PG_Napoleonics.HexUtilities.Common;
+using PG_Napoleonics.WinForms;
 
-namespace PG_Napoleonics.HexGridExample {
+namespace PG_Napoleonics.HexGridExample2 {
   public sealed partial class HexGridExampleForm : Form, IMessageFilter {
     public HexGridExampleForm() {
       InitializeComponent();
@@ -55,13 +57,17 @@ namespace PG_Napoleonics.HexGridExample {
       Custom = new CustomCoordsFactory(matrix);
 
 			Application.AddMessageFilter(this);
+      MapBoard.RangeCutoff = (int)txtPathCutover.Tag;
     }
     protected override CreateParams CreateParams { 
 			get { return this.SetCompositedStyle(base.CreateParams); }
 		}
 
     CustomCoordsFactory Custom   { get; set; }
-    MapDisplay          MapBoard { get; set; }
+    MapDisplay          MapBoard { 
+      get {return _mapBoard;}
+      set {_mapBoard = value; _mapBoard.RangeCutoff = (int)txtPathCutover.Tag;}
+    } MapDisplay _mapBoard;
 
     #region Event handlers
     void HexGridExampleForm_Load(object sender, EventArgs e) {
@@ -99,6 +105,18 @@ namespace PG_Napoleonics.HexGridExample {
 
     void buttonTransposeMap_Click(object sender, EventArgs e) {
       hexgridPanel.IsTransposed = buttonTransposeMap.Checked;
+    }
+
+    private void txtPathCutover_TextChanged(object sender, EventArgs e) {
+      int value;
+      if (Int32.TryParse(txtPathCutover.Text, out value)) {
+        txtPathCutover.Tag = value;
+      } else {
+        txtPathCutover.Text = txtPathCutover.Tag.ToString();
+        value = (int)txtPathCutover.Tag;
+      }
+      MapBoard.RangeCutoff = value;
+      Refresh();
     }
     #endregion
 
@@ -152,7 +170,7 @@ namespace PG_Napoleonics.HexGridExample {
             #if DEBUG
               DebugTracing.Trace(TraceFlag.ScrollEvents, true," - {0}.WM.{1}: ", Name, ((WM)m.Msg)); 
             #endif
-            if (ctl is HexgridPanel  ||  ctl is HexGridExampleForm) {
+            if (ctl is HexgridPanel.HexgridPanel  ||  ctl is HexGridExampleForm) {
               return (SendMessage(hWnd, m.Msg, m.WParam, m.LParam) == IntPtr.Zero);
             }
             break;

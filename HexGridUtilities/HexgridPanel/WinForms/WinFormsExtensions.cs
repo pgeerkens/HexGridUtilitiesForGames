@@ -33,7 +33,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
-namespace PG_Napoleonics.Utilities.WinForms {
+namespace PG_Napoleonics.WinForms {
   public static partial class WinFormsExtensions {
     /// <summary>Reflect to set Double-Buffering on Control.</summary>
     /// <param name="control">Control to operate on.</param>

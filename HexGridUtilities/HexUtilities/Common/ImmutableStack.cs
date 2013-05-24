@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PG_Napoleonics.Utilities {
+namespace PG_Napoleonics.HexUtilities.Common {
   /// <summary>Eric Lippert's implementation for use in A*.</summary>
   /// <remarks>An implementation of immutable stack for use in A* as a 'Path to here'..</remarks>
   /// <cref>http://blogs.msdn.com/b/ericlippert/archive/2007/10/04/path-finding-using-a-in-c-3-0-part-two.aspx</cref>

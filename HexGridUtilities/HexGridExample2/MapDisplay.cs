@@ -33,10 +33,14 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics.Utilities;
-using PG_Napoleonics.Utilities.HexUtilities;
+using PG_Napoleonics;
+using PG_Napoleonics.HexgridPanel;
+using PG_Napoleonics.HexUtilities;
+using PG_Napoleonics.HexUtilities.Common;
+using PG_Napoleonics.HexUtilities.PathFinding;
+using PG_Napoleonics.HexUtilities.ShadowCastingFov;
 
-namespace PG_Napoleonics.HexGridExample {
+namespace PG_Napoleonics.HexGridExample2 {
   public abstract class MapDisplay : HexBoard, IMapDisplay, IBoard<IHex>, INavigableBoard {
  
     public MapDisplay() : base(Size.Empty) {
@@ -59,27 +63,25 @@ namespace PG_Napoleonics.HexGridExample {
                                       GridSize.Width/3,  GridSize.Height/2);
     }
 
-    public virtual  IFov       FOV            {
+    public virtual  IFov     FOV            {
       get { return _fov ?? (_fov = this.GetFov(HotSpotHex)); }
       protected set { _fov = value; }
     } IFov _fov;
-    public virtual  ICoords    GoalHex        { 
+    public virtual  ICoords  GoalHex        { 
       get { return _goalHex??(_goalHex=HexCoords.EmptyUser); } 
       set { _goalHex=value; _path = null; } 
     } ICoords _goalHex;
-    public virtual  ICoords    HotSpotHex     { 
+    public virtual  ICoords  HotSpotHex     { 
       get { return _hotSpotHex; }
       set { _hotSpotHex = value; FOV = null; }
     } ICoords _hotSpotHex;
-    public          IPath2     Path           { 
-      get {return _path ?? (_path = SetPath());} 
-    } IPath2 _path;
-    public virtual  ICoords    StartHex       { 
+    public          IPath    Path           { 
+      get {return _path ?? (_path = this.GetPath(StartHex,GoalHex));} 
+    } IPath _path;
+    public virtual  ICoords  StartHex       { 
       get { return _startHex ?? (_startHex = HexCoords.EmptyUser); } 
       set { if (IsOnBoard(value)) _startHex = value; _path = null; } 
     } ICoords _startHex;
-
-    private         IPath2 SetPath() { return this.GetPath(StartHex,GoalHex); }
 
     public Size            GridSize      { get; private set; }
     public Size            MapMargin     { get; set; }

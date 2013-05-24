@@ -32,13 +32,14 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-using PG_Napoleonics.Utilities;
+using PG_Napoleonics;
+using PG_Napoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.Utilities.HexUtilities.ShadowCastingFov {
+namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
   /// <summary>Credit: Eric Lippert</summary>
   /// <cref>http://blogs.msdn.com/b/ericlippert/archive/2011/12/29/shadowcasting-in-c-part-six.aspx</cref>
-  public static partial class ShadowCasting {
-    public static int MaximumBoardElevation { get; set; }
+  internal static partial class ShadowCasting {
+    //public static int MaximumBoardElevation { get; set; }
 
     /// <summary></summary>
     /// <remarks>

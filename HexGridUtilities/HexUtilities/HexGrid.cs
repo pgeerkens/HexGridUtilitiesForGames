@@ -33,10 +33,11 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics.Utilities;
-using PG_Napoleonics.Utilities.HexUtilities;
+using PG_Napoleonics;
+using PG_Napoleonics.HexUtilities;
+using PG_Napoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.Utilities.HexUtilities {
+namespace PG_Napoleonics.HexUtilities {
   public interface IHexGridHost {
     Size    ClientSize      { get; }
 
@@ -59,17 +60,39 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     UserCoordsRectangle     VisibleRectangle { get; }
   }
 
-  /// <summary>C# implementation of the hex-picking algorithm noted  below.</summary>
-  /// <remarks>See "file://Documentation/HexGridAlgorithm.mht"</remarks>
-  public class HexGrid {
-    public HexGrid(IHexGridHost host) { Host = host; }
-
-    public virtual Point ScrollPosition { get { return Host.ScrollPosition; } }
-    public virtual Size  Size           { get { return Size.Ceiling(Host.MapSizePixels.Scale(Host.MapScale)); } }
+  public interface IHexGrid {
+    /// <summary></summary>
+    Point ScrollPosition { get; }
+    /// <summary></summary>
+    Size  Size           { get; }
 
     /// <summary><c>ICoords</c> for the hex at the screen point, with the given AutoScroll position.</summary>
     /// <param name="point">Screen point specifying hex to be identified.</param>
     /// <param name="autoScroll">AutoScrollPosition for game-display Panel.</param>
+    ICoords GetHexCoords(Point point, Size autoScroll);
+
+    /// <summary>Returns the scroll position to center a specified hex in viewport.</summary>
+    /// <param name="coordsNewCenterHex"><c>ICoords</c> for the hex to be centered in viewport.</param>
+    /// <returns>Pixel coordinates in Client reference frame.</returns>
+    Point   ScrollPositionToCenterOnHex(ICoords coordsNewCenterHex);
+
+    /// <summary>Returns ScrollPosition that places given hex in the upper-Left of viewport.</summary>
+    /// <param name="coordsNewULHex"><c>ICoords</c> for new upper-left hex</param>
+    /// <returns>Pixel coordinates in Client reference frame.</returns>
+    Point   HexCenterPoint(ICoords coordsNewULHex);
+  }
+
+  /// <summary>C# implementation of the hex-picking algorithm noted  below.</summary>
+  /// <remarks>See "file://Documentation/HexGridAlgorithm.mht"</remarks>
+  public class HexGrid : IHexGrid {
+    public HexGrid(IHexGridHost host) { Host = host; }
+
+    /// <inheritdoc/>
+    public virtual Point ScrollPosition { get { return Host.ScrollPosition; } }
+    /// <inheritdoc/>
+    public virtual Size  Size           { get { return Size.Ceiling(Host.MapSizePixels.Scale(Host.MapScale)); } }
+
+    /// <inheritdoc/>
     public virtual ICoords GetHexCoords(Point point, Size autoScroll) {
       if( Host == null ) return HexCoords.EmptyCanon;
 
@@ -83,19 +106,15 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
                                        GetCoordinate(matrixY, point) );
     }
 
-    /// <summary>Returns the scroll position to center a specified hex in viewport.</summary>
-    /// <param name="coordsNewCenterHex"><c>ICoords</c> for the hex to be centered in viewport.</param>
-    /// <returns>Pixel coordinates in Client reference frame.</returns>
-    public virtual Point ScrollPositionToCenterOnHex(ICoords coordsNewCenterHex) {
+    /// <inheritdoc/>
+    public virtual Point   ScrollPositionToCenterOnHex(ICoords coordsNewCenterHex) {
       return HexCenterPoint(HexCoords.NewUserCoords(
               coordsNewCenterHex.User - ( new IntVector2D(Host.VisibleRectangle.Size.User) / 2 )
       ));
     }
 
-    /// <summary>Returns ScrollPosition that places given hex in the upper-Left of viewport.</summary>
-    /// <param name="coordsNewULHex"><c>ICoords</c> for new upper-left hex</param>
-    /// <returns>Pixel coordinates in Client reference frame.</returns>
-    public virtual Point HexCenterPoint(ICoords coordsNewULHex) {
+    /// <inheritdoc/>
+    public virtual Point   HexCenterPoint(ICoords coordsNewULHex) {
       if (coordsNewULHex == null) return new Point();
       var offset = new Size((int)(Host.GridSizeF.Width*2F/3F), (int)Host.GridSizeF.Height);
       var margin = Size.Round( Host.MapMargin.Scale(Host.MapScale) );

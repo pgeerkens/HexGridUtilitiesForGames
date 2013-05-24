@@ -30,7 +30,7 @@ using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-namespace PG_Napoleonics.Utilities {
+namespace PG_Napoleonics.HexUtilities.Common {
   public struct KeyValuePair<TKey,TValue> : IComparable<KeyValuePair<TKey,TValue>>
     where TKey : IComparable<TKey>
   {

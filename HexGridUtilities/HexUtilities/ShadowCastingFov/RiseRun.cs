@@ -32,9 +32,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-using PG_Napoleonics.Utilities;
+using PG_Napoleonics;
 
-namespace PG_Napoleonics.Utilities.HexUtilities.ShadowCastingFov {
+namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
   #pragma warning disable 0660,0661 // operator == or != w/o overriding object.equals(object o)
   internal struct RiseRun : IEquatable<RiseRun>, IComparable<RiseRun> {
     static RiseRun Max(RiseRun lhs, RiseRun rhs) { return lhs >  rhs  ? lhs : rhs; }

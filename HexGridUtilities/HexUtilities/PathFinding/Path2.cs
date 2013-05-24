@@ -32,44 +32,56 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PG_Napoleonics.Utilities.HexUtilities {
+using PG_Napoleonics.HexUtilities.Common;
+
+namespace PG_Napoleonics.HexUtilities.PathFinding {
+  /// <summary>Structure returned by the A-* Path Finding utility.</summary>
+  public interface IPath : IEnumerable<ICoords>
+  { 
+    Hexside   LastDirection { get; }
+    ICoords   LastStep      { get; }
+    IPath    PreviousSteps { get; }
+    uint      TotalCost     { get; }
+    uint      TotalSteps    { get; }
+  }
+
   /// <summary>Eric Lippert's implementation for use in A*, modified for a hex-grid.</summary>
   /// <remarks>An implementation of 'path' using an immutable stack.</remarks>
   /// <cref>http://blogs.msdn.com/b/ericlippert/archive/2007/10/04/path-finding-using-a-in-c-3-0-part-two.aspx</cref>
   /// <typeparam name="TNode">The type of a path-'node'.</typeparam>
-  public sealed class Path2 : IPath2
+  internal sealed class Path : IPath
   {
     public Hexside  LastDirection { get; private set; }
     public ICoords  LastStep      { get; private set; }
-    public IPath2   PreviousSteps { get{ return _previousSteps;} } Path2 _previousSteps;
+    public IPath   PreviousSteps { get{ return _previousSteps;} } Path _previousSteps;
     public uint     TotalCost     { get; private set; }
     public uint     TotalSteps    { get; private set; }
 
-    public Path2 AddStep(ICoords step, uint stepCost, Hexside direction) {
-      return new Path2(this, step, direction, TotalCost + stepCost);
-    }
-
-    public Path2(ICoords start) : this(null, start, Hexside.None, 0) { }
-    private Path2(Path2 previousSteps, ICoords thisStep, Hexside direction, uint totalCost)
-    : this(previousSteps, thisStep, direction, totalCost, 0) { }
-    private Path2(Path2 previousSteps, ICoords thisStep, Hexside direction, uint totalCost, int count) {
-      _previousSteps = previousSteps;
-      LastDirection  = direction;
-      LastStep       = thisStep;
-      TotalCost      = totalCost;
-      TotalSteps     = previousSteps==null ? 0 : previousSteps.TotalSteps+1;
+    public override string ToString() {
+      return string.Format("Hex: {0} with TotalCost={1,3} (as {2}/{3})",
+        LastStep, TotalCost, TotalCost>>16, TotalCost &0xFFFF);
     }
 
     public IEnumerator<ICoords> GetEnumerator() {
-      for (var p = (IPath2)this; p.LastStep != null; p = p.PreviousSteps) 
+      for (var p = (IPath)this; p.LastStep != null; p = p.PreviousSteps) 
         yield return p.LastStep;
     }
 
     IEnumerator IEnumerable.GetEnumerator() { return this.GetEnumerator(); }
 
-    public override string ToString() {
-      return string.Format("Hex: {0} with TotalCost={1,3} (as {2}/{3})",
-        LastStep, TotalCost, TotalCost>>16, TotalCost &0xFFFF);
+    /////////////////////////////  Internals  //////////////////////////////////
+    internal Path(ICoords start) : this(null, start, Hexside.None, 0) { }
+
+    internal Path AddStep(ICoords step, uint stepCost, Hexside direction) {
+      return new Path(this, step, direction, TotalCost + stepCost);
+    }
+
+    private  Path(Path previousSteps, ICoords thisStep, Hexside direction, uint totalCost) {
+      LastDirection  = direction;
+      LastStep       = thisStep;
+      _previousSteps = previousSteps;
+      TotalCost      = totalCost;
+      TotalSteps     = previousSteps==null ? 0 : previousSteps.TotalSteps+1;
     }
   }
 }

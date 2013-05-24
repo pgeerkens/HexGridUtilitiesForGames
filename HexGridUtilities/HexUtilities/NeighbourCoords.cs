@@ -32,7 +32,9 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 
-namespace PG_Napoleonics.Utilities.HexUtilities {
+using PG_Napoleonics.HexUtilities.Common;
+
+namespace PG_Napoleonics.HexUtilities {
   [Flags] public enum Hexside {
     None      = 0x00,
     North     = 0x01,

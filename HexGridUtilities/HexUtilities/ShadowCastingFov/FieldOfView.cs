@@ -28,66 +28,36 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
-using PG_Napoleonics.Utilities;
-using PG_Napoleonics.Utilities.HexUtilities;
-using PG_Napoleonics.Utilities.HexUtilities.ShadowCastingFov;
+using PG_Napoleonics;
+using PG_Napoleonics.HexUtilities;
+using PG_Napoleonics.HexUtilities.Common;
+using PG_Napoleonics.HexUtilities.ShadowCastingFov;
 
-namespace PG_Napoleonics.Utilities.HexUtilities {
-  public enum FovTargetMode {
-    EqualHeights,
-    TargetHeightEqualZero,
-    TargetHeightEqualActual
+namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
+  /// <summary>Structure returned by the Field-of-View factory.</summary>
+  public interface IFov {
+    /// <summary>True if the hex at location <c>coords> is visible in this field-of-view.</summary>
+    bool this[ICoords coords] { get; }
   }
-  public class FieldOfView : IFov {
-    public static IFov GetFieldOfView(IFovBoard board, ICoords origin) {
-      return GetFieldOfView(board, origin, board.FovRadius, FovTargetMode.EqualHeights);
-    }
-    public static IFov GetFieldOfView(IFovBoard board, ICoords origin, int range, 
-      FovTargetMode targetMode) {
-      TraceFlag.FieldOfView.Trace("GetFieldOfView");
-      var fov = new FieldOfView(board);
-      if (board.IsPassable(origin)) {
-        Func<ICoords,int> target;
-        int               observer;
-        switch (targetMode) {
-          case FovTargetMode.EqualHeights: 
-            observer = board[origin].ElevationASL + 1;
-            target   = coords => board[coords].ElevationASL + 1;
-            break;
-          case FovTargetMode.TargetHeightEqualZero:
-            observer = board[origin].HeightObserver;
-            target   = coords => board[coords].ElevationASL;
-            break;
-          default:
-          case FovTargetMode.TargetHeightEqualActual:
-            observer = board[origin].HeightObserver;
-            target   = coords => board[coords].HeightTarget;
-            break;
-        }
-        ShadowCasting.ComputeFieldOfView(
-          origin, 
-          board.FovRadius, 
-          observer,
-          coords => board.IsOnBoard(coords),
-          target,
-          coords => board[coords].HeightTerrain,
-          coords => fov[coords] = true
-        );
-      }
-      return fov;
-    }
 
-    public FieldOfView(IFovBoard board) {
+  /// <summary>Implementation of IFov using a 2-D backing array.</summary>
+  internal class ArrayFieldOfView : IFov {
+    public ArrayFieldOfView(IFovBoard board) {
       Board      = board;
       FovBacking = new bool[board.SizeHexes.Width, board.SizeHexes.Height];
     }
 
     public bool this[ICoords coords] { 
-      get { return Board.IsOnBoard(coords) && FovBacking[coords.User.X, coords.User.Y]; } 
-      internal set { if (Board.IsOnBoard(coords)) { FovBacking[coords.User.X,coords.User.Y] = value; } }
+      get { 
+        return Board.IsOnBoard(coords) && FovBacking[coords.User.X, coords.User.Y];
+      } 
+      internal set { 
+        if (Board.IsOnBoard(coords)) { FovBacking[coords.User.X,coords.User.Y] = value; } 
+      }
     } bool[,] FovBacking;
 
     IFovBoard           Board;

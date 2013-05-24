@@ -31,7 +31,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PG_Napoleonics.Utilities {
+namespace PG_Napoleonics.HexUtilities.Common {
   /// <summary>
   /// MinHeap from ZeraldotNet (http://zeraldotnet.codeplex.com/)
   /// Modified by Roy Triesscheijn (http://royalexander.wordpress.com)    

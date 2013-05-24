@@ -29,29 +29,28 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text; 
 
-namespace PG_Napoleonics.Utilities.HexUtilities {
-  public partial class Coords : ICoords {
-    IntVector2D ICoords.User   { get { return VectorUser;   } }
-    IntVector2D ICoords.Canon  { get { return VectorCanon;  } }
+using PG_Napoleonics.HexUtilities.Common;
 
-    int     ICoords.Range(ICoords coords)    { return Range(coords); }
-    ICoords ICoords.StepOut(Hexside hexside) {
-      switch(hexside) {
-        case Hexside.NorthWest:   return (ICoords) StepOut(HexCoords.NewCanonCoords(-1,-1));
-        case Hexside.North:       return (ICoords) StepOut(HexCoords.NewCanonCoords( 0,-1));
-        case Hexside.NorthEast:   return (ICoords) StepOut(HexCoords.NewCanonCoords( 1, 0));
-        case Hexside.SouthEast:   return (ICoords) StepOut(HexCoords.NewCanonCoords( 1, 1));
-        case Hexside.South:       return (ICoords) StepOut(HexCoords.NewCanonCoords( 0, 1));
-        case Hexside.SouthWest:   return (ICoords) StepOut(HexCoords.NewCanonCoords(-1, 0));
-        default:                  throw new ArgumentOutOfRangeException();
-      }
-    }
-    string  ICoords.ToString()               { return VectorUser.ToString(); }
+namespace PG_Napoleonics.HexUtilities {
+  public interface ICoords {
+    /// <summary>Returns rectangular (90 degree axes at E and S) coordinates for this hex</summary>
+    IntVector2D User    { get; }
 
-    IEnumerable<NeighbourCoords> ICoords.GetNeighbours(Hexside hexsides) { 
-      return GetNeighbours(hexsides); 
-    }
+    /// <summary>Returns canonical (120 degree axes at NE and S) coordinates for this hex.</summary>
+    IntVector2D Canon   { get; }
+
+    /// <summary><i>Manhattan</i> distance of specified hex from this one.</summary>
+    int         Range(ICoords coords);
+
+    /// <summary>Returns an <c>ICorods</c> for the hex in direction <c>hexside</c> from this one.</summary>
+    ICoords     StepOut(Hexside hexside);
+
+    /// <summary>Formattted string of the rectangular coordiantes for this hex.</summary>
+    string      ToString();
+
+    /// <summary>Returns set of hexes at direction(s) specified by <c>hexsides</c>, as IEnumerable<T>.</summary>
+    IEnumerable<NeighbourCoords> GetNeighbours(Hexside hexsides);
   }
 }

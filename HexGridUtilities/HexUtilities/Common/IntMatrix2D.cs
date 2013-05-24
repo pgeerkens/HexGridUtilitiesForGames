@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PG_Napoleonics.Utilities.HexUtilities {
+namespace PG_Napoleonics.HexUtilities.Common {
   /// <summary>Row-major order representation of an immutable integer matrix.</summary>
   /// <remarks> Represents Points as row vectors and planes as column vectors.
   /// This representation is standard for computer graphics, though opposite 

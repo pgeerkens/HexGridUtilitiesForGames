@@ -32,9 +32,9 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
-using PG_Napoleonics.Utilities;
+using PG_Napoleonics;
 
-namespace PG_Napoleonics.HexGridExample {
+namespace PG_Napoleonics.HexGridExample2 {
   static class Program {
     /// <summary>The main entry point for the application.</summary>
     [STAThread]

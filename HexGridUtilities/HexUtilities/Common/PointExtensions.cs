@@ -29,30 +29,28 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics;
-using PG_Napoleonics.HexUtilities;
-using PG_Napoleonics.HexUtilities.ShadowCastingFov;
-
-namespace PG_Napoleonics.HexGridExample2 {
-  public interface IMapGridHex : IHex {
-    int              Elevation      { get; }
-    void Paint(Graphics g);
-  }
-
-  public abstract class MapGridHex : Hex, IMapGridHex {
-    public MapGridHex(MapDisplay board, ICoords coords) : base(board, coords) { 
+namespace PG_Napoleonics.HexUtilities.Common {
+  public static class PointExtensions {
+    public static Point Scale(this Point @this, int scale) { 
+      return @this.Scale(scale,scale);
     }
-
-    public virtual  int              Elevation      { get; protected set; }
-    public abstract void Paint(Graphics g);
-
-    public IEnumerable<NeighbourHex> GetNeighbours() {
-      var @this = this;
-      return NeighbourHex.GetNeighbours(@this).Where(n=>@this.Board.IsOnBoard(n.Hex.Coords));
+    public static Point Scale(this Point @this, int scaleX, int scaleY) {
+      return new Point(@this.X * scaleX, @this.Y * scaleY);
+    }
+    public static PointF Scale(this Point @this, float scale) {
+      return @this.Scale(scale,scale);
+    }
+    public static PointF Scale(this Point @this, float scaleX, float scaleY) {
+      return new PointF(@this.X,@this.Y).Scale(scaleX,scaleY);
+    }
+    public static PointF Scale(this PointF @this, float scale) { 
+      return @this.Scale(scale,scale);
+    }
+    public static PointF Scale(this PointF @this, float scaleX, float scaleY) {
+      return new PointF(@this.X * scaleX, @this.Y * scaleY);
     }
   }
 }

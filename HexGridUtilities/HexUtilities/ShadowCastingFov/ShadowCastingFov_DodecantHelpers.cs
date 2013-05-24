@@ -32,10 +32,11 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-using PG_Napoleonics.Utilities;
+using PG_Napoleonics;
+using PG_Napoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.Utilities.HexUtilities.ShadowCastingFov {
-  public static partial class ShadowCasting {
+namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
+  internal static partial class ShadowCasting {
     /// <summary>Build dodecant matrices from sextant matrices and reflection about theta=30.</summary>
     static ShadowCasting() {
       var matrixRotate  = new IntMatrix2D( 0,-1, 1,1);

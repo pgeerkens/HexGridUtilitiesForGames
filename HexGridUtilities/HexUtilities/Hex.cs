@@ -31,7 +31,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PG_Napoleonics.Utilities.HexUtilities {
+using PG_Napoleonics.HexUtilities.Common;
+
+namespace PG_Napoleonics.HexUtilities {
   public interface IHex {
     /// <summary>The <c>IBoard<T></c> on which this hex is located.</summary>
     IBoard<IHex> Board          { get; }

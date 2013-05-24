@@ -33,10 +33,10 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics.Utilities;
-using PG_Napoleonics.Utilities.HexUtilities;
+using PG_Napoleonics;
+using PG_Napoleonics.HexUtilities;
 
-namespace PG_Napoleonics.HexGridExample {
+namespace PG_Napoleonics.HexGridExample2 {
   public abstract class TerrainGridHex : MapGridHex {
 
     public TerrainGridHex(MapDisplay map, ICoords coords, Size gridSize) 

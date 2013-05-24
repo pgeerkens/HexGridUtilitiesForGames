@@ -32,9 +32,10 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-using PG_Napoleonics.Utilities;
+using PG_Napoleonics;
+using PG_Napoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.Utilities.HexUtilities.ShadowCastingFov {
+namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
   internal struct FovCone : IEquatable<FovCone> {
     public IntVector2D  VectorTop    { get; private set; }
     public IntVector2D  VectorBottom { get; private set; }

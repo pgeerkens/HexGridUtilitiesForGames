@@ -33,39 +33,44 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics.Utilities;
-using PG_Napoleonics.Utilities.HexUtilities;
+using PG_Napoleonics;
+using PG_Napoleonics.HexUtilities;
+using PG_Napoleonics.HexUtilities.Common;
+using PG_Napoleonics.HexUtilities.PathFinding;
+using PG_Napoleonics.HexUtilities.ShadowCastingFov;
 
-namespace PG_Napoleonics.Utilities.HexUtilities {
+namespace PG_Napoleonics.HexUtilities {
+    public interface IBoard<TGridHex> 
+      : INavigableBoard, IFovBoard  where TGridHex : class, IHex {
+      new bool   IsOnBoard(ICoords coords);
+    }
+
   public abstract class HexBoard : IBoard<IHex> {
     public HexBoard(Size sizeHexes) { SizeHexes = sizeHexes; }
 
     ///  <inheritdoc/>
-    public virtual  int        FovRadius      { get; set; }
+    public virtual  int  FovRadius      { get; set; }
+
+    /// <inheritdoc/>
+    public int           RangeCutoff    { get; set; }
 
     ///  <inheritdoc/>
-    public virtual  Size       SizeHexes      { get; private set; }
-
-    /// <summary>Returns this instance as a <c>IFovBoard<IGridHex></c>.</summary>
-    public virtual  IFovBoard  FovBoard       { get { return this; } }
-
-    /// <summary>Returns this instance as a <c>INavigableBoard</c>.</summary>
-    public INavigableBoard     NavigableBoard { get { return this; } }
+    public virtual  Size SizeHexes      { get; private set; }
 
     ///  <inheritdoc/>
-    public virtual  int    Heuristic(int range) { return range; }
+    public virtual  int  Heuristic(int range) { return range; }
 
     ///  <inheritdoc/>
-    public virtual  bool   IsOnBoard(ICoords coords)  {
+    public virtual  bool IsOnBoard(ICoords coords)  {
       return 0<=coords.User.X && coords.User.X < SizeHexes.Width
           && 0<=coords.User.Y && coords.User.Y < SizeHexes.Height;
     }
 
     ///  <inheritdoc/>
-    public virtual  bool   IsPassable(ICoords coords) { return IsOnBoard(coords); }
+    public virtual  bool IsPassable(ICoords coords) { return IsOnBoard(coords); }
 
     ///  <inheritdoc/>
-    public virtual  int    StepCost(ICoords coords, Hexside hexSide) {
+    public virtual  int  StepCost(ICoords coords, Hexside hexSide) {
       return IsOnBoard(coords) ? GetGridHex(coords.StepOut(hexSide)).StepCost(hexSide) : -1;
     }
 
@@ -79,22 +84,22 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
   public static partial class Extensions {
     /// <summary>Returns the field-of-view on <c>board</c> from the hex specified by coordinates <c>coords</c>.</summary>
     public static IFov GetFov(this IFovBoard @this, ICoords origin) {
-      return FieldOfView.GetFieldOfView(@this,origin);
+      return FovFactory.GetFieldOfView(@this,origin);
     }
 
     /// <summary>Returns the field-of-view from this hex.</summary>
     public static IFov GetFov(this IHex @this) {
-      return FieldOfView.GetFieldOfView(@this.Board, @this.Coords);
+      return FovFactory.GetFieldOfView(@this.Board, @this.Coords);
     }
 
     /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
-    public static IPath2 GetPath(this INavigableBoard board, ICoords start, ICoords goal) {
-      return PathFinder2.FindPath(start, goal, board);
+    public static IPath GetPath(this INavigableBoard board, ICoords start, ICoords goal) {
+      return PathFinder.FindPath(start, goal, board);
     }
 
     /// <summary>Returns a least-cost path from this hex to the hex <c>goal.</c></summary>
-    public static IPath2 GetPath(this IHex @this, ICoords goal) {
-      return PathFinder2.FindPath( @this.Coords, goal, @this.Board);
+    public static IPath GetPath(this IHex @this, ICoords goal) {
+      return PathFinder.FindPath( @this.Coords, goal, @this.Board);
     }
   }
 }

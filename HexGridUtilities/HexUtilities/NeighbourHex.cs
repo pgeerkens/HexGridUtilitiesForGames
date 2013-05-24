@@ -32,7 +32,9 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 
-namespace PG_Napoleonics.Utilities.HexUtilities {
+using PG_Napoleonics.HexUtilities.Common;
+
+namespace PG_Napoleonics.HexUtilities {
   public interface INeighbourHex {
     IHex    Hex        { get; }
     Hexside Direction  { get; }

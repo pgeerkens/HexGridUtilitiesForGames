@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PG_Napoleonics.Utilities {
-  /// <summary>Joe Duffy's Simple Fast List enumerator.</summary>
+namespace PG_Napoleonics.HexUtilities.Common {
+  /// <summary>Joe Duffy's Simple (Fast) List enumerator.</summary>
   /// <seealso cref="http://www.bluebytesoftware.com/blog/2008/09/21/TheCostOfEnumeratingInNET.aspx"/>
   public class FastList<T> : IEnumerable<T>, IFastEnumerable<T>, IForEachable<T>, IForEachable2<T>{
     private T[] m_array;

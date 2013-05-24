@@ -32,10 +32,11 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-using PG_Napoleonics.Utilities;
+using PG_Napoleonics;
+using PG_Napoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.Utilities.HexUtilities.ShadowCastingFov {
-  public static partial class ShadowCasting {
+namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
+  internal static partial class ShadowCasting {
     static IntVector2D LogAndEnqueue(Action<FovCone> enqueue, int range, IntVector2D top, 
             IntVector2D bottom, RiseRun riseRun, int code
     ) {

@@ -31,9 +31,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-using PG_Napoleonics.Utilities;
+using PG_Napoleonics;
 
-namespace PG_Napoleonics.Utilities.HexUtilities.ShadowCastingFov {
+namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
   internal class FovQueue {
     public FovQueue() : this(0) {}
     public FovQueue(int capacity) {

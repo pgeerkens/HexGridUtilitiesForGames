@@ -32,49 +32,23 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace PG_Napoleonics.Utilities {
-  public interface IPriorityQueue<TPriority,TValue> 
+namespace PG_Napoleonics.HexUtilities.Common {
+  /// <summary>Fast (but unstable) implementation of PriorityQueue.</summary>
+  /// <typeparam name="TPriority"></typeparam>
+  /// <typeparam name="TValue"></typeparam>
+  public sealed class HeapPriorityQueue<TPriority,TValue> : IPriorityQueue<TPriority,TValue>
     where TPriority : struct, IComparable<TPriority>, IEquatable<TPriority>
   {
-    bool IsEmpty { get; }
+    IHeap<KeyValuePair<TPriority,TValue>> heap = new MinListHeap<KeyValuePair<TPriority,TValue>>();
 
-    void                           Enqueue(TPriority priority, TValue value);
-    TValue                         Dequeue();
-    KeyValuePair<TPriority,TValue> Peek();
-  }
-
-  /// <summary>Stable (insertion-order preserving for equal-priority elements) PriorityQueue implementation.</summary>
-  /// <remarks>Eric Lippert's C# implementation of PrioirtyQueue for use by the A* algorithm.</remarks>
-  /// <cref>http://blogs.msdn.com/b/ericlippert/archive/2007/10/08/path-finding-using-a-in-c-3-0-part-three.aspx</cref>
-  /// <typeparam name="TPriority">Type of the queue-item prioirty.</typeparam>
-  /// <typeparam name="TValue">Type of the queue-item value.</typeparam>
-  public sealed class DictPriorityQueue<TPriority,TValue> : IPriorityQueue<TPriority,TValue>
-    where TPriority : struct, IComparable<TPriority>, IEquatable<TPriority> 
-  {
-    IDictionary<TPriority,Queue<TValue>> list = new SortedDictionary<TPriority,Queue<TValue>>();
-
-    public bool IsEmpty { get { return !list.Any(); } }
+    public bool IsEmpty { get { return heap.IsEmpty; } }
 
     public void Enqueue(TPriority priority, TValue value) {
-      Queue<TValue> queue;
-      if( ! list.TryGetValue(priority, out queue) ) {
-        queue = new Queue<TValue>();
-        list.Add(priority, queue);
-      }
-      queue.Enqueue(value);
+      heap.Add(new KeyValuePair<TPriority,TValue>(priority, value));
     }
 
-    public TValue Dequeue() {
-      var pair = list.First();
-      var v    = pair.Value.Dequeue();
-      if( pair.Value.Count == 0)  list.Remove(pair.Key);
+    public TValue Dequeue() { return heap.ExtractFirst().Value; }
 
-      return v;
-    }
-
-    public KeyValuePair<TPriority,TValue> Peek() { 
-      var peek = list.First();
-      return new KeyValuePair<TPriority,TValue>(peek.Key, peek.Value.Peek()); 
-    }
+    public KeyValuePair<TPriority,TValue> Peek() { return heap.Peek(); }
   }
 }

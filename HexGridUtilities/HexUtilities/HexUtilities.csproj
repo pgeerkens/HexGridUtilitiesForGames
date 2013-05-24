@@ -27,6 +27,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>
     </DocumentationFile>
+    <NoWarn>1607</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,6 +38,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>
     </DocumentationFile>
+    <NoWarn>1607</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -49,9 +51,10 @@
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
     <DocumentationFile>
     </DocumentationFile>
+    <NoWarn>1607</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>..\bin\HesUtilities\bin\x86\Release\</OutputPath>
+    <OutputPath>..\bin\HexUtilities\bin\x86\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -61,57 +64,29 @@
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
     <DocumentationFile>
     </DocumentationFile>
+    <NoWarn>1607</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug32|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\bin\HexUtilities\bin\Debug32\</OutputPath>
+    <OutputPath>..\bin\HexUtilities\bin\x64\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
-    <DocumentationFile>
-    </DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug32|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\bin\HexUtilities\bin\x86\Debug32\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
-    <DocumentationFile>
-    </DocumentationFile>
     <NoWarn>1607</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release32|AnyCPU'">
-    <OutputPath>..\bin\HexUtilities\bin\Release32\</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\bin\HexUtilities\bin\x64\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
-    <DocumentationFile>
-    </DocumentationFile>
     <NoWarn>1607</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release32|x86'">
-    <OutputPath>..\bin\HexUtilities\bin\x86\Release32\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
-    <DocumentationFile>
-    </DocumentationFile>
-    <NoWarn>1607</NoWarn>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -124,44 +99,45 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Coords.cs" />
-    <Compile Include="DebugTracing.cs" />
-    <Compile Include="DictPriorityQueue.cs" />
-    <Compile Include="FastList.cs" />
-    <Compile Include="HeapPriorityQueue.cs" />
+    <Compile Include="CustomCoordsFactory.cs" />
+    <Compile Include="Common\DebugTracing.cs" />
+    <Compile Include="Common\DictPriorityQueue.cs" />
+    <Compile Include="Common\FastList.cs" />
+    <Compile Include="Common\HeapPriorityQueue.cs" />
     <Compile Include="HexCoords.cs" />
     <Compile Include="HexGrid.cs" />
-    <Compile Include="Interfaces.cs" />
     <Compile Include="ICoords.cs" />
     <Compile Include="Hex.cs" />
-    <Compile Include="IHeap.cs" />
+    <Compile Include="Common\IHeap.cs" />
     <Compile Include="HexBoard.cs" />
-    <Compile Include="ImmutableStack.cs" />
-    <Compile Include="IntMatrix2D.cs" />
-    <Compile Include="IntVector2D.cs" />
-    <Compile Include="MinListHeap.cs" />
+    <Compile Include="Common\ImmutableStack.cs" />
+    <Compile Include="Common\IntMatrix2D.cs" />
+    <Compile Include="Common\IntVector2D.cs" />
+    <Compile Include="Common\MinListHeap.cs" />
     <Compile Include="NeighbourCoords.cs" />
     <Compile Include="NeighbourHex.cs" />
-    <Compile Include="Path2.cs" />
-    <Compile Include="PathFinder2.cs" />
-    <Compile Include="PointExtensions.cs" />
+    <Compile Include="PathFinding\Path2.cs" />
+    <Compile Include="PathFinding\PathFinder2.cs" />
+    <Compile Include="Common\PointExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShadowCastingFov\FieldOfView.cs" />
+    <Compile Include="ShadowCastingFov\FovFactory.cs" />
     <Compile Include="ShadowCastingFov\FovCone.cs" />
     <Compile Include="ShadowCastingFov\FovQueue.cs" />
     <Compile Include="ShadowCastingFov\RiseRun.cs" />
     <Compile Include="ShadowCastingFov\ShadowCastingFov.cs" />
     <Compile Include="ShadowCastingFov\ShadowCastingFov_DodecantHelpers.cs" />
     <Compile Include="ShadowCastingFov\ShadowCastingFov_Utilities.cs" />
-    <Compile Include="SizeExtensions.cs" />
+    <Compile Include="Common\SizeExtensions.cs" />
     <Compile Include="UserCoordsRectangle.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="Common\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

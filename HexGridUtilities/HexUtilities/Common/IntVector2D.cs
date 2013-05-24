@@ -32,7 +32,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 
-namespace PG_Napoleonics.Utilities.HexUtilities {
+namespace PG_Napoleonics.HexUtilities.Common {
   /// <summary>Representation of an immutable integer 2D vector.</summary>
   public struct IntVector2D : IEquatable<IntVector2D> {
     public static readonly IntVector2D Empty = new IntVector2D(Point.Empty);
@@ -96,12 +96,6 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     /// <summary>Vector Subtraction of two <code>IntVector2D</code> as a new <code>IntVector2D</code></summary>
     public static IntVector2D operator - (IntVector2D v1, IntVector2D v2) {
       return new IntVector2D(v1.X-v2.X, v1.Y-v2.Y);
-    }
-    #endregion
-
-    #region Coords-vector operators
-    public static ICoords operator + (ICoords coords, IntVector2D vector) {
-      return HexCoords.NewCanonCoords(coords.Canon.X + vector.X, coords.Canon.Y + vector.Y);
     }
     #endregion
 

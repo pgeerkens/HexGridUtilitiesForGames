@@ -31,8 +31,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PG_Napoleonics.Utilities.HexUtilities {
-  public partial class HexCoords : Coords {
+using PG_Napoleonics.HexUtilities.Common;
+
+namespace PG_Napoleonics.HexUtilities {
+  public class HexCoords : ICoords,
+    IEquatable<HexCoords>, IEqualityComparer<HexCoords> {
+    #region static members
     static HexCoords() {
       HexsideList        = Utils.EnumGetValues<Hexside>().Where(h=>h!=Hexside.None).ToList();
 
@@ -46,69 +50,109 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     public static   ICoords EmptyCanon { get { return _EmptyCanon; } }
     public static   ICoords EmptyUser  { get { return _EmptyUser; } }
 
-    #region Constructors
-    public static ICoords NewCanonCoords (IntVector2D vector){ return new HexCoords(CoordsType.Canon, vector); }
-    public static ICoords NewUserCoords  (IntVector2D vector){ return new HexCoords(CoordsType.User,vector); }
-    public static ICoords NewCanonCoords (int x, int y) { return new HexCoords(CoordsType.Canon, x,y); }
-    public static ICoords NewUserCoords  (int x, int y) { return new HexCoords(CoordsType.User,x,y); }
-
-    protected HexCoords(CoordsType coordsType, IntVector2D vector) : base(coordsType, vector) {}
-    protected HexCoords(CoordsType coordsType, int x, int y) : base(coordsType, new IntVector2D(x,y)) {}
+    public static ICoords NewCanonCoords (IntVector2D vector){ return new HexCoords(true, vector); }
+    public static ICoords NewUserCoords  (IntVector2D vector){ return new HexCoords(false,vector); }
+    public static ICoords NewCanonCoords (int x, int y) { return new HexCoords(true, x,y); }
+    public static ICoords NewUserCoords  (int x, int y) { return new HexCoords(false,x,y); }
     #endregion
 
-    #region protected overrides
-    protected override IEnumerable<NeighbourCoords> GetNeighbours(Hexside hexsides) {
+    #region Constructors
+    protected HexCoords(bool isCanon, int x, int y) : this(isCanon, new IntVector2D(x,y)) {}
+    protected HexCoords(bool isCanon, IntVector2D vector) {
+      if (isCanon) { _vectorCanon = vector;  _vectorUser = null;   }
+      else         { _vectorCanon = null;    _vectorUser = vector; }
+    }
+    #endregion
+
+    #region ICoords implementation
+    IntVector2D ICoords.User   { get { return VectorUser;   } }
+    IntVector2D ICoords.Canon  { get { return VectorCanon;  } }
+
+    int     ICoords.Range(ICoords coords)    { return Range(coords); }
+    ICoords ICoords.StepOut(Hexside hexside) {
+      //switch(hexside) {
+      //  case Hexside.NorthWest: return StepOut(NewCanonCoords(-1,-1));
+      //  case Hexside.North:     return StepOut(NewCanonCoords( 0,-1));
+      //  case Hexside.NorthEast: return StepOut(NewCanonCoords( 1, 0));
+      //  case Hexside.SouthEast: return StepOut(NewCanonCoords( 1, 1));
+      //  case Hexside.South:     return StepOut(NewCanonCoords( 0, 1));
+      //  case Hexside.SouthWest: return StepOut(NewCanonCoords(-1, 0));
+      //  default:                throw new ArgumentOutOfRangeException();
+      //}
+      switch(hexside) {
+        case Hexside.NorthWest: return NewCanonCoords(VectorCanon + vectorNW);
+        case Hexside.North:     return NewCanonCoords(VectorCanon + vectorN );
+        case Hexside.NorthEast: return NewCanonCoords(VectorCanon + vectorNE);
+        case Hexside.SouthEast: return NewCanonCoords(VectorCanon + vectorSE);
+        case Hexside.South:     return NewCanonCoords(VectorCanon + vectorS );
+        case Hexside.SouthWest: return NewCanonCoords(VectorCanon + vectorSW);
+        default:                throw new ArgumentOutOfRangeException();
+      }
+    }
+
+    internal static readonly IntVector2D vectorNW = new IntVector2D(-1,-1);
+    internal static readonly IntVector2D vectorN  = new IntVector2D( 0,-1);
+    internal static readonly IntVector2D vectorNE = new IntVector2D( 1, 0);
+    internal static readonly IntVector2D vectorSE = new IntVector2D( 1, 1);
+    internal static readonly IntVector2D vectorS  = new IntVector2D( 0, 1);
+    internal static readonly IntVector2D vectorSW = new IntVector2D(-1, 0);
+
+    string  ICoords.ToString()               { return ToString(); }
+
+    IEnumerable<NeighbourCoords> ICoords.GetNeighbours(Hexside hexsides) { 
+      return GetNeighbours(hexsides);
+    }
+    #endregion
+
+    #region Conversions
+    protected static IntMatrix2D MatrixUserToCanon;
+    protected IntVector2D VectorCanon {
+      get { return ( _vectorCanon.HasValue ? _vectorCanon 
+                                           : _vectorCanon = VectorUser * MatrixUserToCanon
+                   ).Value; }
+    } protected Nullable<IntVector2D> _vectorCanon;
+
+    protected static IntMatrix2D MatrixCanonToUser;
+    protected IntVector2D VectorUser {
+      get { return ( _vectorUser.HasValue  ? _vectorUser
+                                           : _vectorUser = VectorCanon * MatrixCanonToUser
+                   ).Value; }
+    } protected Nullable<IntVector2D> _vectorUser;
+    #endregion
+
+    #region Value Equality
+    bool IEquatable<HexCoords>.Equals(HexCoords rhs) { return this == rhs; }
+    public override bool Equals(object rhs) { return (rhs is HexCoords) && this == (HexCoords)rhs; }
+    public static bool operator == (HexCoords lhs, HexCoords rhs) { return lhs.VectorCanon.Equals(rhs.VectorCanon); }
+    public static bool operator != (HexCoords lhs, HexCoords rhs) { return ! (lhs == rhs); }
+    public override int GetHashCode() { return VectorUser.GetHashCode(); }
+
+    bool IEqualityComparer<HexCoords>.Equals(HexCoords lhs, HexCoords rhs) { return lhs == rhs; }
+    int  IEqualityComparer<HexCoords>.GetHashCode(HexCoords coords) { return coords.GetHashCode(); }
+    #endregion
+
+    protected IEnumerable<NeighbourCoords> GetNeighbours(Hexside hexsides) {
       ICoords coords = this;
       foreach (var hexside in HexsideList.Where(h=>hexsides.HasFlag(h)))
         yield return new NeighbourCoords(hexside, coords.StepOut(hexside));
     }
 
-    protected override int Range(ICoords coords) {
-      return Range(coords.Canon);
-    }
-    private int Range(IntVector2D vector) {
+    protected       int     Range(ICoords coords) { return Range(coords.Canon); }
+    private         int     Range(IntVector2D vector) {
       var deltaX = vector.X - VectorCanon.X;
       var deltaY = vector.Y - VectorCanon.Y;
       return (Math.Abs(deltaX) + Math.Abs(deltaY) + Math.Abs(deltaX-deltaY)) / 2;
     }
+    //protected       ICoords StepOut(ICoords coords) { 
+    //  return NewCanonCoords(VectorCanon + coords.Canon); 
+    //}
+    //protected       ICoords StepOut(int x, int y) {
+    //  return NewCanonCoords(VectorCanon + new IntVector2D(x,y));
+    //}
 
-    protected override ICoords StepOut(ICoords coords) { 
-      return NewCanonCoords(VectorCanon + coords.Canon); 
+    /// <inheritDoc/>
+    public override string  ToString() {
+      return string.Format("User: {0}", VectorUser);
     }
-    #endregion
   } 
-  public class CustomCoordsFactory {
-    public CustomCoordsFactory(IntMatrix2D matrix) : this(matrix,matrix) {}
-    public CustomCoordsFactory(IntMatrix2D userToCustom, IntMatrix2D customToUser) {
-      MatrixUserToCustom = userToCustom;
-      MatrixCustomToUser = customToUser;
-    }
-
-    protected IntMatrix2D MatrixCustomToUser { get; private set; }
-    protected IntMatrix2D MatrixUserToCustom { get; private set; }
-
-    public ICoords Coords(int x, int y) { return Coords(new IntVector2D(x,y)); }
-    public ICoords Coords(IntVector2D vector) {
-      return HexCoords.NewUserCoords(vector * MatrixCustomToUser);
-    }
-    public IntVector2D Custom(ICoords coords) {
-      return coords.User * MatrixUserToCustom;
-    }
-
-    public IntVector2D User(IntVector2D custom) { return custom * MatrixCustomToUser; }
-    public IntVector2D Custom(IntVector2D user) { return user * MatrixUserToCustom; }
-
-    public class CustomCoords : HexCoords {
-      private CustomCoords (CustomCoordsFactory factory, IntVector2D vector) 
-        : base(CoordsType.User, factory.User(vector)) {
-        Factory = factory;
-      }
-
-      private CustomCoordsFactory Factory { get; set; }
-
-      public IntVector2D Custom { get { return Factory.Custom(base.VectorUser); } }
-
-      public override string ToString() { return Custom.ToString(); }
-    }
-  }
 }

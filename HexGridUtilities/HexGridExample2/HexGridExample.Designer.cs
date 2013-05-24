@@ -5,7 +5,7 @@
 // Use of this software is permitted only as described in the attached file: license.txt.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-namespace PG_Napoleonics.HexGridExample {
+namespace PG_Napoleonics.HexGridExample2 {
   partial class HexGridExampleForm {
     /// <summary>
     /// Required designer variable.
@@ -36,11 +36,13 @@ namespace PG_Napoleonics.HexGridExample {
       this.toolStrip1 = new System.Windows.Forms.ToolStrip();
       this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
       this.statusLabel = new System.Windows.Forms.ToolStripLabel();
-      this.hexgridPanel = new PG_Napoleonics.Utilities.HexUtilities.HexgridPanel(this.components);
+      this.hexgridPanel = new PG_Napoleonics.HexgridPanel.HexgridPanel(this.components);
       this.toolStrip2 = new System.Windows.Forms.ToolStrip();
       this.buttonTransposeMap = new System.Windows.Forms.ToolStripButton();
       this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
       this.buttonFieldOfView = new System.Windows.Forms.ToolStripButton();
+      this.lblPathCutover = new System.Windows.Forms.ToolStripLabel();
+      this.txtPathCutover = new System.Windows.Forms.ToolStripTextBox();
       this.toolStripContainer1.BottomToolStripPanel.SuspendLayout();
       this.toolStripContainer1.ContentPanel.SuspendLayout();
       this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -81,7 +83,7 @@ namespace PG_Napoleonics.HexGridExample {
             this.statusLabel});
       this.toolStrip1.Location = new System.Drawing.Point(3, 0);
       this.toolStrip1.Name = "toolStrip1";
-      this.toolStrip1.Size = new System.Drawing.Size(613, 25);
+      this.toolStrip1.Size = new System.Drawing.Size(582, 25);
       this.toolStrip1.TabIndex = 0;
       // 
       // toolStripLabel1
@@ -106,17 +108,17 @@ namespace PG_Napoleonics.HexGridExample {
       this.hexgridPanel.IsTransposed = false;
       this.hexgridPanel.Location = new System.Drawing.Point(0, 0);
       this.hexgridPanel.Name = "hexgridPanel";
-      this.hexgridPanel.ScaleIndex = 1;
+      this.hexgridPanel.ScaleIndex = 0;
       this.hexgridPanel.Scales = new float[] {
         0.707F,
         1F,
         1.414F};
       this.hexgridPanel.Size = new System.Drawing.Size(703, 366);
       this.hexgridPanel.TabIndex = 0;
+      this.hexgridPanel.MouseCtlClick += new System.EventHandler<PG_Napoleonics.HexUtilities.HexEventArgs>(this.PanelBoard_GoalHexChange);
+      this.hexgridPanel.MouseLeftClick += new System.EventHandler<PG_Napoleonics.HexUtilities.HexEventArgs>(this.PanelBoard_StartHexChange);
+      this.hexgridPanel.HotSpotHexChange += new System.EventHandler<PG_Napoleonics.HexUtilities.HexEventArgs>(this.PanelBoard_HotSpotHexChange);
       this.hexgridPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.hexgridPanel_MouseMove);
-      this.hexgridPanel.MouseCtlClick += PanelBoard_GoalHexChange;
-      this.hexgridPanel.HotSpotHexChange += PanelBoard_HotSpotHexChange;
-      this.hexgridPanel.MouseLeftClick += PanelBoard_StartHexChange;
       // 
       // toolStrip2
       // 
@@ -124,10 +126,12 @@ namespace PG_Napoleonics.HexGridExample {
       this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.buttonTransposeMap,
             this.toolStripComboBox1,
-            this.buttonFieldOfView});
+            this.buttonFieldOfView,
+            this.lblPathCutover,
+            this.txtPathCutover});
       this.toolStrip2.Location = new System.Drawing.Point(3, 0);
       this.toolStrip2.Name = "toolStrip2";
-      this.toolStrip2.Size = new System.Drawing.Size(233, 25);
+      this.toolStrip2.Size = new System.Drawing.Size(385, 25);
       this.toolStrip2.TabIndex = 0;
       // 
       // buttonTransposeMap
@@ -139,7 +143,7 @@ namespace PG_Napoleonics.HexGridExample {
       this.buttonTransposeMap.Name = "buttonTransposeMap";
       this.buttonTransposeMap.Size = new System.Drawing.Size(65, 22);
       this.buttonTransposeMap.Text = "Transpose";
-      this.buttonTransposeMap.ToolTipText = "Transpose Map";
+      this.buttonTransposeMap.ToolTipText = "Toggles transposition of the current map.";
       this.buttonTransposeMap.Click += new System.EventHandler(this.buttonTransposeMap_Click);
       // 
       // toolStripComboBox1
@@ -153,6 +157,7 @@ namespace PG_Napoleonics.HexGridExample {
       this.toolStripComboBox1.Size = new System.Drawing.Size(121, 23);
       this.toolStripComboBox1.Sorted = true;
       this.toolStripComboBox1.Text = "Map:";
+      this.toolStripComboBox1.ToolTipText = "Selects map to display.";
       this.toolStripComboBox1.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBox1_Click);
       // 
       // buttonFieldOfView
@@ -164,7 +169,25 @@ namespace PG_Napoleonics.HexGridExample {
       this.buttonFieldOfView.Name = "buttonFieldOfView";
       this.buttonFieldOfView.Size = new System.Drawing.Size(33, 22);
       this.buttonFieldOfView.Text = "FOV";
+      this.buttonFieldOfView.ToolTipText = "Toggles display of current Field-of-View";
       this.buttonFieldOfView.Click += new System.EventHandler(this.buttonFieldOfView_Click);
+      // 
+      // lblPathCutover
+      // 
+      this.lblPathCutover.Name = "lblPathCutover";
+      this.lblPathCutover.Size = new System.Drawing.Size(79, 22);
+      this.lblPathCutover.Text = "Path Cutover:";
+      this.lblPathCutover.ToolTipText = resources.GetString("lblPathCutover.ToolTipText");
+      // 
+      // txtPathCutover
+      // 
+      this.txtPathCutover.Name = "txtPathCutover";
+      this.txtPathCutover.Size = new System.Drawing.Size(40, 25);
+      this.txtPathCutover.Tag = 20;
+      this.txtPathCutover.Text = "20";
+      this.txtPathCutover.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+      this.txtPathCutover.ToolTipText = resources.GetString("txtPathCutover.ToolTipText");
+      this.txtPathCutover.TextChanged += new System.EventHandler(this.txtPathCutover_TextChanged);
       // 
       // HexGridExampleForm
       // 
@@ -196,11 +219,13 @@ namespace PG_Napoleonics.HexGridExample {
     private System.Windows.Forms.ToolStripContainer toolStripContainer1;
     private System.Windows.Forms.ToolStrip toolStrip1;
     private System.Windows.Forms.ToolStripLabel toolStripLabel1;
-    private PG_Napoleonics.Utilities.HexUtilities.HexgridPanel hexgridPanel;
+    private PG_Napoleonics.HexgridPanel.HexgridPanel hexgridPanel;
     private System.Windows.Forms.ToolStrip toolStrip2;
     private System.Windows.Forms.ToolStripButton buttonTransposeMap;
     private System.Windows.Forms.ToolStripLabel statusLabel;
     private System.Windows.Forms.ToolStripComboBox toolStripComboBox1;
     private System.Windows.Forms.ToolStripButton buttonFieldOfView;
+    private System.Windows.Forms.ToolStripLabel lblPathCutover;
+    private System.Windows.Forms.ToolStripTextBox txtPathCutover;
   }
 }

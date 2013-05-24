@@ -33,10 +33,10 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics.Utilities;
-using PG_Napoleonics.Utilities.HexUtilities;
+using PG_Napoleonics;
+using PG_Napoleonics.HexUtilities;
 
-namespace PG_Napoleonics.HexGridExample {
+namespace PG_Napoleonics.HexGridExample2 {
   public sealed class MazeMap : MapDisplay {
     public MazeMap() : base() {}
 
@@ -44,6 +44,7 @@ namespace PG_Napoleonics.HexGridExample {
       return IsOnBoard(coords)  &&  GetMapGridHex(coords).Elevation == 0; 
     }
 
+    /// <inheritdoc/>
     public override int    Heuristic(int range) { return range; }
 
     #region Painting

@@ -32,7 +32,9 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace PG_Napoleonics.Utilities.HexUtilities {
+using PG_Napoleonics.HexUtilities.Common;
+
+namespace PG_Napoleonics.HexUtilities {
   /// <summary></summary>
   public class HexEventArgs : MouseEventArgs {
     public ICoords  Coords       { get; private set; }

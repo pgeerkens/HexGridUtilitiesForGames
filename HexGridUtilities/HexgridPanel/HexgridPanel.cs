@@ -36,10 +36,11 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-using PG_Napoleonics.Utilities.HexUtilities;
-using PG_Napoleonics.Utilities.WinForms;
+using PG_Napoleonics.HexUtilities;
+using PG_Napoleonics.HexUtilities.Common;
+using PG_Napoleonics.WinForms;
 
-namespace PG_Napoleonics.Utilities.HexUtilities {
+namespace PG_Napoleonics.HexgridPanel {
   //public interface IMapGridHex : IGridHex {
   //  void Paint(Graphics g);
   //}

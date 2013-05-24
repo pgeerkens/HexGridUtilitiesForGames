@@ -30,7 +30,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;     // For StructLayout, DllImport
 
-namespace PG_Napoleonics.Utilities {
+namespace PG_Napoleonics.HexUtilities.Common {
   [StructLayout(LayoutKind.Sequential)]
   public sealed class _SystemTime {
     public ushort year;
@@ -49,22 +49,25 @@ namespace PG_Napoleonics.Utilities {
   }
   [Flags]
   public enum TraceFlag  {
-     None           = 0x0000
-    ,Painting       = 0x0001
-    ,FieldOfView    = 0x0002
-    ,Mouse          = 0x0004
-    ,MouseMove      = 0x0008
-    ,MainForm       = 0x0010
-    ,FindPath       = 0x0020
-    ,Docking        = 0x0040
-    ,MenuEvents     = 0x0080
-    ,KeyEvents      = 0x0100
-    ,Sizing         = 0x0200
-    ,ScrollEvents   = 0x0400
-    ,ToolTipEvents  = 0x0800
-    ,Caching        = 0x1000
-    ,Initialization = 0x2000
-    ,Solo          = Int32.MinValue // 0x40000000
+     None           = 0x00000
+    ,Unused1        = 0x00001
+    ,FieldOfView    = 0x00002
+    ,Mouse          = 0x00004
+    ,MouseMove      = 0x00008
+    ,MainForm       = 0x00010
+    ,FindPath       = 0x00020
+    ,Docking        = 0x00040
+    ,MenuEvents     = 0x00080
+    ,KeyEvents      = 0x00100
+    ,Sizing         = 0x00200
+    ,ScrollEvents   = 0x00400
+    ,ToolTipEvents  = 0x00800
+    ,Caching        = 0x01000
+    ,Initialization = 0x02000
+    ,Paint          = 0x04000
+    ,PaintMap       = 0x08000
+    ,PaintDetail    = 0x108000
+    ,Solo           = Int32.MinValue // 0x40000000
   }
 
   public sealed partial class DebugTracing {

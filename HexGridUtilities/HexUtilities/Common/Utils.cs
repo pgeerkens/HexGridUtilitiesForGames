@@ -28,30 +28,45 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
-namespace PG_Napoleonics.Utilities {
-  public static class SizeExtensions {
-    #region Size scaling functions
-    public static Size Scale(this Size @this, int scale) { 
-      return @this.Scale(scale,scale);
+namespace PG_Napoleonics.HexUtilities.Common {
+  public static class Utils{
+    #region Enum Parsing utilities
+    public static IEnumerable<TEnum> EnumGetValues<TEnum>() {
+      return (IEnumerable<TEnum>)(Enum.GetValues(typeof(TEnum)));
     }
-    public static Size Scale(this Size @this, int scaleX, int scaleY) {
-      return new Size(@this.Width * scaleX, @this.Height * scaleY);
+
+    public static T ParseEnum<T>(string value, bool checkConstants = true) where T:struct {
+      T enumValue;
+      if (!TryParseEnum<T>(value, out enumValue) && checkConstants) 
+                  ThrowInvalidDataException(typeof(T), enumValue);
+      return enumValue;
     }
-    public static SizeF Scale(this Size @this, float scale) {
-      return @this.Scale(scale,scale);
+    public static bool TryParseEnum<T>(string value, out T enumValue) where T:struct {
+      return Enum.TryParse<T>(value, out enumValue)  
+         &&  Enum.IsDefined(typeof(T),enumValue);
     }
-    public static SizeF Scale(this Size @this, float scaleX, float scaleY) {
-      return new SizeF(@this).Scale(scaleX,scaleY);
+    public static T EnumParse<T>(char c, string lookup) {
+      var index = lookup.IndexOf(c);
+      if (index == -1) ThrowInvalidDataException(typeof(T), c);
+      return (T) Enum.ToObject(typeof(T), index);
     }
-    public static SizeF Scale(this SizeF @this, float scale) { 
-      return @this.Scale(scale,scale);
+    #endregion
+
+    #region InvalidDataException Throwers
+    public static void ThrowInvalidDataException(Type type, object data) {
+      throw new InvalidDataException(string.Format("{0}: Invalid: '{1}'", 
+            type.Name, data));
     }
-    public static SizeF Scale(this SizeF @this, float scaleX, float scaleY) {
-      return new SizeF(@this.Width * scaleX, @this.Height * scaleY);
+    public static void ThrowInvalidDataException(string parseType, int lineNo, 
+      object section, string error, Exception ex, object data) {
+      throw new InvalidDataException(
+              string.Format("{0}: {3}\n  for section {2} on line # {1}:\n   {4}",  
+                  parseType, lineNo, section, error, data), ex);
     }
     #endregion
   }

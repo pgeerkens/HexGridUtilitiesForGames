@@ -33,7 +33,27 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 
-namespace PG_Napoleonics.Utilities.HexUtilities {
+using PG_Napoleonics.HexUtilities.Common;
+using PG_Napoleonics.HexUtilities.PathFinding;
+
+namespace PG_Napoleonics.HexUtilities.PathFinding {
+  /// <summary>Interface required to make use of A-* Path Finding utility.</summary>
+  public interface INavigableBoard {
+    /// <summary>Range beyond which Fast PathFinding is used instead of Stable PathFinding.</summary>
+    int RangeCutoff { get; }
+
+    /// <summary>The cost of entering the hex at location <c>coords</c> heading  <c>hexside</c>.</summary>
+    int   StepCost(ICoords coords, Hexside hexside);
+
+    /// <summary>Returns an A-* heuristic value from the supplied hexagonal Manhattan distance <c>range</c>.</summary>
+    /// <remarks>Returning the supplied range multiplied by the cheapest movement 
+    /// cost for a single hex is usually suffficient.</remarks>
+    int   Heuristic(int range);
+
+    /// <summary>Returns whether the hex at location <c>coords</c>is "on board".</summary>
+    bool  IsOnBoard(ICoords coords);
+  }
+
   /// <summary>(Adapted) C# implementation of A* path-finding algorithm by Eric Lippert.</summary>
   /// <remarks><quote>
   /// A nice property of the A* algorithm is that it finds the optimal path in a reasonable 
@@ -60,16 +80,15 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
   /// <param name="goal"></param>
   /// <param name="board"></param>
   /// <returns></returns>
-  public static class PathFinder2 {
+  public static class PathFinder {
     public static int RangeCutoff { get; set; }
-    static PathFinder2() { RangeCutoff = 80; }  // TODO: Set this to FOVRange perhaps?
 
-    public static IPath2 FindPath(
+    public static IPath FindPath(
       ICoords     start,
       ICoords     goal,
       INavigableBoard board
     ) {
-      return FindPath(start, goal, board.StepCost, board.Heuristic, board.IsOnBoard);
+      return FindPath(start, goal, board.RangeCutoff, board.StepCost, board.Heuristic, board.IsOnBoard);
     }
 
     /// <summary>
@@ -81,24 +100,25 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     /// <param name="heuristic"></param>
     /// <param name="isOnBoard"></param>
     /// <returns></returns>
-    public static IPath2 FindPath(
+    public static IPath FindPath(
       ICoords     start,
       ICoords     goal,
+      int         rangeCutoff,
       Func<ICoords, Hexside, int> stepCost,
       Func<int,int>               heuristic,
       Func<ICoords,bool>          isOnBoard
     ) {
       var vectorGoal = goal.Canon - start.Canon;
       var closed     = new HashSet<ICoords>();
-      var queue      = goal.Range(start) > RangeCutoff
-          ? (IPriorityQueue<uint, Path2>) new HeapPriorityQueue<uint, Path2>()
-          : (IPriorityQueue<uint, Path2>) new DictPriorityQueue<uint, Path2>();
+      var queue      = goal.Range(start) > rangeCutoff
+          ? (IPriorityQueue<uint, Path>) new HeapPriorityQueue<uint, Path>()
+          : (IPriorityQueue<uint, Path>) new DictPriorityQueue<uint, Path>();
       #if DEBUG
         TraceFlag.FindPath.Trace(true, "Find path from {0} to {1}; vectorGoal = {0}", 
                                       start.Canon, goal.Canon, vectorGoal);
       #endif
 
-      queue.Enqueue (0, new Path2(start));
+      queue.Enqueue (0, new Path(start));
 
       while (! queue.IsEmpty) {
         var oldPref = queue.Peek().Key & 0xFFFF; 

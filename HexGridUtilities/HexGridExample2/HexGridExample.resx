@@ -154,4 +154,31 @@
         TgDQASA1MVpwzwAAAABJRU5ErkJggg==
 </value>
   </data>
+  <data name="lblPathCutover.ToolTipText" xml:space="preserve">
+    <value>Range beyond which Fast PathFinding is used instead of Stable PathFinding. 
+By way of illustration using the Terrain Map:
+1) With Path Cutover set to 20 hexes (the default;
+2) Left-click a Start-Hex along the left side of the board;
+3) Right-click a Goal-Hex just inside the (tan-coloured) Trail; then
+4) Right-click a Goal-Hex just over the (tan-coloured) Trail.
+
+Note how the "directness" of the path is influenced. The 
+"unstable" path-finder is significantly faster at long range, 
+but generates meandering (still optimal) paths over 
+clear terriain.
+</value>
+  </data>
+  <data name="txtPathCutover.ToolTipText" xml:space="preserve">
+    <value>Range beyond which Fast PathFinding is used instead of Stable PathFinding. 
+By way of illustration using the Terrain Map:
+1) With Path Cutover set to 20 hexes (the default;
+2) Left-click a Start-Hex along the left side of the board;
+3) Right-click a Goal-Hex just inside the (tan-coloured) Trail; then
+4) Right-click a Goal-Hex just over the (tan-coloured) Trail.
+
+Note how the "directness" of the path is influenced. The 
+"unstable" path-finder is significantly faster at long range, 
+but generates meandering (still optimal) paths over 
+clear terriain.</value>
+  </data>
 </root>
