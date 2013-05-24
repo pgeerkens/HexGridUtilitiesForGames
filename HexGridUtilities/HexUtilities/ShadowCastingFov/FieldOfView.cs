@@ -47,7 +47,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
     }
     public static IFov GetFieldOfView(IFovBoard board, ICoords origin, int range, 
       FovTargetMode targetMode) {
-      DebugTracing.LogTime(TraceFlag.FieldOfView,"FieldOfView - begin");
+      TraceFlag.FieldOfView.Trace("GetFieldOfView");
       var fov = new FieldOfView(board);
       if (board.IsPassable(origin)) {
         Func<ICoords,int> target;
@@ -77,7 +77,6 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
           coords => fov[coords] = true
         );
       }
-      DebugTracing.LogTime(TraceFlag.FieldOfView,"FieldOfView - end");
       return fov;
     }
 
@@ -88,7 +87,7 @@ namespace PG_Napoleonics.Utilities.HexUtilities {
 
     public bool this[ICoords coords] { 
       get { return Board.IsOnBoard(coords) && FovBacking[coords.User.X, coords.User.Y]; } 
-      set { if (Board.IsOnBoard(coords)) { FovBacking[coords.User.X,coords.User.Y] = value; } }
+      internal set { if (Board.IsOnBoard(coords)) { FovBacking[coords.User.X,coords.User.Y] = value; } }
     } bool[,] FovBacking;
 
     IFovBoard           Board;
