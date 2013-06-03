@@ -32,6 +32,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using PG_Napoleonics.HexUtilities;
 using PG_Napoleonics.HexUtilities.Common;
 
 namespace PG_Napoleonics.HexUtilities {

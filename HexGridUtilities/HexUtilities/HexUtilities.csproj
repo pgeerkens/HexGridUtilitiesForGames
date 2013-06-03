@@ -8,7 +8,7 @@
     <ProjectGuid>{013628E1-60E2-40A6-91D4-8B446F397A0A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PG_Napoleonics.Utilities.HexUtilities</RootNamespace>
+    <RootNamespace>PG_Napoleonics.HexUtilities</RootNamespace>
     <AssemblyName>HexUtilities</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -116,9 +116,12 @@
     <Compile Include="Common\MinListHeap.cs" />
     <Compile Include="NeighbourCoords.cs" />
     <Compile Include="NeighbourHex.cs" />
-    <Compile Include="PathFinding\Path2.cs" />
-    <Compile Include="PathFinding\PathFinder2.cs" />
+    <Compile Include="PathFinding\Path.cs" />
+    <Compile Include="PathFinding\PathFinder.cs" />
     <Compile Include="Common\PointExtensions.cs" />
+    <Compile Include="PathFinding\PathFinderFwd.cs" />
+    <Compile Include="PathFinding\PathFwd.cs" />
+    <Compile Include="PathFinding\PathShortcut.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShadowCastingFov\FieldOfView.cs" />
     <Compile Include="ShadowCastingFov\FovFactory.cs" />

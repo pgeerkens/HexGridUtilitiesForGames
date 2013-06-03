@@ -63,7 +63,7 @@ namespace PG_Napoleonics.HexUtilities {
 
       private CustomCoordsFactory Factory { get; set; }
 
-      public IntVector2D Custom { get { return Factory.Custom(base.VectorUser); } }
+      public IntVector2D Custom { get { return Factory.Custom(base.User); } }
 
       public override string ToString() { return Custom.ToString(); }
     }

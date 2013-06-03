@@ -44,6 +44,38 @@ namespace PG_Napoleonics.HexUtilities {
     SouthWest = 0x10,
     NorthWest = 0x20
   }
+  public enum HexsideIndex {
+    North,    NorthEast,    SouthEast,    South,    SouthWest,    NorthWest
+  }
+  public static partial class HexExtensions {
+    public static readonly List<HexsideIndex> HexsideIndexList 
+      = Utils.EnumGetValues<HexsideIndex>().ToList();
+      
+    public static readonly List<Hexside> HexsideList = new List<Hexside>() { 
+      Hexside.North,  Hexside.NorthEast,  Hexside.SouthEast, 
+      Hexside.South,  Hexside.SouthWest,  Hexside.NorthWest 
+    };
+
+    /// <summary>Reverses a given Hexside direction.</summary>
+    public static Hexside Reversed(this Hexside hexside) {
+      if (hexside.Equals(Hexside.None)) return Hexside.None;
+      var indexReversed = 3 + (int)hexside.IndexOf();
+      if (indexReversed > 5) indexReversed -= 6;
+      return HexsideList[indexReversed];
+    }
+
+    public static HexsideIndex IndexOf(this Hexside @this) {
+      return (HexsideIndex)HexsideList.IndexOf(@this);
+    }
+
+    public static Hexside Direction(this HexsideIndex @this) {
+      return HexsideList[(int)@this];
+    }
+    public static HexsideIndex Reversed(this HexsideIndex @this) {
+      var reversed = @this+3;
+      return (reversed <= HexsideIndex.NorthWest) ? reversed : (reversed - 6);
+    }
+  }
 
   public struct NeighbourCoords : IEquatable<NeighbourCoords> {
     public Hexside Direction { get; private set; }
@@ -58,14 +90,14 @@ namespace PG_Napoleonics.HexUtilities {
 
     #region Value Equality - on Coords field only
     public override bool Equals(object obj) { 
-      return (obj is NeighbourCoords) && this == (NeighbourCoords)obj;
+      return obj is NeighbourCoords  &&  this.Coords.Equals(((NeighbourCoords)obj).Coords);
     }
-    bool IEquatable<NeighbourCoords>.Equals(NeighbourCoords obj)              { return this == obj; }
+    public override int GetHashCode() { return Coords.GetHashCode(); }
+
+    bool IEquatable<NeighbourCoords>.Equals(NeighbourCoords obj) { return this.Equals(obj); }
+
     public static bool operator != (NeighbourCoords lhs, NeighbourCoords rhs) { return ! (lhs == rhs); }
-    public static bool operator == (NeighbourCoords lhs, NeighbourCoords rhs) {
-      return lhs.Direction == rhs.Direction  &&  lhs.Coords == rhs.Coords;
-    }
-    public override int GetHashCode() { return Coords.User.GetHashCode(); }
+    public static bool operator == (NeighbourCoords lhs, NeighbourCoords rhs) { return lhs.Equals(rhs); }
     #endregion
   }
 }

@@ -41,8 +41,9 @@ using PG_Napoleonics.HexUtilities.ShadowCastingFov;
 
 namespace PG_Napoleonics.HexUtilities {
     public interface IBoard<TGridHex> 
-      : INavigableBoard, IFovBoard  where TGridHex : class, IHex {
+      : INavigableBoardFwd, IFovBoard  where TGridHex : class, IHex {
       new bool   IsOnBoard(ICoords coords);
+      IPathFwd GetPathFwd(IHex start, IHex goal);
     }
 
   public abstract class HexBoard : IBoard<IHex> {
@@ -71,7 +72,12 @@ namespace PG_Napoleonics.HexUtilities {
 
     ///  <inheritdoc/>
     public virtual  int  StepCost(ICoords coords, Hexside hexSide) {
-      return IsOnBoard(coords) ? GetGridHex(coords.StepOut(hexSide)).StepCost(hexSide) : -1;
+      return IsOnBoard(coords) ? GetGridHex(coords).StepCostFwd(hexSide) : -1;
+    }
+
+    ///  <inheritdoc/>
+    public virtual  int  StepCostFwd(ICoords coords, Hexside hexSideExit) {
+      return IsOnBoard(coords) ? GetGridHex(coords.StepOut(hexSideExit)).StepCost(hexSideExit) : -1;
     }
 
     ///  <inheritdoc/>
@@ -79,9 +85,14 @@ namespace PG_Napoleonics.HexUtilities {
 
     /// <summary>Returns the hex at coordinates specified by <c>coords</c>.</summary>
     protected abstract IHex GetGridHex(ICoords coords);
+
+    /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
+    public virtual IPathFwd GetPathFwd(IHex start, IHex goal) {
+      return PathFinder.FindPathFwd(start, goal, this);
+    }
   }
 
-  public static partial class Extensions {
+  public static partial class HexExtensions {
     /// <summary>Returns the field-of-view on <c>board</c> from the hex specified by coordinates <c>coords</c>.</summary>
     public static IFov GetFov(this IFovBoard @this, ICoords origin) {
       return FovFactory.GetFieldOfView(@this,origin);
@@ -97,9 +108,19 @@ namespace PG_Napoleonics.HexUtilities {
       return PathFinder.FindPath(start, goal, board);
     }
 
+    /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
+    public static IPathFwd GetPathFwd(this INavigableBoardFwd board, IHex start, IHex goal) {
+      return PathFinder.FindPathFwd(start, goal, board);
+    }
+
     /// <summary>Returns a least-cost path from this hex to the hex <c>goal.</c></summary>
-    public static IPath GetPath(this IHex @this, ICoords goal) {
-      return PathFinder.FindPath( @this.Coords, goal, @this.Board);
+    public static IPathFwd GetPathFwd(this IHex @this, IHex goal) {
+      return PathFinder.FindPathFwd(@this, goal, @this.Board);
+    }
+
+    /// <summary>Returns whether this hex is "On Board".</summary>
+    public static bool IsOnBoard(this IHex @this) {
+      return @this.Board.IsOnBoard(@this.Coords);
     }
   }
 }

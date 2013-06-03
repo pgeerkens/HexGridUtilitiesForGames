@@ -35,12 +35,12 @@ using System.Text;
 using PG_Napoleonics.HexUtilities.Common;
 
 namespace PG_Napoleonics.HexUtilities.PathFinding {
-  /// <summary>Structure returned by the A-* Path Finding utility.</summary>
+  /// <summary>Structure returned by the A* Path Finding utility.</summary>
   public interface IPath : IEnumerable<ICoords>
   { 
     Hexside   LastDirection { get; }
     ICoords   LastStep      { get; }
-    IPath    PreviousSteps { get; }
+    IPath     PreviousSteps { get; }
     uint      TotalCost     { get; }
     uint      TotalSteps    { get; }
   }
@@ -51,11 +51,13 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
   /// <typeparam name="TNode">The type of a path-'node'.</typeparam>
   internal sealed class Path : IPath
   {
+    #region IPath implementation
     public Hexside  LastDirection { get; private set; }
     public ICoords  LastStep      { get; private set; }
-    public IPath   PreviousSteps { get{ return _previousSteps;} } Path _previousSteps;
+    public IPath    PreviousSteps { get; private set; }
     public uint     TotalCost     { get; private set; }
     public uint     TotalSteps    { get; private set; }
+    #endregion
 
     public override string ToString() {
       return string.Format("Hex: {0} with TotalCost={1,3} (as {2}/{3})",
@@ -72,16 +74,17 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
     /////////////////////////////  Internals  //////////////////////////////////
     internal Path(ICoords start) : this(null, start, Hexside.None, 0) { }
 
-    internal Path AddStep(ICoords step, uint stepCost, Hexside direction) {
-      return new Path(this, step, direction, TotalCost + stepCost);
+    internal Path    AddStep(NeighbourCoords neighbour, uint stepCost) {
+      return new Path(this, neighbour.Coords, neighbour.Direction, TotalCost + stepCost);
     }
 
     private  Path(Path previousSteps, ICoords thisStep, Hexside direction, uint totalCost) {
       LastDirection  = direction;
       LastStep       = thisStep;
-      _previousSteps = previousSteps;
+      PreviousSteps  = previousSteps;
       TotalCost      = totalCost;
       TotalSteps     = previousSteps==null ? 0 : previousSteps.TotalSteps+1;
     }
   }
+
 }

@@ -27,36 +27,45 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 using PG_Napoleonics.HexUtilities.Common;
+using PG_Napoleonics.HexUtilities.PathFinding;
 
 namespace PG_Napoleonics.HexUtilities {
-  public interface IHex {
+  public interface IHex : IEnumerable<NeighbourHex>{
     /// <summary>The <c>IBoard<T></c> on which this hex is located.</summary>
-    IBoard<IHex> Board          { get; }
+    IBoard<IHex>        Board          { get; }
 
     /// <summary>The <c>ICoords</c> coordinates for this hex on <c>Board</c>.</summary>
-    ICoords          Coords         { get; }
+    ICoords             Coords         { get; }
 
-    int              ElevationASL   { get; }
-    int              HeightObserver { get; }
-    int              HeightTarget   { get; }
-    int              HeightTerrain  { get; }
+    int                 ElevationASL   { get; }
+    int                 HeightObserver { get; }
+    int                 HeightTarget   { get; }
+    int                 HeightTerrain  { get; }
+    IList<PathShortcut> Shortcuts      { get; }
 
     /// <summary>The <i>Manhattan</i> distance from this hex to that at <c>coords</c>.</summary>
     int              Range(ICoords target);
 
     /// <summary>The cost to enter this hex heading in the direction <c>hexside</c>.</summary>
     int              StepCost(Hexside direction);
+
+    /// <summary>The cost to exit this hex in the direction <c>hexside</c>.</summary>
+    int              StepCostFwd(Hexside hexsideExit);
+
+    IEnumerable<NeighbourHex> GetNeighbourHexes();
   }
 
-  public abstract class Hex : IHex {
+  public abstract class Hex : IHex, IEquatable<Hex>, IEqualityComparer<Hex> {
     public Hex(IBoard<IHex> board, ICoords coords) { 
-      Coords = coords; 
-      Board  = board;
+      Board    = board;
+      Coords   = coords; 
+      Shortcuts = new List<PathShortcut>(0);
     }
 
     ///  <inheritdoc/>
@@ -78,9 +87,38 @@ namespace PG_Napoleonics.HexUtilities {
     public abstract int          HeightTerrain  { get; }
 
     ///  <inheritdoc/>
+    public IList<PathShortcut>   Shortcuts      { get; private set; }
+
+    ///  <inheritdoc/>
     public          int          Range(ICoords target) { return Coords.Range(target); }
 
     ///  <inheritdoc/>
     public abstract int          StepCost(Hexside direction);
+
+    ///  <inheritdoc/>
+    public virtual  int          StepCostFwd(Hexside hexsideExit) {
+      return Board[Coords.StepOut(hexsideExit)].StepCost(hexsideExit);
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() { return GetNeighbourHexes().GetEnumerator(); }
+
+    public IEnumerable<NeighbourHex>   GetNeighbourHexes() { return this; }
+    IEnumerator<NeighbourHex> IEnumerable<NeighbourHex>.GetEnumerator() {
+      foreach (var index in HexExtensions.HexsideIndexList) {
+        var hex = Board[Coords.StepOut(index.Direction())];
+        if (hex != null) yield return new NeighbourHex(hex,index);
+      }
+    }
+
+    #region Value Equality
+    public override bool Equals(object obj)              {
+      return obj is Hex  &&  this.Coords.Equals(((Hex)obj).Coords); 
+    }
+    public override int GetHashCode()                    { return Coords.GetHashCode(); }
+
+    bool IEquatable<Hex>.Equals(Hex rhs)                 { return this.Equals(rhs); }
+    bool IEqualityComparer<Hex>.Equals(Hex lhs, Hex rhs) { return lhs.Equals(rhs); }
+    int  IEqualityComparer<Hex>.GetHashCode(Hex @this)   { return @this.GetHashCode(); }
+    #endregion
   }
 }

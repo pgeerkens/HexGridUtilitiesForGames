@@ -28,26 +28,33 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics;
-using PG_Napoleonics.HexUtilities;
-using PG_Napoleonics.HexUtilities.ShadowCastingFov;
+using PG_Napoleonics.HexUtilities.Common;
+using PG_Napoleonics.HexUtilities.PathFinding;
 
-namespace PG_Napoleonics.HexGridExample2 {
-  public interface IMapGridHex : IHex {
-    int              Elevation      { get; }
-    void Paint(Graphics g);
-  }
+namespace PG_Napoleonics.HexUtilities.PathFinding {
+  public class PathShortcut {
+    public IPathFwd PathFwd { get; private set; }
+    public IHex     Goal    { get; private set; }
 
-  public abstract class MapGridHex : Hex, IMapGridHex {
-    public MapGridHex(MapDisplay board, ICoords coords) : base(board, coords) { 
+    public PathShortcut(IHex start, IHex gGoal, INavigableBoardFwd board) 
+    : this(start, gGoal, board.RangeCutoff, board.StepCostFwd, board.Heuristic, board.IsOnBoard) { }
+    public PathShortcut(
+      IHex start, 
+      IHex goal, 
+      int  rangeCutoff,
+      Func<ICoords, Hexside, int> stepCostFwd,
+      Func<int,int>               heuristic,
+      Func<ICoords,bool>          isOnBoard
+    ) {
+      PathFwd = PathFinder.FindPathFwd(start, goal, rangeCutoff,
+        (c,h) => stepCostFwd(c.StepOut(h), h.Reversed()), 
+        heuristic, isOnBoard, false);
+      Goal = goal;
     }
-
-    public virtual  int              Elevation      { get; protected set; }
-    public abstract void Paint(Graphics g);
   }
 }

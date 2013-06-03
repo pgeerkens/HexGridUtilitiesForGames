@@ -37,15 +37,15 @@ using PG_Napoleonics.HexUtilities.Common;
 using PG_Napoleonics.HexUtilities.PathFinding;
 
 namespace PG_Napoleonics.HexUtilities.PathFinding {
-  /// <summary>Interface required to make use of A-* Path Finding utility.</summary>
+  /// <summary>Interface required to make use of A* Path Finding utility.</summary>
   public interface INavigableBoard {
     /// <summary>Range beyond which Fast PathFinding is used instead of Stable PathFinding.</summary>
     int RangeCutoff { get; }
 
-    /// <summary>The cost of entering the hex at location <c>coords</c> heading  <c>hexside</c>.</summary>
-    int   StepCost(ICoords coords, Hexside hexside);
+    /// <summary>The cost of entering the hex at location <c>coords</c> heading <c>hexside</c>.</summary>
+    int   StepCost(ICoords coords, Hexside hexsideExit);
 
-    /// <summary>Returns an A-* heuristic value from the supplied hexagonal Manhattan distance <c>range</c>.</summary>
+    /// <summary>Returns an A* heuristic value from the supplied hexagonal Manhattan distance <c>range</c>.</summary>
     /// <remarks>Returning the supplied range multiplied by the cheapest movement 
     /// cost for a single hex is usually suffficient.</remarks>
     int   Heuristic(int range);
@@ -80,26 +80,22 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
   /// <param name="goal"></param>
   /// <param name="board"></param>
   /// <returns></returns>
-  public static class PathFinder {
-    public static int RangeCutoff { get; set; }
-
+  public static partial class PathFinder {
     public static IPath FindPath(
       ICoords     start,
       ICoords     goal,
       INavigableBoard board
     ) {
-      return FindPath(start, goal, board.RangeCutoff, board.StepCost, board.Heuristic, board.IsOnBoard);
+      return FindPath(start, goal, board.RangeCutoff, board.StepCost, 
+                      board.Heuristic, board.IsOnBoard);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="start"></param>
-    /// <param name="goal"></param>
-    /// <param name="stepCost">Cost to enter hex at <c>coords</c> heading in direction <c>hexside</c>.</param>
-    /// <param name="heuristic"></param>
-    /// <param name="isOnBoard"></param>
-    /// <returns></returns>
+    /// <summary>Returns an <c>IPath</c> for the optimal path from coordinates <c>start</c> to <c>goal</c>.</summary>
+    /// <param name="start">Coordinates for the <c>last</c> step on the desired path.</param>
+    /// <param name="goal">Coordinates for the <c>first</c> step on the desired path.</param>
+    /// <param name="stepCost">Cost to extend path by hex at <c>coords</c> from hex at direction <c>hexside</c>.</param>
+    /// <param name="heuristic">Returns a cost estimate from a range value.</param>
+    /// <param name="isOnBoard">Returns whether the coordinates specified are "on board".</param>
     public static IPath FindPath(
       ICoords     start,
       ICoords     goal,
@@ -113,45 +109,54 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
       var queue      = goal.Range(start) > rangeCutoff
           ? (IPriorityQueue<uint, Path>) new HeapPriorityQueue<uint, Path>()
           : (IPriorityQueue<uint, Path>) new DictPriorityQueue<uint, Path>();
-      #if DEBUG
-        TraceFlag.FindPath.Trace(true, "Find path from {0} to {1}; vectorGoal = {0}", 
-                                      start.Canon, goal.Canon, vectorGoal);
-      #endif
+      TraceFlag.FindPathDetail.Trace(true, "Find path from {0} to {1}; vectorGoal = {0}", 
+                                    start.Canon, goal.Canon, vectorGoal);
 
       queue.Enqueue (0, new Path(start));
 
       while (! queue.IsEmpty) {
-        var oldPref = queue.Peek().Key & 0xFFFF; 
+        #if DEBUG
+        var oldPref = queue.Peek().Key & 0xFFFF;
+        #endif
         var path = queue.Dequeue();
         if( closed.Contains(path.LastStep) ) continue;
 
         #if DEBUG
           var previous = (path.PreviousSteps) == null ? HexCoords.EmptyUser : path.PreviousSteps.LastStep;
-          TraceFlag.FindPath.Trace("Dequeue Path at {0} from {3} w/ cost={1,4}:{2,3}.", 
+          TraceFlag.FindPathDetail.Trace("Dequeue Path at {0} from {3} w/ cost={1,4}:{2,3}.", 
             path.LastStep, path.TotalCost, oldPref, previous);
         #endif
         if(path.LastStep!=null  &&  path.LastStep.Equals(goal)) return path;
 
         closed.Add(path.LastStep);
 
-        foreach (var neighbour in path.LastStep.GetNeighbours(~Hexside.None)) {
-          if (isOnBoard(neighbour.Coords)) {
+        foreach (var neighbour in path.LastStep.GetNeighbours(~Hexside.None)
+                                      .Where(n => isOnBoard(n.Coords))
+        ) {
             var cost = stepCost(path.LastStep, neighbour.Direction);
             if (cost > 0) {
-              var preference = (ushort)Math.Abs(vectorGoal ^ (goal.Canon - neighbour.Coords.Canon));
-              var newPath    = path.AddStep(neighbour.Coords, (ushort)cost, neighbour.Direction); 
-              var estimate   = ( (uint)heuristic(goal.Range(neighbour.Coords))
-                             +   (uint)newPath.TotalCost ) << 16;
-              queue.Enqueue(estimate + preference, newPath);
-              #if DEBUG
-                TraceFlag.FindPath.Trace("   Enqueue {0}: {1,4}:{2,3}",
-                        neighbour.Coords, estimate>>16, preference);
-              #endif
+              var newPath  = path.AddStep(neighbour, (ushort)cost);
+              var estimate = Estimate(heuristic,vectorGoal,goal, newPath.LastStep, newPath.TotalCost);
+              TraceFlag.FindPathDetail.Trace("   Enqueue {0}: {1,4}:{2,3}",
+                      neighbour.Coords, estimate>>16,  (int) ((int)(estimate & 0xFFFFu) - 0x7FFF));
+              queue.Enqueue(estimate, newPath);
             }
-          }
         }
       }
       return null;
+    }
+
+    static uint Estimate(Func<int,int> heuristic, IntVector2D vectorGoal, ICoords goal, 
+            ICoords hex, uint totalCost) {
+      var estimate   = (uint)heuristic(goal.Range(hex)) + totalCost;
+      var preference = DotPreference(vectorGoal, goal, hex);
+      return (estimate << 16) + preference;
+    }
+    static uint Preference(IntVector2D vectorGoal, ICoords goal, ICoords hex) {
+      return (uint)(0xFFFF & Math.Abs(vectorGoal ^ (goal.Canon - hex.Canon) ));
+    }
+    static uint DotPreference(IntVector2D vectorGoal, ICoords goal, ICoords hex) {
+      return (uint) (0x7FFF + vectorGoal * (goal.Canon - hex.Canon));
     }
   }
 }

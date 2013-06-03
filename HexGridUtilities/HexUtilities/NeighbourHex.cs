@@ -36,40 +36,59 @@ using PG_Napoleonics.HexUtilities.Common;
 
 namespace PG_Napoleonics.HexUtilities {
   public interface INeighbourHex {
-    IHex    Hex        { get; }
-    Hexside Direction  { get; }
-    int     SequenceNo { get; }
+    IHex         Hex          { get; }
+    Hexside      HexsideEntry { get; }
+    Hexside      HexsideExit  { get; }
+    HexsideIndex HexsideIndex { get; }
   }
-  public struct NeighbourHex : INeighbourHex, IEquatable<NeighbourHex> {
-    public IHex    Hex        { get; private set; }
-    public Hexside Direction  { get; private set; }
-    public int     SequenceNo { get; private set; }
-    public NeighbourHex(IHex hex, Hexside direction) : this(hex,direction,0) {}
-    public NeighbourHex(IHex hex, Hexside direction, int seqNo) : this() {
-      Hex        = hex;
-      Direction  = direction;
-      SequenceNo = seqNo;
+  public class NeighbourHex : INeighbourHex, 
+    IEquatable<NeighbourHex>, IEqualityComparer<NeighbourHex> {
+    public IHex         Hex          { get; private set; }
+    public Hexside      HexsideEntry { get {return HexsideIndex.Direction();} }
+    public Hexside      HexsideExit  { get {return HexsideIndex.Reversed().Direction();} }
+    public HexsideIndex HexsideIndex { get; private set; }
+
+    public NeighbourHex(IHex hex) : this(hex, null) {}
+    public NeighbourHex(IHex hex, HexsideIndex? hexsideIndex) {
+      Hex          = hex;
+      HexsideIndex = hexsideIndex ?? 0;
+    }
+    public NeighbourHex(IHex hex, Hexside hexside) {
+      Hex          = hex;
+      HexsideIndex = hexside.IndexOf();
     }
 
+
     public override string ToString() { 
-      return string.Format("NeighbourHex: {0} at {1}",Hex.Coords,Direction);
+      return string.Format("NeighbourHex: {0} exits to {1}", Hex.Coords, HexsideEntry);
     }
 
     public static IEnumerable<NeighbourHex> GetNeighbours(IHex hex) {
       return hex.Coords.GetNeighbours(~Hexside.None)
-                .Select((nn,seq)=>new NeighbourHex(hex.Board[nn.Coords], nn.Direction, seq))
-                .Where(n=>n.Hex!=null)
-                .Select(nh=>nh);
+                .Select((n,seq) => new NeighbourHex(hex.Board[n.Coords], n.Direction))
+                .Where(n => n.Hex!=null  &&  n.Hex.IsOnBoard())
+                .Select(nh => nh);
     }
 
     #region Value Equality - on Hex field only
-    public override bool Equals(object obj)                               {
-      return (obj is NeighbourHex)  &&  this == (NeighbourHex)obj; 
+    public override bool Equals(object obj)                  {
+      return (obj is NeighbourHex)  &&  Hex.Coords.Equals(((NeighbourHex)obj).Hex.Coords); 
     }
-    bool IEquatable<NeighbourHex>.Equals(NeighbourHex rhs)                { return this == rhs; }
-    public static bool operator != (NeighbourHex @this, NeighbourHex rhs) { return ! (@this == rhs); }
-    public static bool operator == (NeighbourHex @this, NeighbourHex rhs) { return @this.Hex == rhs.Hex; }
-    public override int GetHashCode()                                     { return Hex.Coords.GetHashCode(); }
+    public override int GetHashCode()                        { return Hex.Coords.GetHashCode(); }
+    bool IEquatable<NeighbourHex>.Equals(NeighbourHex rhs)   { return this == rhs; }
+
+    bool IEqualityComparer<NeighbourHex>.Equals(NeighbourHex lhs, NeighbourHex rhs) {
+      return lhs !=null && lhs.Equals(rhs);
+    }
+    int IEqualityComparer<NeighbourHex>.GetHashCode(NeighbourHex @this) {
+      return @this==null ? 0 : @this.GetHashCode();
+    }
+
+    public static bool operator != (NeighbourHex lhs, NeighbourHex rhs) { return ! (lhs==rhs); }
+    public static bool operator == (NeighbourHex lhs, NeighbourHex rhs) {
+      return lhs is NeighbourHex && rhs is NeighbourHex 
+          && lhs.Hex.Coords.Equals(rhs.Hex.Coords);
+    }
     #endregion
   }
 }
