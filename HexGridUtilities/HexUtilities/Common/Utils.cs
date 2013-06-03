@@ -36,20 +36,27 @@ using System.Text.RegularExpressions;
 namespace PG_Napoleonics.HexUtilities.Common {
   public static class Utils{
     #region Enum Parsing utilities
+    /// <summary>Typesafe wrapper for <c>Enum.GetValues(typeof(TEnum).</c></summary>
     public static IEnumerable<TEnum> EnumGetValues<TEnum>() {
       return (IEnumerable<TEnum>)(Enum.GetValues(typeof(TEnum)));
     }
 
+    /// <summary>Typesafe wrapper for <c>Enum.ParseEnum()</c> that automatically checks 
+    /// constants for membership in the <c>enum</c>.</summary>
     public static T ParseEnum<T>(string value, bool checkConstants = true) where T:struct {
       T enumValue;
       if (!TryParseEnum<T>(value, out enumValue) && checkConstants) 
                   ThrowInvalidDataException(typeof(T), enumValue);
       return enumValue;
     }
+    /// <summary>Typesafe wrapper for <c>Enum.TryParseEnum()</c> that automatically checks 
+    /// constants for membership in the <c>enum</c>.</summary>
     public static bool TryParseEnum<T>(string value, out T enumValue) where T:struct {
       return Enum.TryParse<T>(value, out enumValue)  
          &&  Enum.IsDefined(typeof(T),enumValue);
     }
+    /// <summary>Typesafe wrapper for <c>Enum.ToObject()</c>.</summary>
+    /// <typeparam name="T"></typeparam>
     public static T EnumParse<T>(char c, string lookup) {
       var index = lookup.IndexOf(c);
       if (index == -1) ThrowInvalidDataException(typeof(T), c);
