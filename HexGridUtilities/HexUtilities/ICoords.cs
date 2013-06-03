@@ -44,13 +44,13 @@ namespace PG_Napoleonics.HexUtilities {
     /// <summary><i>Manhattan</i> distance of specified hex from this one.</summary>
     int         Range(ICoords coords);
 
-    /// <summary>Returns an <c>ICorods</c> for the hex in direction <c>hexside</c> from this one.</summary>
+    /// <summary>Returns an <c>ICoords</c> for the hex in direction <c>hexside</c> from this one.</summary>
     ICoords     StepOut(Hexside hexside);
 
     /// <summary>Formattted string of the rectangular coordiantes for this hex.</summary>
     string      ToString();
 
-    /// <summary>Returns set of hexes at direction(s) specified by <c>hexsides</c>, as IEnumerable<T>.</summary>
+    /// <summary>Returns set of hexes at direction(s) specified by <c>hexsides</c>, as IEnumerable.</summary>
     IEnumerable<NeighbourCoords> GetNeighbours(Hexside hexsides);
   }
 }
