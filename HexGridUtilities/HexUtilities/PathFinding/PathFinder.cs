@@ -27,6 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -107,33 +108,31 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
       var vectorGoal = goal.Canon - start.Canon;
       var closed     = new HashSet<ICoords>();
       var queue      = goal.Range(start) > rangeCutoff
-          ? (IPriorityQueue<uint, Path>) new HeapPriorityQueue<uint, Path>()
+          ? (IPriorityQueue<uint, Path>) new ConcurrentPriorityQueue<uint, Path>()
           : (IPriorityQueue<uint, Path>) new DictPriorityQueue<uint, Path>();
       TraceFlag.FindPathDetail.Trace(true, "Find path from {0} to {1}; vectorGoal = {0}", 
                                     start.Canon, goal.Canon, vectorGoal);
 
       queue.Enqueue (0, new Path(start));
 
-      while (! queue.IsEmpty) {
-        #if DEBUG
-        var oldPref = queue.Peek().Key & 0xFFFF;
-        #endif
-        var path = queue.Dequeue();
+      MyKeyValuePair<uint,Path> item;
+      while (queue.TryDequeue(out item)) {
+        var path = item.Value;
         if( closed.Contains(path.LastStep) ) continue;
 
         #if DEBUG
           var previous = (path.PreviousSteps) == null ? HexCoords.EmptyUser : path.PreviousSteps.LastStep;
           TraceFlag.FindPathDetail.Trace("Dequeue Path at {0} from {3} w/ cost={1,4}:{2,3}.", 
-            path.LastStep, path.TotalCost, oldPref, previous);
+            path.LastStep, path.TotalCost, item.Key & 0xFFFF, previous);
         #endif
-        if(path.LastStep!=null  &&  path.LastStep.Equals(goal)) return path;
+        if(path.LastStep.Equals(goal)) return path;
 
         closed.Add(path.LastStep);
 
-        foreach (var neighbour in path.LastStep.GetNeighbours(~Hexside.None)
+        foreach (var neighbour in path.LastStep.GetNeighbours()
                                       .Where(n => isOnBoard(n.Coords))
         ) {
-            var cost = stepCost(path.LastStep, neighbour.Direction);
+            var cost = stepCost(path.LastStep, neighbour.Index);
             if (cost > 0) {
               var newPath  = path.AddStep(neighbour, (ushort)cost);
               var estimate = Estimate(heuristic,vectorGoal,goal, newPath.LastStep, newPath.TotalCost);
@@ -149,7 +148,7 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
     static uint Estimate(Func<int,int> heuristic, IntVector2D vectorGoal, ICoords goal, 
             ICoords hex, uint totalCost) {
       var estimate   = (uint)heuristic(goal.Range(hex)) + totalCost;
-      var preference = DotPreference(vectorGoal, goal, hex);
+      var preference = Preference(vectorGoal, goal, hex);
       return (estimate << 16) + preference;
     }
     static uint Preference(IntVector2D vectorGoal, ICoords goal, ICoords hex) {

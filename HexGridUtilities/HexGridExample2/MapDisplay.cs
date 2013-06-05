@@ -75,9 +75,15 @@ namespace PG_Napoleonics.HexGridExample2 {
       get { return _hotSpotHex; }
       set { _hotSpotHex = value; FOV = null; }
     } ICoords _hotSpotHex;
-    public          IPath    Path           { 
-      get {return _path ?? (_path = this.GetPath(StartHex,GoalHex));} 
+#if PathFwd
+    public          IPathFwd Path           { 
+      get {return _path ?? (_path = this.GetPathFwd(this[StartHex], this[GoalHex]));} 
+    } IPathFwd _path;
+#else
+    public          IPath Path           { 
+      get {return _path ?? (_path = this.GetPath(StartHex, GoalHex));} 
     } IPath _path;
+#endif
     public virtual  ICoords  StartHex       { 
       get { return _startHex ?? (_startHex = HexCoords.EmptyUser); } 
       set { if (IsOnBoard(value)) _startHex = value; _path = null; } 
@@ -94,6 +100,8 @@ namespace PG_Napoleonics.HexGridExample2 {
 
     protected abstract string[] Board    { get; }
 
+    protected virtual IHex this[ICoords coords] { get {return ((IFovBoard)this)[coords];} }
+
     public UserCoordsRectangle GetClipCells(PointF point, SizeF size) {
       return GetClipHexes( new RectangleF(point,size), SizeHexes );
     }
@@ -108,20 +116,26 @@ namespace PG_Napoleonics.HexGridExample2 {
       );
       g.DrawPath(Pens.Red, HexgridPath);
 
+#if PathFwd
+      g.Restore(state); state = g.Save();
+      PaintPath(g,Path);
+#else
       using(var brush = new SolidBrush(Color.FromArgb(78, Color.PaleGoldenrod))) {
         var path = Path;
         while (path != null) {
           g.Restore(state); state = g.Save();
-          var step = path.LastStep;
 
+          var coords = path.LastStep;
           g.TranslateTransform(
-            MapMargin.Width  + step.User.X * GridSize.Width,
-            MapMargin.Height + step.User.Y * GridSize.Height + (step.User.X+1)%2 * GridSize.Height/2
+            MapMargin.Width  + coords.User.X * GridSize.Width,
+            MapMargin.Height + coords.User.Y * GridSize.Height + (coords.User.X+1)%2 * GridSize.Height/2
           );
           g.FillPath(brush, HexgridPath);
+
           path = path.PreviousSteps;
         }
       }
+#endif
 
       g.Restore(state); state = g.Save();
       var clipCells = GetClipCells(g.VisibleClipBounds);
@@ -144,6 +158,42 @@ namespace PG_Napoleonics.HexGridExample2 {
         }
       }
     }
+
+#if PathFwd
+    void PaintPath(Graphics g, IPathFwd Path) {
+      var state = g.Save();
+      using(var brush = new SolidBrush(Color.FromArgb(78, Color.PaleGoldenrod))) {
+        var path = Path;
+        while (path != null) {
+          g.Restore(state); state = g.Save();
+          var coords = path.Step.Hex.Coords;
+          g.TranslateTransform(
+            MapMargin.Width  + coords.User.X * GridSize.Width,
+            MapMargin.Height + coords.User.Y * GridSize.Height + (coords.User.X+1)%2 * GridSize.Height/2
+          );
+          g.FillPath(brush, HexgridPath);
+
+          PaintPathArrow(g, path);
+          path = path.NextSteps;
+        }
+      }
+    }
+
+    void PaintPathArrow(Graphics g, IPathFwd path) {
+      g.TranslateTransform(GridSize.Width * 2/3, GridSize.Height/2);
+      var unit = GridSize.Height/8.0F;
+      if (path.NextSteps == null) {
+        g.DrawLine(Pens.Black, -unit*2,-unit*2, unit*2, unit*2);
+        g.DrawLine(Pens.Black, -unit*2, unit*2, unit*2,-unit*2);
+      } else {
+        g.RotateTransform(60 * (int)path.Step.HexsideEntry);
+        g.DrawLine(Pens.Black, 0,unit*4,       0,-unit);
+        g.DrawLine(Pens.Black, 0,unit*4, -unit*3/2, unit*2);
+        g.DrawLine(Pens.Black, 0,unit*4,  unit*3/2, unit*2);
+      }
+    }
+#endif
+
     public abstract void PaintMap(Graphics g);
     public abstract void PaintUnits(Graphics g);
 

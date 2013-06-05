@@ -35,54 +35,55 @@ using System.Text;
 using PG_Napoleonics.HexUtilities.Common;
 
 namespace PG_Napoleonics.HexUtilities {
-  [Flags] public enum Hexside {
-    None      = 0x00,
-    North     = 0x01,
-    NorthEast = 0x02,
-    SouthEast = 0x04,
-    South     = 0x08,
-    SouthWest = 0x10,
-    NorthWest = 0x20
-  }
-  public enum HexsideIndex {
+  public enum Hexside {
     North,    NorthEast,    SouthEast,    South,    SouthWest,    NorthWest
   }
+  [Flags] public enum HexsideFlags {
+    None      = 0x00,
+    North     = 1 << Hexside.North,
+    NorthEast = 1 << Hexside.NorthEast,
+    SouthEast = 1 << Hexside.SouthEast,
+    South     = 1 << Hexside.South,
+    SouthWest = 1 << Hexside.SouthWest,
+    NorthWest = 1 << Hexside.NorthWest,
+  }
   public static partial class HexExtensions {
-    public static readonly List<HexsideIndex> HexsideIndexList 
-      = Utils.EnumGetValues<HexsideIndex>().ToList();
+    public static readonly List<Hexside> HexsideList 
+      = Utils.EnumGetValues<Hexside>().ToList();
       
-    public static readonly List<Hexside> HexsideList = new List<Hexside>() { 
-      Hexside.North,  Hexside.NorthEast,  Hexside.SouthEast, 
-      Hexside.South,  Hexside.SouthWest,  Hexside.NorthWest 
-    };
+    public static readonly List<HexsideFlags> HexsideFlagsList =
+      HexsideList.Select(h=>Utils.ParseEnum<HexsideFlags>(h.ToString())).ToList();
 
     /// <summary>Reverses a given Hexside direction.</summary>
-    public static Hexside Reversed(this Hexside hexside) {
-      if (hexside.Equals(Hexside.None)) return Hexside.None;
+    public static HexsideFlags Reversed(this HexsideFlags hexside) {
+      if (hexside.Equals(HexsideFlags.None)) return HexsideFlags.None;
       var indexReversed = 3 + (int)hexside.IndexOf();
       if (indexReversed > 5) indexReversed -= 6;
-      return HexsideList[indexReversed];
+      return HexsideFlagsList[indexReversed];
     }
 
-    public static HexsideIndex IndexOf(this Hexside @this) {
-      return (HexsideIndex)HexsideList.IndexOf(@this);
+    public static Hexside IndexOf(this HexsideFlags @this) {
+      return (Hexside)HexsideFlagsList.IndexOf(@this);
     }
 
-    public static Hexside Direction(this HexsideIndex @this) {
-      return HexsideList[(int)@this];
+    public static HexsideFlags Direction(this Hexside @this) {
+      return HexsideFlagsList[(int)@this];
     }
-    public static HexsideIndex Reversed(this HexsideIndex @this) {
+    public static Hexside Reversed(this Hexside @this) {
       var reversed = @this+3;
-      return (reversed <= HexsideIndex.NorthWest) ? reversed : (reversed - 6);
+      return (reversed <= Hexside.NorthWest) ? reversed : (reversed - 6);
     }
   }
 
   public struct NeighbourCoords : IEquatable<NeighbourCoords> {
-    public Hexside Direction { get; private set; }
-    public ICoords Coords    { get; private set; }
+    public HexsideFlags      Direction { get { return Index.Direction();} }
+    public Hexside Index     { get; private set; }
+    public ICoords      Coords    { get; private set; }
 
-    public NeighbourCoords(Hexside direction, ICoords coords) : this() {
-      Direction = direction; Coords = coords;
+    public NeighbourCoords(ICoords coords, HexsideFlags direction) 
+      : this(coords, direction.IndexOf()) {}
+    public NeighbourCoords(ICoords coords, Hexside index) : this() {
+      Coords = coords; Index = index;
     }
     public override string ToString() { 
       return string.Format("Neighbour: {0} at {1}", Coords.User,Direction);

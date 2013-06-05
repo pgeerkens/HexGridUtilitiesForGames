@@ -58,10 +58,26 @@ namespace PG_Napoleonics.HexGridExample2 {
 
 			Application.AddMessageFilter(this);
       MapBoard.RangeCutoff = (int)txtPathCutover.Tag;
+
+      LoadDebugMenu();
     }
     protected override CreateParams CreateParams { 
 			get { return this.SetCompositedStyle(base.CreateParams); }
 		}
+
+    void LoadDebugMenu() {
+      #if DEBUG
+        foreach(var item in Enum.GetValues(typeof(TraceFlag))) {
+          var menuItem = new System.Windows.Forms.ToolStripMenuItem();
+          menuItemDebug.DropDownItems.Add(menuItem);
+          menuItem.Name         = "menuItemDebugTracing" + item.ToString();
+          menuItem.Size         = new System.Drawing.Size(143, 22);
+          menuItem.Text         = item.ToString();
+          menuItem.CheckOnClick = true;
+          menuItem.Click       += new System.EventHandler(this.menuItemDebugTracing_Click);
+        }
+      #endif
+    }
 
     CustomCoordsFactory Custom   { get; set; }
     MapDisplay          MapBoard { 
@@ -117,6 +133,17 @@ namespace PG_Napoleonics.HexGridExample2 {
       }
       MapBoard.RangeCutoff = value;
       Refresh();
+    }
+
+    private void menuItemDebugTracing_Click(object sender, EventArgs e) {
+      var item = (ToolStripMenuItem)sender;
+      item.CheckState = item.Checked ? CheckState.Checked : CheckState.Unchecked;
+      var name = item.Name.Replace("menuItemDebugTracing","");
+      var flag = (TraceFlag)Enum.Parse(typeof(TraceFlag),name);
+      if( item.Checked)
+        DebugTracing.EnabledFags |=  flag;
+      else
+        DebugTracing.EnabledFags &= ~flag;
     }
     #endregion
 

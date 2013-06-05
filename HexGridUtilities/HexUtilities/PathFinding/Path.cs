@@ -38,7 +38,7 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
   /// <summary>Structure returned by the A* Path Finding utility.</summary>
   public interface IPath : IEnumerable<ICoords>
   { 
-    Hexside   LastDirection { get; }
+    HexsideFlags   LastDirection { get; }
     ICoords   LastStep      { get; }
     IPath     PreviousSteps { get; }
     uint      TotalCost     { get; }
@@ -52,7 +52,7 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
   internal sealed class Path : IPath
   {
     #region IPath implementation
-    public Hexside  LastDirection { get; private set; }
+    public HexsideFlags  LastDirection { get; private set; }
     public ICoords  LastStep      { get; private set; }
     public IPath    PreviousSteps { get; private set; }
     public uint     TotalCost     { get; private set; }
@@ -72,13 +72,13 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
     IEnumerator IEnumerable.GetEnumerator() { return this.GetEnumerator(); }
 
     /////////////////////////////  Internals  //////////////////////////////////
-    internal Path(ICoords start) : this(null, start, Hexside.None, 0) { }
+    internal Path(ICoords start) : this(null, start, HexsideFlags.None, 0) { }
 
     internal Path    AddStep(NeighbourCoords neighbour, uint stepCost) {
       return new Path(this, neighbour.Coords, neighbour.Direction, TotalCost + stepCost);
     }
 
-    private  Path(Path previousSteps, ICoords thisStep, Hexside direction, uint totalCost) {
+    private  Path(Path previousSteps, ICoords thisStep, HexsideFlags direction, uint totalCost) {
       LastDirection  = direction;
       LastStep       = thisStep;
       PreviousSteps  = previousSteps;

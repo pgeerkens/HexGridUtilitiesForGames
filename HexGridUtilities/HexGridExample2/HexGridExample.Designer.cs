@@ -43,6 +43,7 @@ namespace PG_Napoleonics.HexGridExample2 {
       this.buttonFieldOfView = new System.Windows.Forms.ToolStripButton();
       this.lblPathCutover = new System.Windows.Forms.ToolStripLabel();
       this.txtPathCutover = new System.Windows.Forms.ToolStripTextBox();
+      this.menuItemDebug = new System.Windows.Forms.ToolStripDropDownButton();
       this.toolStripContainer1.BottomToolStripPanel.SuspendLayout();
       this.toolStripContainer1.ContentPanel.SuspendLayout();
       this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -128,10 +129,11 @@ namespace PG_Napoleonics.HexGridExample2 {
             this.toolStripComboBox1,
             this.buttonFieldOfView,
             this.lblPathCutover,
-            this.txtPathCutover});
+            this.txtPathCutover,
+            this.menuItemDebug});
       this.toolStrip2.Location = new System.Drawing.Point(3, 0);
       this.toolStrip2.Name = "toolStrip2";
-      this.toolStrip2.Size = new System.Drawing.Size(385, 25);
+      this.toolStrip2.Size = new System.Drawing.Size(502, 25);
       this.toolStrip2.TabIndex = 0;
       // 
       // buttonTransposeMap
@@ -189,6 +191,15 @@ namespace PG_Napoleonics.HexGridExample2 {
       this.txtPathCutover.ToolTipText = resources.GetString("txtPathCutover.ToolTipText");
       this.txtPathCutover.TextChanged += new System.EventHandler(this.txtPathCutover_TextChanged);
       // 
+      // menuItemDebug
+      // 
+      this.menuItemDebug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.menuItemDebug.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.menuItemDebug.Name = "menuItemDebug";
+      this.menuItemDebug.Size = new System.Drawing.Size(117, 22);
+      this.menuItemDebug.Text = "&Debug Trace Flags";
+      this.menuItemDebug.ToolTipText = "Build with DEBUG to enable this feature.";
+      // 
       // HexGridExampleForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -227,5 +238,6 @@ namespace PG_Napoleonics.HexGridExample2 {
     private System.Windows.Forms.ToolStripButton buttonFieldOfView;
     private System.Windows.Forms.ToolStripLabel lblPathCutover;
     private System.Windows.Forms.ToolStripTextBox txtPathCutover;
+    private System.Windows.Forms.ToolStripDropDownButton menuItemDebug;
   }
 }

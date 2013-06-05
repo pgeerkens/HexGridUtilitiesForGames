@@ -45,12 +45,14 @@ namespace PG_Napoleonics.HexUtilities {
     int         Range(ICoords coords);
 
     /// <summary>Returns an <c>ICoords</c> for the hex in direction <c>hexside</c> from this one.</summary>
+//    ICoords     StepOut(Hexside hexside);
     ICoords     StepOut(Hexside hexside);
 
     /// <summary>Formattted string of the rectangular coordiantes for this hex.</summary>
     string      ToString();
 
     /// <summary>Returns set of hexes at direction(s) specified by <c>hexsides</c>, as IEnumerable.</summary>
-    IEnumerable<NeighbourCoords> GetNeighbours(Hexside hexsides);
+    IEnumerable<NeighbourCoords> GetNeighbours(HexsideFlags hexsides);
+    IEnumerable<NeighbourCoords> GetNeighbours();
   }
 }

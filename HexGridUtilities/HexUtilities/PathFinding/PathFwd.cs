@@ -36,7 +36,7 @@ using PG_Napoleonics.HexUtilities.Common;
 
 namespace PG_Napoleonics.HexUtilities.PathFinding {
   public interface IPathFwd : IEnumerable<IPathFwd> { 
-    Hexside       HexsideExit { get; }
+    Hexside  HexsideExit { get; }
     NeighbourHex  Step        { get; }
     IPathFwd      NextSteps   { get; }
     uint          TotalCost   { get; }
@@ -47,7 +47,7 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
   }
   internal class PathFwd : IPathFwd {
     #region IPath implementation
-    public virtual Hexside       HexsideExit { get; private set; }
+    public virtual Hexside  HexsideExit { get; private set; }
     public virtual NeighbourHex  Step        { get; private set; }
     public virtual IPathFwd      NextSteps   { get; private set; }
     public virtual uint          TotalCost   { get; private set; }
@@ -83,7 +83,7 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
 
     internal PathFwd(IPathFwd nextSteps, NeighbourHex neighbour, uint totalCost) {
       HexsideExit = neighbour.HexsideExit;
-      Step   = neighbour;
+      Step        = neighbour;
       NextSteps   = nextSteps;
       TotalCost   = totalCost;
       TotalSteps  = nextSteps==null ? 0 : nextSteps.TotalSteps+1;
@@ -92,7 +92,7 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
 
   internal class PathWaypoint : IPathFwd {
     #region IPath implementation
-    public Hexside       HexsideExit { get {return PathFront.HexsideExit;} }
+    public Hexside  HexsideExit { get {return PathFront.HexsideExit;} }
     public NeighbourHex  Step        { get {return PathFront.Step;} }
     public IPathFwd      NextSteps   { 
       get { return (PathFront.NextSteps == null) 

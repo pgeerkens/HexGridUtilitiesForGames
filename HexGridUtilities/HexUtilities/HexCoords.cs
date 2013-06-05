@@ -56,6 +56,10 @@ namespace PG_Napoleonics.HexUtilities {
     static readonly IntVector2D vectorSE = new IntVector2D( 1, 1);
     static readonly IntVector2D vectorS  = new IntVector2D( 0, 1);
     static readonly IntVector2D vectorSW = new IntVector2D(-1, 0);
+
+    static readonly IntVector2D[] HexsideVectors = new IntVector2D[] {
+      vectorN,  vectorNE, vectorSE, vectorS,  vectorSW, vectorNW
+    };
     #endregion
 
     #region Constructors
@@ -77,28 +81,22 @@ namespace PG_Napoleonics.HexUtilities {
 
     /// <inheritDoc/>
     ICoords ICoords.StepOut(Hexside hexside) {
-      switch(hexside) {
-        case Hexside.NorthWest: return NewCanonCoords(Canon + vectorNW);
-        case Hexside.North:     return NewCanonCoords(Canon + vectorN );
-        case Hexside.NorthEast: return NewCanonCoords(Canon + vectorNE);
-        case Hexside.SouthEast: return NewCanonCoords(Canon + vectorSE);
-        case Hexside.South:     return NewCanonCoords(Canon + vectorS );
-        case Hexside.SouthWest: return NewCanonCoords(Canon + vectorSW);
-        default:                throw new ArgumentOutOfRangeException();
-      }
+      return NewCanonCoords(Canon + HexsideVectors[(int)hexside]); 
     }
 
     /// <inheritDoc/>
     string  ICoords.ToString()               { return ToString(); }
 
     /// <inheritDoc/>
-    IEnumerable<NeighbourCoords> ICoords.GetNeighbours(Hexside hexsides) { 
-      ICoords coords = this;
-      foreach (var hexside in HexExtensions.HexsideList.Where(h=>hexsides.HasFlag(h)))
-        yield return new NeighbourCoords(hexside, coords.StepOut(hexside));
+    IEnumerable<NeighbourCoords> ICoords.GetNeighbours(HexsideFlags hexsides) { 
+      return ((ICoords)this).GetNeighbours().Where(n=>hexsides.HasFlag(n.Direction));
+    }
+    IEnumerable<NeighbourCoords> ICoords.GetNeighbours() { 
+      foreach (var hexside in HexExtensions.HexsideList)
+        yield return new NeighbourCoords(((ICoords)this).StepOut(hexside), hexside);
     }
 
-//    bool IEquatable<ICoords>.Equals(ICoords rhs) { return this.Equals(rhs); }
+    //bool IEquatable<ICoords>.Equals(ICoords rhs) { return this.Equals(rhs); }
     //bool IEqualityComparer<ICoords>.Equals(ICoords lhs,ICoords rhs) { 
     //  return lhs != null  &&  lhs.Equals(rhs); 
     //}
@@ -130,24 +128,24 @@ namespace PG_Napoleonics.HexUtilities {
     /// <inheritDoc/>
     public override string ToString() { return string.Format("User: {0}", User); }
 
-    #region Equality
+    #region Value Equality
     /// <inheritdoc/>
     public override bool Equals(object obj) { 
-      return obj is HexCoords  &&  User.Equals(((HexCoords)obj).User); 
+      return obj is HexCoords  &&  Equals((HexCoords)obj);
     }
     /// <inheritdoc/>
     public override int GetHashCode() { return User.GetHashCode(); }
 
     /// <inheritdoc/>
-    bool IEquatable<HexCoords>.Equals(HexCoords rhs) { 
-      return this.Equals(rhs); 
+    public bool Equals(HexCoords rhs) { 
+      return User.Equals(rhs.User);
     }
     /// <inheritdoc/>
-    bool IEqualityComparer<HexCoords>.Equals(HexCoords lhs, HexCoords rhs) { 
+    public bool Equals(HexCoords lhs, HexCoords rhs) { 
       return lhs.Equals(rhs); 
     }
     /// <inheritdoc/>
-    int  IEqualityComparer<HexCoords>.GetHashCode(HexCoords @this) { 
+    public int  GetHashCode(HexCoords @this) { 
       return @this.GetHashCode(); 
     }
 

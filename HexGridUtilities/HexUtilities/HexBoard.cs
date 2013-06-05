@@ -77,11 +77,13 @@ namespace PG_Napoleonics.HexUtilities {
 
     ///  <inheritdoc/>
     public virtual  int  StepCostFwd(ICoords coords, Hexside hexSideExit) {
-      return IsOnBoard(coords) ? GetGridHex(coords.StepOut(hexSideExit)).StepCost(hexSideExit) : -1;
+      return IsOnBoard(coords) 
+        ? GetGridHex(coords.StepOut(hexSideExit)).StepCost(hexSideExit) 
+        : -1;
     }
 
     ///  <inheritdoc/>
-    IHex IFovBoard.this[ICoords coords]  { get { return GetGridHex(coords); } }
+    IHex IFovBoard.this[ICoords coords]  { get { return IsOnBoard(coords) ? GetGridHex(coords) : null; } }
 
     /// <summary>Returns the hex at coordinates specified by <c>coords</c>.</summary>
     protected abstract IHex GetGridHex(ICoords coords);

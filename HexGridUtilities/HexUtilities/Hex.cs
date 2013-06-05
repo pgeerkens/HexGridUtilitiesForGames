@@ -104,8 +104,8 @@ namespace PG_Napoleonics.HexUtilities {
 
     public IEnumerable<NeighbourHex>   GetNeighbourHexes() { return this; }
     IEnumerator<NeighbourHex> IEnumerable<NeighbourHex>.GetEnumerator() {
-      foreach (var index in HexExtensions.HexsideIndexList) {
-        var hex = Board[Coords.StepOut(index.Direction())];
+      foreach (var index in HexExtensions.HexsideList) {
+        var hex = Board[Coords.StepOut(index)];
         if (hex != null) yield return new NeighbourHex(hex,index);
       }
     }

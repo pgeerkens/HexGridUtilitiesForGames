@@ -27,6 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -98,25 +99,23 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
       var vectorGoal = goal.Coords.Canon - start.Coords.Canon;
       var closed     = new HashSet<ICoords>();
       var queue      = goal.Coords.Range(start.Coords) > rangeCutoff
-          ? (IPriorityQueue<uint, IPathFwd>) new HeapPriorityQueue<uint, IPathFwd>()
+          ? (IPriorityQueue<uint, IPathFwd>) new ConcurrentPriorityQueue<uint, IPathFwd>()
           : (IPriorityQueue<uint, IPathFwd>) new DictPriorityQueue<uint, IPathFwd>();
         TraceFlag.FindPathDetail.Trace(true, "Find path from {0} to {1}; vectorGoal = {2}", 
                                       start.Coords, goal.Coords, vectorGoal);
 
       queue.Enqueue (0, new PathFwd(goal));
 
-      while (! queue.IsEmpty) {
-        #if DEBUG
-          var queueValue = queue.Peek().Value;
-          var queueKey   = queue.Peek().Key;
-          var pref       = (int) ((int)(queueKey & 0xFFFFu) - 0x7FFF);
-        #endif
-        var path = queue.Dequeue();
+      MyKeyValuePair<uint,IPathFwd> item;
+      while (queue.TryDequeue(out item)) {
+        var path = item.Value;
         if( closed.Contains(path.Step.Hex.Coords) ) continue;
+
         #if DEBUG
           TraceFlag.FindPathDequeue.Trace(
             "Dequeue Path at {0} w/ cost={1,4} at {2}; estimate={3,4}:{4,4}.", 
-            queueValue.FirstStep.Hex.Coords, queueValue.TotalCost, queueValue.HexsideExit, queueKey>>16, pref);
+            item.Value.Step.Hex.Coords, item.Value.TotalCost, item.Value.HexsideExit, item.Key>>16, 
+                  (int) ((int)(item.Key & 0xFFFFu) - 0x7FFF));
         #endif
 
         if(path.Step.Hex.Equals(start)) {
