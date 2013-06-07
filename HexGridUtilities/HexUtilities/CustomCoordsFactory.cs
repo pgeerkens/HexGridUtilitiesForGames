@@ -34,38 +34,22 @@ using System.Text;
 using PG_Napoleonics.HexUtilities.Common;
 
 namespace PG_Napoleonics.HexUtilities {
-  public class CustomCoordsFactory {
-    public CustomCoordsFactory(IntMatrix2D matrix) : this(matrix,matrix) {}
-    public CustomCoordsFactory(IntMatrix2D userToCustom, IntMatrix2D customToUser) {
+  public static class CustomCoords {
+
+    public static IntVector2D UserToCustom(this HexCoords @this) {
+      return @this.User * MatrixUserToCustom;
+    }
+    public static HexCoords CustomToUser(this IntVector2D @this) {
+      return HexCoords.NewUserCoords(@this * MatrixUserToCustom);
+    }
+
+    public static void SetMatrices(IntMatrix2D matrix) { SetMatrices(matrix,matrix); }
+    public static void SetMatrices(IntMatrix2D userToCustom, IntMatrix2D customToUser) {
       MatrixUserToCustom = userToCustom;
       MatrixCustomToUser = customToUser;
     }
 
-    protected IntMatrix2D MatrixCustomToUser { get; private set; }
-    protected IntMatrix2D MatrixUserToCustom { get; private set; }
-
-    public ICoords Coords(int x, int y) { return Coords(new IntVector2D(x,y)); }
-    public ICoords Coords(IntVector2D vector) {
-      return HexCoords.NewUserCoords(vector * MatrixCustomToUser);
-    }
-    public IntVector2D Custom(ICoords coords) {
-      return coords.User * MatrixUserToCustom;
-    }
-
-    public IntVector2D User(IntVector2D custom) { return custom * MatrixCustomToUser; }
-    public IntVector2D Custom(IntVector2D user) { return user * MatrixUserToCustom; }
-
-    public class CustomCoords : HexCoords {
-      private CustomCoords (CustomCoordsFactory factory, IntVector2D vector) 
-        : base(false, factory.User(vector)) {
-        Factory = factory;
-      }
-
-      private CustomCoordsFactory Factory { get; set; }
-
-      public IntVector2D Custom { get { return Factory.Custom(base.User); } }
-
-      public override string ToString() { return Custom.ToString(); }
-    }
+    public static IntMatrix2D MatrixCustomToUser { get; private set; }
+    public static IntMatrix2D MatrixUserToCustom { get; private set; }
   }
 }

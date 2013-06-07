@@ -41,8 +41,8 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
   /// <summary>Interface required to make use of A* Path Finding utility.</summary>
 
   public interface INavigableBoardFwd : INavigableBoard {
-    /// <summary>The cost of leaving the hex at location <c>coords</c> heading <c>hexside</c>.</summary>
-    int  StepCostFwd(ICoords coords, Hexside hexsideExit);
+    /// <summary>Cost to extend path by the hex at <c>coords</c> from hex at direction <c>hexside</c>.</summary>
+    int  StepCostFwd(HexCoords coords, Hexside hexsideExit);
   }
 
   /// <summary>(Adapted) C# implementation of A* path-finding algorithm by Eric Lippert.</summary>
@@ -72,42 +72,53 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
   /// <param name="board"></param>
   /// <returns></returns>
   public static partial class PathFinder {
+    /// <summary>Returns an <c>IPath</c> for the optimal path from coordinates <c>start</c> to <c>goal</c>.</summary>
+    /// <param name="start">Coordinates for the <c>last</c> step on the desired path.</param>
+    /// <param name="goal">Coordinates for the <c>first</c> step on the desired path.</param>
+    /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
+    /// ///<remarks>Note that <c>heuristic</c> <b>must</b> be monotonic in order for the algorithm to perform properly.</remarks>
+    /// <seealso cref="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html"/>
     public static IPathFwd FindPathFwd(
       IHex start,
       IHex goal,
-      INavigableBoardFwd board
+      INavigableBoardFwd board,
+      bool useShortcuts = false
     ) {
-        return FindPathFwd(start, goal, board.RangeCutoff, board.StepCostFwd,
-                        board.Heuristic, board.IsOnBoard);
+      return FindPathFwd(start, goal, board.RangeCutoff, board.StepCostFwd,
+                                      board.Heuristic, board.IsOnBoard, useShortcuts);
     }
 
     /// <summary>Returns an <c>IPath</c> for the optimal path from coordinates <c>start</c> to <c>goal</c>.</summary>
     /// <param name="start">Coordinates for the <c>last</c> step on the desired path.</param>
     /// <param name="goal">Coordinates for the <c>first</c> step on the desired path.</param>
     /// <param name="stepCost">Cost to extend path by hex at <c>coords</c> from hex at direction <c>hexside</c>.</param>
-    /// <param name="heuristic">Returns a cost estimate from a range value.</param>
+    /// <param name="heuristic">Returns a monotonic (ie locally admissible) cost estimate from a range value.</param>
     /// <param name="isOnBoard">Returns whether the coordinates specified are "on board".</param>
+    /// ///<remarks>Note that <c>heuristic</c> <b>must</b> be monotonic in order for the algorithm to perform properly.</remarks>
+    /// <seealso cref="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html"/>
     public static IPathFwd FindPathFwd (
       IHex start,
       IHex goal,
       int  rangeCutoff,
-      Func<ICoords, Hexside, int> stepCost,
-      Func<int,int>               heuristic,
-      Func<ICoords,bool>          isOnBoard,
+      Func<HexCoords, Hexside, int> stepCost,
+      Func<int,int>                 heuristic,
+      Func<HexCoords,bool>          isOnBoard,
       bool useShortcuts = false
     ) {
       var vectorGoal = goal.Coords.Canon - start.Coords.Canon;
-      var closed     = new HashSet<ICoords>();
+      var closed     = new HashSet<HexCoords>();
+      var open       = new HashSet<HexCoords>();
       var queue      = goal.Coords.Range(start.Coords) > rangeCutoff
           ? (IPriorityQueue<uint, IPathFwd>) new ConcurrentPriorityQueue<uint, IPathFwd>()
           : (IPriorityQueue<uint, IPathFwd>) new DictPriorityQueue<uint, IPathFwd>();
-        TraceFlag.FindPathDetail.Trace(true, "Find path from {0} to {1}; vectorGoal = {2}", 
+      TraceFlag.FindPathDetail.Trace(true, "Find path from {0} to {1}; vectorGoal = {2}", 
                                       start.Coords, goal.Coords, vectorGoal);
 
       queue.Enqueue (0, new PathFwd(goal));
 
       MyKeyValuePair<uint,IPathFwd> item;
       while (queue.TryDequeue(out item)) {
+        open.Add(item.Value.Step.Hex.Coords);
         var path = item.Value;
         if( closed.Contains(path.Step.Hex.Coords) ) continue;
 
@@ -127,13 +138,15 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
 
         foreach (var neighbour in path.Step.Hex.GetNeighbourHexes()
         ) {
-          var cost = stepCost(neighbour.Hex.Coords, neighbour.HexsideExit);
-          if (cost > 0) {
-            var newPath  = path.AddStep(neighbour, (uint)cost);
-            var estimate = Estimate(heuristic, vectorGoal, start.Coords, newPath.Step.Hex.Coords, newPath.TotalCost);
-            TraceFlag.FindPathEnqueue.Trace("   Enqueue {0}: estimate={1,4}:{2,3}",
-                neighbour.Hex.Coords, (estimate)>>16, (int) ((int)(estimate & 0xFFFFu) - 0x7FFF));
-            queue.Enqueue(estimate, newPath);
+          if ( ! open.Contains(neighbour.Hex.Coords)) {
+            var cost = stepCost(neighbour.Hex.Coords, neighbour.HexsideExit);
+            if (cost > 0) {
+              var newPath  = path.AddStep(neighbour, (uint)cost);
+              var estimate = Estimate(heuristic, vectorGoal, start.Coords, newPath.Step.Hex.Coords, newPath.TotalCost);
+              TraceFlag.FindPathEnqueue.Trace("   Enqueue {0}: estimate={1,4}:{2,3}",
+                  neighbour.Hex.Coords, (estimate)>>16, (int) ((int)(estimate & 0xFFFFu) - 0x7FFF));
+              queue.Enqueue(estimate, newPath);
+            }
           }
         }
 
@@ -151,9 +164,9 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
       IPriorityQueue<uint, IPathFwd> queue,
       IPathFwd path,
       int  rangeCutoff,
-      Func<ICoords, Hexside, int> stepCost,
+      Func<HexCoords, Hexside, int> stepCost,
       Func<int,int>               heuristic,
-      Func<ICoords,bool>          isOnBoard
+      Func<HexCoords,bool>          isOnBoard
     ) {
       foreach (var shortcut in path.Step.Hex.Shortcuts) {
         var pathFwd = shortcut.PathFwd;

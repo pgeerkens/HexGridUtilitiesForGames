@@ -53,6 +53,7 @@ namespace PG_Napoleonics.HexUtilities.Common {
 
     public IntVector2D Normalize() {
       switch (W) {
+        case 0:   return Empty; // uninitialized!
         case 1:   return this;
         case 2:   return new IntVector2D(X >> 1, Y >> 1);
         case 4:   return new IntVector2D(X >> 2, Y >> 2);

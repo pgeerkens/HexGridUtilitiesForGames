@@ -52,26 +52,26 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
     Size     SizeHexes             { get; }
 
     /// <summary>Returns the <c>TGridHex</c> at location <c>coords</c>.</summary>
-    IHex     this[ICoords  coords] { get; }
+    IHex     this[HexCoords  coords] { get; }
 
     /// <summary>Returns whether the hex at location <c>coords</c>is "on board".</summary>
-    bool     IsOnBoard(ICoords coords);
+    bool     IsOnBoard(HexCoords coords);
 
     /// <summary>Returns whether the hex at location <c>coords</c> is passable.</summary>
     /// <param name="coords"></param>
-    bool     IsPassable(ICoords coords);
+    bool     IsPassable(HexCoords coords);
   }
 
   public static class FovFactory {
-    public static IFov GetFieldOfView(IFovBoard board, ICoords origin) {
+    public static IFov GetFieldOfView(IFovBoard board, HexCoords origin) {
       return GetFieldOfView(board, origin, board.FovRadius, FovTargetMode.EqualHeights);
     }
-    public static IFov GetFieldOfView(IFovBoard board, ICoords origin, int range, 
+    public static IFov GetFieldOfView(IFovBoard board, HexCoords origin, int range, 
       FovTargetMode targetMode) {
       TraceFlag.FieldOfView.Trace("GetFieldOfView");
       var fov = new ArrayFieldOfView(board);
       if (board.IsPassable(origin)) {
-        Func<ICoords,int> target;
+        Func<HexCoords,int> target;
         int               observer;
         switch (targetMode) {
           case FovTargetMode.EqualHeights: 

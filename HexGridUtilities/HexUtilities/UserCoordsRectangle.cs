@@ -39,7 +39,7 @@ using PG_Napoleonics.HexUtilities.Common;
 namespace PG_Napoleonics.HexUtilities {
   /// <summary>Stores a rectangular board region as four User Coordinate integers.</summary>
   public struct UserCoordsRectangle : IEquatable<UserCoordsRectangle>, IEqualityComparer<UserCoordsRectangle> {
-    public UserCoordsRectangle(ICoords location, ICoords size) 
+    public UserCoordsRectangle(HexCoords location, HexCoords size) 
       : this(new Rectangle(location.User, size.User)) {}
     public UserCoordsRectangle(int x, int y, int width, int height) 
       : this(new Rectangle(x,y,width,height)) {}
@@ -51,19 +51,19 @@ namespace PG_Napoleonics.HexUtilities {
     public int     Height   { get { return Rectangle.Height; } }
     public bool    IsEmpty  { get { return Rectangle.IsEmpty; } }
     public int     Left     { get { return Rectangle.Left; } }
-    public ICoords Location { get { return HexCoords.NewUserCoords(Rectangle.Location); } }
+    public HexCoords Location { get { return HexCoords.NewUserCoords(Rectangle.Location); } }
     public int     Right    { get { return Rectangle.Right; } }
-    public ICoords Size     { get { return HexCoords.NewUserCoords(Rectangle.Size); } }
+    public HexCoords Size     { get { return HexCoords.NewUserCoords(Rectangle.Size); } }
     public int     Top      { get { return Rectangle.Top; } }
     public int     Width    { get { return Rectangle.Width; } }
     public int     X        { get { return Rectangle.X; } }
     public int     Y        { get { return Rectangle.Y; } }
 
     public Rectangle Rectangle  { get; private set; }
-    public ICoords   UpperLeft  { get { return HexCoords.NewUserCoords(Left,Top); } }
-    public ICoords   UpperRight { get { return HexCoords.NewUserCoords(Right,Top); } }
-    public ICoords   LowerLeft  { get { return HexCoords.NewUserCoords(Left,Bottom); } }
-    public ICoords   LowerRight { get { return HexCoords.NewUserCoords(Right,Bottom); } }
+    public HexCoords   UpperLeft  { get { return HexCoords.NewUserCoords(Left,Top); } }
+    public HexCoords   UpperRight { get { return HexCoords.NewUserCoords(Right,Top); } }
+    public HexCoords   LowerLeft  { get { return HexCoords.NewUserCoords(Left,Bottom); } }
+    public HexCoords   LowerRight { get { return HexCoords.NewUserCoords(Right,Bottom); } }
 
     #region Value Equality
     bool IEquatable<UserCoordsRectangle>.Equals(UserCoordsRectangle rhs) { return this == rhs; }

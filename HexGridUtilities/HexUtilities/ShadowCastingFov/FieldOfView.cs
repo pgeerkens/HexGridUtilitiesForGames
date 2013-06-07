@@ -41,7 +41,7 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
   /// <summary>Structure returned by the Field-of-View factory.</summary>
   public interface IFov {
     /// <summary>True if the hex at location <c>coords> is visible in this field-of-view.</summary>
-    bool this[ICoords coords] { get; }
+    bool this[HexCoords coords] { get; }
   }
 
   /// <summary>Implementation of IFov using a 2-D backing array.</summary>
@@ -51,7 +51,7 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
       FovBacking = new bool[board.SizeHexes.Width, board.SizeHexes.Height];
     }
 
-    public bool this[ICoords coords] { 
+    public bool this[HexCoords coords] { 
       get { 
         return Board.IsOnBoard(coords) && FovBacking[coords.User.X, coords.User.Y];
       } 

@@ -35,34 +35,48 @@ using System.Text;
 using PG_Napoleonics.HexUtilities.Common;
 
 namespace PG_Napoleonics.HexUtilities {
-  public struct NeighbourCoords : IEquatable<NeighbourCoords> {
-    public HexsideFlags  Direction { get { return Index.Direction();} }
-    public Hexside       Index     { get; private set; }
-    public HexCoords     Coords    { get; private set; }
+  /// <summary>Enumeration of the six hexagonal directions.</summary>
+  public enum Hexside {
+    North,    NorthEast,    SouthEast,    South,    SouthWest,    NorthWest
+  }
 
-    public NeighbourCoords(HexCoords coords, HexsideFlags direction) 
-      : this(coords, direction.IndexOf()) {}
-    public NeighbourCoords(HexCoords coords, Hexside index) : this() {
-      Coords = coords; Index = index;
+  /// <summary>Flags for combinations of the six hexagonal directions.</summary>
+  [Flags] public enum HexsideFlags {
+    None      = 0x00,
+    North     = 1 << Hexside.North,
+    NorthEast = 1 << Hexside.NorthEast,
+    SouthEast = 1 << Hexside.SouthEast,
+    South     = 1 << Hexside.South,
+    SouthWest = 1 << Hexside.SouthWest,
+    NorthWest = 1 << Hexside.NorthWest,
+  }
+
+  /// <summary>Common <i>extension methods</i> for <c>Hexside</c> and <c>HexSideFlags</c>.</summary>
+  public static partial class HexExtensions {
+
+    /// <summary><c>Static List&lt;Hexside></c> for enumerations.</summary>
+    public static readonly List<Hexside> HexsideList 
+      = Utils.EnumGetValues<Hexside>().ToList();
+      
+    /// <summary>Static List&lt;HexSideFlags> for enumerations.</summary>
+    public static readonly List<HexsideFlags> HexsideFlagsList =
+      HexsideList.Select(h=>Utils.ParseEnum<HexsideFlags>(h.ToString())).ToList();
+
+    /// <summary>The <c>Hexside</c> corresponding to this <c>HexsideFlag</c>, or -1 if it doesn't exist.</summary>
+    public static Hexside IndexOf(this HexsideFlags @this) {
+      return (Hexside)HexsideFlagsList.IndexOf(@this);
     }
-    public override string ToString() { 
-      return string.Format("Neighbour: {0} at {1}", Coords.User,Direction);
+
+    /// <summary>The <c>HexsideFlag</c> corresponding to this <c>HexSide</c>.</summary>
+    public static HexsideFlags Direction(this Hexside @this) {
+      return HexsideFlagsList[(int)@this];
     }
 
-    public Func<NeighbourCoords,T> Bind<T>(Func<HexCoords,T> f) {
-      return n => f(n.Coords);
+    /// <summary>Returns the reversed, or opposite, <c>Hexside</c> to the supplied value.</summary>
+    /// <param name="this"></param>
+    public static Hexside Reversed(this Hexside @this) {
+      var reversed = @this+3;
+      return (reversed <= Hexside.NorthWest) ? reversed : (reversed - 6);
     }
-
-    #region Value Equality - on Coords field only
-    public override bool Equals(object obj) { 
-      return obj is NeighbourCoords  &&  this.Coords.Equals(((NeighbourCoords)obj).Coords);
-    }
-    public override int  GetHashCode() { return Coords.GetHashCode(); }
-
-    bool IEquatable<NeighbourCoords>.Equals(NeighbourCoords obj) { return this.Equals(obj); }
-
-    public static bool operator != (NeighbourCoords lhs, NeighbourCoords rhs) { return ! (lhs == rhs); }
-    public static bool operator == (NeighbourCoords lhs, NeighbourCoords rhs) { return lhs.Equals(rhs); }
-    #endregion
   }
 }

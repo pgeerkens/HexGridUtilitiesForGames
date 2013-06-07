@@ -44,7 +44,7 @@ namespace PG_Napoleonics.HexGridExample2 {
   }
 
   public abstract class MapGridHex : Hex, IMapGridHex {
-    public MapGridHex(MapDisplay board, ICoords coords) : base(board, coords) { 
+    public MapGridHex(MapDisplay board, HexCoords coords) : base(board, coords) { 
     }
 
     public virtual  int              Elevation      { get; protected set; }

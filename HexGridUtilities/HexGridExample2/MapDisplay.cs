@@ -63,36 +63,36 @@ namespace PG_Napoleonics.HexGridExample2 {
                                       GridSize.Width/3,  GridSize.Height/2);
     }
 
-    public virtual  IFov     FOV            {
+    public virtual  IFov      FOV        {
       get { return _fov ?? (_fov = this.GetFov(HotSpotHex)); }
       protected set { _fov = value; }
     } IFov _fov;
-    public virtual  ICoords  GoalHex        { 
-      get { return _goalHex??(_goalHex=HexCoords.EmptyUser); } 
+    public virtual  HexCoords GoalHex    { 
+      get { return _goalHex; }
       set { _goalHex=value; _path = null; } 
-    } ICoords _goalHex;
-    public virtual  ICoords  HotSpotHex     { 
+    } HexCoords _goalHex = HexCoords.EmptyUser;
+    public virtual  HexCoords HotSpotHex { 
       get { return _hotSpotHex; }
       set { _hotSpotHex = value; FOV = null; }
-    } ICoords _hotSpotHex;
+    } HexCoords _hotSpotHex = HexCoords.EmptyUser;
 #if PathFwd
-    public          IPathFwd Path           { 
-      get {return _path ?? (_path = this.GetPathFwd(this[StartHex], this[GoalHex]));} 
+    public          IPathFwd  Path       { 
+      get { return _path ?? (_path = this.GetPathFwd(this[StartHex], this[GoalHex])); } 
     } IPathFwd _path;
 #else
-    public          IPath Path           { 
+    public          IPath     Path       { 
       get {return _path ?? (_path = this.GetPath(StartHex, GoalHex));} 
     } IPath _path;
 #endif
-    public virtual  ICoords  StartHex       { 
-      get { return _startHex ?? (_startHex = HexCoords.EmptyUser); } 
+    public virtual  HexCoords StartHex   { 
+      get { return _startHex; } // ?? (_startHex = HexCoords.EmptyUser); } 
       set { if (IsOnBoard(value)) _startHex = value; _path = null; } 
-    } ICoords _startHex;
+    } HexCoords _startHex = HexCoords.EmptyUser;
 
     public Size            GridSize      { get; private set; }
     public Size            MapMargin     { get; set; }
     public Size            MapSizePixels { get {return SizeHexes * MapSizeMatrix;} }
-    public string          Name          { get { return "MapDisplay"; }}
+    public string          Name          { get {return "MapDisplay";} }
     protected GraphicsPath HexgridPath   { get; set; }
     protected IntMatrix2D  MapSizeMatrix { get; set; }
     public bool            ShowFov       { get; set; }
@@ -100,7 +100,7 @@ namespace PG_Napoleonics.HexGridExample2 {
 
     protected abstract string[] Board    { get; }
 
-    protected virtual IHex this[ICoords coords] { get {return ((IFovBoard)this)[coords];} }
+    protected virtual IHex this[HexCoords coords] { get {return ((IFovBoard)this)[coords];} }
 
     public UserCoordsRectangle GetClipCells(PointF point, SizeF size) {
       return GetClipHexes( new RectangleF(point,size), SizeHexes );
@@ -205,7 +205,7 @@ namespace PG_Napoleonics.HexGridExample2 {
       return new UserCoordsRectangle (left, top, right-left, bottom-top);
     }
     
-    public string        HexText(ICoords coords) { return HexText(coords.User.X, coords.User.Y); }
-           string        HexText(int x, int y)   { return string.Format("{0,2}-{1,2}", x, y); }
+    public string    HexText(HexCoords coords) { return HexText(coords.User.X, coords.User.Y); }
+           string    HexText(int x, int y)     { return string.Format("{0,2}-{1,2}", x, y); }
   }
 }

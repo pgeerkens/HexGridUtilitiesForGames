@@ -45,7 +45,7 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
     IPathFwd AddStep(NeighbourHex neighbour, uint stepCost);
     IPathFwd AddStep(IPathFwd pathFront);
   }
-  internal class PathFwd : IPathFwd {
+  public class PathFwd : IPathFwd {
     #region IPath implementation
     public virtual Hexside  HexsideExit { get; private set; }
     public virtual NeighbourHex  Step        { get; private set; }

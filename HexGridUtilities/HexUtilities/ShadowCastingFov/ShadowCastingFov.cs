@@ -55,13 +55,13 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
     /// <param name="terrainHeight">Returns height (ASL) of terrain in supplied hex.</param>
     /// <param name="setFoV">Sets a hex as visible in the Field-of-View.</param>
     public static void ComputeFieldOfView(
-      ICoords            observerCoords, 
+      HexCoords            observerCoords, 
       int                radius, 
       int                observerHeight,
-      Func<ICoords,bool> isOnBoard,
-      Func<ICoords,int>  targetHeight, 
-      Func<ICoords,int>  terrainHeight,
-      Action<ICoords>    setFoV
+      Func<HexCoords,bool> isOnBoard,
+      Func<HexCoords,int>  targetHeight, 
+      Func<HexCoords,int>  terrainHeight,
+      Action<HexCoords>    setFoV
     ) {
       #if TraceFOV
         TraceFlag.FieldOfView.Trace(true, " - Coords = " + observerCoords.User.ToString());
@@ -92,10 +92,10 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
     private static void ComputeFieldOfViewInDodecantZero(
       int                radius,
       int                observerHeight,
-      Func<ICoords,bool> isOnBoard,
-      Func<ICoords, int> targetHeight,
-      Func<ICoords, int> terrainHeight,
-      Action<ICoords>    setFieldOfView)
+      Func<HexCoords,bool> isOnBoard,
+      Func<HexCoords, int> targetHeight,
+      Func<HexCoords, int> terrainHeight,
+      Action<HexCoords>    setFieldOfView)
     {
       #if TraceFOV
         radius = 16;
@@ -141,10 +141,10 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
     private static FovCone ComputeFoVForRange(
       int                observerHeight,
       FovCone            cone,
-      Func<ICoords,bool> isOnBoard,
-      Func<ICoords, int> targetHeight,
-      Func<ICoords, int> terrainHeight,
-      Action<ICoords>    setFieldOfView,
+      Func<HexCoords,bool> isOnBoard,
+      Func<HexCoords, int> targetHeight,
+      Func<HexCoords, int> terrainHeight,
+      Action<HexCoords>    setFieldOfView,
       FovQueue           queue)
     {
       Action<FovCone> enqueue = queue.Enqueue;

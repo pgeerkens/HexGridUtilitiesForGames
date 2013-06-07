@@ -34,25 +34,25 @@ using System.Text;
 using PG_Napoleonics.HexUtilities.Common;
 
 namespace PG_Napoleonics.HexUtilities {
-  public interface ICoords {
-    /// <summary>Returns rectangular (90 degree axes at E and S) coordinates for this hex</summary>
-    IntVector2D User    { get; }
+//  public interface HexCoords {
+//    /// <summary>Returns rectangular (90 degree axes at E and S) coordinates for this hex</summary>
+//    IntVector2D User    { get; }
 
-    /// <summary>Returns canonical (120 degree axes at NE and S) coordinates for this hex.</summary>
-    IntVector2D Canon   { get; }
+//    /// <summary>Returns canonical (120 degree axes at NE and S) coordinates for this hex.</summary>
+//    IntVector2D Canon   { get; }
 
-    /// <summary><i>Manhattan</i> distance of specified hex from this one.</summary>
-    int         Range(ICoords coords);
+//    /// <summary><i>Manhattan</i> distance of specified hex from this one.</summary>
+//    int         Range(HexCoords coords);
 
-    /// <summary>Returns an <c>ICoords</c> for the hex in direction <c>hexside</c> from this one.</summary>
-//    ICoords     StepOut(Hexside hexside);
-    ICoords     StepOut(Hexside hexside);
+//    /// <summary>Returns an <c>HexCoords</c> for the hex in direction <c>hexside</c> from this one.</summary>
+////    HexCoords     StepOut(Hexside hexside);
+//    HexCoords     StepOut(Hexside hexside);
 
-    /// <summary>Formattted string of the rectangular coordiantes for this hex.</summary>
-    string      ToString();
+//    /// <summary>Formattted string of the rectangular coordiantes for this hex.</summary>
+//    string      ToString();
 
-    /// <summary>Returns set of hexes at direction(s) specified by <c>hexsides</c>, as IEnumerable.</summary>
-    IEnumerable<NeighbourCoords> GetNeighbours(HexsideFlags hexsides);
-    IEnumerable<NeighbourCoords> GetNeighbours();
-  }
+//    /// <summary>Returns set of hexes at direction(s) specified by <c>hexsides</c>, as IEnumerable.</summary>
+//    IEnumerable<NeighbourCoords> GetNeighbours(HexsideFlags hexsides);
+//    IEnumerable<NeighbourCoords> GetNeighbours();
+//  }
 }

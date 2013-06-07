@@ -34,21 +34,21 @@ using System.Text;
 using PG_Napoleonics.HexUtilities.Common;
 
 namespace PG_Napoleonics.HexUtilities {
-  public class HexCoords : ICoords,IEquatable<HexCoords>,IEqualityComparer<HexCoords> {
+  public struct HexCoords : IEquatable<HexCoords> {
     #region static members
-    public static ICoords EmptyCanon { get { return _EmptyCanon; } }
-    public static ICoords EmptyUser  { get { return _EmptyUser; } }
+    public static HexCoords EmptyCanon { get { return _EmptyCanon; } }
+    public static HexCoords EmptyUser  { get { return _EmptyUser; } }
 
-    public static ICoords NewCanonCoords (IntVector2D vector){ return new HexCoords(true, vector); }
-    public static ICoords NewUserCoords  (IntVector2D vector){ return new HexCoords(false,vector); }
-    public static ICoords NewCanonCoords (int x, int y) { return new HexCoords(true, x,y); }
-    public static ICoords NewUserCoords  (int x, int y) { return new HexCoords(false,x,y); }
+    public static HexCoords NewCanonCoords (IntVector2D vector){ return new HexCoords(true, vector); }
+    public static HexCoords NewUserCoords  (IntVector2D vector){ return new HexCoords(false,vector); }
+    public static HexCoords NewCanonCoords (int x, int y) { return new HexCoords(true, x,y); }
+    public static HexCoords NewUserCoords  (int x, int y) { return new HexCoords(false,x,y); }
 
     static readonly IntMatrix2D MatrixUserToCanon = new IntMatrix2D(2, 1,  0,2,  0,0,  2);
     static readonly IntMatrix2D MatrixCanonToUser = new IntMatrix2D(2,-1,  0,2,  0,1,  2);
 
-    static readonly ICoords _EmptyCanon  = HexCoords.NewCanonCoords(0,0);
-    static readonly ICoords _EmptyUser   = HexCoords.NewUserCoords(0,0);
+    static readonly HexCoords _EmptyCanon  = HexCoords.NewCanonCoords(0,0);
+    static readonly HexCoords _EmptyUser   = HexCoords.NewUserCoords(0,0);
 
     static readonly IntVector2D vectorNW = new IntVector2D(-1,-1);
     static readonly IntVector2D vectorN  = new IntVector2D( 0,-1);
@@ -63,95 +63,71 @@ namespace PG_Napoleonics.HexUtilities {
     #endregion
 
     #region Constructors
-    protected HexCoords(bool isCanon, int x, int y) : this(isCanon, new IntVector2D(x,y)) {}
-    protected HexCoords(bool isCanon, IntVector2D vector) {
-      if (isCanon) { _Canon = vector;  _User = null;   }
-      else         { _Canon = null;    _User = vector; }
+    private HexCoords(bool isCanon, int x, int y) : this(isCanon, new IntVector2D(x,y)) {}
+    private HexCoords(bool isCanon, IntVector2D vector) : this() {
+      if (isCanon) { Canon = vector; userHasValue  = false; }
+      else         { User  = vector; canonHasValue = false; }
     }
     #endregion
 
-    #region ICoords implementation
-    /// <inheritDoc/>
-    IntVector2D ICoords.User   { get { return User;   } }
-    /// <inheritDoc/>
-    IntVector2D ICoords.Canon  { get { return Canon;  } }
+    #region Properties
+    public  IntVector2D Canon {
+      get { return canonHasValue ? _Canon : ( Canon = _User * MatrixUserToCanon); }
+      set { _Canon = value; canonHasValue = true; userHasValue = false; }
+    } private IntVector2D _Canon;
+    bool canonHasValue;
 
-    /// <inheritDoc/>
-    int     ICoords.Range(ICoords coords)    { return Range(coords); }
+    public  IntVector2D User  {
+      get { return userHasValue ? _User : ( User = _Canon * MatrixCanonToUser); }
+      set { _User = value;  userHasValue = true; canonHasValue = false; }
+    } private IntVector2D _User;
+    bool userHasValue;
+    #endregion
 
-    /// <inheritDoc/>
-    ICoords ICoords.StepOut(Hexside hexside) {
+    #region Methods
+    ///<summary>Returns all neighbouring hexes as IEnumerable.</summary>
+    public IEnumerable<NeighbourCoords> GetNeighbours() { 
+      foreach (var hexside in HexExtensions.HexsideList)
+        yield return new NeighbourCoords(StepOut(hexside), hexside);
+    }
+
+    ///<summary>Returns set of hexes at direction(s) specified by <c>hexsides</c>, as IEnumerable.</summary>
+    public IEnumerable<NeighbourCoords> GetNeighbours(HexsideFlags hexsides) { 
+      return GetNeighbours().Where(n=>hexsides.HasFlag(n.Direction));
+    }
+
+    /// <summary>Modified <i>Manhattan</i> distance of supplied coordinate from this one.</summary>
+    public int       Range(HexCoords coords) { 
+      var deltaX = coords.Canon.X - Canon.X;
+      var deltaY = coords.Canon.Y - Canon.Y;
+      return ( Math.Abs(deltaX) + Math.Abs(deltaY) + Math.Abs(deltaX-deltaY) ) / 2;
+    }
+
+    /// <summary>Returns an <c>HexCoords</c> for the hex in direction <c>hexside</c> from this one.</summary>
+    public HexCoords StepOut(Hexside hexside) {
       return NewCanonCoords(Canon + HexsideVectors[(int)hexside]); 
     }
 
     /// <inheritDoc/>
-    string  ICoords.ToString()               { return ToString(); }
-
-    /// <inheritDoc/>
-    IEnumerable<NeighbourCoords> ICoords.GetNeighbours(HexsideFlags hexsides) { 
-      return ((ICoords)this).GetNeighbours().Where(n=>hexsides.HasFlag(n.Direction));
-    }
-    IEnumerable<NeighbourCoords> ICoords.GetNeighbours() { 
-      foreach (var hexside in HexExtensions.HexsideList)
-        yield return new NeighbourCoords(((ICoords)this).StepOut(hexside), hexside);
-    }
-
-    //bool IEquatable<ICoords>.Equals(ICoords rhs) { return this.Equals(rhs); }
-    //bool IEqualityComparer<ICoords>.Equals(ICoords lhs,ICoords rhs) { 
-    //  return lhs != null  &&  lhs.Equals(rhs); 
-    //}
-    //int  IEqualityComparer<ICoords>.GetHashCode(ICoords @this) { 
-    //  return ((HexCoords)@this).GetHashCode(); 
-    //}
-    #endregion
-
-    #region Conversions
-    protected IntVector2D Canon {
-      get { return ( _Canon.HasValue ? _Canon 
-                                     : _Canon = User * MatrixUserToCanon
-                   ).Value; }
-    } protected Nullable<IntVector2D> _Canon;
-    protected IntVector2D User  {
-      get { return ( _User.HasValue  ? _User
-                                     : _User = Canon * MatrixCanonToUser
-                   ).Value; }
-    } protected Nullable<IntVector2D> _User;
-    #endregion
-
-    /// <summary>Manhattan distance of supplied coordinate from this one.</summary>
-    protected       int    Range(ICoords coords) { 
-      var deltaX = coords.Canon.X - Canon.X;
-      var deltaY = coords.Canon.Y - Canon.Y;
-      return (Math.Abs(deltaX) + Math.Abs(deltaY) + Math.Abs(deltaX-deltaY)) / 2;
-    }
-
-    /// <inheritDoc/>
     public override string ToString() { return string.Format("User: {0}", User); }
+    #endregion
 
     #region Value Equality
     /// <inheritdoc/>
     public override bool Equals(object obj) { 
-      return obj is HexCoords  &&  Equals((HexCoords)obj);
+      return obj is HexCoords  &&  User == ((HexCoords)obj).User;
     }
     /// <inheritdoc/>
     public override int GetHashCode() { return User.GetHashCode(); }
 
     /// <inheritdoc/>
     public bool Equals(HexCoords rhs) { 
-      return User.Equals(rhs.User);
-    }
-    /// <inheritdoc/>
-    public bool Equals(HexCoords lhs, HexCoords rhs) { 
-      return lhs.Equals(rhs); 
-    }
-    /// <inheritdoc/>
-    public int  GetHashCode(HexCoords @this) { 
-      return @this.GetHashCode(); 
+      return User == rhs.User;
     }
 
     public static bool operator != (HexCoords lhs, HexCoords rhs) { return ! (lhs==rhs); }
     public static bool operator == (HexCoords lhs, HexCoords rhs) {
-      return lhs != null  &&  lhs.Equals(rhs);
+      return lhs.User == rhs.User;
     }
     #endregion
   } 

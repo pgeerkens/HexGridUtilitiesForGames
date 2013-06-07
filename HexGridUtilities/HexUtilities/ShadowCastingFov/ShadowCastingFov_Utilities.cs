@@ -52,7 +52,7 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
       }
     }
 
-    private static int GetRange(ICoords coords) { return HexCoords.EmptyCanon.Range(coords); }
+    private static int GetRange(HexCoords coords) { return HexCoords.EmptyCanon.Range(coords); }
 
     static int XFromVector(int y, IntVector2D v, bool isTop) {
       if (isTop) {
@@ -70,7 +70,7 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
     ///       (x + 2/3, y + 1/3) == 1/3 * (3x + 2, 3y + 1)
     /// </remarks>
     static IntMatrix2D matrixHexTop = new IntMatrix2D(3,0,  0,3, 2,1);
-    static IntVector2D VectorHexTop(ICoords hex) { return hex.Canon * matrixHexTop; }
+    static IntVector2D VectorHexTop(HexCoords hex) { return hex.Canon * matrixHexTop; }
     /// <summary>IntVector2D for bottom corner of cell Canon(x,y).</summary>
     /// <remarks>
     /// In first dodecant; The bottom corner for hex (x,y) is determined 
@@ -80,7 +80,7 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
     ///       (x - 2/3, y - 1/3) == 1/3 * (3x - 2, 3y - 1)
     /// </remarks>
     static IntMatrix2D matrixHexBottom = new IntMatrix2D(3,0,  0,3, -2,-1);
-    static IntVector2D VectorHexBottom(ICoords hex)  { return hex.Canon * matrixHexBottom;  }
+    static IntVector2D VectorHexBottom(HexCoords hex)  { return hex.Canon * matrixHexBottom;  }
 
     // These are here (instead of IntVector2D.cs) because they are "upside-down" for regular use.
     static IntVector2D VectorMax(IntVector2D lhs, IntVector2D rhs) {

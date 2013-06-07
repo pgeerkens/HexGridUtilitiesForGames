@@ -47,9 +47,9 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
       IHex start, 
       IHex goal, 
       int  rangeCutoff,
-      Func<ICoords, Hexside, int> stepCostFwd,
+      Func<HexCoords, Hexside, int> stepCostFwd,
       Func<int,int>               heuristic,
-      Func<ICoords,bool>          isOnBoard
+      Func<HexCoords,bool>          isOnBoard
     ) {
       PathFwd = PathFinder.FindPathFwd(start, goal, rangeCutoff,
         (c,h) => stepCostFwd(c.StepOut(h), h.Reversed()), 

@@ -75,6 +75,7 @@ namespace PG_Napoleonics.HexgridPanel {
     }
     public virtual void EndInit() { 
       this.MakeDoubleBuffered(true);
+      HotSpotHex = HexCoords.EmptyUser;
     }
     #endregion
 
@@ -91,7 +92,7 @@ namespace PG_Napoleonics.HexgridPanel {
       set { _host = value; MapBuffer = null; }
     } IMapDisplay _host;
 
-    public ICoords     HotSpotHex    { get; private set; }
+    public HexCoords     HotSpotHex    { get; private set; }
 
     public bool        IsTransposed  { 
       get { return _isTransposed; }
@@ -111,8 +112,8 @@ namespace PG_Napoleonics.HexgridPanel {
     /// <summary>Current scaling factor for map display.</summary>
     public float       MapScale      { get { return Scales[ScaleIndex]; } }
 
-    /// <summary>Returns <code>ICoords</code> of the hex closest to the center of the current viewport.</summary>
-    public ICoords PanelCenterHex    { 
+    /// <summary>Returns <code>HexCoords</code> of the hex closest to the center of the current viewport.</summary>
+    public HexCoords PanelCenterHex    { 
       get { return GetHexCoords( Location + Size.Round(ClientSize.Scale(0.50F)) ); }
     }
 
@@ -170,23 +171,23 @@ namespace PG_Napoleonics.HexgridPanel {
       }
     }
 
-    /// <summary><c>ICoords</c> for a selected hex.</summary>
+    /// <summary><c>HexCoords</c> for a selected hex.</summary>
     /// <param name="point">Screen point specifying hex to be identified.</param>
     /// <returns>Coordinates for a hex specified by a screen point.</returns>
     /// <remarks>See "file://Documentation/HexGridAlgorithm.mht"</remarks>
-    public ICoords GetHexCoords(Point point) {
+    public HexCoords GetHexCoords(Point point) {
       return HexGrid.GetHexCoords(point, new Size(AutoScrollPosition));
     }
     /// <summary>Returns ScrollPosition that places given hex in the upper-Left of viewport.</summary>
-    /// <param name="coordsNewULHex"><c>ICoords</c> for new upper-left hex</param>
+    /// <param name="coordsNewULHex"><c>HexCoords</c> for new upper-left hex</param>
     /// <returns>Pixel coordinates in Client reference frame.</returns>
-    public Point HexCenterPoint(ICoords coordsNewULHex) {
+    public Point HexCenterPoint(HexCoords coordsNewULHex) {
       return HexGrid.HexCenterPoint(coordsNewULHex);
     }
     /// <summary>Returns the scroll position to center a specified hex in viewport.</summary>
-    /// <param name="coordsNewCenterHex"><c>ICoords</c> for the hex to be centered in viewport.</param>
+    /// <param name="coordsNewCenterHex"><c>HexCoords</c> for the hex to be centered in viewport.</param>
     /// <returns>Pixel coordinates in Client reference frame.</returns>
-    protected Point ScrollPositionToCenterOnHex(ICoords coordsNewCenterHex) {
+    protected Point ScrollPositionToCenterOnHex(HexCoords coordsNewCenterHex) {
       return HexGrid.ScrollPositionToCenterOnHex(coordsNewCenterHex);
     }
     #endregion

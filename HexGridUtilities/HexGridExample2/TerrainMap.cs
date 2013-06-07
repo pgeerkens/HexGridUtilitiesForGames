@@ -107,8 +107,8 @@ namespace PG_Napoleonics.HexGridExample2 {
     };
     #endregion
 
-    protected override IHex GetGridHex(ICoords coords) { return GetMapGridHex(coords); }
-    private IMapGridHex GetMapGridHex(ICoords coords) {
+    protected override IHex GetGridHex(HexCoords coords) { return GetMapGridHex(coords); }
+    private IMapGridHex GetMapGridHex(HexCoords coords) {
       char value = Board[coords.User.Y][coords.User.X];
       switch(value) {
         default:  return new ClearTerrainGridHex   (this, coords, GridSize);

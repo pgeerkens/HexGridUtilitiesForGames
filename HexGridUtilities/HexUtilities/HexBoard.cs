@@ -42,7 +42,7 @@ using PG_Napoleonics.HexUtilities.ShadowCastingFov;
 namespace PG_Napoleonics.HexUtilities {
     public interface IBoard<TGridHex> 
       : INavigableBoardFwd, IFovBoard  where TGridHex : class, IHex {
-      new bool   IsOnBoard(ICoords coords);
+      new bool   IsOnBoard(HexCoords coords);
       IPathFwd GetPathFwd(IHex start, IHex goal);
     }
 
@@ -62,31 +62,31 @@ namespace PG_Napoleonics.HexUtilities {
     public virtual  int  Heuristic(int range) { return range; }
 
     ///  <inheritdoc/>
-    public virtual  bool IsOnBoard(ICoords coords)  {
+    public virtual  bool IsOnBoard(HexCoords coords)  {
       return 0<=coords.User.X && coords.User.X < SizeHexes.Width
           && 0<=coords.User.Y && coords.User.Y < SizeHexes.Height;
     }
 
     ///  <inheritdoc/>
-    public virtual  bool IsPassable(ICoords coords) { return IsOnBoard(coords); }
+    public virtual  bool IsPassable(HexCoords coords) { return IsOnBoard(coords); }
 
     ///  <inheritdoc/>
-    public virtual  int  StepCost(ICoords coords, Hexside hexSide) {
+    public virtual  int  StepCost(HexCoords coords, Hexside hexSide) {
       return IsOnBoard(coords) ? GetGridHex(coords).StepCostFwd(hexSide) : -1;
     }
 
     ///  <inheritdoc/>
-    public virtual  int  StepCostFwd(ICoords coords, Hexside hexSideExit) {
+    public virtual  int  StepCostFwd(HexCoords coords, Hexside hexSideExit) {
       return IsOnBoard(coords) 
         ? GetGridHex(coords.StepOut(hexSideExit)).StepCost(hexSideExit) 
         : -1;
     }
 
     ///  <inheritdoc/>
-    IHex IFovBoard.this[ICoords coords]  { get { return IsOnBoard(coords) ? GetGridHex(coords) : null; } }
+    IHex IFovBoard.this[HexCoords coords]  { get { return IsOnBoard(coords) ? GetGridHex(coords) : null; } }
 
     /// <summary>Returns the hex at coordinates specified by <c>coords</c>.</summary>
-    protected abstract IHex GetGridHex(ICoords coords);
+    protected abstract IHex GetGridHex(HexCoords coords);
 
     /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
     public virtual IPathFwd GetPathFwd(IHex start, IHex goal) {
@@ -96,7 +96,7 @@ namespace PG_Napoleonics.HexUtilities {
 
   public static partial class HexExtensions {
     /// <summary>Returns the field-of-view on <c>board</c> from the hex specified by coordinates <c>coords</c>.</summary>
-    public static IFov GetFov(this IFovBoard @this, ICoords origin) {
+    public static IFov GetFov(this IFovBoard @this, HexCoords origin) {
       return FovFactory.GetFieldOfView(@this,origin);
     }
 
@@ -106,7 +106,7 @@ namespace PG_Napoleonics.HexUtilities {
     }
 
     /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
-    public static IPath GetPath(this INavigableBoard board, ICoords start, ICoords goal) {
+    public static IPath GetPath(this INavigableBoard board, HexCoords start, HexCoords goal) {
       return PathFinder.FindPath(start, goal, board);
     }
 

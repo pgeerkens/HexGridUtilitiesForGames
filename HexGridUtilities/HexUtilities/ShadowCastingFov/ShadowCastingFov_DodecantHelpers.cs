@@ -73,10 +73,10 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
     //         /     |     \
     //             Y-axis
     private static List<IntMatrix2D> matrices;
-    private static Action<ICoords> TranslateDodecant(IntMatrix2D matrix, Action<ICoords> action) {
+    private static Action<HexCoords> TranslateDodecant(IntMatrix2D matrix, Action<HexCoords> action) {
       return (v) => action(HexCoords.NewCanonCoords(v.Canon*matrix));
     }
-    private static Func<ICoords,T> TranslateDodecant<T>(IntMatrix2D matrix, Func<ICoords,T> func) {
+    private static Func<HexCoords,T> TranslateDodecant<T>(IntMatrix2D matrix, Func<HexCoords,T> func) {
       return (v) => func(HexCoords.NewCanonCoords(v.Canon*matrix));
     }
   }

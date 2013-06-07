@@ -66,20 +66,20 @@ namespace PG_Napoleonics.HexUtilities {
     /// <summary></summary>
     Size  Size           { get; }
 
-    /// <summary><c>ICoords</c> for the hex at the screen point, with the given AutoScroll position.</summary>
+    /// <summary><c>HexCoords</c> for the hex at the screen point, with the given AutoScroll position.</summary>
     /// <param name="point">Screen point specifying hex to be identified.</param>
     /// <param name="autoScroll">AutoScrollPosition for game-display Panel.</param>
-    ICoords GetHexCoords(Point point, Size autoScroll);
+    HexCoords GetHexCoords(Point point, Size autoScroll);
 
     /// <summary>Returns the scroll position to center a specified hex in viewport.</summary>
-    /// <param name="coordsNewCenterHex"><c>ICoords</c> for the hex to be centered in viewport.</param>
+    /// <param name="coordsNewCenterHex"><c>HexCoords</c> for the hex to be centered in viewport.</param>
     /// <returns>Pixel coordinates in Client reference frame.</returns>
-    Point   ScrollPositionToCenterOnHex(ICoords coordsNewCenterHex);
+    Point   ScrollPositionToCenterOnHex(HexCoords coordsNewCenterHex);
 
     /// <summary>Returns ScrollPosition that places given hex in the upper-Left of viewport.</summary>
-    /// <param name="coordsNewULHex"><c>ICoords</c> for new upper-left hex</param>
+    /// <param name="coordsNewULHex"><c>HexCoords</c> for new upper-left hex</param>
     /// <returns>Pixel coordinates in Client reference frame.</returns>
-    Point   HexCenterPoint(ICoords coordsNewULHex);
+    Point   HexCenterPoint(HexCoords coordsNewULHex);
   }
 
   /// <summary>C# implementation of the hex-picking algorithm noted  below.</summary>
@@ -93,7 +93,7 @@ namespace PG_Napoleonics.HexUtilities {
     public virtual Size  Size           { get { return Size.Ceiling(Host.MapSizePixels.Scale(Host.MapScale)); } }
 
     /// <inheritdoc/>
-    public virtual ICoords GetHexCoords(Point point, Size autoScroll) {
+    public virtual HexCoords GetHexCoords(Point point, Size autoScroll) {
       if( Host == null ) return HexCoords.EmptyCanon;
 
       // Adjust for origin not as assumed by GetCoordinate().
@@ -107,14 +107,14 @@ namespace PG_Napoleonics.HexUtilities {
     }
 
     /// <inheritdoc/>
-    public virtual Point   ScrollPositionToCenterOnHex(ICoords coordsNewCenterHex) {
+    public virtual Point   ScrollPositionToCenterOnHex(HexCoords coordsNewCenterHex) {
       return HexCenterPoint(HexCoords.NewUserCoords(
               coordsNewCenterHex.User - ( new IntVector2D(Host.VisibleRectangle.Size.User) / 2 )
       ));
     }
 
     /// <inheritdoc/>
-    public virtual Point   HexCenterPoint(ICoords coordsNewULHex) {
+    public virtual Point   HexCenterPoint(HexCoords coordsNewULHex) {
       if (coordsNewULHex == null) return new Point();
       var offset = new Size((int)(Host.GridSizeF.Width*2F/3F), (int)Host.GridSizeF.Height);
       var margin = Size.Round( Host.MapMargin.Scale(Host.MapScale) );
@@ -149,7 +149,7 @@ namespace PG_Napoleonics.HexUtilities {
 		  return (int) Math.Floor( (pts[0].X + pts[0].Y + 2F) / 3F );
 	  }
 
-    Point HexOrigin(SizeF gridSize, ICoords coords) {
+    Point HexOrigin(SizeF gridSize, HexCoords coords) {
       return new Point(
         (int)(Host.GridSizeF.Width  * coords.User.X),
         (int)(Host.GridSizeF.Height * coords.User.Y   + Host.GridSizeF.Height/2 * (coords.User.X+1)%2)
@@ -167,11 +167,11 @@ namespace PG_Napoleonics.HexUtilities {
     public override Size  Size           { get { return TransposeSize(base.Size); } }
 
     ///<inheritdoc/>
-    public override ICoords GetHexCoords(Point point, Size autoScroll) {
+    public override HexCoords GetHexCoords(Point point, Size autoScroll) {
       return base.GetHexCoords(TransposePoint(point), TransposeSize(autoScroll));
     }
     ///<inheritdoc/>
-    public override Point HexCenterPoint(ICoords coordsNewULHex) {
+    public override Point HexCenterPoint(HexCoords coordsNewULHex) {
       return TransposePoint(base.HexCenterPoint(coordsNewULHex));
     }
 

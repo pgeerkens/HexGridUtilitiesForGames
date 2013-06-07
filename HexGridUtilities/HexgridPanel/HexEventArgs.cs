@@ -38,7 +38,7 @@ using PG_Napoleonics.HexUtilities.Common;
 namespace PG_Napoleonics.HexUtilities {
   /// <summary></summary>
   public class HexEventArgs : MouseEventArgs {
-    public ICoords  Coords       { get; private set; }
+    public HexCoords  Coords       { get; private set; }
 
     public bool     Alt          { get { return ModifierKeys.HasFlag(Keys.Alt);  } }
     public bool     Control      { get { return ModifierKeys.HasFlag(Keys.Control); } }
@@ -46,13 +46,13 @@ namespace PG_Napoleonics.HexUtilities {
 
     public Keys     ModifierKeys { get; private set; }
 
-    public HexEventArgs(ICoords coords) 
+    public HexEventArgs(HexCoords coords) 
       : this(coords, new MouseEventArgs(MouseButtons.None,0,0,0,0)) {}
-    public HexEventArgs(ICoords coords, Keys modifierKeys) 
+    public HexEventArgs(HexCoords coords, Keys modifierKeys) 
       : this(coords, new MouseEventArgs(MouseButtons.None,0,0,0,0), modifierKeys) {}
-    public HexEventArgs(ICoords coords, MouseEventArgs e) 
+    public HexEventArgs(HexCoords coords, MouseEventArgs e) 
       : this(coords, e, Keys.None) {}
-    public HexEventArgs(ICoords coords, MouseEventArgs e, Keys modifierKeys)
+    public HexEventArgs(HexCoords coords, MouseEventArgs e, Keys modifierKeys)
       : base(e.Button,e.Clicks,e.X,e.Y,e.Delta) {
       Coords       = coords;
       ModifierKeys = modifierKeys;

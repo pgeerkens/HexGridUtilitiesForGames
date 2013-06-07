@@ -40,8 +40,8 @@ namespace PG_Napoleonics.HexUtilities {
     /// <summary>The <c>IBoard<T></c> on which this hex is located.</summary>
     IBoard<IHex>        Board          { get; }
 
-    /// <summary>The <c>ICoords</c> coordinates for this hex on <c>Board</c>.</summary>
-    ICoords             Coords         { get; }
+    /// <summary>The <c>HexCoords</c> coordinates for this hex on <c>Board</c>.</summary>
+    HexCoords             Coords         { get; }
 
     int                 ElevationASL   { get; }
     int                 HeightObserver { get; }
@@ -50,7 +50,7 @@ namespace PG_Napoleonics.HexUtilities {
     IList<PathShortcut> Shortcuts      { get; }
 
     /// <summary>The <i>Manhattan</i> distance from this hex to that at <c>coords</c>.</summary>
-    int              Range(ICoords target);
+    int              Range(HexCoords target);
 
     /// <summary>The cost to enter this hex heading in the direction <c>hexside</c>.</summary>
     int              StepCost(Hexside direction);
@@ -62,7 +62,7 @@ namespace PG_Napoleonics.HexUtilities {
   }
 
   public abstract class Hex : IHex, IEquatable<Hex>, IEqualityComparer<Hex> {
-    public Hex(IBoard<IHex> board, ICoords coords) { 
+    public Hex(IBoard<IHex> board, HexCoords coords) { 
       Board    = board;
       Coords   = coords; 
       Shortcuts = new List<PathShortcut>(0);
@@ -72,7 +72,7 @@ namespace PG_Napoleonics.HexUtilities {
     public virtual  IBoard<IHex> Board          { get; private set; }
 
     ///  <inheritdoc/>
-    public virtual  ICoords      Coords         { get; private set; }
+    public virtual  HexCoords      Coords         { get; private set; }
 
     ///  <inheritdoc/>
     public virtual  int          ElevationASL   { get; protected set; }
@@ -90,7 +90,7 @@ namespace PG_Napoleonics.HexUtilities {
     public IList<PathShortcut>   Shortcuts      { get; private set; }
 
     ///  <inheritdoc/>
-    public          int          Range(ICoords target) { return Coords.Range(target); }
+    public          int          Range(HexCoords target) { return Coords.Range(target); }
 
     ///  <inheritdoc/>
     public abstract int          StepCost(Hexside direction);

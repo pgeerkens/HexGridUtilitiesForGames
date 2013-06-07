@@ -40,7 +40,7 @@ namespace PG_Napoleonics.HexGridExample2 {
   public sealed class MazeMap : MapDisplay {
     public MazeMap() : base() {}
 
-    public override bool  IsPassable(ICoords coords) { 
+    public override bool  IsPassable(HexCoords coords) { 
       return IsOnBoard(coords)  &&  GetMapGridHex(coords).Elevation == 0; 
     }
 
@@ -111,8 +111,8 @@ namespace PG_Napoleonics.HexGridExample2 {
     };
     #endregion
 
-    protected override IHex GetGridHex(ICoords coords) { return GetMapGridHex(coords); }
-    private IMapGridHex GetMapGridHex(ICoords coords) {
+    protected override IHex GetGridHex(HexCoords coords) { return GetMapGridHex(coords); }
+    private IMapGridHex GetMapGridHex(HexCoords coords) {
       switch (Board[coords.User.Y][coords.User.X]) {
         case '.':   return new PathMazeGridHex(this,coords,GridSize);
         default:    return new WallMazeGridHex(this,coords,GridSize);
@@ -120,7 +120,7 @@ namespace PG_Napoleonics.HexGridExample2 {
     }
 
     public abstract class MazeGridHex : MapGridHex {
-      public MazeGridHex(MapDisplay board, ICoords coords, Size gridSize) 
+      public MazeGridHex(MapDisplay board, HexCoords coords, Size gridSize) 
         : base(board, coords) {
         GridSize  = gridSize;
 
@@ -144,7 +144,7 @@ namespace PG_Napoleonics.HexGridExample2 {
     }
 
     public sealed class PathMazeGridHex : MazeGridHex {
-      public PathMazeGridHex(MapDisplay board, ICoords coords, Size gridSize) 
+      public PathMazeGridHex(MapDisplay board, HexCoords coords, Size gridSize) 
         : base(board, coords, gridSize) {}
       public override int  Elevation      { get { return 0; } }
       public override int  HeightTerrain  { get { return ElevationASL + 0; } }
@@ -152,7 +152,7 @@ namespace PG_Napoleonics.HexGridExample2 {
     }
 
     public sealed class WallMazeGridHex : MazeGridHex {
-      public WallMazeGridHex(MapDisplay board, ICoords coords, Size gridSize) 
+      public WallMazeGridHex(MapDisplay board, HexCoords coords, Size gridSize) 
         : base(board, coords, gridSize) {}
       public override int  Elevation      { get { return 1; } }
       public override int  HeightTerrain  { get { return ElevationASL + 10; } }

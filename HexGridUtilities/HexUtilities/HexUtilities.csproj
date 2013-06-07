@@ -99,6 +99,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\ConcurrentPriorityQueue.cs" />
     <Compile Include="CustomCoordsFactory.cs" />
     <Compile Include="Common\DebugTracing.cs" />
     <Compile Include="Common\DictPriorityQueue.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Common\HeapPriorityQueue.cs" />
     <Compile Include="HexCoords.cs" />
     <Compile Include="HexGrid.cs" />
+    <Compile Include="Hexside.cs" />
     <Compile Include="ICoords.cs" />
     <Compile Include="Hex.cs" />
     <Compile Include="Common\IHeap.cs" />

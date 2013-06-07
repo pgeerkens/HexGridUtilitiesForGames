@@ -44,15 +44,15 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
     int RangeCutoff { get; }
 
     /// <summary>The cost of entering the hex at location <c>coords</c> heading <c>hexside</c>.</summary>
-    int   StepCost(ICoords coords, Hexside hexsideExit);
+    int   StepCost(HexCoords coords, Hexside hexsideExit);
 
     /// <summary>Returns an A* heuristic value from the supplied hexagonal Manhattan distance <c>range</c>.</summary>
     /// <remarks>Returning the supplied range multiplied by the cheapest movement 
-    /// cost for a single hex is usually suffficient.</remarks>
+    /// cost for a single hex is usually suffficient. Note that <c>heuristic</c> <b>must</b> be monotonic in order for the algorithm to perform properly.</remarks>
     int   Heuristic(int range);
 
     /// <summary>Returns whether the hex at location <c>coords</c>is "on board".</summary>
-    bool  IsOnBoard(ICoords coords);
+    bool  IsOnBoard(HexCoords coords);
   }
 
   /// <summary>(Adapted) C# implementation of A* path-finding algorithm by Eric Lippert.</summary>
@@ -83,8 +83,8 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
   /// <returns></returns>
   public static partial class PathFinder {
     public static IPath FindPath(
-      ICoords     start,
-      ICoords     goal,
+      HexCoords     start,
+      HexCoords     goal,
       INavigableBoard board
     ) {
       return FindPath(start, goal, board.RangeCutoff, board.StepCost, 
@@ -98,15 +98,15 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
     /// <param name="heuristic">Returns a cost estimate from a range value.</param>
     /// <param name="isOnBoard">Returns whether the coordinates specified are "on board".</param>
     public static IPath FindPath(
-      ICoords     start,
-      ICoords     goal,
+      HexCoords   start,
+      HexCoords   goal,
       int         rangeCutoff,
-      Func<ICoords, Hexside, int> stepCost,
-      Func<int,int>               heuristic,
-      Func<ICoords,bool>          isOnBoard
+      Func<HexCoords, Hexside, int> stepCost,
+      Func<int,int>                 heuristic,
+      Func<HexCoords,bool>          isOnBoard
     ) {
       var vectorGoal = goal.Canon - start.Canon;
-      var closed     = new HashSet<ICoords>();
+      var closed     = new HashSet<HexCoords>();
       var queue      = goal.Range(start) > rangeCutoff
           ? (IPriorityQueue<uint, Path>) new ConcurrentPriorityQueue<uint, Path>()
           : (IPriorityQueue<uint, Path>) new DictPriorityQueue<uint, Path>();
@@ -145,16 +145,16 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
       return null;
     }
 
-    static uint Estimate(Func<int,int> heuristic, IntVector2D vectorGoal, ICoords goal, 
-            ICoords hex, uint totalCost) {
+    static uint Estimate(Func<int,int> heuristic, IntVector2D vectorGoal, HexCoords goal, 
+            HexCoords hex, uint totalCost) {
       var estimate   = (uint)heuristic(goal.Range(hex)) + totalCost;
       var preference = Preference(vectorGoal, goal, hex);
       return (estimate << 16) + preference;
     }
-    static uint Preference(IntVector2D vectorGoal, ICoords goal, ICoords hex) {
+    static uint Preference(IntVector2D vectorGoal, HexCoords goal, HexCoords hex) {
       return (uint)(0xFFFF & Math.Abs(vectorGoal ^ (goal.Canon - hex.Canon) ));
     }
-    static uint DotPreference(IntVector2D vectorGoal, ICoords goal, ICoords hex) {
+    static uint DotPreference(IntVector2D vectorGoal, HexCoords goal, HexCoords hex) {
       return (uint) (0x7FFF + vectorGoal * (goal.Canon - hex.Canon));
     }
   }

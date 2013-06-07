@@ -36,10 +36,10 @@ using PG_Napoleonics.HexUtilities.Common;
 
 namespace PG_Napoleonics.HexUtilities.PathFinding {
   /// <summary>Structure returned by the A* Path Finding utility.</summary>
-  public interface IPath : IEnumerable<ICoords>
+  public interface IPath : IEnumerable<HexCoords>
   { 
     HexsideFlags   LastDirection { get; }
-    ICoords   LastStep      { get; }
+    HexCoords   LastStep      { get; }
     IPath     PreviousSteps { get; }
     uint      TotalCost     { get; }
     uint      TotalSteps    { get; }
@@ -53,7 +53,7 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
   {
     #region IPath implementation
     public HexsideFlags  LastDirection { get; private set; }
-    public ICoords  LastStep      { get; private set; }
+    public HexCoords  LastStep      { get; private set; }
     public IPath    PreviousSteps { get; private set; }
     public uint     TotalCost     { get; private set; }
     public uint     TotalSteps    { get; private set; }
@@ -64,7 +64,7 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
         LastStep, TotalCost, TotalCost>>16, TotalCost &0xFFFF);
     }
 
-    public IEnumerator<ICoords> GetEnumerator() {
+    public IEnumerator<HexCoords> GetEnumerator() {
       for (var p = (IPath)this; p.LastStep != null; p = p.PreviousSteps) 
         yield return p.LastStep;
     }
@@ -72,13 +72,13 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
     IEnumerator IEnumerable.GetEnumerator() { return this.GetEnumerator(); }
 
     /////////////////////////////  Internals  //////////////////////////////////
-    internal Path(ICoords start) : this(null, start, HexsideFlags.None, 0) { }
+    internal Path(HexCoords start) : this(null, start, HexsideFlags.None, 0) { }
 
     internal Path    AddStep(NeighbourCoords neighbour, uint stepCost) {
       return new Path(this, neighbour.Coords, neighbour.Direction, TotalCost + stepCost);
     }
 
-    private  Path(Path previousSteps, ICoords thisStep, HexsideFlags direction, uint totalCost) {
+    private  Path(Path previousSteps, HexCoords thisStep, HexsideFlags direction, uint totalCost) {
       LastDirection  = direction;
       LastStep       = thisStep;
       PreviousSteps  = previousSteps;

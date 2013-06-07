@@ -53,8 +53,7 @@ namespace PG_Napoleonics.HexGridExample2 {
       MapBoard.ShowFov  = buttonFieldOfView.Checked
                         = true;
       toolStripComboBox1.SelectedIndex = 0;
-      var matrix        = new IntMatrix2D(2,0, 0,-2, 0,2*MapBoard.SizeHexes.Height-1, 2);
-      Custom = new CustomCoordsFactory(matrix);
+      CustomCoords.SetMatrices(new IntMatrix2D(2,0, 0,-2, 0,2*MapBoard.SizeHexes.Height-1, 2));
 
 			Application.AddMessageFilter(this);
       MapBoard.RangeCutoff = (int)txtPathCutover.Tag;
@@ -79,7 +78,6 @@ namespace PG_Napoleonics.HexGridExample2 {
       #endif
     }
 
-    CustomCoordsFactory Custom   { get; set; }
     MapDisplay          MapBoard { 
       get {return _mapBoard;}
       set {_mapBoard = value; _mapBoard.RangeCutoff = (int)txtPathCutover.Tag;}
@@ -113,7 +111,7 @@ namespace PG_Napoleonics.HexGridExample2 {
     void hexgridPanel_MouseMove(object sender, MouseEventArgs e) {
       var hotHex       = MapBoard.HotSpotHex;
       statusLabel.Text = "HotHex: " + hotHex.ToString() 
-                       + "/ Custom=" + Custom.Custom(hotHex.User).ToString()
+                       + "/ Custom=" + hotHex.UserToCustom().ToString()
                        + "/ Canon=" + hotHex.Canon.ToString()
                        + "; Range = " + MapBoard.StartHex.Range(hotHex)
                        + "; Path Length = " + (MapBoard.Path==null ? 0 : MapBoard.Path.TotalCost);
