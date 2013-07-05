@@ -37,36 +37,30 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-using PG_Napoleonics;
-using PG_Napoleonics.HexgridPanel;
-using PG_Napoleonics.HexUtilities;
-using PG_Napoleonics.HexUtilities.Common;
-using PG_Napoleonics.WinForms;
+using PGNapoleonics;
+using PGNapoleonics.HexUtilities;
+using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.WinForms;
 
-namespace PG_Napoleonics.HexGridExample2 {
-  public sealed partial class HexGridExampleForm : Form, IMessageFilter {
-    public HexGridExampleForm() {
+namespace PGNapoleonics.HexGridExample2 {
+  internal sealed partial class HexgridExampleForm : Form, IMessageFilter {
+    public HexgridExampleForm() {
       InitializeComponent();
-
-      hexgridPanel.Host = 
-      MapBoard          = new TerrainMap();
-      MapBoard.ShowFov  = buttonFieldOfView.Checked
-                        = true;
-      toolStripComboBox1.SelectedIndex = 0;
-      CustomCoords.SetMatrices(new IntMatrix2D(2,0, 0,-2, 0,2*MapBoard.SizeHexes.Height-1, 2));
-
 			Application.AddMessageFilter(this);
-      MapBoard.RangeCutoff = (int)txtPathCutover.Tag;
 
-      LoadDebugMenu();
+      LoadTraceMenu();
+
+      toolStripComboBox1.SelectedIndex = 0;
+      CustomCoords.SetMatrices(new IntMatrix2D(2,0, 0,-2, 0,2*MapBoard.MapSizeHexes.Height-1, 2));
     }
     protected override CreateParams CreateParams { 
 			get { return this.SetCompositedStyle(base.CreateParams); }
 		}
 
-    void LoadDebugMenu() {
-      #if DEBUG
-        foreach(var item in Enum.GetValues(typeof(TraceFlag))) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+    void LoadTraceMenu() {
+      #if TRACE
+        foreach(var item in Enum.GetValues(typeof(TraceFlags))) {
           var menuItem = new System.Windows.Forms.ToolStripMenuItem();
           menuItemDebug.DropDownItems.Add(menuItem);
           menuItem.Name         = "menuItemDebugTracing" + item.ToString();
@@ -85,7 +79,7 @@ namespace PG_Napoleonics.HexGridExample2 {
 
     #region Event handlers
     void HexGridExampleForm_Load(object sender, EventArgs e) {
-      hexgridPanel.Scales = new float[] {0.707F,  0.841F, 1.000F, 1.189F, 1.414F};
+      hexgridPanel.SetScaleList(new List<float>() {0.707F,  0.841F, 1.000F, 1.189F, 1.414F}.AsReadOnly());
       hexgridPanel.ScaleIndex = hexgridPanel.Scales
                               .Select((f,i) => new {value=f, index=i})
                               .Where(s => s.value==1.0F)
@@ -108,9 +102,14 @@ namespace PG_Napoleonics.HexGridExample2 {
       hexgridPanel.SetScroll();
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
+      "CA2204:Literals should be spelled correctly", MessageId = "HotspotHex"), 
+    System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", 
+      "CA1303:Do not pass literals as localized parameters", 
+      MessageId = "System.Windows.Forms.ToolStripItem.set_Text(System.String)")]
     void hexgridPanel_MouseMove(object sender, MouseEventArgs e) {
-      var hotHex       = MapBoard.HotSpotHex;
-      statusLabel.Text = "HotHex: " + hotHex.ToString() 
+      var hotHex       = MapBoard.HotspotHex;
+      statusLabel.Text = "HotspotHex: " + hotHex.ToString() 
                        + "/ Custom=" + hotHex.UserToCustom().ToString()
                        + "/ Canon=" + hotHex.Canon.ToString()
                        + "; Range = " + MapBoard.StartHex.Range(hotHex)
@@ -129,6 +128,7 @@ namespace PG_Napoleonics.HexGridExample2 {
         txtPathCutover.Text = txtPathCutover.Tag.ToString();
         value = (int)txtPathCutover.Tag;
       }
+      MapBoard.FovRadius   =
       MapBoard.RangeCutoff = value;
       Refresh();
     }
@@ -137,7 +137,7 @@ namespace PG_Napoleonics.HexGridExample2 {
       var item = (ToolStripMenuItem)sender;
       item.CheckState = item.Checked ? CheckState.Checked : CheckState.Unchecked;
       var name = item.Name.Replace("menuItemDebugTracing","");
-      var flag = (TraceFlag)Enum.Parse(typeof(TraceFlag),name);
+      var flag = (TraceFlags)Enum.Parse(typeof(TraceFlags),name);
       if( item.Checked)
         DebugTracing.EnabledFags |=  flag;
       else
@@ -152,7 +152,9 @@ namespace PG_Napoleonics.HexGridExample2 {
         case "TerrainMap": hexgridPanel.Host = MapBoard = new TerrainMap(); break;
         default:  break;
       }
-      MapBoard.ShowFov = buttonFieldOfView.Checked;
+      MapBoard.ShowFov     = buttonFieldOfView.Checked;
+      MapBoard.FovRadius   =
+      MapBoard.RangeCutoff = (int)txtPathCutover.Tag;
       hexgridPanel.Refresh();
     }
 
@@ -169,7 +171,7 @@ namespace PG_Napoleonics.HexGridExample2 {
       Refresh();
     }
     private void PanelBoard_HotSpotHexChange(object sender, HexEventArgs e) {
-      MapBoard.HotSpotHex = e.Coords;
+      MapBoard.HotspotHex = e.Coords;
       Refresh();
     }
 
@@ -186,39 +188,24 @@ namespace PG_Napoleonics.HexGridExample2 {
 		[System.Security.Permissions.PermissionSetAttribute(
 			System.Security.Permissions.SecurityAction.Demand, Name="FullTrust")]
 		bool IMessageFilter.PreFilterMessage(ref Message m) {
-			var hWnd  = WindowFromPoint( WindowsMouseInput.GetPointLParam(m.LParam) );
+			var hWnd  = NativeMethods.WindowFromPoint( WindowsMouseInput.GetPointLParam(m.LParam) );
 			var ctl	  = Control.FromHandle(hWnd);
       if (hWnd != IntPtr.Zero  &&  hWnd != m.HWnd  &&  ctl != null) {
         switch((WM)m.Msg) {
           default:  break;
           case WM.MOUSEWHEEL:
             #if DEBUG
-              DebugTracing.Trace(TraceFlag.ScrollEvents, true," - {0}.WM.{1}: ", Name, ((WM)m.Msg)); 
+              DebugTracing.Trace(TraceFlags.ScrollEvents, true," - {0}.WM.{1}: ", Name, 
+                ((WM)m.Msg)); 
             #endif
-            if (ctl is HexgridPanel.HexgridPanel  ||  ctl is HexGridExampleForm) {
-              return (SendMessage(hWnd, m.Msg, m.WParam, m.LParam) == IntPtr.Zero);
+            if (ctl is HexUtilities.HexgridPanel  ||  ctl is HexgridExampleForm) {
+              return (NativeMethods.SendMessage(hWnd, m.Msg, m.WParam, m.LParam) == IntPtr.Zero);
             }
             break;
         }
       }
       return false;
 		}
-    #region Extern declarations
-    /// <summary>P/Invoke declaration for user32.dll.WindowFromPoint</summary>
-		/// <remarks><see cref="http://msdn.microsoft.com/en-us/library/windows/desktop/ms633558(v=vs.85).aspx"/></remarks>
-		/// <param name="pt">(Sign-extended) screen coordinates as a Point structure.</param>
-		/// <returns>Window handle (hWnd).</returns>
-		[DllImport("user32.dll")]
-		private static extern IntPtr WindowFromPoint(Point pt);
-		/// <summary>P/Invoke declaration for user32.dll.SendMessage</summary>
-		/// <param name="hWnd">Window handle</param>
-		/// <param name="msg">Windows message</param>
-		/// <param name="wp">WParam</param>
-		/// <param name="lp">LParam</param>
-		/// <returns></returns>
-		[DllImport("user32.dll", CharSet = CharSet.Auto)]
-		private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-    #endregion
     #endregion
   }
 }

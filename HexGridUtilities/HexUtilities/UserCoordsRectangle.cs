@@ -32,50 +32,50 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics;
-using PG_Napoleonics.HexUtilities;
-using PG_Napoleonics.HexUtilities.Common;
+using PGNapoleonics;
+using PGNapoleonics.HexUtilities;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.HexUtilities {
+namespace PGNapoleonics.HexUtilities {
   /// <summary>Stores a rectangular board region as four User Coordinate integers.</summary>
-  public struct UserCoordsRectangle : IEquatable<UserCoordsRectangle>, IEqualityComparer<UserCoordsRectangle> {
-    public UserCoordsRectangle(HexCoords location, HexCoords size) 
+  public struct CoordsRectangle : IEquatable<CoordsRectangle>, IEqualityComparer<CoordsRectangle> {
+    public CoordsRectangle(HexCoords location, HexCoords size) 
       : this(new Rectangle(location.User, size.User)) {}
-    public UserCoordsRectangle(int x, int y, int width, int height) 
+    public CoordsRectangle(int x, int y, int width, int height) 
       : this(new Rectangle(x,y,width,height)) {}
-    public UserCoordsRectangle(Rectangle rectangle) : this() {
+    public CoordsRectangle(Rectangle rectangle) : this() {
       Rectangle = rectangle;
     }
 
-    public int     Bottom   { get { return Rectangle.Bottom; } }
-    public int     Height   { get { return Rectangle.Height; } }
-    public bool    IsEmpty  { get { return Rectangle.IsEmpty; } }
-    public int     Left     { get { return Rectangle.Left; } }
+    public int       Bottom   { get { return Rectangle.Bottom; } }
+    public int       Height   { get { return Rectangle.Height; } }
+    public bool      IsEmpty  { get { return Rectangle.IsEmpty; } }
+    public int       Left     { get { return Rectangle.Left; } }
     public HexCoords Location { get { return HexCoords.NewUserCoords(Rectangle.Location); } }
-    public int     Right    { get { return Rectangle.Right; } }
+    public int       Right    { get { return Rectangle.Right; } }
     public HexCoords Size     { get { return HexCoords.NewUserCoords(Rectangle.Size); } }
-    public int     Top      { get { return Rectangle.Top; } }
-    public int     Width    { get { return Rectangle.Width; } }
-    public int     X        { get { return Rectangle.X; } }
-    public int     Y        { get { return Rectangle.Y; } }
+    public int       Top      { get { return Rectangle.Top; } }
+    public int       Width    { get { return Rectangle.Width; } }
+    public int       X        { get { return Rectangle.X; } }
+    public int       Y        { get { return Rectangle.Y; } }
 
     public Rectangle Rectangle  { get; private set; }
-    public HexCoords   UpperLeft  { get { return HexCoords.NewUserCoords(Left,Top); } }
-    public HexCoords   UpperRight { get { return HexCoords.NewUserCoords(Right,Top); } }
-    public HexCoords   LowerLeft  { get { return HexCoords.NewUserCoords(Left,Bottom); } }
-    public HexCoords   LowerRight { get { return HexCoords.NewUserCoords(Right,Bottom); } }
+    public HexCoords UpperLeft  { get { return HexCoords.NewUserCoords(Left,Top); } }
+    public HexCoords UpperRight { get { return HexCoords.NewUserCoords(Right,Top); } }
+    public HexCoords LowerLeft  { get { return HexCoords.NewUserCoords(Left,Bottom); } }
+    public HexCoords LowerRight { get { return HexCoords.NewUserCoords(Right,Bottom); } }
 
     #region Value Equality
-    bool IEquatable<UserCoordsRectangle>.Equals(UserCoordsRectangle rhs) { return this == rhs; }
-    public override bool Equals(object rhs) { return (rhs is UserCoordsRectangle) && this == (UserCoordsRectangle)rhs; }
-    public static bool operator == (UserCoordsRectangle lhs, UserCoordsRectangle rhs) { 
+    bool IEquatable<CoordsRectangle>.Equals(CoordsRectangle obj) { return this == obj; }
+    public override bool Equals(object obj) { return (obj is CoordsRectangle) && this == (CoordsRectangle)obj; }
+    public static bool operator == (CoordsRectangle lhs, CoordsRectangle rhs) { 
       return lhs.Rectangle == rhs.Rectangle; 
     }
-    public static bool operator != (UserCoordsRectangle lhs, UserCoordsRectangle rhs) { return ! (lhs == rhs); }
+    public static bool operator != (CoordsRectangle lhs, CoordsRectangle rhs) { return ! (lhs == rhs); }
     public override int GetHashCode() { return Rectangle.GetHashCode(); }
 
-    bool IEqualityComparer<UserCoordsRectangle>.Equals(UserCoordsRectangle lhs, UserCoordsRectangle rhs) { return lhs == rhs; }
-    int  IEqualityComparer<UserCoordsRectangle>.GetHashCode(UserCoordsRectangle coords) { return Rectangle.GetHashCode(); }
+    bool IEqualityComparer<CoordsRectangle>.Equals(CoordsRectangle lhs, CoordsRectangle rhs) { return lhs == rhs; }
+    int  IEqualityComparer<CoordsRectangle>.GetHashCode(CoordsRectangle coords) { return Rectangle.GetHashCode(); }
     #endregion
   }
 }

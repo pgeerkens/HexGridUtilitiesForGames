@@ -32,9 +32,9 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
-using PG_Napoleonics;
+using PGNapoleonics.WinForms;
 
-namespace PG_Napoleonics.HexGridExample2 {
+namespace PGNapoleonics.HexGridExample2 {
   static class Program {
     /// <summary>The main entry point for the application.</summary>
     [STAThread]
@@ -43,16 +43,9 @@ namespace PG_Napoleonics.HexGridExample2 {
       Application.SetCompatibleTextRenderingDefault(false);
       Application.ThreadException += 
         new ThreadExceptionEventHandler(
-          (new ThreadExceptionHandler()).Application_ThreadException);
+          (new ThreadExceptionHandler()).ApplicationThreadException);
 
-      Application.Run(new HexGridExampleForm());
-    }
-
-    public static void InquireOnThisException(Exception ex) {
-      string message = ex.Message + (ex.InnerException == null 
-                     ? "" 
-                     : Environment.NewLine + ex.InnerException.Message);
-      MessageBox.Show(message,"Open Map-File Error",MessageBoxButtons.OK);
+      Application.Run(new HexgridExampleForm());
     }
   }
 }

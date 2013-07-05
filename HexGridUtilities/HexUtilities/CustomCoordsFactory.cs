@@ -31,9 +31,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.HexUtilities {
+namespace PGNapoleonics.HexUtilities {
   public static class CustomCoords {
 
     public static IntVector2D UserToCustom(this HexCoords @this) {

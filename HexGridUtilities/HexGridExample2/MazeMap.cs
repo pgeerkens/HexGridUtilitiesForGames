@@ -32,25 +32,30 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-using PG_Napoleonics;
-using PG_Napoleonics.HexUtilities;
+using PGNapoleonics;
+using PGNapoleonics.HexUtilities;
 
-namespace PG_Napoleonics.HexGridExample2 {
-  public sealed class MazeMap : MapDisplay {
-    public MazeMap() : base() {}
-
-    public override bool  IsPassable(HexCoords coords) { 
-      return IsOnBoard(coords)  &&  GetMapGridHex(coords).Elevation == 0; 
-    }
+namespace PGNapoleonics.HexGridExample2 {
+  internal sealed class MazeMap : MapDisplay {
+    public MazeMap() : base(_sizeHexes, (map,coords) => InitializeHex(map,coords)) {}
 
     /// <inheritdoc/>
-    public override int    Heuristic(int range) { return range; }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
+      "CA2233:OperationsShouldNotOverflow", MessageId = "10*elevationLevel")]
+    public override int   ElevationASL(int elevationLevel) { return 10 * elevationLevel; }
+    /// <inheritdoc/>
+    public override int   Heuristic(int range) { return range; }
+    /// <inheritdoc/>
+    public override bool  IsPassable(HexCoords coords) { 
+      return IsOnboard(coords)  &&  this[coords].Elevation == 0; 
+    }
 
     #region Painting
     public override void PaintMap(Graphics g) { 
+      if (g==null) throw new ArgumentNullException("g");
       var clipCells = GetClipCells(g.VisibleClipBounds);
-      var state     = g.Save();
       var location  = new Point(GridSize.Width*2/3, GridSize.Height/2);
 
       g.TranslateTransform(MapMargin.Width + clipCells.Right*GridSize.Width, MapMargin.Height);
@@ -63,7 +68,7 @@ namespace PG_Napoleonics.HexGridExample2 {
           var container = g.BeginContainer();
           g.TranslateTransform(0,  clipCells.Top*GridSize.Height + (x+1)%2 * (GridSize.Height)/2);
           for (int y=clipCells.Top; y<clipCells.Bottom; y++) {
-            GetMapGridHex(HexCoords.NewUserCoords(x,y)).Paint(g);
+            this[HexCoords.NewUserCoords(x,y)].Paint(g);
             g.DrawPath(Pens.Black, HexgridPath);
 
             g.TranslateTransform(0,GridSize.Height);
@@ -75,9 +80,8 @@ namespace PG_Napoleonics.HexGridExample2 {
     public override void PaintUnits(Graphics g) { ; }
     #endregion
 
-    #region Board definition
-    protected override string[]   Board { get { return _board; } }
-    string[] _board = new string[] {
+    #region static Board definition
+    static List<string> _board = new List<string>() {
       ".............|.........|.......|.........|.............",
       ".............|.........|.......|.........|.............",
       "....xxxxxxxxx|....|....|...|...|...|.....|.............",
@@ -109,58 +113,13 @@ namespace PG_Napoleonics.HexGridExample2 {
       ".............................|.......|.....|...........",
       ".............................|.......|.....|..........."
     };
+    static Size _sizeHexes = new Size(_board[0].Length, _board.Count);
     #endregion
 
-    protected override IHex GetGridHex(HexCoords coords) { return GetMapGridHex(coords); }
-    private IMapGridHex GetMapGridHex(HexCoords coords) {
-      switch (Board[coords.User.Y][coords.User.X]) {
-        case '.':   return new PathMazeGridHex(this,coords,GridSize);
-        default:    return new WallMazeGridHex(this,coords,GridSize);
-      }
-    }
-
-    public abstract class MazeGridHex : MapGridHex {
-      public MazeGridHex(MapDisplay board, HexCoords coords, Size gridSize) 
-        : base(board, coords) {
-        GridSize  = gridSize;
-
-        HexgridPath = new GraphicsPath();
-        HexgridPath.AddLines(new Point[] {
-          new Point(GridSize.Width*1/3,                0), 
-          new Point(GridSize.Width*3/3,                0),
-          new Point(GridSize.Width*4/3,GridSize.Height/2),
-          new Point(GridSize.Width*3/3,GridSize.Height  ),
-          new Point(GridSize.Width*1/3,GridSize.Height  ),
-          new Point(                 0,GridSize.Height/2),
-          new Point(GridSize.Width*1/3,                0)
-        } );
-      }
-
-      public override int  ElevationASL   { get { return Elevation * 10; } protected set { throw new NotSupportedException(); } }
-      public override void Paint(Graphics g) {;}
-
-      protected Size         GridSize      { get; private set; }
-      protected GraphicsPath HexgridPath   { get; set; }
-    }
-
-    public sealed class PathMazeGridHex : MazeGridHex {
-      public PathMazeGridHex(MapDisplay board, HexCoords coords, Size gridSize) 
-        : base(board, coords, gridSize) {}
-      public override int  Elevation      { get { return 0; } }
-      public override int  HeightTerrain  { get { return ElevationASL + 0; } }
-      public override int  StepCost(Hexside direction) { return  1; }
-    }
-
-    public sealed class WallMazeGridHex : MazeGridHex {
-      public WallMazeGridHex(MapDisplay board, HexCoords coords, Size gridSize) 
-        : base(board, coords, gridSize) {}
-      public override int  Elevation      { get { return 1; } }
-      public override int  HeightTerrain  { get { return ElevationASL + 10; } }
-      public override int  StepCost(Hexside direction) { return -1; }
-
-      public override void Paint(Graphics g) {
-        using(var brush = new SolidBrush(Color.FromArgb(78,Color.DarkGray)))
-          g.FillPath(brush, HexgridPath);
+    private static MapGridHex InitializeHex(IBoard<MapGridHex> board, HexCoords coords) {
+      switch (_board[coords.User.Y][coords.User.X]) {
+        case '.': return new PathMazeGridHex(board, coords, board.GridSize);
+        default:  return new WallMazeGridHex(board, coords, board.GridSize);
       }
     }
   }

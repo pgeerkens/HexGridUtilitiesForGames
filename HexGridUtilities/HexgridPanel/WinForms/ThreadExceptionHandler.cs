@@ -33,10 +33,22 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace System.Threading {
+namespace  PGNapoleonics.WinForms {
+  [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage()]
   public class ThreadExceptionHandler {
     ///<summary>Handles the thread exception.</summary> 
-    public void Application_ThreadException(object sender, ThreadExceptionEventArgs e) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+      "CA1031:DoNotCatchGeneralExceptionTypes"), 
+    System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", 
+      "CA1303:Do not pass literals as localized parameters", 
+      MessageId = "System.Windows.Forms.MessageBox.Show(System.String,System.String,System.Windows.Forms.MessageBoxButtons,System.Windows.Forms.MessageBoxIcon)"), 
+    System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
+      "CA1804:RemoveUnusedLocals", MessageId = "result"), 
+    System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", 
+      "CA1300:SpecifyMessageBoxOptions")]
+    public void ApplicationThreadException(object sender, ThreadExceptionEventArgs e) {
+      if (sender==null) throw new ArgumentNullException("sender");
+      if (e==null) throw new ArgumentNullException("e");
       if(e.Exception is NotImplementedException || e.Exception is NotSupportedException) {
           MessageBox.Show(e.Exception.Message, 
             "Application Error", 
@@ -60,26 +72,29 @@ namespace System.Threading {
     }
 
     /// <summary>Creates and displays the error message.</summary>
-    private DialogResult ShowThreadExceptionDialog(Exception ex) {
+    private static DialogResult ShowThreadExceptionDialog(Exception ex) {
       var errorMessage= 
-        "Unhandled Exception:\n\n" +
-        ex.Message + "\n\n" + 
-        ex.GetType() + 
-        "\n\nStack Trace:\n" + 
+        "Unhandled Exception:" + Environment.NewLine + Environment.NewLine +
+        ex.Message + Environment.NewLine + Environment.NewLine +
+        ex.GetType() + Environment.NewLine + Environment.NewLine +
+        "Stack Trace:" + Environment.NewLine +
         ex.StackTrace;
 
-      return MessageBox.Show(errorMessage, 
-        "Application Error", 
-        MessageBoxButtons.OK, //.AbortRetryIgnore, 
-        MessageBoxIcon.Stop);
+      var dialog = new ExceptionDialog(errorMessage);
+      try {
+        dialog.Show();
+      } finally { if (dialog!=null) dialog.Dispose(); }
+      return DialogResult.Abort;
     }
   }
 
-  public static partial class Extensions {
+  public static partial class ControlExtensions {
     /// <summary>Executes Action asynchronously on the UI thread, without blocking the calling thread.</summary>
     /// <param name="this"></param>
     /// <param name="action"></param>
     public static void UIThread(this Control @this, Action action) {
+      if (@this==null) throw new ArgumentNullException("this");
+      if (action==null) throw new ArgumentNullException("action");
       if (@this.InvokeRequired) {
         @this.BeginInvoke(action);
       } else {
@@ -87,23 +102,34 @@ namespace System.Threading {
       }
     }
     public static void UIThread(this Control @this, Action<object[]> action, params object[] args) {
+      if (@this==null) throw new ArgumentNullException("this");
+      if (action==null) throw new ArgumentNullException("action");
       if (@this.InvokeRequired) {
         @this.BeginInvoke(action,args);
       } else {
         action.Invoke(args);
       }
     }
+  }
+
+  public static partial class FormExtensions {
     /// <summary>Executes Action asynchronously on the UI thread, without blocking the calling thread.</summary>
     /// <param name="this"></param>
     /// <param name="action"></param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
     public static void UIThread(this Form @this, Action action) {
+      if (@this==null) throw new ArgumentNullException("this");
+      if (action==null) throw new ArgumentNullException("action");
       if (@this.InvokeRequired) {
         @this.BeginInvoke(action);
       } else {
         action.Invoke();
       }
     }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
     public static void UIThread(this Form @this, Action<object[]> action, params object[] args) {
+      if (@this==null) throw new ArgumentNullException("this");
+      if (action==null) throw new ArgumentNullException("action");
       if (@this.InvokeRequired) {
         @this.BeginInvoke(action,args);
       } else {

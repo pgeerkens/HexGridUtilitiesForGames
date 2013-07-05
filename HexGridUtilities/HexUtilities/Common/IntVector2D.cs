@@ -29,10 +29,11 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace PG_Napoleonics.HexUtilities.Common {
+namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>Representation of an immutable integer 2D vector.</summary>
   public struct IntVector2D : IEquatable<IntVector2D> {
     public static readonly IntVector2D Empty = new IntVector2D(Point.Empty);
@@ -41,8 +42,8 @@ namespace PG_Napoleonics.HexUtilities.Common {
     public int Y { get; private set; }
     public int W { get; private set; }
 
-    public IntVector2D(Point p)             : this(p.X, p.Y, 1) {}
-    public IntVector2D(Size s)              : this(s.Width, s.Height, 1) {}
+    public IntVector2D(Point point)         : this(point.X, point.Y, 1) {}
+    public IntVector2D(Size size)           : this(size.Width, size.Height, 1) {}
     public IntVector2D(IntVector2D v)       : this(v.X, v.Y, 1) {}
     public IntVector2D(int x, int y)        : this(x, y, 1) {}
     public IntVector2D(int x, int y, int w) : this() {
@@ -78,26 +79,38 @@ namespace PG_Napoleonics.HexUtilities.Common {
     public static IntVector2D operator / (IntVector2D v, float s) {
       return new IntVector2D((int)Math.Floor(v.X/(float)s), (int)Math.Floor(v.Y/(float)s));
     }
+    public static IntVector2D Multiply (int s, IntVector2D v) { return v * s; }
+    public static IntVector2D Multiply (IntVector2D v, int s) { return v * s; }
+    public static IntVector2D Divide (IntVector2D v, int i)   { return v / i; }
+    public static IntVector2D Divide (IntVector2D v, float s) { return v / s; }
     #endregion
 
     #region Vector operators
     /// <summary>Scalar (Inner, or Dot) Product of two <code>IntVector2D</code> as an Int32.</summary>
-   public static int operator * (IntVector2D v1, IntVector2D v2) {
+    public static int operator * (IntVector2D v1, IntVector2D v2) {
       return v1.X*v2.X + v1.Y*v2.Y;
     }
     /// <summary>Z component of the 'Vector'- or Cross-Product of two <code>IntVector2D</code>s</summary>
     /// <returns>A pseudo-scalar (it reverses sign on exchange of its arguments).</returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
+      "CA2225:OperatorOverloadsHaveNamedAlternates")]
     public static int operator ^ (IntVector2D v1, IntVector2D v2) {
       return v1.X*v2.Y - v1.Y*v2.X;
     }
     /// <summary>Vector Addition of two <code>IntVector2D</code> as a new <code>IntVector2D</code>.</summary>
-   public static IntVector2D operator + (IntVector2D v1, IntVector2D v2) {
+    public static IntVector2D operator + (IntVector2D v1, IntVector2D v2) {
       return new IntVector2D(v1.X+v2.X, v1.Y+v2.Y);
     }
     /// <summary>Vector Subtraction of two <code>IntVector2D</code> as a new <code>IntVector2D</code></summary>
     public static IntVector2D operator - (IntVector2D v1, IntVector2D v2) {
       return new IntVector2D(v1.X-v2.X, v1.Y-v2.Y);
     }
+    public static IntVector2D Add  (IntVector2D v1, IntVector2D v2) { return v1 + v2; }
+    public static IntVector2D Subtract (IntVector2D v1, IntVector2D v2) { return v1 - v2; }
+
+    public static int InnerProduct (IntVector2D v1, IntVector2D v2) { return v1 * v2; }
+    public static int CrossProduct (IntVector2D v1, IntVector2D v2) { return v1 ^ v2; }
+
     #endregion
 
     #region Casts
@@ -118,6 +131,7 @@ namespace PG_Napoleonics.HexUtilities.Common {
     public override int GetHashCode() { return (X<<16) ^ Y ^ W; }
     #endregion
 
-    public override string ToString() { return string.Format("({0,3},{1,3})",X,Y); }
+    public override string ToString() { return string.Format(CultureInfo.InvariantCulture,
+      "({0,3},{1,3})",X,Y); }
   }
 }

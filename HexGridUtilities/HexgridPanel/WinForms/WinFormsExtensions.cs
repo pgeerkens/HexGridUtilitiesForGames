@@ -30,25 +30,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-namespace PG_Napoleonics.WinForms {
+using PGNapoleonics;
+
+namespace PGNapoleonics.WinForms {
   public static partial class WinFormsExtensions {
     /// <summary>Reflect to set Double-Buffering on Control.</summary>
     /// <param name="control">Control to operate on.</param>
     /// <param name="setting">New value for parameter.</param>
     public static void MakeDoubleBuffered(this Control control, bool setting)
     {
+      if (control==null) throw new ArgumentNullException("control");
       control.GetType()
              .GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic)
              .SetValue(control, setting, null);
     }
-    /// <summary>Use WS_EX_COMPOSITED to make a flicker-free form control.</summary>
+
+    /// <summary>Use COMPOSITED to make a flicker-free form control.</summary>
 		/// See "http://social.msdn.microsoft.com/Forums/en-US/winforms/thread/aaed00ce-4bc9-424e-8c05-c30213171c2c"
-    public static CreateParams SetCompositedStyle(this Control control, CreateParams cp) {
-      cp.ExStyle |= (int)WindowStylesEx.WS_EX_COMPOSITED;
-      return cp;
+    public static CreateParams SetCompositedStyle(this Control control, CreateParams parameters) {
+      if (control==null) throw new ArgumentNullException("control");
+      if (parameters==null) throw new ArgumentNullException("parameters");
+      parameters.ExStyle |= (int)WindowStylesEx.COMPOSITED;
+      return parameters;
     }
   }
 }

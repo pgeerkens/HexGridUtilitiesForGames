@@ -32,22 +32,41 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-using PG_Napoleonics;
-using PG_Napoleonics.HexUtilities.Common;
+using PGNapoleonics;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
+namespace PGNapoleonics.HexUtilities {
   internal static partial class ShadowCasting {
+    //         Sextant map
+    //                    X-axis
+    //         \     |     /
+    //           \ 3 | 2 /
+    //             \ | / 
+    //          4    +    1     
+    //             / | \
+    //           / 5 | 0 \  
+    //         /     |     \
+    //             Y-axis
+    private static List<IntMatrix2D> _dodecantMatrices = BuildDodecantMatrices();
+    private static Action<HexCoords> TranslateDodecant(IntMatrix2D matrix, Action<HexCoords> action) {
+      return (v) => action(HexCoords.NewCanonCoords(v.Canon*matrix));
+    }
+    private static Func<HexCoords,T> TranslateDodecant<T>(IntMatrix2D matrix, Func<HexCoords,T> func) {
+      return (v) => func(HexCoords.NewCanonCoords(v.Canon*matrix));
+    }
+
     /// <summary>Build dodecant matrices from sextant matrices and reflection about theta=30.</summary>
-    static ShadowCasting() {
+    static List<IntMatrix2D> BuildDodecantMatrices() {
       var matrixRotate  = new IntMatrix2D( 0,-1, 1,1);
       var matrixReflect = new IntMatrix2D(-1, 0, 1,1);
-      matrices = new List<IntMatrix2D>(12);
+      var matrices = new List<IntMatrix2D>(12);
       matrices.Add(IntMatrix2D.Identity);
       matrices.Add(matrixReflect);
       for (int i=2; i<12; i+=2) {
         matrices.Add(matrixRotate  * matrices[i-2]);
         matrices.Add(matrixReflect * matrices[i]);
       }
+      return matrices;
     }
     #if TraceFoV
     static void TestMatrices() {
@@ -61,23 +80,5 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
         }
       }
     #endif
-
-    //         Sextant map
-    //                    X-axis
-    //         \     |     /
-    //           \ 3 | 2 /
-    //             \ | / 
-    //          4    +    1     
-    //             / | \
-    //           / 5 | 0 \  
-    //         /     |     \
-    //             Y-axis
-    private static List<IntMatrix2D> matrices;
-    private static Action<HexCoords> TranslateDodecant(IntMatrix2D matrix, Action<HexCoords> action) {
-      return (v) => action(HexCoords.NewCanonCoords(v.Canon*matrix));
-    }
-    private static Func<HexCoords,T> TranslateDodecant<T>(IntMatrix2D matrix, Func<HexCoords,T> func) {
-      return (v) => func(HexCoords.NewCanonCoords(v.Canon*matrix));
-    }
   }
 }

@@ -29,20 +29,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.HexUtilities.PathFinding {
+namespace PGNapoleonics.HexUtilities.PathFinding {
   /// <summary>Structure returned by the A* Path Finding utility.</summary>
-  public interface IPath : IEnumerable<HexCoords>
+  public interface IPath
   { 
-    HexsideFlags   LastDirection { get; }
-    HexCoords   LastStep      { get; }
-    IPath     PreviousSteps { get; }
-    uint      TotalCost     { get; }
-    uint      TotalSteps    { get; }
+    Hexside   HexsideExit { get; }
+    HexCoords StepCoords  { get; }
+    IPath     PathSoFar   { get; }
+    int       TotalCost   { get; }
+    int       TotalSteps  { get; }
   }
 
   /// <summary>Eric Lippert's implementation for use in A*, modified for a hex-grid.</summary>
@@ -52,38 +53,37 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
   internal sealed class Path : IPath
   {
     #region IPath implementation
-    public HexsideFlags  LastDirection { get; private set; }
-    public HexCoords  LastStep      { get; private set; }
-    public IPath    PreviousSteps { get; private set; }
-    public uint     TotalCost     { get; private set; }
-    public uint     TotalSteps    { get; private set; }
+    public Hexside   HexsideExit { get; private set; }
+    public HexCoords StepCoords  { get; private set; }
+    public IPath     PathSoFar   { get; private set; }
+    public int       TotalCost   { get; private set; }
+    public int       TotalSteps  { get; private set; }
     #endregion
 
     public override string ToString() {
-      return string.Format("Hex: {0} with TotalCost={1,3} (as {2}/{3})",
-        LastStep, TotalCost, TotalCost>>16, TotalCost &0xFFFF);
+      return string.Format(CultureInfo.InvariantCulture,
+        "Hex: {0} with TotalCost={1,3} (as {2}/{3})",
+        StepCoords, TotalCost, TotalCost>>16, TotalCost &0xFFFF);
     }
 
-    public IEnumerator<HexCoords> GetEnumerator() {
-      for (var p = (IPath)this; p.LastStep != null; p = p.PreviousSteps) 
-        yield return p.LastStep;
-    }
-
-    IEnumerator IEnumerable.GetEnumerator() { return this.GetEnumerator(); }
+    //public IEnumerator<HexCoords> GetEnumerator() {
+    //  for (var p = (IPath)this; p.StepCoords != null; p = p.PathSoFar) 
+    //    yield return p.StepCoords;
+    //}
 
     /////////////////////////////  Internals  //////////////////////////////////
-    internal Path(HexCoords start) : this(null, start, HexsideFlags.None, 0) { }
+    internal Path(HexCoords start) : this(null, start, Hexside.North, 0) { }
 
-    internal Path    AddStep(NeighbourCoords neighbour, uint stepCost) {
-      return new Path(this, neighbour.Coords, neighbour.Direction, TotalCost + stepCost);
+    internal Path    AddStep(NeighbourCoords neighbour, int stepCost) {
+      return new Path(this, neighbour.Coords, neighbour.Hexside, TotalCost + stepCost);
     }
 
-    private  Path(Path previousSteps, HexCoords thisStep, HexsideFlags direction, uint totalCost) {
-      LastDirection  = direction;
-      LastStep       = thisStep;
-      PreviousSteps  = previousSteps;
-      TotalCost      = totalCost;
-      TotalSteps     = previousSteps==null ? 0 : previousSteps.TotalSteps+1;
+    private  Path(Path previousSteps, HexCoords step, Hexside direction, int totalCost) {
+      HexsideExit  = direction;
+      StepCoords   = step;
+      PathSoFar    = previousSteps;
+      TotalCost    = totalCost;
+      TotalSteps   = previousSteps==null ? 0 : previousSteps.TotalSteps+1;
     }
   }
 

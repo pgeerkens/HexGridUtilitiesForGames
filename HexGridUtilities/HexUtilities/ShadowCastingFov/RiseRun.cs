@@ -29,19 +29,16 @@
 #undef TraceFoV
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Threading.Tasks;
 
-using PG_Napoleonics;
+using PGNapoleonics;
 
-namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
-  #pragma warning disable 0660,0661 // operator == or != w/o overriding object.equals(object o)
+namespace PGNapoleonics.HexUtilities {
   internal struct RiseRun : IEquatable<RiseRun>, IComparable<RiseRun> {
-    static RiseRun Max(RiseRun lhs, RiseRun rhs) { return lhs >  rhs  ? lhs : rhs; }
-    static RiseRun Min(RiseRun lhs, RiseRun rhs) { return lhs <= rhs  ? lhs : rhs; }
-
-    public int Rise;    // in units of elevation: meters.
-    public int Run;     // in units of distance:  hexes.
+    public int Rise { get; private set; }    // in units of elevation: meters.
+    public int Run  { get; private set; }     // in units of distance:  hexes.
     public RiseRun(int rise, int run) : this() {
       this.Rise = rise;
       this.Run  = run;
@@ -64,9 +61,9 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
            : (this  < rhs) ? -1 
                            : +1;
     }
+    public override bool Equals(object obj) { return this == (RiseRun)obj; }
     public override int GetHashCode() { return Rise ^ Run; }
     #endregion
-    public override string ToString() { return string.Format("Rise={0}; Run={1}", Rise, Run); }
+    public override string ToString() { return string.Format(CultureInfo.InvariantCulture,"Rise={0}; Run={1}", Rise, Run); }
   }
-  #pragma warning restore 0660,0661
 }

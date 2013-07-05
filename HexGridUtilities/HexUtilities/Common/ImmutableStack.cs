@@ -32,25 +32,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PG_Napoleonics.HexUtilities.Common {
+namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>Eric Lippert's implementation for use in A*.</summary>
   /// <remarks>An implementation of immutable stack for use in A* as a 'Path to here'..</remarks>
   /// <cref>http://blogs.msdn.com/b/ericlippert/archive/2007/10/04/path-finding-using-a-in-c-3-0-part-two.aspx</cref>
   /// <typeparam name="T"></typeparam>
-  public class ImmutableStack<T> : IEnumerable<T> {
+  public class ImmutableStackCollection<T> : IEnumerable<T> {
 
     public T                 TopItem      { get; protected set; }
-    public ImmutableStack<T> Remainder    { get; protected set; }
-    public ImmutableStack<T> Push(T step) { return new ImmutableStack<T>(step, this); }
+    public ImmutableStackCollection<T> Remainder    { get; protected set; }
+    public ImmutableStackCollection<T> Push(T step) { return new ImmutableStackCollection<T>(step, this); }
 
-    public ImmutableStack(T start) : this(start, null) {}
-    protected ImmutableStack(T topItem, ImmutableStack<T> remainder) {
+    public ImmutableStackCollection(T start) : this(start, null) {}
+    protected ImmutableStackCollection(T topItem, ImmutableStackCollection<T> remainder) {
       TopItem   = topItem;
       Remainder = remainder;
     }
 
     public IEnumerator<T> GetEnumerator() {
-      for (ImmutableStack<T> p = this; p != null; p = p.Remainder)  yield return p.TopItem;
+      for (ImmutableStackCollection<T> p = this; p != null; p = p.Remainder)  yield return p.TopItem;
     }
 
     IEnumerator IEnumerable.GetEnumerator() { return this.GetEnumerator(); }

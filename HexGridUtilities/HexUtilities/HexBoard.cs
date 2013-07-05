@@ -32,97 +32,149 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-using PG_Napoleonics;
-using PG_Napoleonics.HexUtilities;
-using PG_Napoleonics.HexUtilities.Common;
-using PG_Napoleonics.HexUtilities.PathFinding;
-using PG_Napoleonics.HexUtilities.ShadowCastingFov;
+using PGNapoleonics;
+using PGNapoleonics.HexUtilities;
+using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.PathFinding;
 
-namespace PG_Napoleonics.HexUtilities {
-    public interface IBoard<TGridHex> 
-      : INavigableBoardFwd, IFovBoard  where TGridHex : class, IHex {
-      new bool   IsOnBoard(HexCoords coords);
-      IPathFwd GetPathFwd(IHex start, IHex goal);
+namespace PGNapoleonics.HexUtilities {
+  public interface IBoard<out THex> : IDirectedNavigableBoard, IFovBoard<THex> where THex : IHex {
+    Size     GridSize  { get; }
+    /// <summary>Range beyond which Fast PathFinding is used instead of Stable PathFinding.</summary>
+    int RangeCutoff { get; }
+
+    new bool IsOnboard(HexCoords coords);
+    int      ElevationASL(int elevationLevel);
+  }
+
+  public abstract class HexBoard<THex> : IBoard<THex>, IDisposable where THex : class, IHex {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sizeHexes"></param>
+    /// <param name="gridSize"></param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+    protected HexBoard(Size sizeHexes, Size gridSize, Func<HexBoard<THex>,BoardStorage<THex>> initializeBoard) {
+      if (initializeBoard==null) throw new ArgumentNullException("initializeBoard");
+      SetGridSize(sizeHexes, gridSize);
+      BoardHexes = initializeBoard(this); 
     }
 
-  public abstract class HexBoard : IBoard<IHex> {
-    public HexBoard(Size sizeHexes) { SizeHexes = sizeHexes; }
-
+    #region IBoard<THex> implementation
     ///  <inheritdoc/>
     public virtual  int  FovRadius      { get; set; }
 
     /// <inheritdoc/>
-    public int           RangeCutoff    { get; set; }
-
-    ///  <inheritdoc/>
-    public virtual  Size SizeHexes      { get; private set; }
+    public          int  RangeCutoff    { get; set; }
 
     ///  <inheritdoc/>
     public virtual  int  Heuristic(int range) { return range; }
 
     ///  <inheritdoc/>
-    public virtual  bool IsOnBoard(HexCoords coords)  {
-      return 0<=coords.User.X && coords.User.X < SizeHexes.Width
-          && 0<=coords.User.Y && coords.User.Y < SizeHexes.Height;
+    public abstract int  ElevationASL(int elevationLevel);
+
+    ///  <inheritdoc/>
+    public          bool IsOnboard(HexCoords coords)  { return BoardHexes.IsOnboard(coords); }
+
+    ///  <inheritdoc/>
+    public virtual  bool IsPassable(HexCoords coords) { return IsOnboard(coords); }
+
+    ///  <inheritdoc/>
+    public virtual  int  StepCost(HexCoords coords, Hexside hexsideExit) {
+      return IsOnboard(coords) ? this[coords].StepCost(hexsideExit) : -1;
     }
 
     ///  <inheritdoc/>
-    public virtual  bool IsPassable(HexCoords coords) { return IsOnBoard(coords); }
-
-    ///  <inheritdoc/>
-    public virtual  int  StepCost(HexCoords coords, Hexside hexSide) {
-      return IsOnBoard(coords) ? GetGridHex(coords).StepCostFwd(hexSide) : -1;
+    public virtual  int  DirectedStepCost(IHex hex, Hexside hexsideExit) {
+      return hex==null ? -1 : hex.DirectedStepCost(hexsideExit);
     }
 
     ///  <inheritdoc/>
-    public virtual  int  StepCostFwd(HexCoords coords, Hexside hexSideExit) {
-      return IsOnBoard(coords) 
-        ? GetGridHex(coords.StepOut(hexSideExit)).StepCost(hexSideExit) 
-        : -1;
-    }
+    public          THex this[HexCoords coords]  { get { return BoardHexes[coords];} }
+    #endregion
 
+    #region Drawing support
     ///  <inheritdoc/>
-    IHex IFovBoard.this[HexCoords coords]  { get { return IsOnBoard(coords) ? GetGridHex(coords) : null; } }
+    public BoardStorage<THex> BoardHexes    { get; protected set; }
+    ///  <inheritdoc/>
+    public Size               GridSize      { get; private set; }
+    ///  <inheritdoc/>
+    public GraphicsPath       HexgridPath   { get; private set; }
+    ///  <inheritdoc/>
+    public Size               MapSizeHexes  { get; private set; }
+    ///  <inheritdoc/>
+    public Size               MapSizePixels { get; private set; }
 
-    /// <summary>Returns the hex at coordinates specified by <c>coords</c>.</summary>
-    protected abstract IHex GetGridHex(HexCoords coords);
-
-    /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
-    public virtual IPathFwd GetPathFwd(IHex start, IHex goal) {
-      return PathFinder.FindPathFwd(start, goal, this);
+    /// <summary>Sets the board layout parameters</summary>
+    /// <param name="mapSizeHexes"><c>Size</c> struct of the  board horizontal
+    /// and vertical extent in hexes.</param>
+    /// <param name="gridSize"><c>Size</c> struct of the horizontal and vertical
+    /// extent (in pixels) of the grid on which hexes are to be laid out on.</param>
+    public void SetGridSize(Size mapSizeHexes, Size gridSize) {
+      MapSizeHexes  = mapSizeHexes;
+      GridSize      = gridSize;
+      HexgridPath   = SetGraphicsPath();
+      MapSizePixels = MapSizeHexes 
+                    * new IntMatrix2D(GridSize.Width,                 0, 
+                                                   0,    GridSize.Height, 
+                                      GridSize.Width/3,  GridSize.Height/2);;
     }
+    GraphicsPath SetGraphicsPath() {
+      GraphicsPath path     = null;
+      GraphicsPath tempPath = null;
+      try {
+        tempPath  = new GraphicsPath();
+        tempPath.AddLines(new Point[] {
+          new Point(GridSize.Width*1/3,                0), 
+          new Point(GridSize.Width*3/3,                0),
+          new Point(GridSize.Width*4/3,GridSize.Height/2),
+          new Point(GridSize.Width*3/3,GridSize.Height  ),
+          new Point(GridSize.Width*1/3,GridSize.Height  ),
+          new Point(                 0,GridSize.Height/2),
+          new Point(GridSize.Width*1/3,                0)
+        } );
+        path     = tempPath;
+        tempPath = null;
+      } finally { if(tempPath!=null) tempPath.Dispose(); }
+      return path;
+    }
+    #endregion
+
+    #region IDisposable implementation with Finalizeer
+    bool _isDisposed = false;
+    public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
+    protected virtual void Dispose(bool disposing) {
+      if (!_isDisposed) {
+        if (disposing) {
+          if (BoardHexes!=null) BoardHexes.Dispose();
+        }
+        _isDisposed = true;
+      }
+    }
+    ~HexBoard() { Dispose(false); }
+    #endregion
   }
 
-  public static partial class HexExtensions {
-    /// <summary>Returns the field-of-view on <c>board</c> from the hex specified by coordinates <c>coords</c>.</summary>
-    public static IFov GetFov(this IFovBoard @this, HexCoords origin) {
-      return FovFactory.GetFieldOfView(@this,origin);
-    }
-
-    /// <summary>Returns the field-of-view from this hex.</summary>
-    public static IFov GetFov(this IHex @this) {
-      return FovFactory.GetFieldOfView(@this.Board, @this.Coords);
+  public static partial class HexBoardExtensions {
+    /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
+    public static IPath GetUndirectedPath(this IBoard<IHex> @this, HexCoords start, HexCoords goal) {
+      if (@this == null) throw new ArgumentNullException("this");
+      return Pathfinder.FindPath(start, goal, @this);
     }
 
     /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
-    public static IPath GetPath(this INavigableBoard board, HexCoords start, HexCoords goal) {
-      return PathFinder.FindPath(start, goal, board);
-    }
-
-    /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
-    public static IPathFwd GetPathFwd(this INavigableBoardFwd board, IHex start, IHex goal) {
-      return PathFinder.FindPathFwd(start, goal, board);
-    }
-
-    /// <summary>Returns a least-cost path from this hex to the hex <c>goal.</c></summary>
-    public static IPathFwd GetPathFwd(this IHex @this, IHex goal) {
-      return PathFinder.FindPathFwd(@this, goal, @this.Board);
-    }
-
-    /// <summary>Returns whether this hex is "On Board".</summary>
-    public static bool IsOnBoard(this IHex @this) {
-      return @this.Board.IsOnBoard(@this.Coords);
+    public static IDirectedPath GetDirectedPath(this IBoard<IHex> @this, IHex start, IHex goal) {
+      if (@this == null) throw new ArgumentNullException("this");
+      if (start == null) throw new ArgumentNullException("start");
+      if (goal == null) throw new ArgumentNullException("goal");
+      if (@this.IsPassable(start.Coords) && @this.IsPassable(goal.Coords)) {
+        return goal.Coords.Range(start.Coords) > @this.RangeCutoff
+              ? BidirectionalPathfinder.FindDirectedPathFwd(start, goal, @this)
+              : Pathfinder.FindDirectedPath(start, goal, @this);
+      } else
+        return null;
     }
   }
 }

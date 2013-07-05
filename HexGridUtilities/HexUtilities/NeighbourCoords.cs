@@ -29,27 +29,25 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.HexUtilities {
+namespace PGNapoleonics.HexUtilities {
   public struct NeighbourCoords : IEquatable<NeighbourCoords> {
-    public HexsideFlags  Direction { get { return Index.Direction();} }
-    public Hexside       Index     { get; private set; }
-    public HexCoords     Coords    { get; private set; }
+    public Hexside   Hexside     { get; private set; }
+    public HexCoords Coords    { get; private set; }
 
-    public NeighbourCoords(HexCoords coords, HexsideFlags direction) 
-      : this(coords, direction.IndexOf()) {}
-    public NeighbourCoords(HexCoords coords, Hexside index) : this() {
-      Coords = coords; Index = index;
+    public NeighbourCoords(HexCoords coords, Hexside hexside) : this() {
+      Coords = coords; Hexside = hexside;
     }
     public override string ToString() { 
-      return string.Format("Neighbour: {0} at {1}", Coords.User,Direction);
+      return string.Format(CultureInfo.InvariantCulture,"Neighbour: {0} at {1}", Coords.User,Hexside);
     }
 
-    public Func<NeighbourCoords,T> Bind<T>(Func<HexCoords,T> f) {
+    public static Func<NeighbourCoords,T> Bind<T>(Func<HexCoords,T> f) {
       return n => f(n.Coords);
     }
 

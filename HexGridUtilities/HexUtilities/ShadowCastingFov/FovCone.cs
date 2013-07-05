@@ -29,27 +29,29 @@
 #undef TraceFoV
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Threading.Tasks;
 
-using PG_Napoleonics;
-using PG_Napoleonics.HexUtilities.Common;
+using PGNapoleonics;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
+namespace PGNapoleonics.HexUtilities {
   internal struct FovCone : IEquatable<FovCone> {
-    public IntVector2D  VectorTop    { get; private set; }
-    public IntVector2D  VectorBottom { get; private set; }
     public int          Range        { get; private set; }
     public RiseRun      RiseRun      { get; private set; }
+    public IntVector2D  VectorBottom { get; private set; }
+    public IntVector2D  VectorTop    { get; private set; }
 
     public FovCone(int range, IntVector2D top, IntVector2D bottom, RiseRun riseRun) : this() {
       this.Range        = range;
+      this.RiseRun      = riseRun;
       this.VectorTop    = top;
       this.VectorBottom = bottom;
-      this.RiseRun      = riseRun;
     }
     public override string ToString() {
-      return string.Format("Y={0}, TopVector={1}, BottomVector={2}, RiseRun={3}",
+      return string.Format(CultureInfo.InvariantCulture,
+        "Y={0}, TopVector={1}, BottomVector={2}, RiseRun={3}",
                                   Range, VectorTop, VectorBottom, RiseRun);
     }
 

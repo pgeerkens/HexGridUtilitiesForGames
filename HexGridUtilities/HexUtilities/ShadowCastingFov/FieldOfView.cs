@@ -27,39 +27,46 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
-using PG_Napoleonics;
-using PG_Napoleonics.HexUtilities;
-using PG_Napoleonics.HexUtilities.Common;
-using PG_Napoleonics.HexUtilities.ShadowCastingFov;
+using PGNapoleonics;
+using PGNapoleonics.HexUtilities;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
+namespace PGNapoleonics.HexUtilities {
   /// <summary>Structure returned by the Field-of-View factory.</summary>
   public interface IFov {
     /// <summary>True if the hex at location <c>coords> is visible in this field-of-view.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
     bool this[HexCoords coords] { get; }
   }
 
-  /// <summary>Implementation of IFov using a 2-D backing array.</summary>
+  /// <summary>Implementation of IFov using a backing array of BitArray.</summary>
   internal class ArrayFieldOfView : IFov {
-    public ArrayFieldOfView(IFovBoard board) {
-      Board      = board;
-      FovBacking = new bool[board.SizeHexes.Width, board.SizeHexes.Height];
+    private readonly object _syncLock = new object();
+
+    public ArrayFieldOfView(IFovBoard<IHex> board) {
+      _isOnboard  = h => board.IsOnboard(h);
+      _fovBacking = new BitArray[board.MapSizeHexes.Width]; 
+      for (var i=0; i< board.MapSizeHexes.Width; i++)
+        _fovBacking[i] = new BitArray(board.MapSizeHexes.Height);
     }
 
     public bool this[HexCoords coords] { 
       get { 
-        return Board.IsOnBoard(coords) && FovBacking[coords.User.X, coords.User.Y];
+        return _isOnboard(coords) && _fovBacking[coords.User.X][coords.User.Y];
       } 
       internal set { 
-        if (Board.IsOnBoard(coords)) { FovBacking[coords.User.X,coords.User.Y] = value; } 
+        lock(_syncLock) {
+          if (_isOnboard(coords)) { _fovBacking[coords.User.X][coords.User.Y] = value; } 
+        }
       }
-    } bool[,] FovBacking;
+    } BitArray[] _fovBacking;
 
-    IFovBoard           Board;
+    Func<HexCoords,bool> _isOnboard;
   }
 }

@@ -32,10 +32,10 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-using PG_Napoleonics.HexUtilities;
-using PG_Napoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.HexUtilities {
+namespace PGNapoleonics.HexUtilities {
   /// <summary></summary>
   public class HexEventArgs : MouseEventArgs {
     public HexCoords  Coords       { get; private set; }
@@ -52,6 +52,7 @@ namespace PG_Napoleonics.HexUtilities {
       : this(coords, new MouseEventArgs(MouseButtons.None,0,0,0,0), modifierKeys) {}
     public HexEventArgs(HexCoords coords, MouseEventArgs e) 
       : this(coords, e, Keys.None) {}
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1")]
     public HexEventArgs(HexCoords coords, MouseEventArgs e, Keys modifierKeys)
       : base(e.Button,e.Clicks,e.X,e.Y,e.Delta) {
       Coords       = coords;

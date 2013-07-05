@@ -33,20 +33,27 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics;
-using PG_Napoleonics.HexUtilities;
+using PGNapoleonics;
+using PGNapoleonics.HexUtilities;
 
-namespace PG_Napoleonics.HexGridExample2 {
-  public sealed class TerrainMap : MapDisplay {
-    public TerrainMap() : base() {}
+namespace PGNapoleonics.HexGridExample2 {
+  internal sealed class TerrainMap : MapDisplay {
+    public TerrainMap() : base(_sizeHexes, (map,coords) => InitializeHex(map,coords)) {}
 
     /// <inheritdoc/>
-    public override int    Heuristic(int range) { return 2 * range; }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
+      "CA2233:OperationsShouldNotOverflow", MessageId = "10*elevationLevel")]
+    public override int   ElevationASL(int elevationLevel) { return 10 * elevationLevel; }
+
+    /// <inheritdoc/>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
+      "CA2233:OperationsShouldNotOverflow", MessageId = "2*range")]
+    public override int   Heuristic(int range) { return 2 * range; }
 
     #region Painting
     public override void PaintMap(Graphics g) { 
+      if (g==null) throw new ArgumentNullException("g");
       var clipCells = GetClipCells(g.VisibleClipBounds);
-      var state     = g.Save();
       var location  = new Point(GridSize.Width*2/3, GridSize.Height/2);
 
       g.TranslateTransform(MapMargin.Width + clipCells.Right*GridSize.Width, MapMargin.Height);
@@ -59,7 +66,7 @@ namespace PG_Napoleonics.HexGridExample2 {
           var container = g.BeginContainer();
           g.TranslateTransform(0,  clipCells.Top*GridSize.Height + (x+1)%2 * (GridSize.Height)/2);
           for (int y=clipCells.Top; y<clipCells.Bottom; y++) {
-            GetMapGridHex(HexCoords.NewUserCoords(x,y)).Paint(g);
+            this[HexCoords.NewUserCoords(x,y)].Paint(g);
             g.DrawPath(Pens.Black, HexgridPath);
 
             g.TranslateTransform(0,GridSize.Height);
@@ -71,9 +78,8 @@ namespace PG_Napoleonics.HexGridExample2 {
     public override void PaintUnits(Graphics g) { ; }
     #endregion
 
-    #region Board definition
-    protected override string[]   Board { get { return _board; } }
-    string[] _board = new string[] {
+    #region static Board definition
+    static List<string> _board = new List<string>() {
       "...................3.......22...........R..............",
       "...................3.........222222.....R..............",
       "...................3..............2.....R..............",
@@ -105,20 +111,21 @@ namespace PG_Napoleonics.HexGridExample2 {
       "..................RR...................................",
       ".................RRR..................................."
     };
+    static Size _sizeHexes = new Size(_board[0].Length, _board.Count);
     #endregion
 
-    protected override IHex GetGridHex(HexCoords coords) { return GetMapGridHex(coords); }
-    private IMapGridHex GetMapGridHex(HexCoords coords) {
-      char value = Board[coords.User.Y][coords.User.X];
+    private static MapGridHex InitializeHex(IBoard<MapGridHex> board, HexCoords coords) {
+      char value = _board[coords.User.Y][coords.User.X];
       switch(value) {
-        default:  return new ClearTerrainGridHex   (this, coords, GridSize);
-        case '2': return new PikeTerrainGridHex    (this, coords, GridSize);
-        case '3': return new RoadTerrainGridHex    (this, coords, GridSize);
-        case 'R': return new RiverTerrainGridHex   (this, coords, GridSize);
-        case 'W': return new WoodsTerrainGridHex   (this, coords, GridSize);
-        case 'F': return new FordTerrainGridHex    (this, coords, GridSize);
-        case 'H': return new HillTerrainGridHex    (this, coords, GridSize);
-        case 'M': return new MountainTerrainGridHex(this, coords, GridSize);
+        default:   
+        case '.':  return new ClearTerrainGridHex   (board, coords, board.GridSize);
+        case '2':  return new PikeTerrainGridHex    (board, coords, board.GridSize);
+        case '3':  return new RoadTerrainGridHex    (board, coords, board.GridSize);
+        case 'F':  return new FordTerrainGridHex    (board, coords, board.GridSize);
+        case 'H':  return new HillTerrainGridHex    (board, coords, board.GridSize);
+        case 'M':  return new MountainTerrainGridHex(board, coords, board.GridSize);
+        case 'R':  return new RiverTerrainGridHex   (board, coords, board.GridSize);
+        case 'W':  return new WoodsTerrainGridHex   (board, coords, board.GridSize);
       }
     }
   }

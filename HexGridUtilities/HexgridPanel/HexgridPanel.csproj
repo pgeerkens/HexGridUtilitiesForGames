@@ -65,6 +65,8 @@
     <DocumentationFile>
     </DocumentationFile>
     <NoWarn>1607</NoWarn>
+    <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -88,8 +90,16 @@
     <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>HexgridPanel.key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Accessibility" />
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -100,6 +110,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HexEventArgs.cs" />
     <Compile Include="HexgridPanel.cs">
       <SubType>Component</SubType>
@@ -107,8 +118,14 @@
     <Compile Include="HexgridPanel.Designer.cs">
       <DependentUpon>HexgridPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="WinForms\NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WinForms\Extensions.cs" />
+    <Compile Include="WinForms\ExceptionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WinForms\ExceptionDialog.Designer.cs">
+      <DependentUpon>ExceptionDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="WinForms\ThreadExceptionHandler.cs" />
     <Compile Include="WinForms\TransparentPanel.cs">
       <SubType>Component</SubType>
@@ -122,17 +139,29 @@
     <EmbeddedResource Include="HexGridPanel.resx">
       <DependentUpon>HexgridPanel.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="WinForms\ExceptionDialog.en-US.resx">
+      <DependentUpon>ExceptionDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WinForms\ExceptionDialog.resx">
+      <DependentUpon>ExceptionDialog.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="HexgridPanel.key.snk" />
     <None Include="license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HexUtilities\HexUtilities.csproj">
-      <Project>{013628E1-60E2-40A6-91D4-8B446F397A0A}</Project>
+      <Project>{013628e1-60e2-40a6-91d4-8b446f397a0a}</Project>
       <Name>HexUtilities</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
+      <Link>CustomDictionary.xml</Link>
+    </CodeAnalysisDictionary>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

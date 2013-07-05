@@ -28,13 +28,26 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.HexUtilities {
-  public struct HexCoords : IEquatable<HexCoords> {
+namespace PGNapoleonics.HexUtilities {
+  /// <summary>Coordinate structure for hexagonal grids that abstracts the distinction 
+  /// between rectangular (User) and canonical (Canon) bases (basis vectors, or reference 
+  /// frame).</summary>
+  /// <remarks>
+  /// An obtuse reference frmae, with basis vectors at 120 degrees, eases most grid 
+  /// calculations and movement operations; a rectangular reference frmae is easier for 
+  /// most user interactions, and optimal for board storage. This structure hides the
+  /// distinction betwene them, and automatically converting from one to the other on 
+  /// demand (and caching the result).
+  /// </remarks>
+  [DebuggerDisplay("User: {User}")]
+  public struct HexCoords : IEquatable<HexCoords>, IEqualityComparer<HexCoords> {
     #region static members
     public static HexCoords EmptyCanon { get { return _EmptyCanon; } }
     public static HexCoords EmptyUser  { get { return _EmptyUser; } }
@@ -50,12 +63,12 @@ namespace PG_Napoleonics.HexUtilities {
     static readonly HexCoords _EmptyCanon  = HexCoords.NewCanonCoords(0,0);
     static readonly HexCoords _EmptyUser   = HexCoords.NewUserCoords(0,0);
 
-    static readonly IntVector2D vectorNW = new IntVector2D(-1,-1);
     static readonly IntVector2D vectorN  = new IntVector2D( 0,-1);
     static readonly IntVector2D vectorNE = new IntVector2D( 1, 0);
     static readonly IntVector2D vectorSE = new IntVector2D( 1, 1);
     static readonly IntVector2D vectorS  = new IntVector2D( 0, 1);
     static readonly IntVector2D vectorSW = new IntVector2D(-1, 0);
+    static readonly IntVector2D vectorNW = new IntVector2D(-1,-1);
 
     static readonly IntVector2D[] HexsideVectors = new IntVector2D[] {
       vectorN,  vectorNE, vectorSE, vectorS,  vectorSW, vectorNW
@@ -85,15 +98,23 @@ namespace PG_Napoleonics.HexUtilities {
     #endregion
 
     #region Methods
+    /// <summary>Returns an <c>HexCoords</c> for the hex in direction <c>hexside</c> from this one.</summary>
+    public HexCoords GetNeighbour(Hexside hexside) {
+      return NewCanonCoords(Canon + HexsideVectors[(int)hexside]); 
+    }
+
     ///<summary>Returns all neighbouring hexes as IEnumerable.</summary>
     public IEnumerable<NeighbourCoords> GetNeighbours() { 
-      foreach (var hexside in HexExtensions.HexsideList)
-        yield return new NeighbourCoords(StepOut(hexside), hexside);
+      for (var hexside=0; hexside<HexsideVectors.Length; hexside++)
+        yield return new NeighbourCoords(NewCanonCoords(Canon + HexsideVectors[hexside]),
+                                        (Hexside)hexside); 
+      //foreach (var hexside in HexExtensions.HexsideList)
+      //  yield return new NeighbourCoords(GetNeighbour(hexside), hexside);
     }
 
     ///<summary>Returns set of hexes at direction(s) specified by <c>hexsides</c>, as IEnumerable.</summary>
     public IEnumerable<NeighbourCoords> GetNeighbours(HexsideFlags hexsides) { 
-      return GetNeighbours().Where(n=>hexsides.HasFlag(n.Direction));
+      return GetNeighbours().Where(n=>hexsides.HasFlag(n.Hexside));
     }
 
     /// <summary>Modified <i>Manhattan</i> distance of supplied coordinate from this one.</summary>
@@ -103,13 +124,9 @@ namespace PG_Napoleonics.HexUtilities {
       return ( Math.Abs(deltaX) + Math.Abs(deltaY) + Math.Abs(deltaX-deltaY) ) / 2;
     }
 
-    /// <summary>Returns an <c>HexCoords</c> for the hex in direction <c>hexside</c> from this one.</summary>
-    public HexCoords StepOut(Hexside hexside) {
-      return NewCanonCoords(Canon + HexsideVectors[(int)hexside]); 
-    }
-
     /// <inheritDoc/>
-    public override string ToString() { return string.Format("User: {0}", User); }
+    public override string ToString() { return string.Format(CultureInfo.InvariantCulture,
+      "User: {0}", User); }
     #endregion
 
     #region Value Equality
@@ -121,14 +138,16 @@ namespace PG_Napoleonics.HexUtilities {
     public override int GetHashCode() { return User.GetHashCode(); }
 
     /// <inheritdoc/>
-    public bool Equals(HexCoords rhs) { 
-      return User == rhs.User;
-    }
+    public bool Equals(HexCoords other) { return User == other.User; }
 
     public static bool operator != (HexCoords lhs, HexCoords rhs) { return ! (lhs==rhs); }
-    public static bool operator == (HexCoords lhs, HexCoords rhs) {
-      return lhs.User == rhs.User;
-    }
+    public static bool operator == (HexCoords lhs, HexCoords rhs) { return lhs.User == rhs.User; }
+
+    /// <inheritdoc/>
+    bool IEqualityComparer<HexCoords>.Equals(HexCoords lhs, HexCoords rhs) { return lhs.User == rhs.User; }
+
+    /// <inheritdoc/>
+    int  IEqualityComparer<HexCoords>.GetHashCode(HexCoords coords) { return coords.GetHashCode(); }
     #endregion
   } 
 }

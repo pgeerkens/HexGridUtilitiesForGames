@@ -32,22 +32,22 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 
-namespace PG_Napoleonics.HexUtilities.Common {
+namespace PGNapoleonics.HexUtilities.Common {
   public static class PointExtensions {
-    public static Point Scale(this Point @this, int scale) { 
-      return @this.Scale(scale,scale);
+    public static Point Scale(this Point @this, int value) { 
+      return @this.Scale(value,value);
     }
     public static Point Scale(this Point @this, int scaleX, int scaleY) {
       return new Point(@this.X * scaleX, @this.Y * scaleY);
     }
-    public static PointF Scale(this Point @this, float scale) {
-      return @this.Scale(scale,scale);
+    public static PointF Scale(this Point @this, float value) {
+      return @this.Scale(value,value);
     }
     public static PointF Scale(this Point @this, float scaleX, float scaleY) {
       return new PointF(@this.X,@this.Y).Scale(scaleX,scaleY);
     }
-    public static PointF Scale(this PointF @this, float scale) { 
-      return @this.Scale(scale,scale);
+    public static PointF Scale(this PointF @this, float value) { 
+      return @this.Scale(value,value);
     }
     public static PointF Scale(this PointF @this, float scaleX, float scaleY) {
       return new PointF(@this.X * scaleX, @this.Y * scaleY);

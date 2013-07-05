@@ -32,30 +32,30 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
-using PG_Napoleonics;
-using PG_Napoleonics.HexUtilities;
-using PG_Napoleonics.HexUtilities.Common;
-using PG_Napoleonics.HexUtilities.ShadowCastingFov;
+using PGNapoleonics;
+using PGNapoleonics.HexUtilities;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
+namespace PGNapoleonics.HexUtilities {
   public enum FovTargetMode {
     EqualHeights,
     TargetHeightEqualZero,
     TargetHeightEqualActual
   }
     /// <summary>Interface required to make use of ShadowCasting Field-of-View calculation.</summary>
-  public interface IFovBoard {
+  public interface IFovBoard<out THex> where THex : IHex {
     /// <summary>Distance in hexes out to which Field-of-View is to be calculated.</summary>
     int      FovRadius             { get; set; }
 
     /// <summary>The rectangular extent of the board's hexagonal grid, in hexes.</summary>
-    Size     SizeHexes             { get; }
+    Size     MapSizeHexes             { get; }
 
-    /// <summary>Returns the <c>TGridHex</c> at location <c>coords</c>.</summary>
-    IHex     this[HexCoords  coords] { get; }
+    /// <summary>Returns the <c>IHex</c> at location <c>coords</c>.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
+    THex     this[HexCoords  coords] { get; }
 
     /// <summary>Returns whether the hex at location <c>coords</c>is "on board".</summary>
-    bool     IsOnBoard(HexCoords coords);
+    bool     IsOnboard(HexCoords coords);
 
     /// <summary>Returns whether the hex at location <c>coords</c> is passable.</summary>
     /// <param name="coords"></param>
@@ -63,12 +63,12 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
   }
 
   public static class FovFactory {
-    public static IFov GetFieldOfView(IFovBoard board, HexCoords origin) {
-      return GetFieldOfView(board, origin, board.FovRadius, FovTargetMode.EqualHeights);
+    public static IFov GetFieldOfView(IFovBoard<IHex> board, HexCoords origin) {
+      if (board==null) throw new ArgumentNullException("board");
+      return GetFieldOfView(board, origin, FovTargetMode.EqualHeights);
     }
-    public static IFov GetFieldOfView(IFovBoard board, HexCoords origin, int range, 
-      FovTargetMode targetMode) {
-      TraceFlag.FieldOfView.Trace("GetFieldOfView");
+    public static IFov GetFieldOfView(IFovBoard<IHex> board, HexCoords origin, FovTargetMode targetMode) {
+      TraceFlags.FieldOfView.Trace("GetFieldOfView");
       var fov = new ArrayFieldOfView(board);
       if (board.IsPassable(origin)) {
         Func<HexCoords,int> target;
@@ -92,7 +92,7 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
           origin, 
           board.FovRadius, 
           observer,
-          coords => board.IsOnBoard(coords),
+          coords => board.IsOnboard(coords),
           target,
           coords => board[coords].HeightTerrain,
           coords => fov[coords] = true

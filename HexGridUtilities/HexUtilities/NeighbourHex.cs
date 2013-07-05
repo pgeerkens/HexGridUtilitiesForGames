@@ -28,46 +28,32 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.HexUtilities {
-  public interface INeighbourHex {
-    IHex         Hex          { get; }
-    Hexside HexsideEntry { get; }
-    Hexside HexsideExit  { get; }
-//    HexsideIndex HexsideIndex { get; }
-  }
-  public class NeighbourHex : INeighbourHex, 
-    IEquatable<NeighbourHex>, IEqualityComparer<NeighbourHex> {
-    public IHex         Hex          { get; private set; }
+namespace PGNapoleonics.HexUtilities {
+  [DebuggerDisplay("NeighbourHex: {Hex.Coords} exits to {HexsideEntry}")]
+  public struct NeighbourHex : IEquatable<NeighbourHex> {
+    public IHex    Hex          { get; private set; }
     public Hexside HexsideEntry { get {return HexsideIndex;} }
     public Hexside HexsideExit  { get {return HexsideIndex.Reversed();} }
     public Hexside HexsideIndex { get; private set; }
 
     public NeighbourHex(IHex hex) : this(hex, null) {}
-    public NeighbourHex(IHex hex, Hexside? hexsideIndex) {
+    public NeighbourHex(IHex hex, HexsideFlags hexside)  : this(hex,hexside.IndexOf()) {}
+    public NeighbourHex(IHex hex, Hexside? hexsideIndex) : this() {
       Hex          = hex;
       HexsideIndex = hexsideIndex ?? 0;
     }
-    public NeighbourHex(IHex hex, HexsideFlags hexside) {
-      Hex          = hex;
-      HexsideIndex = hexside.IndexOf();
-    }
-
 
     public override string ToString() { 
-      return string.Format("NeighbourHex: {0} exits to {1}", Hex.Coords, HexsideEntry);
-    }
-
-    public static IEnumerable<NeighbourHex> GetNeighbours(IHex hex) {
-      return hex.Coords.GetNeighbours()
-                .Select((n,seq) => new NeighbourHex(hex.Board[n.Coords], n.Direction))
-                .Where(n => n.Hex!=null  &&  n.Hex.IsOnBoard())
-                .Select(nh => nh);
+      return string.Format(CultureInfo.InvariantCulture,
+        "NeighbourHex: {0} exits to {1}", Hex.Coords, HexsideEntry);
     }
 
     #region Value Equality - on Hex field only
@@ -77,17 +63,9 @@ namespace PG_Napoleonics.HexUtilities {
     public override int GetHashCode()                        { return Hex.Coords.GetHashCode(); }
     bool IEquatable<NeighbourHex>.Equals(NeighbourHex rhs)   { return this == rhs; }
 
-    bool IEqualityComparer<NeighbourHex>.Equals(NeighbourHex lhs, NeighbourHex rhs) {
-      return lhs !=null && lhs.Equals(rhs);
-    }
-    int IEqualityComparer<NeighbourHex>.GetHashCode(NeighbourHex @this) {
-      return @this==null ? 0 : @this.GetHashCode();
-    }
-
     public static bool operator != (NeighbourHex lhs, NeighbourHex rhs) { return ! (lhs==rhs); }
     public static bool operator == (NeighbourHex lhs, NeighbourHex rhs) {
-      return lhs is NeighbourHex && rhs is NeighbourHex 
-          && lhs.Hex.Coords.Equals(rhs.Hex.Coords);
+      return lhs.Hex.Coords.Equals(rhs.Hex.Coords);
     }
     #endregion
   }

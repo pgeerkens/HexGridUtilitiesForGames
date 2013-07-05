@@ -33,18 +33,17 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics;
-using PG_Napoleonics.HexUtilities;
-using PG_Napoleonics.HexUtilities.ShadowCastingFov;
+using PGNapoleonics;
+using PGNapoleonics.HexUtilities;
 
-namespace PG_Napoleonics.HexGridExample2 {
-  public interface IMapGridHex : IHex {
+namespace PGNapoleonics.HexGridExample2 {
+  internal interface IMapGridHex : IHex {
     int              Elevation      { get; }
     void Paint(Graphics g);
   }
 
-  public abstract class MapGridHex : Hex, IMapGridHex {
-    public MapGridHex(MapDisplay board, HexCoords coords) : base(board, coords) { 
+  internal abstract class MapGridHex : Hex, IMapGridHex {
+    protected MapGridHex(IBoard<IHex> board, HexCoords coords) : base(board, coords) { 
     }
 
     public virtual  int              Elevation      { get; protected set; }

@@ -28,10 +28,11 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace PG_Napoleonics.HexUtilities.Common {
+namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>Row-major order representation of an immutable integer matrix.</summary>
   /// <remarks> Represents Points as row vectors and planes as column vectors.
   /// This representation is standard for computer graphics, though opposite 
@@ -55,17 +56,19 @@ namespace PG_Napoleonics.HexUtilities.Common {
 
     #region Constructors
     /// <summary> Initializes a new <code>IntMatrix2D</code> as the translation defined by the vector v.</summary>
-    /// <param name="v">the translation vector</param>
-    public IntMatrix2D(IntVector2D v)  : this(1,0, 0,1, v.X,v.Y, 1) {}
+    /// <param name="vector">the translation vector</param>
+    public IntMatrix2D(IntVector2D vector)  : this(1,0, 0,1, vector.X,vector.Y, 1) {}
     /// <summary> Initializes a new <code>IntMatrix2D</code> as the translation (dx,dy).</summary>
     /// <param name="dx">X-translate component</param>
     /// <param name="dy">Y-translate component</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "dy")]
     public IntMatrix2D(int dx, int dy)  : this(1,0, 0,1, dx,dy,1) {}
     /// <summary> Initialies a new <code>IntMatrix2D</code> with a rotation.</summary>
     /// <param name="m11">X-scale component.</param>
     /// <param name="m12">Y-shear component</param>
     /// <param name="m21">X-shear component</param>
     /// <param name="m22">Y-scale component</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1025:ReplaceRepetitiveArgumentsWithParamsArray"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "m")]
     public IntMatrix2D(int m11, int m12, int m21, int m22) : this(m11,m12, m21,m22, 0,0, 1) {}
     /// <summary>Copy Constructor for a new <code>IntMatrix2D</code>.</summary>
     /// <param name="m">Source IntegerMatrix</param>
@@ -114,6 +117,8 @@ namespace PG_Napoleonics.HexUtilities.Common {
         m1.M31*m2.M11 + m1.M32*m2.M21 + m2.M31,  m1.M31*m2.M12 + m1.M32*m2.M22 + m2.M32,  m1.M33 * m2.M33
       );
     }
+    public static IntVector2D Multiply(IntVector2D v, IntMatrix2D m) { return v * m; }
+    public static IntMatrix2D Multiply(IntMatrix2D m1, IntMatrix2D m2) { return m1 * m2; }
     #endregion
 
     /// <summary>Vector Rotation (only).</summary>
@@ -140,7 +145,8 @@ namespace PG_Napoleonics.HexUtilities.Common {
 
     /// <inheritdoc/>
     public override string ToString() {
-      return string.Format("(({0},{1]),({2},{3}),({4],{5}),{6})",M11,M12,M21,M22,M31,M32,M33);
+      return string.Format(CultureInfo.InvariantCulture,
+        "(({0},{1}),({2},{3}),({4},{5}),{6})",  M11,M12,M21,M22,M31,M32,M33);
     }
   }
 }

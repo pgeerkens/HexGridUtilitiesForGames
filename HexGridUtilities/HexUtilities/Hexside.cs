@@ -27,56 +27,63 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Collections;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.HexUtilities {
+namespace PGNapoleonics.HexUtilities {
   /// <summary>Enumeration of the six hexagonal directions.</summary>
   public enum Hexside {
-    North,    NorthEast,    SouthEast,    South,    SouthWest,    NorthWest
+    North,    Northeast,    Southeast,    South,    Southwest,    Northwest
   }
 
   /// <summary>Flags for combinations of the six hexagonal directions.</summary>
-  [Flags] public enum HexsideFlags {
+  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags"), Flags]
+  public enum HexsideFlags {
     None      = 0x00,
     North     = 1 << Hexside.North,
-    NorthEast = 1 << Hexside.NorthEast,
-    SouthEast = 1 << Hexside.SouthEast,
+    Northeast = 1 << Hexside.Northeast,
+    Southeast = 1 << Hexside.Southeast,
     South     = 1 << Hexside.South,
-    SouthWest = 1 << Hexside.SouthWest,
-    NorthWest = 1 << Hexside.NorthWest,
+    Southwest = 1 << Hexside.Southwest,
+    Northwest = 1 << Hexside.Northwest,
   }
 
   /// <summary>Common <i>extension methods</i> for <c>Hexside</c> and <c>HexSideFlags</c>.</summary>
   public static partial class HexExtensions {
-
     /// <summary><c>Static List&lt;Hexside></c> for enumerations.</summary>
-    public static readonly List<Hexside> HexsideList 
-      = Utils.EnumGetValues<Hexside>().ToList();
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+    public static readonly IEnumerable<Hexside> HexsideList 
+      = Utilities.EnumGetValues<Hexside>().ToList().AsReadOnly();
       
+    internal static readonly List<HexsideFlags> HexsideFlags =
+      HexsideList.Select(h=>Utilities.ParseEnum<HexsideFlags>(h.ToString())).ToList();
     /// <summary>Static List&lt;HexSideFlags> for enumerations.</summary>
-    public static readonly List<HexsideFlags> HexsideFlagsList =
-      HexsideList.Select(h=>Utils.ParseEnum<HexsideFlags>(h.ToString())).ToList();
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
+    public static readonly IEnumerable<HexsideFlags> HexsideFlagsList =
+      HexsideFlags.AsReadOnly(); //.AsEnumerable();
 
     /// <summary>The <c>Hexside</c> corresponding to this <c>HexsideFlag</c>, or -1 if it doesn't exist.</summary>
     public static Hexside IndexOf(this HexsideFlags @this) {
-      return (Hexside)HexsideFlagsList.IndexOf(@this);
+      return (Hexside)HexsideFlags.IndexOf(@this);
     }
 
     /// <summary>The <c>HexsideFlag</c> corresponding to this <c>HexSide</c>.</summary>
     public static HexsideFlags Direction(this Hexside @this) {
-      return HexsideFlagsList[(int)@this];
+      return HexsideFlags[(int)@this];
     }
 
     /// <summary>Returns the reversed, or opposite, <c>Hexside</c> to the supplied value.</summary>
     /// <param name="this"></param>
     public static Hexside Reversed(this Hexside @this) {
       var reversed = @this+3;
-      return (reversed <= Hexside.NorthWest) ? reversed : (reversed - 6);
+      return (reversed <= Hexside.Northwest) ? reversed : (reversed - 6);
     }
   }
 }

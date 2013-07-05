@@ -33,52 +33,41 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics;
-using PG_Napoleonics.HexgridPanel;
-using PG_Napoleonics.HexUtilities;
-using PG_Napoleonics.HexUtilities.Common;
-using PG_Napoleonics.HexUtilities.PathFinding;
-using PG_Napoleonics.HexUtilities.ShadowCastingFov;
+using PGNapoleonics;
 
-namespace PG_Napoleonics.HexGridExample2 {
-  public abstract class MapDisplay : HexBoard, IMapDisplay, IBoard<IHex>, INavigableBoard {
- 
-    public MapDisplay() : base(Size.Empty) {
-      FovRadius = 40;
-      GridSize = new Size(27,30);
-      StartHex = GoalHex = HotSpotHex = HexCoords.EmptyUser;
+using PGNapoleonics.HexUtilities;
+using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.PathFinding;
 
-      HexgridPath = new GraphicsPath();
-      HexgridPath.AddLines(new Point[] {
-        new Point(GridSize.Width*1/3,                0), 
-        new Point(GridSize.Width*3/3,                0),
-        new Point(GridSize.Width*4/3,GridSize.Height/2),
-        new Point(GridSize.Width*3/3,GridSize.Height  ),
-        new Point(GridSize.Width*1/3,GridSize.Height  ),
-        new Point(                 0,GridSize.Height/2),
-        new Point(GridSize.Width*1/3,                0)
-      } );
-      MapSizeMatrix = new IntMatrix2D(GridSize.Width,                 0, 
-                                                   0,    GridSize.Height, 
-                                      GridSize.Width/3,  GridSize.Height/2);
+namespace PGNapoleonics.HexGridExample2 {
+  internal abstract class MapDisplay : HexBoard<MapGridHex>, IMapDisplay, IBoard<IHex>, INavigableBoard {
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+      "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+    protected MapDisplay(Size sizeHexes, Func<IBoard<MapGridHex>, HexCoords, MapGridHex> initializeHex) 
+      : base(sizeHexes, new Size(27,30), (map) => 
+            new FlatBoardStorage<MapGridHex>(sizeHexes, coords => initializeHex(map,coords)) )
+    {
+      StartHex   = GoalHex = HotspotHex = HexCoords.EmptyUser;
     }
 
-    public virtual  IFov      FOV        {
-      get { return _fov ?? (_fov = this.GetFov(HotSpotHex)); }
+    public virtual  IFov      Fov        {
+      get { return _fov ?? (_fov = this.GetFov(HotspotHex)); }
       protected set { _fov = value; }
     } IFov _fov;
     public virtual  HexCoords GoalHex    { 
       get { return _goalHex; }
       set { _goalHex=value; _path = null; } 
     } HexCoords _goalHex = HexCoords.EmptyUser;
-    public virtual  HexCoords HotSpotHex { 
+    public virtual  HexCoords HotspotHex { 
       get { return _hotSpotHex; }
-      set { _hotSpotHex = value; FOV = null; }
+      set { _hotSpotHex = value; Fov = null; }
     } HexCoords _hotSpotHex = HexCoords.EmptyUser;
 #if PathFwd
-    public          IPathFwd  Path       { 
-      get { return _path ?? (_path = this.GetPathFwd(this[StartHex], this[GoalHex])); } 
-    } IPathFwd _path;
+    public          IDirectedPath  Path       { 
+      get { return _path ?? ( IsPassable(StartHex) && IsPassable(GoalHex) 
+                          ? (_path = this.GetDirectedPath(this[StartHex], this[GoalHex])) : null); } 
+    } IDirectedPath _path;
 #else
     public          IPath     Path       { 
       get {return _path ?? (_path = this.GetPath(StartHex, GoalHex));} 
@@ -86,29 +75,23 @@ namespace PG_Napoleonics.HexGridExample2 {
 #endif
     public virtual  HexCoords StartHex   { 
       get { return _startHex; } // ?? (_startHex = HexCoords.EmptyUser); } 
-      set { if (IsOnBoard(value)) _startHex = value; _path = null; } 
+      set { if (IsOnboard(value)) _startHex = value; _path = null; } 
     } HexCoords _startHex = HexCoords.EmptyUser;
 
-    public Size            GridSize      { get; private set; }
-    public Size            MapMargin     { get; set; }
-    public Size            MapSizePixels { get {return SizeHexes * MapSizeMatrix;} }
-    public string          Name          { get {return "MapDisplay";} }
-    protected GraphicsPath HexgridPath   { get; set; }
-    protected IntMatrix2D  MapSizeMatrix { get; set; }
-    public bool            ShowFov       { get; set; }
-    public override Size   SizeHexes     { get {return new Size(Board[0].Length, Board.Length);} }
+    public    Size         MapMargin     { get; set; }
+    public    string       Name          { get {return "MapDisplay";} }
+    public    bool         ShowFov       { get; set; }
 
-    protected abstract string[] Board    { get; }
+    IHex       IFovBoard<IHex>.this[HexCoords coords] { get { return BoardHexes[coords]; } }
 
-    protected virtual IHex this[HexCoords coords] { get {return ((IFovBoard)this)[coords];} }
-
-    public UserCoordsRectangle GetClipCells(PointF point, SizeF size) {
-      return GetClipHexes( new RectangleF(point,size), SizeHexes );
+    public CoordsRectangle GetClipCells(PointF point, SizeF size) {
+      return GetClipHexes( new RectangleF(point,size), MapSizeHexes );
     }
-    public UserCoordsRectangle GetClipCells(RectangleF visibleClipBounds) {
-      return GetClipHexes(visibleClipBounds, SizeHexes);
+    public CoordsRectangle GetClipCells(RectangleF visibleClipBounds) {
+      return GetClipHexes(visibleClipBounds, MapSizeHexes);
     }
     public virtual  void PaintHighlight(Graphics g) { 
+      if (g==null) throw new ArgumentNullException("g");
       var state = g.Save();
       g.TranslateTransform(
         MapMargin.Width  + StartHex.User.X * GridSize.Width,
@@ -125,14 +108,14 @@ namespace PG_Napoleonics.HexGridExample2 {
         while (path != null) {
           g.Restore(state); state = g.Save();
 
-          var coords = path.LastStep;
+          var coords = path.StepCoords;
           g.TranslateTransform(
             MapMargin.Width  + coords.User.X * GridSize.Width,
             MapMargin.Height + coords.User.Y * GridSize.Height + (coords.User.X+1)%2 * GridSize.Height/2
           );
           g.FillPath(brush, HexgridPath);
 
-          path = path.PreviousSteps;
+          path = path.PathSoFar;
         }
       }
 #endif
@@ -150,7 +133,7 @@ namespace PG_Napoleonics.HexGridExample2 {
           g.TranslateTransform(0,  clipCells.Top*GridSize.Height + (x+1)%2 * (GridSize.Height)/2);
           for (int y=clipCells.Top; y<clipCells.Bottom; y++) {
             var coords = HexCoords.NewUserCoords(x,y);
-            if (ShowFov && FOV!=null && ! FOV[coords]) { g.FillPath(shadeBrush, HexgridPath);  }
+            if (ShowFov && Fov!=null && ! Fov[coords]) { g.FillPath(shadeBrush, HexgridPath);  }
 
             g.TranslateTransform(0,GridSize.Height);
           }
@@ -160,13 +143,13 @@ namespace PG_Napoleonics.HexGridExample2 {
     }
 
 #if PathFwd
-    void PaintPath(Graphics g, IPathFwd Path) {
+    void PaintPath(Graphics g, IDirectedPath Path) {
       var state = g.Save();
       using(var brush = new SolidBrush(Color.FromArgb(78, Color.PaleGoldenrod))) {
         var path = Path;
         while (path != null) {
           g.Restore(state); state = g.Save();
-          var coords = path.Step.Hex.Coords;
+          var coords = path.PathStep.Hex.Coords;
           g.TranslateTransform(
             MapMargin.Width  + coords.User.X * GridSize.Width,
             MapMargin.Height + coords.User.Y * GridSize.Height + (coords.User.X+1)%2 * GridSize.Height/2
@@ -174,19 +157,19 @@ namespace PG_Napoleonics.HexGridExample2 {
           g.FillPath(brush, HexgridPath);
 
           PaintPathArrow(g, path);
-          path = path.NextSteps;
+          path = path.PathSoFar;
         }
       }
     }
 
-    void PaintPathArrow(Graphics g, IPathFwd path) {
+    void PaintPathArrow(Graphics g, IDirectedPath path) {
       g.TranslateTransform(GridSize.Width * 2/3, GridSize.Height/2);
       var unit = GridSize.Height/8.0F;
-      if (path.NextSteps == null) {
+      if (path.PathSoFar == null) {
         g.DrawLine(Pens.Black, -unit*2,-unit*2, unit*2, unit*2);
         g.DrawLine(Pens.Black, -unit*2, unit*2, unit*2,-unit*2);
       } else {
-        g.RotateTransform(60 * (int)path.Step.HexsideEntry);
+        g.RotateTransform(60 * (int)path.PathStep.HexsideEntry);
         g.DrawLine(Pens.Black, 0,unit*4,       0,-unit);
         g.DrawLine(Pens.Black, 0,unit*4, -unit*3/2, unit*2);
         g.DrawLine(Pens.Black, 0,unit*4,  unit*3/2, unit*2);
@@ -197,15 +180,15 @@ namespace PG_Napoleonics.HexGridExample2 {
     public abstract void PaintMap(Graphics g);
     public abstract void PaintUnits(Graphics g);
 
-    UserCoordsRectangle  GetClipHexes(RectangleF visibleClipBounds, Size boardSizeHexes) {
+    CoordsRectangle  GetClipHexes(RectangleF visibleClipBounds, Size boardSizeHexes) {
       var left    = Math.Max((int)visibleClipBounds.Left  /GridSize.Width  - 1, 0);
       var top     = Math.Max((int)visibleClipBounds.Top   /GridSize.Height - 1, 0);
       var right   = Math.Min((int)visibleClipBounds.Right /GridSize.Width  + 1, boardSizeHexes.Width);
       var bottom  = Math.Min((int)visibleClipBounds.Bottom/GridSize.Height + 1, boardSizeHexes.Height); 
-      return new UserCoordsRectangle (left, top, right-left, bottom-top);
+      return new CoordsRectangle (left, top, right-left, bottom-top);
     }
     
-    public string    HexText(HexCoords coords) { return HexText(coords.User.X, coords.User.Y); }
-           string    HexText(int x, int y)     { return string.Format("{0,2}-{1,2}", x, y); }
+//    public static string HexText(HexCoords coords) { return HexText(coords.User.X, coords.User.Y); }
+//           static string HexText(int x, int y)     { return string.Format("{0,2}-{1,2}", x, y); }
   }
 }

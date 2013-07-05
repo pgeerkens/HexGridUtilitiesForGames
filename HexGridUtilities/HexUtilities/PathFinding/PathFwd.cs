@@ -29,108 +29,124 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.HexUtilities.PathFinding {
-  public interface IPathFwd : IEnumerable<IPathFwd> { 
-    Hexside  HexsideExit { get; }
-    NeighbourHex  Step        { get; }
-    IPathFwd      NextSteps   { get; }
-    uint          TotalCost   { get; }
-    uint          TotalSteps  { get; }
-
-    IPathFwd AddStep(NeighbourHex neighbour, uint stepCost);
-    IPathFwd AddStep(IPathFwd pathFront);
+namespace PGNapoleonics.HexUtilities.PathFinding {
+  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+  public interface IDirectedPath : IPath, IEnumerable<IDirectedPath> { 
+    NeighbourHex PathStep    { get; }
+    new IDirectedPath PathSoFar   { get; }
   }
-  public class PathFwd : IPathFwd {
-    #region IPath implementation
-    public virtual Hexside  HexsideExit { get; private set; }
-    public virtual NeighbourHex  Step        { get; private set; }
-    public virtual IPathFwd      NextSteps   { get; private set; }
-    public virtual uint          TotalCost   { get; private set; }
-    public virtual uint          TotalSteps  { get; private set; }
 
-    public virtual IPathFwd AddStep(NeighbourHex neighbour, uint stepCost) {
-      return new PathFwd(this, neighbour, TotalCost + stepCost);
-    }
-    public virtual IPathFwd AddStep(IPathFwd pathFront) {
-      return new PathWaypoint(pathFront, this);
-    }
+  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+  internal sealed class DirectedPath : IDirectedPath, IEquatable<HexCoords> {
+    #region IPath implementation
+    IPath       IPath.PathSoFar { get { return PathSoFar; } }
+    IDirectedPath IDirectedPath.PathSoFar { get { return PathSoFar; } }
+
+    public Hexside      HexsideExit { get { return PathStep.HexsideExit; } }
+    public NeighbourHex PathStep    { get; private set; }
+    public HexCoords    StepCoords  { get { return PathStep.Hex.Coords; } }
+    public DirectedPath      PathSoFar   { get; private set; }
+    public int          TotalCost   { get; private set; }
+    public int          TotalSteps  { get; private set; }
     #endregion
 
-    public override string ToString() {
-      if (NextSteps == null) 
-        return string.Format("Hex: {0} arrives with TotalCost={1,3}",
-          Step.Hex.Coords, TotalCost);
-      else
-        return string.Format("Hex: {0} exits {1} with TotalCost={2,3}",
-          Step.Hex.Coords, Step.HexsideEntry, TotalCost);
+    #region IEquatable implementation
+    bool IEquatable<HexCoords>.Equals(HexCoords coords) { 
+      return StepCoords.Equals(coords); 
+    }
+    public override bool Equals(object obj) { return Equals(obj as DirectedPath); }
+    public override int  GetHashCode() { return StepCoords.GetHashCode(); }
+    #endregion
+
+    public DirectedPath AddStep(IHex hex, Hexside hexside, int stepCost) {
+      return AddStep(new NeighbourHex(hex,hexside), stepCost);
+    }
+    public DirectedPath AddStep(NeighbourHex neighbour, int stepCost) {
+      return new DirectedPath(this, neighbour, TotalCost + stepCost);
     }
 
-    public IEnumerator<IPathFwd> GetEnumerator() {
+    public override string ToString() {
+      if (PathSoFar == null) 
+        return string.Format(CultureInfo.InvariantCulture,"Hex: {0} arrives with TotalCost={1,3}",
+          PathStep.Hex.Coords, TotalCost);
+      else
+        return string.Format(CultureInfo.InvariantCulture,"Hex: {0} exits {1} with TotalCost={2,3}",
+          PathStep.Hex.Coords, PathStep.HexsideEntry, TotalCost);
+    }
+
+    public IEnumerator<IDirectedPath> GetEnumerator() {
       yield return this;
-      for (var p = (IPathFwd)this; p.NextSteps != null; p = p.NextSteps) 
-        yield return p.NextSteps;
+      for (var p = (IDirectedPath)this; p.PathSoFar != null; p = p.PathSoFar) 
+        yield return p.PathSoFar;
     }
 
     IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
 
     /////////////////////////////  Internals  //////////////////////////////////
-    internal PathFwd(IHex start) : this(null, new NeighbourHex(start), 0) {}
+    internal DirectedPath(IHex start) : this(null, new NeighbourHex(start), 0) {}
 
-    internal PathFwd(IPathFwd nextSteps, NeighbourHex neighbour, uint totalCost) {
-      HexsideExit = neighbour.HexsideExit;
-      Step        = neighbour;
-      NextSteps   = nextSteps;
+    internal DirectedPath(DirectedPath nextSteps, NeighbourHex neighbour, int totalCost) {
+      PathStep        = neighbour;
+      PathSoFar   = nextSteps;
       TotalCost   = totalCost;
       TotalSteps  = nextSteps==null ? 0 : nextSteps.TotalSteps+1;
     }
   }
 
-  internal class PathWaypoint : IPathFwd {
-    #region IPath implementation
-    public Hexside  HexsideExit { get {return PathFront.HexsideExit;} }
-    public NeighbourHex  Step        { get {return PathFront.Step;} }
-    public IPathFwd      NextSteps   { 
-      get { return (PathFront.NextSteps == null) 
-            ? PathBack
-            : new PathWaypoint(PathFront.NextSteps, PathBack);
-      } 
-    }
-    public uint          TotalCost   { get {return PathFront.TotalCost  + PathBack.TotalCost;} }
-    public uint          TotalSteps  { get {return PathFront.TotalSteps + PathBack.TotalSteps;} }
+  //internal class PathWaypoint : IPathFwd {
+  //  #region IPath implementation
+  //  IPath       IPath.PathSoFar { get { return PathSoFar; } }
+  //  IPathFwd IPathFwd.PathSoFar { get { return PathSoFar; } }
 
-           IPathFwd      PathFront   { get; set; }
-           IPathFwd      PathBack    { get; set; }
+  //  public Hexside      HexsideExit { get {return PathFront.HexsideExit;} }
+  //  public NeighbourHex Step        { get {return PathFront.Step;} }
+  //  public HexCoords    StepCoords  { get { return Step.Hex.Coords; } }
+  //  public IPathFwd     PathSoFar   { 
+  //    get { return (PathFront.PathSoFar == null) 
+  //          ? PathBack
+  //          : new PathWaypoint(PathFront.PathSoFar, PathBack);
+  //    } 
+  //  }
+  //  public int          TotalCost   { get {return PathFront.TotalCost  + PathBack.TotalCost;} }
+  //  public int          TotalSteps  { get {return PathFront.TotalSteps + PathBack.TotalSteps;} }
 
-    public IPathFwd AddStep(NeighbourHex neighbour, uint stepCost) {
-      return new PathFwd(this, neighbour, TotalCost + stepCost);
-    }
-    public IPathFwd AddStep(IPathFwd pathFront) {
-      return new PathWaypoint(pathFront, this);
-    }
-    #endregion
+  //         IPathFwd      PathFront   { get; set; }
+  //         IPathFwd      PathBack    { get; set; }
 
-    public override string ToString() {
-      return string.Format("Hex: {0} with TotalCost={1,3} (as {2}/{3})",
-        Step, TotalCost, TotalCost>>16, TotalCost &0xFFFF);
-    }
+  //  public virtual IPathFwd AddStep(IHex hex, Hexside hexside, int stepCost) {
+  //    return AddStep(new NeighbourHex(hex,hexside), stepCost);
+  //  }
+  //  public IPathFwd AddStep(NeighbourHex neighbour, int stepCost) {
+  //    return new PathFwd(this, neighbour, TotalCost + stepCost);
+  //  }
+  //  public IPathFwd AddStep(IPathFwd pathFront) {
+  //    return new PathWaypoint(pathFront, this);
+  //  }
+  //  #endregion
 
-    public IEnumerator<IPathFwd> GetEnumerator() {
-      yield return this;
-      for (var p = (IPathFwd)this; p.NextSteps != null; p = p.NextSteps) 
-        yield return p.NextSteps;
-    }
+  //  public override string ToString() {
+  //    return string.Format("Hex: {0} with TotalCost={1,3} (as {2}/{3})",
+  //      Step, TotalCost, TotalCost>>16, TotalCost &0xFFFF);
+  //  }
 
-    IEnumerator IEnumerable.GetEnumerator() { return this.GetEnumerator(); }
+  //  public IEnumerator<IPathFwd> GetEnumerator() {
+  //    yield return this;
+  //    for (var p = (IPathFwd)this; p.PathSoFar != null; p = p.PathSoFar) 
+  //      yield return p.PathSoFar;
+  //  }
 
-    /////////////////////////////  Internals  //////////////////////////////////
-    internal PathWaypoint(IPathFwd pathFront, IPathFwd pathBack) {
-      PathFront = pathFront;
-      PathBack  = pathBack;
-    }
-  }
+  //  IEnumerator IEnumerable.GetEnumerator() { return this.GetEnumerator(); }
+
+  //  /////////////////////////////  Internals  //////////////////////////////////
+  //  internal PathWaypoint(IPathFwd pathFront, IPathFwd pathBack) {
+  //    PathFront = pathFront;
+  //    PathBack  = pathBack;
+  //  }
+  //}
 }

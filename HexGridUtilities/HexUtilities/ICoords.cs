@@ -31,9 +31,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text; 
 
-using PG_Napoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.HexUtilities {
+namespace PGNapoleonics.HexUtilities {
 //  public interface HexCoords {
 //    /// <summary>Returns rectangular (90 degree axes at E and S) coordinates for this hex</summary>
 //    IntVector2D User    { get; }

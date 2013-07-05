@@ -26,6 +26,7 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
+#define FastList
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -34,15 +35,15 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics.HexUtilities.Common;
-using PG_Napoleonics.HexUtilities.PathFinding;
+using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.PathFinding;
 
-namespace PG_Napoleonics.HexUtilities.PathFinding {
+namespace PGNapoleonics.HexUtilities.PathFinding {
   /// <summary>Interface required to make use of A* Path Finding utility.</summary>
+  public interface IDirectedNavigableBoard : INavigableBoard {
 
-  public interface INavigableBoardFwd : INavigableBoard {
-    /// <summary>Cost to extend path by the hex at <c>coords</c> from hex at direction <c>hexside</c>.</summary>
-    int  StepCostFwd(HexCoords coords, Hexside hexsideExit);
+    /// <summary>Cost to extend path by exiting the hex at <c>coords</c> through <c>hexside</c>.</summary>
+    int  DirectedStepCost(IHex hex, Hexside hexsideExit);
   }
 
   /// <summary>(Adapted) C# implementation of A* path-finding algorithm by Eric Lippert.</summary>
@@ -71,120 +72,133 @@ namespace PG_Napoleonics.HexUtilities.PathFinding {
   /// <param name="goal"></param>
   /// <param name="board"></param>
   /// <returns></returns>
-  public static partial class PathFinder {
+  public partial class Pathfinder {
     /// <summary>Returns an <c>IPath</c> for the optimal path from coordinates <c>start</c> to <c>goal</c>.</summary>
     /// <param name="start">Coordinates for the <c>last</c> step on the desired path.</param>
     /// <param name="goal">Coordinates for the <c>first</c> step on the desired path.</param>
     /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
     /// ///<remarks>Note that <c>heuristic</c> <b>must</b> be monotonic in order for the algorithm to perform properly.</remarks>
     /// <seealso cref="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html"/>
-    public static IPathFwd FindPathFwd(
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+      "CA1011:ConsiderPassingBaseTypesAsParameters")]
+    public static IDirectedPath FindDirectedPath(
       IHex start,
       IHex goal,
-      INavigableBoardFwd board,
-      bool useShortcuts = false
+      IDirectedNavigableBoard board
     ) {
-      return FindPathFwd(start, goal, board.RangeCutoff, board.StepCostFwd,
-                                      board.Heuristic, board.IsOnBoard, useShortcuts);
+      if (board==null) throw new ArgumentNullException("board"); 
+      return FindDirectedPath(start, goal, board.DirectedStepCost,
+                                     board.Heuristic, board.IsOnboard);
     }
 
     /// <summary>Returns an <c>IPath</c> for the optimal path from coordinates <c>start</c> to <c>goal</c>.</summary>
     /// <param name="start">Coordinates for the <c>last</c> step on the desired path.</param>
     /// <param name="goal">Coordinates for the <c>first</c> step on the desired path.</param>
-    /// <param name="stepCost">Cost to extend path by hex at <c>coords</c> from hex at direction <c>hexside</c>.</param>
+    /// <param name="directedStepCost">Cost to extend path by hex at <c>coords</c> from hex at direction <c>hexside</c>.</param>
     /// <param name="heuristic">Returns a monotonic (ie locally admissible) cost estimate from a range value.</param>
-    /// <param name="isOnBoard">Returns whether the coordinates specified are "on board".</param>
+    /// <param name="isOnboard">Returns whether the coordinates specified are "on board".</param>
     /// ///<remarks>Note that <c>heuristic</c> <b>must</b> be monotonic in order for the algorithm to perform properly.</remarks>
     /// <seealso cref="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html"/>
-    public static IPathFwd FindPathFwd (
+    public static IDirectedPath FindDirectedPath (
       IHex start,
       IHex goal,
-      int  rangeCutoff,
-      Func<HexCoords, Hexside, int> stepCost,
-      Func<int,int>                 heuristic,
-      Func<HexCoords,bool>          isOnBoard,
-      bool useShortcuts = false
+      Func<IHex, Hexside, int> directedStepCost,
+      Func<int,int>            heuristic,
+      Func<HexCoords,bool>     isOnboard
     ) {
-      var vectorGoal = goal.Coords.Canon - start.Coords.Canon;
-      var closed     = new HashSet<HexCoords>();
-      var open       = new HashSet<HexCoords>();
-      var queue      = goal.Coords.Range(start.Coords) > rangeCutoff
-          ? (IPriorityQueue<uint, IPathFwd>) new ConcurrentPriorityQueue<uint, IPathFwd>()
-          : (IPriorityQueue<uint, IPathFwd>) new DictPriorityQueue<uint, IPathFwd>();
-      TraceFlag.FindPathDetail.Trace(true, "Find path from {0} to {1}; vectorGoal = {2}", 
-                                      start.Coords, goal.Coords, vectorGoal);
+      if (start==null)      throw new ArgumentNullException("start"); 
+      if (goal==null)       throw new ArgumentNullException("goal"); 
+      if (directedStepCost==null)   throw new ArgumentNullException("directedStepCost"); 
+      if (heuristic==null)  throw new ArgumentNullException("heuristic"); 
+      if (isOnboard==null)  throw new ArgumentNullException("isOnboard"); 
 
-      queue.Enqueue (0, new PathFwd(goal));
+      var queue  = new DictionaryPriorityQueue<int, DirectedPath>();
 
-      MyKeyValuePair<uint,IPathFwd> item;
+      var functor = new PathQueueFunctor(start,goal,heuristic,directedStepCost,queue);
+
+      queue.Enqueue (0, new DirectedPath(goal));
+
+      HexKeyValuePair<int,DirectedPath> item;
       while (queue.TryDequeue(out item)) {
-        open.Add(item.Value.Step.Hex.Coords);
-        var path = item.Value;
-        if( closed.Contains(path.Step.Hex.Coords) ) continue;
-
-        #if DEBUG
-          TraceFlag.FindPathDequeue.Trace(
-            "Dequeue Path at {0} w/ cost={1,4} at {2}; estimate={3,4}:{4,4}.", 
-            item.Value.Step.Hex.Coords, item.Value.TotalCost, item.Value.HexsideExit, item.Key>>16, 
-                  (int) ((int)(item.Key & 0xFFFFu) - 0x7FFF));
-        #endif
-
-        if(path.Step.Hex.Equals(start)) {
-          TraceFlag.FindPathDequeue.Trace("Closed: {0,7}", closed.Count);
-          return path;
-        }
-
-        closed.Add(path.Step.Hex.Coords);
-
-        foreach (var neighbour in path.Step.Hex.GetNeighbourHexes()
-        ) {
-          if ( ! open.Contains(neighbour.Hex.Coords)) {
-            var cost = stepCost(neighbour.Hex.Coords, neighbour.HexsideExit);
-            if (cost > 0) {
-              var newPath  = path.AddStep(neighbour, (uint)cost);
-              var estimate = Estimate(heuristic, vectorGoal, start.Coords, newPath.Step.Hex.Coords, newPath.TotalCost);
-              TraceFlag.FindPathEnqueue.Trace("   Enqueue {0}: estimate={1,4}:{2,3}",
-                  neighbour.Hex.Coords, (estimate)>>16, (int) ((int)(estimate & 0xFFFFu) - 0x7FFF));
-              queue.Enqueue(estimate, newPath);
-            }
-          }
-        }
-
-        if (useShortcuts)
-          ProcessShortcuts(start, goal, vectorGoal, queue, path, 
-                rangeCutoff, stepCost, heuristic, isOnBoard);
+        if (functor.PathFound(item)) return functor.Path;
       }
-      return null;
+      return null; 
     }
 
-    static void ProcessShortcuts(
-      IHex start,
-      IHex goal,
-      IntVector2D                 vectorGoal,
-      IPriorityQueue<uint, IPathFwd> queue,
-      IPathFwd path,
-      int  rangeCutoff,
-      Func<HexCoords, Hexside, int> stepCost,
-      Func<int,int>               heuristic,
-      Func<HexCoords,bool>          isOnBoard
-    ) {
-      foreach (var shortcut in path.Step.Hex.Shortcuts) {
-        var pathFwd = shortcut.PathFwd;
-        var newPath = path;
-        var hexside  = pathFwd.Step.HexsideEntry;
-        if (path.Step.Equals(pathFwd.Step)) pathFwd = pathFwd.NextSteps;
-        while (pathFwd.NextSteps != null) {
-          var step     = pathFwd.Step;
-          var cost     = pathFwd.TotalCost - pathFwd.NextSteps.TotalCost;
-          newPath      = newPath.AddStep(new NeighbourHex(step.Hex, hexside.Reversed()), cost);
-          var estimate = Estimate(heuristic, vectorGoal, goal.Coords, newPath.Step.Hex.Coords, newPath.TotalCost);
-          queue.Enqueue(estimate, newPath);
-          TraceFlag.FindPathDetail.Trace("   Enqueue {0}: {1,4}:{2,3}",
-              step.Hex.Coords, (estimate & 0xFFFF0000)>>16, estimate & 0xFFFF);
-          hexside      = step.HexsideEntry;
-          pathFwd      = pathFwd.NextSteps;
+    /// <summary><c>Static List&lt;Hexside></c> for enumerations.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", 
+      "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+    public static readonly FastList<Hexside> FastHexsideList 
+      = new FastList<Hexside>(Utilities.EnumGetValues<Hexside>().ToArray());
+
+    private class PathQueueFunctor {
+      public DirectedPath Path { get; set; }
+
+      public PathQueueFunctor(IHex start, IHex goal, Func<int,int> heuristic, 
+        Func<IHex, Hexside, int> stepCost, 
+        IPriorityQueue<int, DirectedPath> queue
+      ) {
+        _vectorGoal = goal.Coords.Canon - start.Coords.Canon;
+
+        TraceFlags.FindPathDetail.Trace(true, "Find path from {0} to {1}; vectorGoal = {2}", 
+                                              start.Coords, goal.Coords, _vectorGoal);
+        Path        = null;
+
+        _start      = start;
+//        _goal       = goal;
+        _heuristic  = heuristic;
+        _open       = (IDictionary<HexCoords,IDirectedPath>) new Dictionary<HexCoords, IDirectedPath>();
+        _stepCost   = stepCost;
+        _queue      = queue;
+      }
+
+      public bool PathFound(HexKeyValuePair<int,DirectedPath> item) {
+        var path = item.Value;
+        var hex  = path.PathStep.Hex;
+        if( _closed.Contains(hex.Coords) ) return false;
+
+        _open.Add(item.Value.PathStep.Hex.Coords, item.Value);
+
+        TraceFlags.FindPathDequeue.Trace(
+          "Dequeue Path at {0} w/ cost={1,4} at {2}; estimate={3,4}:{4,4}.", 
+          item.Value.PathStep.Hex.Coords, item.Value.TotalCost, item.Value.HexsideExit, 
+          item.Key >> 16, item.Key & 0xFFFF);
+
+        if(hex.Coords.Equals(_start.Coords)) { 
+          Path = path;
+          return true; 
+        }
+
+        _closed.Add(hex.Coords);
+
+        FastHexsideList.ForEach((Action<Hexside>)(hexside => Invoke(path, hexside)));
+        return false;
+      }
+
+      public void Invoke(DirectedPath path, Hexside hexside) {
+        var here  = path.PathStep.Hex;
+        var there = here.Board[here.Coords.GetNeighbour(hexside)];
+        if (there != null  &&  ! _open.ContainsKey(there.Coords)) {
+          var cost = _stepCost(there, hexside.Reversed());
+          if (cost > 0) {
+            var newPath  = path.AddStep(there, hexside, cost);
+            var estimate = Estimate(_heuristic, _vectorGoal, _start.Coords, newPath.PathStep.Hex.Coords, newPath.TotalCost);
+            TraceFlags.FindPathEnqueue.Trace("   Enqueue {0}: estimate={1,4}:{2,3}",
+                there.Coords, estimate>>16, estimate & 0xFFFF);
+            _queue.Enqueue(estimate, newPath);
+          }
         }
       }
+
+      IHex                            _start;
+//      IHex                            _goal;
+      Func<int,int>                   _heuristic;
+      Func<IHex, Hexside, int>        _stepCost;
+
+      IDictionary<HexCoords,IDirectedPath> _open;
+      ISet<HexCoords>                 _closed = new HashSet<HexCoords>();
+      IntVector2D                     _vectorGoal;
+      IPriorityQueue<int, DirectedPath>    _queue;
     }
   }
 }

@@ -33,28 +33,44 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics.HexUtilities.Common;
-using PG_Napoleonics.HexUtilities.PathFinding;
+using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.PathFinding;
 
-namespace PG_Napoleonics.HexUtilities.PathFinding {
+namespace PGNapoleonics.HexUtilities.PathFinding {
   public class PathShortcut {
-    public IPathFwd PathFwd { get; private set; }
-    public IHex     Goal    { get; private set; }
+    public IDirectedPath DirectedPath { get; private set; }
+    public IHex          Goal         { get; private set; }
 
-    public PathShortcut(IHex start, IHex gGoal, INavigableBoardFwd board) 
-    : this(start, gGoal, board.RangeCutoff, board.StepCostFwd, board.Heuristic, board.IsOnBoard) { }
-    public PathShortcut(
-      IHex start, 
-      IHex goal, 
-      int  rangeCutoff,
-      Func<HexCoords, Hexside, int> stepCostFwd,
-      Func<int,int>               heuristic,
-      Func<HexCoords,bool>          isOnBoard
-    ) {
-      PathFwd = PathFinder.FindPathFwd(start, goal, rangeCutoff,
-        (c,h) => stepCostFwd(c.StepOut(h), h.Reversed()), 
-        heuristic, isOnBoard, false);
-      Goal = goal;
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+      "CA1062:Validate arguments of public methods", MessageId = "2")]
+    public PathShortcut(IHex start, IHex goal, IDirectedNavigableBoard board) { 
+      DirectedPath = BidirectionalPathfinder.FindDirectedPathFwd(start, goal, board);
+      Goal         = goal;
     }
+
+    //static void ExtendShortcut(IHex goal, IntVector2D vectorGoal,
+    //  IPriorityQueue<int, DirectedPath> queue,
+    //  DirectedPath path,
+    //  Func<int,int> heuristic
+    //) {
+    //  foreach (var shortcut in path.PathStep.Hex.Shortcuts) {
+    //    var pathFwd = shortcut.DirectedPath;
+    //    var newPath = path;
+    //    var hexside = pathFwd.PathStep.HexsideEntry;
+    //    if (newPath.PathStep.Hex.Equals(pathFwd.PathStep.Hex)) pathFwd = pathFwd.PathSoFar;
+    //    while (pathFwd.PathSoFar != null) {
+    //      var step     = pathFwd.PathStep;
+    //      var cost     = pathFwd.TotalCost - pathFwd.PathSoFar.TotalCost;
+    //      newPath      = newPath.AddStep(new NeighbourHex(step.Hex, hexside.Reversed()), cost);
+    //      var estimate = Pathfinder.Estimate(heuristic, vectorGoal, goal.Coords, 
+    //                        newPath.PathStep.Hex.Coords, newPath.TotalCost);
+    //      queue.Enqueue(estimate, newPath);
+    //      TraceFlags.FindPathDetail.Trace("   Enqueue {0}: {1,4}:{2,3}",
+    //          step.Hex.Coords, estimate >> 16, estimate & 0xFFFF);
+    //      hexside      = step.HexsideEntry;
+    //      pathFwd      = pathFwd.PathSoFar;
+    //    }
+    //  }
+    //}
   }
 }

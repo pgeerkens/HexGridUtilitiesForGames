@@ -30,7 +30,9 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace System.Windows.Forms {
+using PGNapoleonics;
+
+namespace  PGNapoleonics.WinForms {
 	/// <summary> Transparent Panel control.</summary>
 	/// <remarks>
 	/// See "http://componentfactory.blogspot.ca/2005/06/net2-transparent-controls.html"
@@ -42,12 +44,12 @@ namespace System.Windows.Forms {
 			BackColor  = Color.Transparent;
 		}
 		/// <summary>Make a truly transparent Panel control.</summary>
-		/// <remarks>Change the behaviour of the window by giving it a WS_EX_TRANSPARENT style.
+		/// <remarks>Change the behaviour of the window by giving it a TRANSPARENT style.
 		/// See "http://www.bobpowell.net/transcontrols.htm"</remarks>
 		protected override CreateParams CreateParams { 
 			get { 
 				var cp=base.CreateParams; 
-				cp.ExStyle |= (int)WindowStylesEx.WS_EX_TRANSPARENT;
+				cp.ExStyle |= (int)WindowStylesEx.TRANSPARENT;
 				return cp; 
 			} 
 		}
@@ -57,18 +59,20 @@ namespace System.Windows.Forms {
 		/// we need to update the graphics. This ensures that whatever is behind the control 
 		/// gets painted before we need to do our own graphics output.
 		/// See "http://www.bobpowell.net/transcontrols.htm"</remarks>
-		public virtual void InvalidateEx() { 
-			InvalidateEx(new Rectangle(this.Location,this.Size));
+		public virtual void Invalidate2() { 
+			Invalidate2(new Rectangle(this.Location,this.Size));
 		} 
-		///<summary><inheritdoc cref="InvalidateEx()" /></summary>
-		/// <param name="r"><c>Rectangle</c> to be invalidated.</param>
-		public virtual void InvalidateEx(Rectangle r) { 
+		///<summary><inheritdoc cref="Invalidate2()" /></summary>
+		/// <param name="rectangle"><c>Rectangle</c> to be invalidated.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", 
+      "CA1300:SpecifyMessageBoxOptions")]
+    public virtual void Invalidate2(Rectangle rectangle) { 
 			if(Parent!=null  &&  Parent.IsHandleCreated) {
 				try {
-					Parent.Invoke((Action<Rectangle,bool>)((rc,b) => Parent.Invalidate(rc,b)), r,true); 
+					Parent.Invoke((Action<Rectangle,bool>)((rc,b) => Parent.Invalidate(rc,b)), rectangle,true); 
 				} catch (InvalidOperationException e) { 
 					MessageBox.Show("Why is " + e.Message + "\n occurring in\n" +
-						"TransparentPanel.InvalidateEx(Rectangle r).");
+						"TransparentPanel.Invalidate2(Rectangle r).");
 				}
 			}
 		} 

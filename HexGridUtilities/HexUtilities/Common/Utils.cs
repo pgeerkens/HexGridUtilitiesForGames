@@ -28,13 +28,15 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace PG_Napoleonics.HexUtilities.Common {
-  public static class Utils{
+namespace PGNapoleonics.HexUtilities.Common {
+  public static class Utilities{
     #region Enum Parsing utilities
     /// <summary>Typesafe wrapper for <c>Enum.GetValues(typeof(TEnum).</c></summary>
     public static IEnumerable<TEnum> EnumGetValues<TEnum>() {
@@ -43,7 +45,10 @@ namespace PG_Napoleonics.HexUtilities.Common {
 
     /// <summary>Typesafe wrapper for <c>Enum.ParseEnum()</c> that automatically checks 
     /// constants for membership in the <c>enum</c>.</summary>
-    public static T ParseEnum<T>(string value, bool checkConstants = true) where T:struct {
+    public static T ParseEnum<T>(string value) where T:struct {return ParseEnum<T>(value,true); }
+    /// <summary>Typesafe wrapper for <c>Enum.ParseEnum()</c> that automatically checks 
+    /// constants for membership in the <c>enum</c>.</summary>
+    public static T ParseEnum<T>(string value, bool checkConstants) where T:struct {
       T enumValue;
       if (!TryParseEnum<T>(value, out enumValue) && checkConstants) 
                   ThrowInvalidDataException(typeof(T), enumValue);
@@ -58,6 +63,7 @@ namespace PG_Napoleonics.HexUtilities.Common {
     /// <summary>Typesafe wrapper for <c>Enum.ToObject()</c>.</summary>
     /// <typeparam name="T"></typeparam>
     public static T EnumParse<T>(char c, string lookup) {
+      if (lookup==null) throw new ArgumentNullException("lookup");
       var index = lookup.IndexOf(c);
       if (index == -1) ThrowInvalidDataException(typeof(T), c);
       return (T) Enum.ToObject(typeof(T), index);
@@ -65,15 +71,17 @@ namespace PG_Napoleonics.HexUtilities.Common {
     #endregion
 
     #region InvalidDataException Throwers
-    public static void ThrowInvalidDataException(Type type, object data) {
-      throw new InvalidDataException(string.Format("{0}: Invalid: '{1}'", 
-            type.Name, data));
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
+    public static void ThrowInvalidDataException(MemberInfo type, object data) {
+      throw new InvalidDataException(string.Format(CultureInfo.InvariantCulture,
+          "{0}: Invalid: '{1}'", type.Name, data));
     }
     public static void ThrowInvalidDataException(string parseType, int lineNo, 
       object section, string error, Exception ex, object data) {
       throw new InvalidDataException(
-              string.Format("{0}: {3}\n  for section {2} on line # {1}:\n   {4}",  
-                  parseType, lineNo, section, error, data), ex);
+          string.Format(CultureInfo.InvariantCulture,
+            "{0}: {3}\n  for section {2} on line # {1}:\n   {4}",  
+              parseType, lineNo, section, error, data), ex);
     }
     #endregion
   }

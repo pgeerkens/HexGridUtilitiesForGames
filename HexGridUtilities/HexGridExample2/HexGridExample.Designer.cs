@@ -5,8 +5,8 @@
 // Use of this software is permitted only as described in the attached file: license.txt.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-namespace PG_Napoleonics.HexGridExample2 {
-  partial class HexGridExampleForm {
+namespace PGNapoleonics.HexGridExample2 {
+  partial class HexgridExampleForm {
     /// <summary>
     /// Required designer variable.
     /// </summary>
@@ -31,12 +31,12 @@ namespace PG_Napoleonics.HexGridExample2 {
     /// </summary>
     private void InitializeComponent() {
       this.components = new System.ComponentModel.Container();
-      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HexGridExampleForm));
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HexgridExampleForm));
       this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
       this.toolStrip1 = new System.Windows.Forms.ToolStrip();
       this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
       this.statusLabel = new System.Windows.Forms.ToolStripLabel();
-      this.hexgridPanel = new PG_Napoleonics.HexgridPanel.HexgridPanel(this.components);
+      this.hexgridPanel = new PGNapoleonics.HexUtilities.HexgridPanel(this.components);
       this.toolStrip2 = new System.Windows.Forms.ToolStrip();
       this.buttonTransposeMap = new System.Windows.Forms.ToolStripButton();
       this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
@@ -110,15 +110,11 @@ namespace PG_Napoleonics.HexGridExample2 {
       this.hexgridPanel.Location = new System.Drawing.Point(0, 0);
       this.hexgridPanel.Name = "hexgridPanel";
       this.hexgridPanel.ScaleIndex = 0;
-      this.hexgridPanel.Scales = new float[] {
-        0.707F,
-        1F,
-        1.414F};
       this.hexgridPanel.Size = new System.Drawing.Size(703, 366);
       this.hexgridPanel.TabIndex = 0;
-      this.hexgridPanel.MouseCtlClick += new System.EventHandler<PG_Napoleonics.HexUtilities.HexEventArgs>(this.PanelBoard_GoalHexChange);
-      this.hexgridPanel.MouseLeftClick += new System.EventHandler<PG_Napoleonics.HexUtilities.HexEventArgs>(this.PanelBoard_StartHexChange);
-      this.hexgridPanel.HotSpotHexChange += new System.EventHandler<PG_Napoleonics.HexUtilities.HexEventArgs>(this.PanelBoard_HotSpotHexChange);
+      this.hexgridPanel.MouseCtlClick += new System.EventHandler<PGNapoleonics.HexUtilities.HexEventArgs>(this.PanelBoard_GoalHexChange);
+      this.hexgridPanel.MouseLeftClick += new System.EventHandler<PGNapoleonics.HexUtilities.HexEventArgs>(this.PanelBoard_StartHexChange);
+      this.hexgridPanel.HotspotHexChange += new System.EventHandler<PGNapoleonics.HexUtilities.HexEventArgs>(this.PanelBoard_HotSpotHexChange);
       this.hexgridPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.hexgridPanel_MouseMove);
       // 
       // toolStrip2
@@ -164,7 +160,9 @@ namespace PG_Napoleonics.HexGridExample2 {
       // 
       // buttonFieldOfView
       // 
+      this.buttonFieldOfView.Checked = true;
       this.buttonFieldOfView.CheckOnClick = true;
+      this.buttonFieldOfView.CheckState = System.Windows.Forms.CheckState.Checked;
       this.buttonFieldOfView.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.buttonFieldOfView.Image = ((System.Drawing.Image)(resources.GetObject("buttonFieldOfView.Image")));
       this.buttonFieldOfView.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -200,13 +198,13 @@ namespace PG_Napoleonics.HexGridExample2 {
       this.menuItemDebug.Text = "&Debug Trace Flags";
       this.menuItemDebug.ToolTipText = "Build with DEBUG to enable this feature.";
       // 
-      // HexGridExampleForm
+      // HexgridExampleForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(707, 420);
       this.Controls.Add(this.toolStripContainer1);
-      this.Name = "HexGridExampleForm";
+      this.Name = "HexgridExampleForm";
       this.Text = "HexGridExample2";
       this.Load += new System.EventHandler(this.HexGridExampleForm_Load);
       this.toolStripContainer1.BottomToolStripPanel.ResumeLayout(false);
@@ -230,7 +228,7 @@ namespace PG_Napoleonics.HexGridExample2 {
     private System.Windows.Forms.ToolStripContainer toolStripContainer1;
     private System.Windows.Forms.ToolStrip toolStrip1;
     private System.Windows.Forms.ToolStripLabel toolStripLabel1;
-    private PG_Napoleonics.HexgridPanel.HexgridPanel hexgridPanel;
+    private PGNapoleonics.HexUtilities.HexgridPanel hexgridPanel;
     private System.Windows.Forms.ToolStrip toolStrip2;
     private System.Windows.Forms.ToolStripButton buttonTransposeMap;
     private System.Windows.Forms.ToolStripLabel statusLabel;

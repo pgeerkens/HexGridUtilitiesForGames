@@ -28,46 +28,31 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-namespace System.Windows.Forms {
-  public static partial class Extensions {
-    /// <summary>Executes Action asynchronously on the UI thread, without blocking the calling thread.</summary>
-    /// <param name="this"></param>
-    /// <param name="action"></param>
-    public static void UIThread(this Control @this, Action action) {
-      if (@this.InvokeRequired) {
-        @this.BeginInvoke(action);
-      } else {
-        action.Invoke();
-      }
-    }
-    public static void UIThread(this Control @this, Action<object[]> action, params object[] args) {
-      if (@this.InvokeRequired) {
-        @this.BeginInvoke(action,args);
-      } else {
-        action.Invoke(args);
-      }
-    }
-    /// <summary>Executes Action asynchronously on the UI thread, without blocking the calling thread.</summary>
-    /// <param name="this"></param>
-    /// <param name="action"></param>
-    public static void UIThread(this Form @this, Action action) {
-      if (@this.InvokeRequired) {
-        @this.BeginInvoke(action);
-      } else {
-        action.Invoke();
-      }
-    }
-    public static void UIThread(this Form @this, Action<object[]> action, params object[] args) {
-      if (@this.InvokeRequired) {
-        @this.BeginInvoke(action,args);
-      } else {
-        action.Invoke(args);
-      }
-    }
+namespace PGNapoleonics.WinForms {
+  internal static partial class NativeMethods {
+    /// <summary>P/Invoke declaration for user32.dll.WindowFromPoint</summary>
+		/// <remarks><see cref="http://msdn.microsoft.com/en-us/library/windows/desktop/ms633558(v=vs.85).aspx"/></remarks>
+		/// <param name="pt">(Sign-extended) screen coordinates as a Point structure.</param>
+		/// <returns>Window handle (hWnd).</returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "0"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode"), DllImport("user32.dll")]
+		internal static extern IntPtr WindowFromPoint(System.Drawing.Point pt);
+
+    /// <summary>P/Invoke declaration for user32.dll.SendMessage</summary>
+		/// <param name="hWnd">Window handle</param>
+		/// <param name="msg">Windows message</param>
+		/// <param name="wp">WParam</param>
+		/// <param name="lp">LParam</param>
+		/// <returns></returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode"), DllImport("user32.dll", CharSet = CharSet.Auto)]
+		internal static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
   }
 }

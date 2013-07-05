@@ -33,12 +33,12 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics;
-using PG_Napoleonics.HexUtilities;
-using PG_Napoleonics.HexUtilities.Common;
+using PGNapoleonics;
+using PGNapoleonics.HexUtilities;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.HexUtilities {
-  public interface IHexGridHost {
+namespace PGNapoleonics.HexUtilities {
+  public interface IHexgridHost {
     Size    ClientSize      { get; }
 
     /// <summary>Scaled <code>Size</code> of each hexagon in grid, being the 'full-width' and 'full-height'.</summary>
@@ -57,10 +57,10 @@ namespace PG_Napoleonics.HexUtilities {
     Point   ScrollPosition  { get; }
 
     /// <summary>IUserCoords for the currently visible extent (location & size), as a Rectangle.</summary>
-    UserCoordsRectangle     VisibleRectangle { get; }
+    CoordsRectangle     VisibleRectangle { get; }
   }
 
-  public interface IHexGrid {
+  public interface IHexgrid {
     /// <summary></summary>
     Point ScrollPosition { get; }
     /// <summary></summary>
@@ -84,8 +84,8 @@ namespace PG_Napoleonics.HexUtilities {
 
   /// <summary>C# implementation of the hex-picking algorithm noted  below.</summary>
   /// <remarks>See "file://Documentation/HexGridAlgorithm.mht"</remarks>
-  public class HexGrid : IHexGrid {
-    public HexGrid(IHexGridHost host) { Host = host; }
+  public class Hexgrid : IHexgrid {
+    public Hexgrid(IHexgridHost host) { Host = host; }
 
     /// <inheritdoc/>
     public virtual Point ScrollPosition { get { return Host.ScrollPosition; } }
@@ -118,11 +118,11 @@ namespace PG_Napoleonics.HexUtilities {
       if (coordsNewULHex == null) return new Point();
       var offset = new Size((int)(Host.GridSizeF.Width*2F/3F), (int)Host.GridSizeF.Height);
       var margin = Size.Round( Host.MapMargin.Scale(Host.MapScale) );
-      return HexOrigin(Host.GridSizeF,coordsNewULHex) + margin + offset;
+      return HexOrigin(coordsNewULHex) + margin + offset;
     }
 
     /// <summary>Scrolling control hosting this HexGrid.</summary>
-    protected IHexGridHost Host { get; private set; }
+    protected IHexgridHost Host { get; private set; }
 
     /// Mathemagically (left as exercise for the reader) our 'picking' matrices are these, assuming: 
     ///  - origin at upper-left corner of hex (0,0);
@@ -149,7 +149,7 @@ namespace PG_Napoleonics.HexUtilities {
 		  return (int) Math.Floor( (pts[0].X + pts[0].Y + 2F) / 3F );
 	  }
 
-    Point HexOrigin(SizeF gridSize, HexCoords coords) {
+    Point HexOrigin(HexCoords coords) {
       return new Point(
         (int)(Host.GridSizeF.Width  * coords.User.X),
         (int)(Host.GridSizeF.Height * coords.User.Y   + Host.GridSizeF.Height/2 * (coords.User.X+1)%2)
@@ -157,8 +157,8 @@ namespace PG_Napoleonics.HexUtilities {
     }
   }
 
-  public class TransposedHexGrid : HexGrid {
-    public TransposedHexGrid(IHexGridHost host) :base(host) {}
+  public class TransposedHexgrid : Hexgrid {
+    public TransposedHexgrid(IHexgridHost host) :base(host) {}
 
     ///<inheritdoc/>
     public override Point ScrollPosition { get { return TransposePoint(base.ScrollPosition); } }
@@ -175,7 +175,7 @@ namespace PG_Napoleonics.HexUtilities {
       return TransposePoint(base.HexCenterPoint(coordsNewULHex));
     }
 
-    Point TransposePoint(Point point) { return new Point(point.Y,point.X); }
-    Size  TransposeSize(Size  size)   { return new Size (size.Height, size.Width); }
+    static Point TransposePoint(Point point) { return new Point(point.Y,point.X); }
+    static Size  TransposeSize(Size  size)   { return new Size (size.Height, size.Width); }
   }
 }

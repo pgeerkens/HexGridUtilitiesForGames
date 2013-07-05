@@ -31,13 +31,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace System.Windows.Forms {
-/// <summary>
-  /// Windows Messages
-  /// Defined in winuser.h from Windows SDK v6.1
-  /// Documentation pulled from MSDN.
-  /// </summary>
-  public enum WM : uint
+namespace PGNapoleonics.WinForms {
+  /// <summary>
+    /// Windows Messages
+    /// Defined in winuser.h from Windows SDK v6.1
+    /// Documentation pulled from MSDN.
+    /// </summary>
+  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+  public enum WM //: uint
   {
     /// <summary>
     /// The WM_NULL message performs no operation. An application sends the WM_NULL message if it wants to post a message that the recipient window will ignore.
@@ -632,7 +633,7 @@ namespace System.Windows.Forms {
     MOUSEWHEEL = 0x020A,
     /// <summary>
     /// The WM_XBUTTONDOWN message is posted when the user presses the first or second X button while the cursor is in the client area of a window. If the mouse is not captured, the message is posted to the window beneath the cursor. Otherwise, the message is posted to the window that has captured the mouse. 
-   /// </summary>
+    /// </summary>
     XBUTTONDOWN = 0x020B,
     /// <summary>
     /// The WM_XBUTTONUP message is posted when the user releases the first or second X button while the cursor is in the client area of a window. If the mouse is not captured, the message is posted to the window beneath the cursor. Otherwise, the message is posted to the window that has captured the mouse.
@@ -940,10 +941,12 @@ namespace System.Windows.Forms {
     /// <summary>
     /// An application sends the WM_CPL_LAUNCH message to Windows Control Panel to request that a Control Panel application be started. 
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores")]
     CPL_LAUNCH = USER+0x1000,
     /// <summary>
     /// The WM_CPL_LAUNCHED message is sent when a Control Panel application, started by the WM_CPL_LAUNCH message, has closed. The WM_CPL_LAUNCHED message is sent to the window identified by the wParam parameter of the WM_CPL_LAUNCH message that started the application. 
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores")]
     CPL_LAUNCHED = USER+0x1001,
     /// <summary>
     /// WM_SYSTIMER is a well-known yet still undocumented message. Windows uses WM_SYSTIMER for internal actions like scrolling.

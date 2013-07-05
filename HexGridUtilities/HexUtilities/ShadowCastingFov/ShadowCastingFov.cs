@@ -29,17 +29,17 @@
 #undef TraceFoV
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-using PG_Napoleonics;
-using PG_Napoleonics.HexUtilities.Common;
+using PGNapoleonics;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
+namespace PGNapoleonics.HexUtilities {
   /// <summary>Credit: Eric Lippert</summary>
   /// <cref>http://blogs.msdn.com/b/ericlippert/archive/2011/12/29/shadowcasting-in-c-part-six.aspx</cref>
   internal static partial class ShadowCasting {
-    //public static int MaximumBoardElevation { get; set; }
 
     /// <summary></summary>
     /// <remarks>
@@ -53,36 +53,36 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
     /// <param name="isOnBoard">Is this hex on the baoard.</param>
     /// <param name="targetHeight">Returns ground level (ASL) of supplied hex.</param>
     /// <param name="terrainHeight">Returns height (ASL) of terrain in supplied hex.</param>
-    /// <param name="setFoV">Sets a hex as visible in the Field-of-View.</param>
+    /// <param name="setFieldOfView">Sets a hex as visible in the Field-of-View.</param>
     public static void ComputeFieldOfView(
       HexCoords            observerCoords, 
-      int                radius, 
-      int                observerHeight,
+      int                  radius, 
+      int                  observerHeight,
       Func<HexCoords,bool> isOnBoard,
       Func<HexCoords,int>  targetHeight, 
       Func<HexCoords,int>  terrainHeight,
-      Action<HexCoords>    setFoV
+      Action<HexCoords>    setFieldOfView
     ) {
       #if TraceFOV
         TraceFlag.FieldOfView.Trace(true, " - Coords = " + observerCoords.User.ToString());
       #endif
       var matrixOrigin = new IntMatrix2D(observerCoords.Canon);
 
-      setFoV(observerCoords);    // Always visible to self!
+      setFieldOfView(observerCoords);    // Always visible to self!
       #if TraceFoV
-        for (int dodecant = 3; dodecant < 4; dodecant++) {
-          TraceFlag.FieldOfView.Trace(true," - Dodecant: {0}", dodecant);
+        int dodecant = 0;
+        foreach (var matrix in matrices.Select(m => m*matrixOrigin)) {
+          TraceFlags.FieldOfView.Trace(true," - Dodecant: {0}", dodecant++);
       #else
-        Parallel.For (0, matrices.Count, dodecant => {
+        Parallel.ForEach (_dodecantMatrices.Select(m => m*matrixOrigin), matrix => {
       #endif
-          var matrix = matrices[dodecant] * matrixOrigin;
           ComputeFieldOfViewInDodecantZero(
             radius,
             observerHeight,
             TranslateDodecant(matrix, isOnBoard),
             TranslateDodecant(matrix, targetHeight),
             TranslateDodecant(matrix, terrainHeight),
-            TranslateDodecant(matrix, setFoV));
+            TranslateDodecant(matrix, setFieldOfView));
         }
       #if !TraceFoV
         );
@@ -90,8 +90,8 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
     }
 
     private static void ComputeFieldOfViewInDodecantZero(
-      int                radius,
-      int                observerHeight,
+      int                  radius,
+      int                  observerHeight,
       Func<HexCoords,bool> isOnBoard,
       Func<HexCoords, int> targetHeight,
       Func<HexCoords, int> terrainHeight,
@@ -108,10 +108,11 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
       if (radius > 0) setFieldOfView(currentCoords);
 
       var queue   = new FovQueue();
-      var current = new FovCone( 2, 
-                                 new IntVector2D(1,2), 
-                                 new IntVector2D(0,1), 
-                                 new RiseRun(terrainHeight(currentCoords) - observerHeight, 1) );
+      var current = new FovCone(
+                    2, 
+                    new IntVector2D(1,2), 
+                    new IntVector2D(0,1), 
+                    new RiseRun(terrainHeight(currentCoords) - observerHeight, 1) );
       while (current.Range <= radius) {
         current = ComputeFoVForRange(
           observerHeight,
@@ -124,28 +125,40 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
       }
     }
 
-    // This method has two main purposes: (1) it marks points inside the
-    // portion that are within the radius as in the field of view, and 
-    // (2) it computes which portions of the following column are in the 
-    // field of view, and puts them on a work queue for later processing. 
-    //
-    // A more sophisticated algorithm would say that a cell is visible if there is 
-    // *any* straight line segment that passes through *any* portion of the origin cell
-    // and any portion of the target cell, passing through only transparent cells
-    // along the way. This is the "Permissive Field Of View" algorithm, and it
-    // is much harder to implement.
-    //
-    // Search for transitions from opaque to transparent or
-    // transparent to opaque and use those to determine what
-    // portions of the *next* column are visible from the origin.
+    /// <summary></summary>
+    /// <param name="observerHeight"></param>
+    /// <param name="cone"></param>
+    /// <param name="isOnBoard"></param>
+    /// <param name="targetHeight"></param>
+    /// <param name="terrainHeight"></param>
+    /// <param name="setFieldOfView"></param>
+    /// <param name="queue"></param>
+    /// <returns></returns>
+    ///<remarks>
+    /// This method: 
+    /// (1) marks points inside the cone-arc that are within the radius of the field 
+    ///     of view; and 
+    /// (2) computes which portions of the following column are in the field of view, 
+    ///     queueing them for later processing. 
+    ///
+    /// This algorithm is <quote>center-to-center</quote>; a more sophisticated algorithm 
+    /// would say that a cell is visible if there is *any* straight line segment that 
+    /// passes through *any* portion of the origin cell and any portion of the target 
+    /// cell, passing through only transparent cells along the way. This is the 
+    /// "Permissive Field Of View" algorithm, and it is much harder to implement.
+    ///
+    /// Search for transitions from opaque to transparent or transparent to opaque and 
+    /// use those to determine what portions of the *next* column are visible from the 
+    /// origin.
+    ///</remarks>
     private static FovCone ComputeFoVForRange(
-      int                observerHeight,
-      FovCone            cone,
+      int                  observerHeight,
+      FovCone              cone,
       Func<HexCoords,bool> isOnBoard,
       Func<HexCoords, int> targetHeight,
       Func<HexCoords, int> terrainHeight,
       Action<HexCoords>    setFieldOfView,
-      FovQueue           queue)
+      FovQueue             queue)
     {
       Action<FovCone> enqueue = queue.Enqueue;
 
@@ -156,7 +169,7 @@ namespace PG_Napoleonics.HexUtilities.ShadowCastingFov {
 
       // track the overlap-cone between adjacent hexes as we move down.
       var overlapVector = cone.VectorTop;
-      var hexX          = XFromVector(range, topVector, true);
+      var hexX          = XFromVector(range, topVector);
       #if TraceFOV
         TraceFlag.FieldOfView.Trace(false, "DQ:   ({0}) from {1}", cone, hexX);
       #endif

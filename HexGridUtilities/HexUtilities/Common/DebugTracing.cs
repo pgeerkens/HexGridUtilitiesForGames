@@ -28,135 +28,168 @@
 #endregion
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.InteropServices;     // For StructLayout, DllImport
 
-namespace PG_Napoleonics.HexUtilities.Common {
-  [StructLayout(LayoutKind.Sequential)]
-  public sealed class _SystemTime {
-    public ushort year;
-    public ushort month;
-    public ushort weekday;
-    public ushort day;
-    public ushort hour;
-    public ushort minute;
-    public ushort second;
-    public ushort millisecond;
-
-    public override string ToString() {
-      return string.Format("{0,2}:{1,2}:{2,2}.{3,3}", 
-        this.hour, this.minute, this.second, this.millisecond);
-    }
-  }
-  [Flags]
-  public enum TraceFlag  {
-     None           = 0x00000
-    ,Unused1        = 0x00001
-    ,FieldOfView    = 0x00002
-    ,Mouse          = 0x00004
-    ,MouseMove      = 0x00008
-    ,MainForm       = 0x00010
-    ,FindPath       = 0x00020
-    ,Docking        = 0x00040
-    ,MenuEvents     = 0x00080
-    ,KeyEvents      = 0x00100
-    ,Sizing         = 0x00200
-    ,ScrollEvents   = 0x00400
-    ,ToolTipEvents  = 0x00800
-    ,Caching        = 0x01000
-    ,Initialization = 0x02000
-    ,Paint          = 0x04000
-    ,PaintMap       = 0x08000
-    ,PaintDetail    = 0x108000
-    ,Solo           = Int32.MinValue // 0x40000000
+namespace PGNapoleonics.HexUtilities.Common {
+  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags"), Flags]
+  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
+  public enum TraceFlags  {
+     None            = 0x00000
+    ,Caching         = 0x00001
+    ,FieldOfView     = 0x00002
+    ,Mouse           = 0x00004
+    ,MouseMove       = 0x00008
+    ,MainForm        = 0x00010
+    ,Initialization  = 0x00020
+    ,Docking         = 0x00040
+    ,MenuEvents      = 0x00080
+    ,KeyEvents       = 0x00100
+    ,Sizing          = 0x00200
+    ,ScrollEvents    = 0x00400
+    ,ToolTipEvents   = 0x00800
+    ,Paint           = 0x01000
+    ,PaintMap        = 0x02000
+    ,PaintDetail     = 0x04000
+    ,FindPathEnqueue = 0x08000
+    ,FindPathDequeue = 0x10000
+    ,FindPathDetail  = 0x20000
+    ,FindPathShortcut= 0x40000
   }
 
-  public sealed partial class DebugTracing {
-    [DllImport("Kernel32.dll")]
-    private static extern void GetSystemTime([In,Out] _SystemTime st);
+  internal static partial class NativeMethods {
+#if DEBUG
+    [StructLayout(LayoutKind.Sequential)]
+    internal sealed class SystemTime {
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
+      public ushort year;
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
+      public ushort month;
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
+      public ushort weekday;
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
+      public ushort day;
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
+      public ushort hour;
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
+      public ushort minute;
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
+      public ushort second;
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
+      public ushort millisecond;
 
-    public static TraceFlag EnabledFags { get; set; }
+      public override string ToString() {
+        return string.Format(CultureInfo.InvariantCulture,"{0,2}:{1,2}:{2,2}.{3,3}", 
+          this.hour, this.minute, this.second, this.millisecond);
+      }
+    }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode"), DllImport("Kernel32.dll")]
+    internal static extern void GetSystemTime([In,Out] SystemTime st);
+#endif
+  }
 
-    public static string GetTimeString() {
-      var st = new _SystemTime();
-      GetSystemTime(st); 
-      return st.ToString();
+  [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage()]
+  public static partial class DebugTracing {
+    public static TraceFlags EnabledFags { get; set; }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object[])"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
+    public static void Trace(TraceFlags traceFlags, string format, params object[] args) {
+      Trace(traceFlags, false, string.Format(format,args));
+    }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object[])"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
+    public static void Trace(TraceFlags traceFlags, bool newLine, string format, params object[] args) {
+      Trace(traceFlags, newLine, string.Format(format,args));
+    }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "traceFlags"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newLine"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "description"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
+    public static void Trace(TraceFlags traceFlags, bool newLine, string description) {
+      TraceDetail(traceFlags, newLine, description);
     }
 
-  #if DEBUG
-      public static void Trace(TraceFlag flags, string format, params object[] args) {
-        Trace(flags, false, string.Format(format,args));
-      }
-      public static void Trace(TraceFlag flags, bool newline, string format, params object[] args) {
-        Trace(flags, newline, string.Format(format,args));
-      }
-      public static void Trace(TraceFlag flags, bool newline, string description) {
-        if (EnabledFags.HasFlag(flags)) {
-          if(newline) Debug.WriteLine("");
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object[])"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
+    public static void LogTime(TraceFlags traceFlags, string format, params object[] args) {
+      LogTime(traceFlags, false, string.Format(format,args));
+    }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object[])"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
+    public static void LogTime(TraceFlags traceFlags, bool newLine, string format, params object[] args) {
+      LogTime(traceFlags, newLine, string.Format(format,args));
+    }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
+    public static void LogTime(TraceFlags traceFlags, string description) {
+      LogTime(traceFlags, false, description);
+    }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "traceFlags"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "description"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newLine"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
+    public static void LogTime(TraceFlags traceFlags, bool newLine, string description) {
+      LogTimeDetail(traceFlags, newLine, description);
+    }
+
+    static partial void TraceDetail(TraceFlags traceFlags, bool newLine, string description);
+
+    static partial void LogTimeDetail(TraceFlags traceFlags, bool newLine, string description);
+#if DEBUG
+      static partial void TraceDetail(TraceFlags traceFlags, bool newLine, string description) {
+        if (EnabledFags.HasFlag(traceFlags)) {
+          if(newLine) Debug.WriteLine("");
           Debug.WriteLine(description);
         }
       }
 
-      public static void LogTime(TraceFlag flags, string format, params object[] args) {
-        LogTime(flags, false, string.Format(format,args));
-      }
-      public static void LogTime(TraceFlag flags, bool newline, string format, params object[] args) {
-        LogTime(flags, newline, string.Format(format,args));
-      }
-      public static void LogTime(TraceFlag flags, string description) {
-        LogTime(flags, false, description);
-      }
-      public static void LogTime(TraceFlag flags, bool newline, string description) {
-        if (EnabledFags.HasFlag(flags)) {
-          if(newline) Debug.WriteLine("");
+    static string GetTimeString() {
+      var st = new NativeMethods.SystemTime();
+      NativeMethods.GetSystemTime(st); 
+      return st.ToString();
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
+      static partial void LogTimeDetail(TraceFlags traceFlags, bool newLine, string description) {
+        if (EnabledFags.HasFlag(traceFlags)) {
+          if(newLine) Debug.WriteLine("");
           Debug.Write("{0} - ", GetTimeString());
-          Trace(flags, false, description);
+          Trace(traceFlags, false, description);
         }
       }
-    #else
-      public static void Trace(TraceFlag flags, string format, params object[] args) {}
-      public static void Trace(TraceFlag flags, bool newline, string format, params object[] args) {}
-      public static void Trace(TraceFlag flags, bool newline, string description) {}
-
-      public static void LogTime(TraceFlag flags, string format, params object[] args) {}
-      public static void LogTime(TraceFlag flags, bool newline, string format, params object[] args) {}
-      public static void LogTime(TraceFlag flags, string description) {}
-      public static void LogTime(TraceFlag flags, bool newline, string description) {}
-    #endif
+#endif
   }
 
   public static partial class Extensions {
     #if DEBUG
-      public static void Trace(this TraceFlag @this, string format, params object[] args) {
+      public static void Trace(this TraceFlags @this, string format, params object[] args) {
         DebugTracing.Trace(@this,format,args);
       }
-      public static void Trace(this TraceFlag @this, bool newline, string format, params object[] args) {
-        DebugTracing.Trace(@this,newline,format,args);
+      public static void Trace(this TraceFlags @this, bool newLine, string format, params object[] args) {
+        DebugTracing.Trace(@this,newLine,format,args);
       }
-      public static void Trace(this TraceFlag @this, bool newline, string description) {
-        DebugTracing.Trace(@this,newline,description);
+      public static void Trace(this TraceFlags @this, bool newLine, string description) {
+        DebugTracing.Trace(@this,newLine,description);
       }
 
-      public static void LogTime(this TraceFlag @this, string format, params object[] args) {
+      public static void LogTime(this TraceFlags @this, string format, params object[] args) {
         DebugTracing.LogTime(@this,format,args);
       }
-      public static void LogTime(this TraceFlag @this, bool newline, string format, params object[] args) {
-        DebugTracing.LogTime(@this,newline,format,args);
+      public static void LogTime(this TraceFlags @this, bool newLine, string format, params object[] args) {
+        DebugTracing.LogTime(@this,newLine,format,args);
       }
-      public static void LogTime(this TraceFlag @this, string description) {
+      public static void LogTime(this TraceFlags @this, string description) {
         DebugTracing.LogTime(@this,description);
       }
-      public static void LogTime(this TraceFlag @this, bool newline, string description) {
-        DebugTracing.LogTime(@this,newline,description);
+      public static void LogTime(this TraceFlags @this, bool newLine, string description) {
+        DebugTracing.LogTime(@this,newLine,description);
       }
     #else
-      public static void Trace(this TraceFlag @this, string format, params object[] args) {}
-      public static void Trace(this TraceFlag @this, bool newline, string format, params object[] args) {}
-      public static void Trace(this TraceFlag @this, bool newline, string description) {}
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "this"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "format")]
+      public static void Trace(this TraceFlags @this, string format, params object[] args) {}
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newLine"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "this"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "format"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newline")]
+      public static void Trace(this TraceFlags @this, bool newLine, string format, params object[] args) {}
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "description"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newLine"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "this"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newline")]
+      public static void Trace(this TraceFlags @this, bool newLine, string description) {}
 
-      public static void LogTime(this TraceFlag @this, string format, params object[] args) {}
-      public static void LogTime(this TraceFlag @this, bool newline, string format, params object[] args) {}
-      public static void LogTime(this TraceFlag @this, string description) {}
-      public static void LogTime(this TraceFlag @this, bool newline, string description) {}
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "this"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "format")]
+      public static void LogTime(this TraceFlags @this, string format, params object[] args) {}
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "format"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newLine"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "this"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newline")]
+      public static void LogTime(this TraceFlags @this, bool newLine, string format, params object[] args) {}
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "description"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "this")]
+      public static void LogTime(this TraceFlags @this, string description) {}
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newLine"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "this"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "description")]
+      public static void LogTime(this TraceFlags @this, bool newLine, string description) {}
     #endif
   }
 }

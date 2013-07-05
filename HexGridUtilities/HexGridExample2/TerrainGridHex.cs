@@ -33,13 +33,13 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 
-using PG_Napoleonics;
-using PG_Napoleonics.HexUtilities;
+using PGNapoleonics;
+using PGNapoleonics.HexUtilities;
 
-namespace PG_Napoleonics.HexGridExample2 {
-  public abstract class TerrainGridHex : MapGridHex {
+namespace PGNapoleonics.HexGridExample2 {
+  internal abstract class TerrainGridHex : MapGridHex {
 
-    public TerrainGridHex(MapDisplay map, HexCoords coords, Size gridSize) 
+    protected TerrainGridHex(IBoard<IHex> map, HexCoords coords, Size gridSize) 
       : base(map, coords) { 
       GridSize  = gridSize;
 
@@ -60,56 +60,73 @@ namespace PG_Napoleonics.HexGridExample2 {
 
     public override void Paint(Graphics g) {;}
     public override int  Elevation     { get { return  0; }  }
-    public override int  ElevationASL  { get { return Elevation * 10; } protected set { throw new NotSupportedException(); } }
-    public override int  HeightTerrain { get { return  ElevationASL; } }
+    public override int  ElevationASL  { get { return Board.ElevationASL(Elevation); } }
+    public override int  HeightTerrain { get { return ElevationASL; } }
     public override int  StepCost(Hexside direction) { return  4; }
   }
-  public sealed class ClearTerrainGridHex    : TerrainGridHex {
-    public ClearTerrainGridHex(MapDisplay map, HexCoords coords, Size gridSize) : base(map, coords, gridSize) { }
+  internal sealed class ClearTerrainGridHex    : TerrainGridHex {
+    public ClearTerrainGridHex(IBoard<MapGridHex> map, HexCoords coords, Size gridSize) : base(map, coords, gridSize) { }
     public override void Paint(Graphics g) { ; }
   }
-  public sealed class FordTerrainGridHex     : TerrainGridHex {
-    public FordTerrainGridHex(MapDisplay map, HexCoords coords, Size gridSize) : base(map, coords, gridSize) { }
+  internal sealed class FordTerrainGridHex     : TerrainGridHex {
+    public FordTerrainGridHex(IBoard<MapGridHex> map, HexCoords coords, Size gridSize) : base(map, coords, gridSize) { }
     public override int StepCost(Hexside direction) { return  5; }
-    public override void Paint(Graphics g) { g.FillPath(Brushes.Brown, HexgridPath); }
+    public override void Paint(Graphics g) { 
+      if (g==null) throw new ArgumentNullException("g");
+      g.FillPath(Brushes.Brown, HexgridPath); 
+    }
   }
-  public sealed class RiverTerrainGridHex    : TerrainGridHex {
-    public RiverTerrainGridHex(MapDisplay map, HexCoords coords, Size gridSize) : base(map, coords, gridSize) { }
+  internal sealed class RiverTerrainGridHex    : TerrainGridHex {
+    public RiverTerrainGridHex(IBoard<MapGridHex> map, HexCoords coords, Size gridSize) : base(map, coords, gridSize) { }
     public override int StepCost(Hexside direction) { return -1; }
-    public override void Paint(Graphics g) { g.FillPath(Brushes.DarkBlue, HexgridPath); }
+    public override void Paint(Graphics g) { 
+      if (g==null) throw new ArgumentNullException("g");
+      g.FillPath(Brushes.DarkBlue, HexgridPath); 
+    }
   }
-  public sealed class PikeTerrainGridHex     : TerrainGridHex {
-    public PikeTerrainGridHex(MapDisplay map, HexCoords coords, Size gridSize) : base(map, coords, gridSize) { }
+  internal sealed class PikeTerrainGridHex     : TerrainGridHex {
+    public PikeTerrainGridHex(IBoard<MapGridHex> map, HexCoords coords, Size gridSize) : base(map, coords, gridSize) { }
     public override int StepCost(Hexside direction) { return  2; }
     public override void Paint(Graphics g) { 
+      if (g==null) throw new ArgumentNullException("g");
       using(var brush = new SolidBrush(Color.FromArgb(78,Color.DarkGray)))
         g.FillPath(brush, HexgridPath); 
     }
   }
-  public sealed class RoadTerrainGridHex     : TerrainGridHex {
-    public RoadTerrainGridHex(MapDisplay map, HexCoords coords, Size gridSize) : base(map, coords, gridSize) { }
+  internal sealed class RoadTerrainGridHex     : TerrainGridHex {
+    public RoadTerrainGridHex(IBoard<MapGridHex> map, HexCoords coords, Size gridSize) : base(map, coords, gridSize) { }
     public override int StepCost(Hexside direction) { return  3; }
     public override void Paint(Graphics g) { 
+      if (g==null) throw new ArgumentNullException("g");
       using(var brush = new SolidBrush(Color.FromArgb(78,Color.SaddleBrown)))
         g.FillPath(brush, HexgridPath); 
     }
   }
-  public sealed class HillTerrainGridHex     : TerrainGridHex {
-    public HillTerrainGridHex(MapDisplay map, HexCoords coords, Size gridSize) : base(map, coords, gridSize) { }
+  internal sealed class HillTerrainGridHex     : TerrainGridHex {
+    public HillTerrainGridHex(IBoard<MapGridHex> map, HexCoords coords, Size gridSize) : base(map, coords, gridSize) { }
     public override int Elevation      { get { return  1; } }
     public override int StepCost(Hexside direction) { return  5; }
-    public override void Paint(Graphics g) { g.FillPath(Brushes.Khaki, HexgridPath); }
+    public override void Paint(Graphics g) { 
+      if (g==null) throw new ArgumentNullException("g");
+      g.FillPath(Brushes.Khaki, HexgridPath); 
+    }
   }
-  public sealed class MountainTerrainGridHex : TerrainGridHex {
-    public MountainTerrainGridHex(MapDisplay map, HexCoords coords, Size gridSize) : base(map, coords, gridSize) { }
+  internal sealed class MountainTerrainGridHex : TerrainGridHex {
+    public MountainTerrainGridHex(IBoard<MapGridHex> map, HexCoords coords, Size gridSize) : base(map, coords, gridSize) { }
     public override int Elevation      { get { return  2; } }
     public override int StepCost(Hexside direction) { return  6; }
-    public override void Paint(Graphics g) { g.FillPath(Brushes.DarkKhaki, HexgridPath); }
+    public override void Paint(Graphics g) { 
+      if (g==null) throw new ArgumentNullException("g");
+      g.FillPath(Brushes.DarkKhaki, HexgridPath); 
+    }
   }
-  public sealed class WoodsTerrainGridHex    : TerrainGridHex {
-    public WoodsTerrainGridHex(MapDisplay map, HexCoords coords, Size gridSize) : base(map, coords, gridSize) { }
+  internal sealed class WoodsTerrainGridHex    : TerrainGridHex {
+    public WoodsTerrainGridHex(IBoard<MapGridHex> map, HexCoords coords, Size gridSize) : base(map, coords, gridSize) { }
     public override int HeightTerrain  { get { return ElevationASL + 7; } }
     public override int StepCost(Hexside direction) { return  8; }
-    public override void Paint(Graphics g) { g.FillPath(Brushes.Green, HexgridPath); }
+    public override void Paint(Graphics g) { 
+      if (g==null) throw new ArgumentNullException("g");
+      g.FillPath(Brushes.Green, HexgridPath); 
+    }
   }
 }
