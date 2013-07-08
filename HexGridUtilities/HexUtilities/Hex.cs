@@ -58,6 +58,7 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>The precalculated <b><c>PathShortcut</c>s</b> from this hex.</summary>
     IList<PathShortcut> Shortcuts { get; }
 
+    /// <summary>Returns the neighbouring hex across <c>Hexside</c> <c>hexside</c>.</summary>
     IHex Neighbour(Hexside hexside);
 
     /// <summary>Cost to extend the path with the hex located across the <c>Hexside</c> at <c>direction</c>.</summary>
@@ -173,8 +174,8 @@ namespace PGNapoleonics.HexUtilities {
 
     /// <summary>Returns whether this hex is "On Board".</summary>
     public static bool IsOnboard(this IHex @this) {
-      if (@this==null) throw new ArgumentNullException("this");
-      return @this.Board.IsOnboard(@this.Coords);
+//      if (@this==null) throw new ArgumentNullException("this");
+      return @this!=null  &&  @this.Board.IsOnboard(@this.Coords);
     }
   }
 }

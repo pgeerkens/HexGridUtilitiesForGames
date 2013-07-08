@@ -134,6 +134,7 @@
     <Compile Include="PathFinding\HotPriorityQueue.cs" />
     <Compile Include="PathFinding\HotPriorityQueueList.cs" />
     <Compile Include="PathFinding\IPriorityQueue.cs" />
+    <Compile Include="PathFinding\Landmark.cs" />
     <Compile Include="PathFinding\Path.cs" />
     <Compile Include="PathFinding\PathFinder.cs" />
     <Compile Include="Common\PointExtensions.cs" />

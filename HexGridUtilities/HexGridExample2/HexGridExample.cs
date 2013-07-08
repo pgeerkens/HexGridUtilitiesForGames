@@ -72,9 +72,19 @@ namespace PGNapoleonics.HexGridExample2 {
       #endif
     }
 
+    void LoadLandMarkMenu() {
+      menuItemLandmarks.Items.Clear();
+      menuItemLandmarks.Items.Add("None");
+      foreach(var landmark in _mapBoard.Landmarks) {
+        menuItemLandmarks.Items.Add(string.Format("{0}", landmark.Coords));
+      }
+      menuItemLandmarks.SelectedIndexChanged += menuItemLandmarks_SelectedIndexChanged;
+      menuItemLandmarks.SelectedIndex = 0; 
+    }
+
     MapDisplay          MapBoard { 
       get {return _mapBoard;}
-      set {_mapBoard = value; _mapBoard.RangeCutoff = (int)txtPathCutover.Tag;}
+      set {_mapBoard = value; _mapBoard.RangeCutoff = (int)txtPathCutover.Tag; LoadLandMarkMenu();}
     } MapDisplay _mapBoard;
 
     #region Event handlers
@@ -131,6 +141,11 @@ namespace PGNapoleonics.HexGridExample2 {
       MapBoard.FovRadius   =
       MapBoard.RangeCutoff = value;
       Refresh();
+    }
+
+    private void menuItemLandmarks_SelectedIndexChanged(object sender, EventArgs e) {
+      _mapBoard.LandmarkToShow = menuItemLandmarks.SelectedIndex - 1;
+      Update();
     }
 
     private void menuItemDebugTracing_Click(object sender, EventArgs e) {

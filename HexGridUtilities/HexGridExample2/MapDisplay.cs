@@ -46,25 +46,25 @@ namespace PGNapoleonics.HexGridExample2 {
       "CA1006:DoNotNestGenericTypesInMemberSignatures")]
     protected MapDisplay(Size sizeHexes, Func<IBoard<MapGridHex>, HexCoords, MapGridHex> initializeHex) 
       : base(sizeHexes, new Size(27,30), (map) => 
-            new FlatBoardStorage<MapGridHex>(sizeHexes, coords => initializeHex(map,coords)) )
-    {
+          new BoardStorage<MapGridHex>.FlatBoardStorage(sizeHexes, coords => initializeHex(map,coords))
+    ) {
       StartHex   = GoalHex = HotspotHex = HexCoords.EmptyUser;
     }
 
-    public virtual  IFov      Fov        {
+    public virtual  IFov      Fov            {
       get { return _fov ?? (_fov = this.GetFov(HotspotHex)); }
       protected set { _fov = value; }
     } IFov _fov;
-    public virtual  HexCoords GoalHex    { 
+    public virtual  HexCoords GoalHex        { 
       get { return _goalHex; }
       set { _goalHex=value; _path = null; } 
     } HexCoords _goalHex = HexCoords.EmptyUser;
-    public virtual  HexCoords HotspotHex { 
+    public virtual  HexCoords HotspotHex     { 
       get { return _hotSpotHex; }
       set { _hotSpotHex = value; Fov = null; }
     } HexCoords _hotSpotHex = HexCoords.EmptyUser;
 #if PathFwd
-    public          IDirectedPath  Path       { 
+    public          IDirectedPath Path       { 
       get { return _path ?? ( IsPassable(StartHex) && IsPassable(GoalHex) 
                           ? (_path = this.GetDirectedPath(this[StartHex], this[GoalHex])) : null); } 
     } IDirectedPath _path;
@@ -73,16 +73,17 @@ namespace PGNapoleonics.HexGridExample2 {
       get {return _path ?? (_path = this.GetPath(StartHex, GoalHex));} 
     } IPath _path;
 #endif
-    public virtual  HexCoords StartHex   { 
+    public virtual  HexCoords StartHex       { 
       get { return _startHex; } // ?? (_startHex = HexCoords.EmptyUser); } 
       set { if (IsOnboard(value)) _startHex = value; _path = null; } 
     } HexCoords _startHex = HexCoords.EmptyUser;
 
-    public    Size         MapMargin     { get; set; }
-    public    string       Name          { get {return "MapDisplay";} }
-    public    bool         ShowFov       { get; set; }
+    public          int       LandmarkToShow { get; set; }
+    public          Size      MapMargin      { get; set; }
+    public          string    Name           { get {return "MapDisplay";} }
+    public          bool      ShowFov        { get; set; }
 
-    IHex       IFovBoard<IHex>.this[HexCoords coords] { get { return BoardHexes[coords]; } }
+    IHex IFovBoard<IHex>.this[HexCoords coords] { get { return BoardHexes[coords]; } }
 
     public CoordsRectangle GetClipCells(PointF point, SizeF size) {
       return GetClipHexes( new RectangleF(point,size), MapSizeHexes );
@@ -126,6 +127,7 @@ namespace PGNapoleonics.HexGridExample2 {
 
       g.TranslateTransform(MapMargin.Width + clipCells.Right*GridSize.Width, MapMargin.Height);
 
+      var textOffset = new Point(GridSize.Width/2 - 6, GridSize.Height/2 - 6);
       using(var shadeBrush = new SolidBrush(Color.FromArgb(78,Color.Black))) {
         for (int x=clipCells.Right; x-->clipCells.Left; ) {
           g.TranslateTransform(-GridSize.Width, 0);
@@ -134,6 +136,8 @@ namespace PGNapoleonics.HexGridExample2 {
           for (int y=clipCells.Top; y<clipCells.Bottom; y++) {
             var coords = HexCoords.NewUserCoords(x,y);
             if (ShowFov && Fov!=null && ! Fov[coords]) { g.FillPath(shadeBrush, HexgridPath);  }
+
+            g.DrawString(HexText(x,y,LandmarkToShow), SystemFonts.MenuFont, Brushes.Black, textOffset);
 
             g.TranslateTransform(0,GridSize.Height);
           }
@@ -188,7 +192,13 @@ namespace PGNapoleonics.HexGridExample2 {
       return new CoordsRectangle (left, top, right-left, bottom-top);
     }
     
-//    public static string HexText(HexCoords coords) { return HexText(coords.User.X, coords.User.Y); }
-//           static string HexText(int x, int y)     { return string.Format("{0,2}-{1,2}", x, y); }
+    public string HexText(HexCoords coords, int landmarkToShow) { 
+      var value = (0 <= landmarkToShow && landmarkToShow < Landmarks.Count)
+        ? Landmarks[landmarkToShow].HexDistance(coords) : -1;
+      return value==-1 ? "" : string.Format("{0,3}", value);
+    }
+    public string HexText(int x, int y, int landmarkToShow)     { 
+      return HexText(HexCoords.NewUserCoords(x,y),landmarkToShow); 
+    }
   }
 }

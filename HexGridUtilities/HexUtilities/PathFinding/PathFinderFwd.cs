@@ -30,6 +30,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -44,6 +45,9 @@ namespace PGNapoleonics.HexUtilities.PathFinding {
 
     /// <summary>Cost to extend path by exiting the hex at <c>coords</c> through <c>hexside</c>.</summary>
     int  DirectedStepCost(IHex hex, Hexside hexsideExit);
+
+    /// <summary>Returns the collecction of defined landmarks on this board.</summary>
+    LandmarkCollection Landmarks { get; }
   }
 
   /// <summary>(Adapted) C# implementation of A* path-finding algorithm by Eric Lippert.</summary>
@@ -145,7 +149,6 @@ namespace PGNapoleonics.HexUtilities.PathFinding {
         Path        = null;
 
         _start      = start;
-//        _goal       = goal;
         _heuristic  = heuristic;
         _open       = (IDictionary<HexCoords,IDirectedPath>) new Dictionary<HexCoords, IDirectedPath>();
         _stepCost   = stepCost;

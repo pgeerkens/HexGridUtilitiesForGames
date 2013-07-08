@@ -28,8 +28,8 @@
 #endregion
 using System;
 using System.Collections;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -57,17 +57,21 @@ namespace PGNapoleonics.HexUtilities {
   /// <summary>Common <i>extension methods</i> for <c>Hexside</c> and <c>HexSideFlags</c>.</summary>
   public static partial class HexExtensions {
     /// <summary><c>Static List&lt;Hexside></c> for enumerations.</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", 
+      "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
     public static readonly IEnumerable<Hexside> HexsideList 
       = Utilities.EnumGetValues<Hexside>().ToList().AsReadOnly();
       
-    internal static readonly List<HexsideFlags> HexsideFlags =
-      HexsideList.Select(h=>Utilities.ParseEnum<HexsideFlags>(h.ToString())).ToList();
+    internal static readonly ReadOnlyCollection<HexsideFlags> HexsideFlags
+      = HexsideList.Select(h=>Utilities.ParseEnum<HexsideFlags>(h.ToString()))
+                   .ToList().AsReadOnly();
+
     /// <summary>Static List&lt;HexSideFlags> for enumerations.</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
-    public static readonly IEnumerable<HexsideFlags> HexsideFlagsList =
-      HexsideFlags.AsReadOnly(); //.AsEnumerable();
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
+      "CA1726:UsePreferredTerms", MessageId = "Flags")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", 
+      "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+    public static readonly IEnumerable<HexsideFlags> HexsideFlagsCollection = HexsideFlags;
 
     /// <summary>The <c>Hexside</c> corresponding to this <c>HexsideFlag</c>, or -1 if it doesn't exist.</summary>
     public static Hexside IndexOf(this HexsideFlags @this) {
@@ -75,15 +79,12 @@ namespace PGNapoleonics.HexUtilities {
     }
 
     /// <summary>The <c>HexsideFlag</c> corresponding to this <c>HexSide</c>.</summary>
-    public static HexsideFlags Direction(this Hexside @this) {
-      return HexsideFlags[(int)@this];
-    }
+    public static HexsideFlags Direction(this Hexside @this) { return HexsideFlags[(int)@this]; }
 
     /// <summary>Returns the reversed, or opposite, <c>Hexside</c> to the supplied value.</summary>
     /// <param name="this"></param>
     public static Hexside Reversed(this Hexside @this) {
-      var reversed = @this+3;
-      return (reversed <= Hexside.Northwest) ? reversed : (reversed - 6);
+      return (@this <= Hexside.Southeast) ? (@this + 3) : (@this - 3);
     }
   }
 }

@@ -43,6 +43,10 @@ namespace PGNapoleonics.HexGridExample2 {
       this.buttonFieldOfView = new System.Windows.Forms.ToolStripButton();
       this.lblPathCutover = new System.Windows.Forms.ToolStripLabel();
       this.txtPathCutover = new System.Windows.Forms.ToolStripTextBox();
+      this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+      this.lblLandmark = new System.Windows.Forms.ToolStripLabel();
+      this.menuItemLandmarks = new System.Windows.Forms.ToolStripComboBox();
+      this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
       this.menuItemDebug = new System.Windows.Forms.ToolStripDropDownButton();
       this.toolStripContainer1.BottomToolStripPanel.SuspendLayout();
       this.toolStripContainer1.ContentPanel.SuspendLayout();
@@ -64,11 +68,11 @@ namespace PGNapoleonics.HexGridExample2 {
       // 
       this.toolStripContainer1.ContentPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
       this.toolStripContainer1.ContentPanel.Controls.Add(this.hexgridPanel);
-      this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(707, 370);
+      this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(770, 370);
       this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
       this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
       this.toolStripContainer1.Name = "toolStripContainer1";
-      this.toolStripContainer1.Size = new System.Drawing.Size(707, 420);
+      this.toolStripContainer1.Size = new System.Drawing.Size(770, 420);
       this.toolStripContainer1.TabIndex = 0;
       this.toolStripContainer1.Text = "toolStripContainer1";
       // 
@@ -110,11 +114,11 @@ namespace PGNapoleonics.HexGridExample2 {
       this.hexgridPanel.Location = new System.Drawing.Point(0, 0);
       this.hexgridPanel.Name = "hexgridPanel";
       this.hexgridPanel.ScaleIndex = 0;
-      this.hexgridPanel.Size = new System.Drawing.Size(703, 366);
+      this.hexgridPanel.Size = new System.Drawing.Size(766, 366);
       this.hexgridPanel.TabIndex = 0;
+      this.hexgridPanel.HotspotHexChange += new System.EventHandler<PGNapoleonics.HexUtilities.HexEventArgs>(this.PanelBoard_HotSpotHexChange);
       this.hexgridPanel.MouseCtlClick += new System.EventHandler<PGNapoleonics.HexUtilities.HexEventArgs>(this.PanelBoard_GoalHexChange);
       this.hexgridPanel.MouseLeftClick += new System.EventHandler<PGNapoleonics.HexUtilities.HexEventArgs>(this.PanelBoard_StartHexChange);
-      this.hexgridPanel.HotspotHexChange += new System.EventHandler<PGNapoleonics.HexUtilities.HexEventArgs>(this.PanelBoard_HotSpotHexChange);
       this.hexgridPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.hexgridPanel_MouseMove);
       // 
       // toolStrip2
@@ -126,10 +130,14 @@ namespace PGNapoleonics.HexGridExample2 {
             this.buttonFieldOfView,
             this.lblPathCutover,
             this.txtPathCutover,
+            this.toolStripSeparator2,
+            this.lblLandmark,
+            this.menuItemLandmarks,
+            this.toolStripSeparator1,
             this.menuItemDebug});
       this.toolStrip2.Location = new System.Drawing.Point(3, 0);
       this.toolStrip2.Name = "toolStrip2";
-      this.toolStrip2.Size = new System.Drawing.Size(502, 25);
+      this.toolStrip2.Size = new System.Drawing.Size(700, 25);
       this.toolStrip2.TabIndex = 0;
       // 
       // buttonTransposeMap
@@ -189,20 +197,45 @@ namespace PGNapoleonics.HexGridExample2 {
       this.txtPathCutover.ToolTipText = resources.GetString("txtPathCutover.ToolTipText");
       this.txtPathCutover.TextChanged += new System.EventHandler(this.txtPathCutover_TextChanged);
       // 
+      // toolStripSeparator2
+      // 
+      this.toolStripSeparator2.Name = "toolStripSeparator2";
+      this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+      // 
+      // lblLandmark
+      // 
+      this.lblLandmark.Name = "lblLandmark";
+      this.lblLandmark.Size = new System.Drawing.Size(145, 22);
+      this.lblLandmark.Text = "Distances from Landmark:";
+      this.lblLandmark.ToolTipText = "Landmark for which to display distances.";
+      // 
+      // menuItemLandmarks
+      // 
+      this.menuItemLandmarks.Items.AddRange(new object[] {
+            "None"});
+      this.menuItemLandmarks.Name = "menuItemLandmarks";
+      this.menuItemLandmarks.Size = new System.Drawing.Size(100, 25);
+      this.menuItemLandmarks.ToolTipText = "Landmark for which distances are to be shown";
+      // 
+      // toolStripSeparator1
+      // 
+      this.toolStripSeparator1.Name = "toolStripSeparator1";
+      this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+      // 
       // menuItemDebug
       // 
       this.menuItemDebug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.menuItemDebug.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.menuItemDebug.Name = "menuItemDebug";
-      this.menuItemDebug.Size = new System.Drawing.Size(117, 22);
-      this.menuItemDebug.Text = "&Debug Trace Flags";
+      this.menuItemDebug.Size = new System.Drawing.Size(87, 22);
+      this.menuItemDebug.Text = "&Debug Trace";
       this.menuItemDebug.ToolTipText = "Build with DEBUG to enable this feature.";
       // 
       // HexgridExampleForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(707, 420);
+      this.ClientSize = new System.Drawing.Size(770, 420);
       this.Controls.Add(this.toolStripContainer1);
       this.Name = "HexgridExampleForm";
       this.Text = "HexGridExample2";
@@ -237,5 +270,9 @@ namespace PGNapoleonics.HexGridExample2 {
     private System.Windows.Forms.ToolStripLabel lblPathCutover;
     private System.Windows.Forms.ToolStripTextBox txtPathCutover;
     private System.Windows.Forms.ToolStripDropDownButton menuItemDebug;
+    private System.Windows.Forms.ToolStripComboBox menuItemLandmarks;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+    private System.Windows.Forms.ToolStripLabel lblLandmark;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
   }
 }

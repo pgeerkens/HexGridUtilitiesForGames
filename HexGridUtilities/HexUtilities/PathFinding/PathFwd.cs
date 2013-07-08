@@ -38,30 +38,22 @@ using PGNapoleonics.HexUtilities.Common;
 namespace PGNapoleonics.HexUtilities.PathFinding {
   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
   public interface IDirectedPath : IPath, IEnumerable<IDirectedPath> { 
-    NeighbourHex PathStep    { get; }
+        NeighbourHex  PathStep    { get; }
     new IDirectedPath PathSoFar   { get; }
   }
 
   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-  internal sealed class DirectedPath : IDirectedPath, IEquatable<HexCoords> {
+  internal sealed class DirectedPath : IDirectedPath {
     #region IPath implementation
-    IPath       IPath.PathSoFar { get { return PathSoFar; } }
+    IPath         IPath.PathSoFar   { get { return PathSoFar; } }
     IDirectedPath IDirectedPath.PathSoFar { get { return PathSoFar; } }
 
     public Hexside      HexsideExit { get { return PathStep.HexsideExit; } }
     public NeighbourHex PathStep    { get; private set; }
     public HexCoords    StepCoords  { get { return PathStep.Hex.Coords; } }
-    public DirectedPath      PathSoFar   { get; private set; }
+    public DirectedPath PathSoFar   { get; private set; }
     public int          TotalCost   { get; private set; }
     public int          TotalSteps  { get; private set; }
-    #endregion
-
-    #region IEquatable implementation
-    bool IEquatable<HexCoords>.Equals(HexCoords coords) { 
-      return StepCoords.Equals(coords); 
-    }
-    public override bool Equals(object obj) { return Equals(obj as DirectedPath); }
-    public override int  GetHashCode() { return StepCoords.GetHashCode(); }
     #endregion
 
     public DirectedPath AddStep(IHex hex, Hexside hexside, int stepCost) {

@@ -28,6 +28,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -55,12 +56,31 @@ namespace PGNapoleonics.HexUtilities {
     /// </summary>
     /// <param name="sizeHexes"></param>
     /// <param name="gridSize"></param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-    protected HexBoard(Size sizeHexes, Size gridSize, Func<HexBoard<THex>,BoardStorage<THex>> initializeBoard) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+      "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+    protected HexBoard(Size sizeHexes, Size gridSize, 
+                       Func<HexBoard<THex>,BoardStorage<THex>> initializeBoard) 
+    : this(sizeHexes, gridSize, initializeBoard, DefaultLandmarks(sizeHexes)) {}
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+      "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+    protected HexBoard(Size sizeHexes, Size gridSize, 
+                       Func<HexBoard<THex>,BoardStorage<THex>> initializeBoard, 
+                       ReadOnlyCollection<HexCoords> landmarkCoords
+    ) {
       if (initializeBoard==null) throw new ArgumentNullException("initializeBoard");
+
       SetGridSize(sizeHexes, gridSize);
       BoardHexes = initializeBoard(this); 
+
+      Landmarks = LandmarkCollection.CreateLandmarks(this, landmarkCoords);
     }
+
+    static readonly Func<Size, ReadOnlyCollection<HexCoords>> DefaultLandmarks = size =>new Point[] {
+        new Point(0,            0), new Point(size.Width/2,            0), new Point(size.Width-1,            0),
+        new Point(0,size.Height/2),                                        new Point(size.Width/2,size.Height/2),
+        new Point(0,size.Height-1), new Point(size.Width/2,size.Height-1), new Point(size.Width-1,size.Height-1)
+      }.Select(p => HexCoords.NewUserCoords(p)).ToList().AsReadOnly();
 
     #region IBoard<THex> implementation
     ///  <inheritdoc/>
@@ -93,6 +113,10 @@ namespace PGNapoleonics.HexUtilities {
 
     ///  <inheritdoc/>
     public          THex this[HexCoords coords]  { get { return BoardHexes[coords];} }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
+      "CA2227:CollectionPropertiesShouldBeReadOnly")]
+    public LandmarkCollection Landmarks { get; protected set; }
     #endregion
 
     #region Drawing support
@@ -142,7 +166,7 @@ namespace PGNapoleonics.HexUtilities {
     }
     #endregion
 
-    #region IDisposable implementation with Finalizeer
+    #region IDisposable implementation with Finalizer
     bool _isDisposed = false;
     public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
     protected virtual void Dispose(bool disposing) {
@@ -159,6 +183,8 @@ namespace PGNapoleonics.HexUtilities {
 
   public static partial class HexBoardExtensions {
     /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+      "CA1011:ConsiderPassingBaseTypesAsParameters")]
     public static IPath GetUndirectedPath(this IBoard<IHex> @this, HexCoords start, HexCoords goal) {
       if (@this == null) throw new ArgumentNullException("this");
       return Pathfinder.FindPath(start, goal, @this);
