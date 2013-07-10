@@ -32,29 +32,50 @@ using System.Globalization;
 using System.Runtime.InteropServices;     // For StructLayout, DllImport
 
 namespace PGNapoleonics.HexUtilities.Common {
+    /// <summary>TODO</summary>
   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags"), Flags]
   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
   public enum TraceFlags  {
-     None            = 0x00000
-    ,Caching         = 0x00001
-    ,FieldOfView     = 0x00002
-    ,Mouse           = 0x00004
-    ,MouseMove       = 0x00008
-    ,MainForm        = 0x00010
-    ,Initialization  = 0x00020
-    ,Docking         = 0x00040
-    ,MenuEvents      = 0x00080
-    ,KeyEvents       = 0x00100
-    ,Sizing          = 0x00200
-    ,ScrollEvents    = 0x00400
-    ,ToolTipEvents   = 0x00800
-    ,Paint           = 0x01000
-    ,PaintMap        = 0x02000
-    ,PaintDetail     = 0x04000
-    ,FindPathEnqueue = 0x08000
-    ,FindPathDequeue = 0x10000
-    ,FindPathDetail  = 0x20000
-    ,FindPathShortcut= 0x40000
+    /// <summary>TODO</summary>
+     None            = 0x00000,
+    /// <summary>TODO</summary>
+    Caching         = 0x00001,
+    /// <summary>TODO</summary>
+    FieldOfView     = 0x00002,
+    /// <summary>TODO</summary>
+    Mouse           = 0x00004,
+    /// <summary>TODO</summary>
+    MouseMove       = 0x00008,
+    /// <summary>TODO</summary>
+    MainForm        = 0x00010,
+    /// <summary>TODO</summary>
+    Initialization  = 0x00020,
+    /// <summary>TODO</summary>
+    Docking         = 0x00040,
+    /// <summary>TODO</summary>
+    MenuEvents      = 0x00080,
+    /// <summary>TODO</summary>
+    KeyEvents       = 0x00100,
+    /// <summary>TODO</summary>
+    Sizing          = 0x00200,
+    /// <summary>TODO</summary>
+    ScrollEvents    = 0x00400,
+    /// <summary>TODO</summary>
+    ToolTipEvents   = 0x00800,
+    /// <summary>TODO</summary>
+    Paint           = 0x01000,
+    /// <summary>TODO</summary>
+    PaintMap        = 0x02000,
+    /// <summary>TODO</summary>
+    PaintDetail     = 0x04000,
+    /// <summary>TODO</summary>
+    FindPathEnqueue = 0x08000,
+    /// <summary>TODO</summary>
+    FindPathDequeue = 0x10000,
+    /// <summary>TODO</summary>
+    FindPathDetail  = 0x20000,
+    /// <summary>TODO</summary>
+    FindPathShortcut= 0x40000
   }
 
   internal static partial class NativeMethods {
@@ -88,35 +109,44 @@ namespace PGNapoleonics.HexUtilities.Common {
 #endif
   }
 
+  /// <summary>TODO</summary>
   [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage()]
   public static partial class DebugTracing {
+    /// <summary>TODO</summary>
     public static TraceFlags EnabledFags { get; set; }
 
+    /// <summary>TODO</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object[])"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
     public static void Trace(TraceFlags traceFlags, string format, params object[] args) {
       Trace(traceFlags, false, string.Format(format,args));
     }
+    /// <summary>TODO</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object[])"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
     public static void Trace(TraceFlags traceFlags, bool newLine, string format, params object[] args) {
       Trace(traceFlags, newLine, string.Format(format,args));
     }
+    /// <summary>TODO</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "traceFlags"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newLine"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "description"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
     public static void Trace(TraceFlags traceFlags, bool newLine, string description) {
       TraceDetail(traceFlags, newLine, description);
     }
 
+    /// <summary>TODO</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object[])"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
     public static void LogTime(TraceFlags traceFlags, string format, params object[] args) {
       LogTime(traceFlags, false, string.Format(format,args));
     }
+    /// <summary>TODO</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object[])"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
     public static void LogTime(TraceFlags traceFlags, bool newLine, string format, params object[] args) {
       LogTime(traceFlags, newLine, string.Format(format,args));
     }
+    /// <summary>TODO</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
     public static void LogTime(TraceFlags traceFlags, string description) {
       LogTime(traceFlags, false, description);
     }
+    /// <summary>TODO</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "traceFlags"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "description"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newLine"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
     public static void LogTime(TraceFlags traceFlags, bool newLine, string description) {
       LogTimeDetail(traceFlags, newLine, description);
@@ -150,6 +180,7 @@ namespace PGNapoleonics.HexUtilities.Common {
 #endif
   }
 
+    /// <summary>TODO</summary>
   public static partial class Extensions {
     #if DEBUG
       public static void Trace(this TraceFlags @this, string format, params object[] args) {
@@ -175,19 +206,26 @@ namespace PGNapoleonics.HexUtilities.Common {
         DebugTracing.LogTime(@this,newLine,description);
       }
     #else
+      /// <summary>TODO</summary>
       [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "this"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "format")]
       public static void Trace(this TraceFlags @this, string format, params object[] args) {}
+      /// <summary>TODO</summary>
       [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newLine"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "this"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "format"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newline")]
       public static void Trace(this TraceFlags @this, bool newLine, string format, params object[] args) {}
+      /// <summary>TODO</summary>
       [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "description"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newLine"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "this"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newline")]
       public static void Trace(this TraceFlags @this, bool newLine, string description) {}
 
+      /// <summary>TODO</summary>
       [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "this"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "format")]
       public static void LogTime(this TraceFlags @this, string format, params object[] args) {}
+      /// <summary>TODO</summary>
       [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "format"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newLine"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "this"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newline")]
       public static void LogTime(this TraceFlags @this, bool newLine, string format, params object[] args) {}
+      /// <summary>TODO</summary>
       [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "description"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "this")]
       public static void LogTime(this TraceFlags @this, string description) {}
+      /// <summary>TODO</summary>
       [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newLine"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "this"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "description")]
       public static void LogTime(this TraceFlags @this, bool newLine, string description) {}
     #endif

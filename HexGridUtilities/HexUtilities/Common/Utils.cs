@@ -36,6 +36,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace PGNapoleonics.HexUtilities.Common {
+    /// <summary>TODO</summary>
   public static class Utilities{
     #region Enum Parsing utilities
     /// <summary>Typesafe wrapper for <c>Enum.GetValues(typeof(TEnum).</c></summary>
@@ -71,11 +72,13 @@ namespace PGNapoleonics.HexUtilities.Common {
     #endregion
 
     #region InvalidDataException Throwers
+    /// <summary>TODO</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
     public static void ThrowInvalidDataException(MemberInfo type, object data) {
       throw new InvalidDataException(string.Format(CultureInfo.InvariantCulture,
           "{0}: Invalid: '{1}'", type.Name, data));
     }
+    /// <summary>TODO</summary>
     public static void ThrowInvalidDataException(string parseType, int lineNo, 
       object section, string error, Exception ex, object data) {
       throw new InvalidDataException(

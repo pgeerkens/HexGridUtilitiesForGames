@@ -36,43 +36,64 @@ using PGNapoleonics;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexUtilities {
-  /// <summary>Stores a rectangular board region as four User Coordinate integers.</summary>
+namespace PGNapoleonics.HexUtilities.Common {
+  /// <summary>Stores a rectangular board region as a a location and extent of <see cref="HexCoords"/>.</summary>
   public struct CoordsRectangle : IEquatable<CoordsRectangle>, IEqualityComparer<CoordsRectangle> {
-    public CoordsRectangle(HexCoords location, HexCoords size) 
-      : this(new Rectangle(location.User, size.User)) {}
-    public CoordsRectangle(int x, int y, int width, int height) 
-      : this(new Rectangle(x,y,width,height)) {}
-    public CoordsRectangle(Rectangle rectangle) : this() {
-      Rectangle = rectangle;
-    }
+    /// <summary>TODO</summary>
+    public CoordsRectangle(HexCoords location, HexCoords size)  : this(new Rectangle(location.User, size.User)) {}
+    /// <summary>TODO</summary>
+    public CoordsRectangle(int x, int y, int width, int height) : this(new Rectangle(x,y,width,height)) {}
+    /// <summary>TODO</summary>
+    public CoordsRectangle(Rectangle rectangle) : this() { Rectangle = rectangle; }
 
+    /// <summary>TODO</summary>
     public int       Bottom   { get { return Rectangle.Bottom; } }
+    /// <summary>TODO</summary>
     public int       Height   { get { return Rectangle.Height; } }
+    /// <summary>TODO</summary>
     public bool      IsEmpty  { get { return Rectangle.IsEmpty; } }
+    /// <summary>TODO</summary>
     public int       Left     { get { return Rectangle.Left; } }
+    /// <summary>TODO</summary>
     public HexCoords Location { get { return HexCoords.NewUserCoords(Rectangle.Location); } }
+    /// <summary>TODO</summary>
     public int       Right    { get { return Rectangle.Right; } }
+    /// <summary>TODO</summary>
     public HexCoords Size     { get { return HexCoords.NewUserCoords(Rectangle.Size); } }
+    /// <summary>TODO</summary>
     public int       Top      { get { return Rectangle.Top; } }
+    /// <summary>TODO</summary>
     public int       Width    { get { return Rectangle.Width; } }
+    /// <summary>TODO</summary>
     public int       X        { get { return Rectangle.X; } }
+    /// <summary>TODO</summary>
     public int       Y        { get { return Rectangle.Y; } }
 
+    /// <summary>TODO</summary>
     public Rectangle Rectangle  { get; private set; }
+    /// <summary>TODO</summary>
     public HexCoords UpperLeft  { get { return HexCoords.NewUserCoords(Left,Top); } }
+    /// <summary>TODO</summary>
     public HexCoords UpperRight { get { return HexCoords.NewUserCoords(Right,Top); } }
+    /// <summary>TODO</summary>
     public HexCoords LowerLeft  { get { return HexCoords.NewUserCoords(Left,Bottom); } }
+    /// <summary>TODO</summary>
     public HexCoords LowerRight { get { return HexCoords.NewUserCoords(Right,Bottom); } }
 
     #region Value Equality
-    bool IEquatable<CoordsRectangle>.Equals(CoordsRectangle obj) { return this == obj; }
+    /// <inheritdoc/>
     public override bool Equals(object obj) { return (obj is CoordsRectangle) && this == (CoordsRectangle)obj; }
+    /// <inheritdoc/>
+    public override int GetHashCode() { return Rectangle.GetHashCode(); }
+
+    /// <summary>Tests value equality of two CoordsRectangle instances.</summary>
     public static bool operator == (CoordsRectangle lhs, CoordsRectangle rhs) { 
       return lhs.Rectangle == rhs.Rectangle; 
     }
+    /// <summary>Tests value inequality of two CoordsRectangle instances.</summary>
     public static bool operator != (CoordsRectangle lhs, CoordsRectangle rhs) { return ! (lhs == rhs); }
-    public override int GetHashCode() { return Rectangle.GetHashCode(); }
+
+    bool IEquatable<CoordsRectangle>.Equals(CoordsRectangle obj) { return this == obj; }
 
     bool IEqualityComparer<CoordsRectangle>.Equals(CoordsRectangle lhs, CoordsRectangle rhs) { return lhs == rhs; }
     int  IEqualityComparer<CoordsRectangle>.GetHashCode(CoordsRectangle coords) { return Rectangle.GetHashCode(); }

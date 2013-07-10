@@ -42,23 +42,35 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexUtilities {
+  /// <summary>TODO</summary>
   public interface IMapDisplay {
+    /// <summary>TODO</summary>
     Size   GridSize      { get; }
+    /// <summary>TODO</summary>
     Size   MapSizePixels { get; }
+    /// <summary>TODO</summary>
     string Name          { get; }
 
+    /// <summary>TODO</summary>
     CoordsRectangle GetClipCells(PointF point, SizeF size);
+    /// <summary>TODO</summary>
     CoordsRectangle GetClipCells(RectangleF visibleClipBounds);
 
+    /// <summary>TODO</summary>
     void  PaintHighlight(Graphics g);
+    /// <summary>TODO</summary>
     void  PaintMap(Graphics g);
+    /// <summary>TODO</summary>
     void  PaintUnits(Graphics g);
   }
 
+  /// <summary>Sub-class implementation of a <b>WinForms</b> Panel with integrated <see cref="Hexgrid"/> support.</summary>
   public partial class HexgridPanel : Panel, ISupportInitialize, IHexgridHost {
+    /// <summary>TODO</summary>
     public HexgridPanel() {
       InitializeComponent();
     }
+    /// <summary>TODO</summary>
     public HexgridPanel(IContainer container) {
       if (container==null) throw new ArgumentNullException("container");
       container.Add(this);
@@ -77,11 +89,17 @@ namespace PGNapoleonics.HexUtilities {
     }
     #endregion
 
+    /// <summary>TODO</summary>
     public event EventHandler<HexEventArgs> HotspotHexChange;
+    /// <summary>TODO</summary>
     public event EventHandler<HexEventArgs> MouseAltClick;
+    /// <summary>TODO</summary>
     public event EventHandler<HexEventArgs> MouseCtlClick;
+    /// <summary>TODO</summary>
     public event EventHandler<HexEventArgs> MouseLeftClick;
+    /// <summary>TODO</summary>
     public event EventHandler<HexEventArgs> MouseRightClick;
+    /// <summary>TODO</summary>
     public event EventHandler<EventArgs>    ScaleChange;
 
     /// <summary>MapBoard hosting this panel.</summary>
@@ -90,8 +108,10 @@ namespace PGNapoleonics.HexUtilities {
       set { _host = value; MapBuffer = null; }
     } IMapDisplay _host;
 
+    /// <summary>TODO</summary>
     public HexCoords     HotspotHex    { get; private set; }
 
+    /// <summary>TODO</summary>
     public bool        IsTransposed  { 
       get { return _isTransposed; }
       set { _isTransposed = value;  
@@ -130,6 +150,7 @@ namespace PGNapoleonics.HexUtilities {
     public ReadOnlyCollection<float>     Scales        { 
       get {return _scales;}
     } ReadOnlyCollection<float> _scales;
+    /// <summary>TODO</summary>
     public void SetScaleList(ReadOnlyCollection<float> scales) {
       _scales = scales; if (_scaleIndex!=0) ScaleIndex = _scaleIndex;
     }
@@ -157,7 +178,9 @@ namespace PGNapoleonics.HexUtilities {
     ///<inheritdoc/>
     protected Hexgrid    Hexgrid        { get; private set; }
     Size    IHexgridHost.ClientSize     { get { return ClientSize; } }
+    /// <summary>TODO</summary>
     public SizeF   GridSizeF      { get { return Host.GridSize.Scale(MapScale); } }
+    /// <summary>TODO</summary>
     public Point   ScrollPosition { get { return AutoScrollPosition; } }
 
     CoordsRectangle GetClipCells(PointF point, SizeF size) {
@@ -193,12 +216,15 @@ namespace PGNapoleonics.HexUtilities {
     #endregion
 
     #region Painting
+    /// <summary>TODO</summary>
     protected override void OnPaintBackground(PaintEventArgs e) { ; }
+    /// <summary>TODO</summary>
     protected override void OnPaint(PaintEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       base.OnPaint(e);
       if(IsHandleCreated)    PaintPanel(e.Graphics);
     }
+    /// <summary>TODO</summary>
     protected virtual void PaintPanel(Graphics g) {
       if (g==null) throw new ArgumentNullException("g");
       var scroll = Hexgrid.ScrollPosition;
@@ -225,11 +251,13 @@ namespace PGNapoleonics.HexUtilities {
     #endregion
 
     #region Double-Buffering
+    /// <summary>TODO</summary>
     Bitmap MapBuffer     { 
       get { return _mapBuffer ?? ( _mapBuffer = PaintBuffer()); } 
       set { if (_mapBuffer!=null) _mapBuffer.Dispose(); _mapBuffer = value; }
     } Bitmap _mapBuffer;
 
+    /// <summary>TODO</summary>
     Bitmap PaintBuffer() {
       var size      = MapSizePixels;
 
@@ -249,11 +277,15 @@ namespace PGNapoleonics.HexUtilities {
     }
     #endregion
 
+    /// <summary>TODO</summary>
     protected static  bool  IsAltKeyDown   { get {return ModifierKeys.HasFlag(Keys.Alt);} }
+    /// <summary>TODO</summary>
     protected static  bool  IsCtlKeyDown   { get {return ModifierKeys.HasFlag(Keys.Control);} }
+    /// <summary>TODO</summary>
     protected static  bool  IsShiftKeyDown { get {return ModifierKeys.HasFlag(Keys.Shift);} }
 
     #region Mouse & Scroll events
+    /// <summary>TODO</summary>
     protected override void OnMouseClick(MouseEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       TraceFlags.Mouse.Trace(" - {0}.OnMouseClick - Shift: {1}; Ctl: {2}; Alt: {3}", 
@@ -267,6 +299,7 @@ namespace PGNapoleonics.HexUtilities {
       else if (IsCtlKeyDown)                      OnMouseCtlClick(eventArgs);
       else                                        OnMouseLeftClick(eventArgs);
     }
+    /// <summary>TODO</summary>
     protected override void OnMouseMove(MouseEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       var newHex = GetHexCoords(e.Location);
@@ -276,6 +309,7 @@ namespace PGNapoleonics.HexUtilities {
 
       base.OnMouseMove(e);
     }
+    /// <summary>TODO</summary>
     protected override void OnMouseWheel(MouseEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       TraceFlags.ScrollEvents.Trace(" - {0}.OnMouseWheel: {1}", Host.Name, e.ToString()); 
@@ -289,32 +323,38 @@ namespace PGNapoleonics.HexUtilities {
       Invalidate();
     }
 
+    /// <summary>TODO</summary>
     protected virtual void OnMouseAltClick(HexEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       var handler = MouseAltClick;
       if( handler != null ) handler(this, e);
     }
+    /// <summary>TODO</summary>
     protected virtual void OnMouseCtlClick(HexEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       var handler = MouseCtlClick;
       if( handler != null ) handler(this, e);
     }
+    /// <summary>TODO</summary>
     protected virtual void OnMouseLeftClick(HexEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       var handler = MouseLeftClick;
       if( handler != null ) handler(this, e);
     }
+    /// <summary>TODO</summary>
     protected virtual void OnMouseRightClick(HexEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       var handler = MouseRightClick;
       if( handler != null ) handler(this, e);
     }
 
+    /// <summary>TODO</summary>
     protected virtual void OnHotspotHexChange(HexEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       var handler = HotspotHexChange;
       if( handler != null ) handler(this, e);
     }
+    /// <summary>TODO</summary>
     protected virtual void OnScaleChange(EventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       var handler = ScaleChange;
@@ -348,6 +388,7 @@ namespace PGNapoleonics.HexUtilities {
       }
       return remainder;
     }
+    /// <summary>TODO</summary>
     public void ScrollPanel(ScrollEventType type, ScrollOrientation orientation, int sign) {
       if( sign != 0 ) {
         ScrollProperties          scroll;

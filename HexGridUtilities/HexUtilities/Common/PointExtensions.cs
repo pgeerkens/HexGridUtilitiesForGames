@@ -33,22 +33,29 @@ using System.Linq;
 using System.Text;
 
 namespace PGNapoleonics.HexUtilities.Common {
+  /// <summary>TODO</summary>
   public static class PointExtensions {
+    /// <summary>TODO</summary>
     public static Point Scale(this Point @this, int value) { 
       return @this.Scale(value,value);
     }
+    /// <summary>TODO</summary>
     public static Point Scale(this Point @this, int scaleX, int scaleY) {
       return new Point(@this.X * scaleX, @this.Y * scaleY);
     }
+    /// <summary>TODO</summary>
     public static PointF Scale(this Point @this, float value) {
       return @this.Scale(value,value);
     }
+    /// <summary>TODO</summary>
     public static PointF Scale(this Point @this, float scaleX, float scaleY) {
       return new PointF(@this.X,@this.Y).Scale(scaleX,scaleY);
     }
+    /// <summary>TODO</summary>
     public static PointF Scale(this PointF @this, float value) { 
       return @this.Scale(value,value);
     }
+    /// <summary>TODO</summary>
     public static PointF Scale(this PointF @this, float scaleX, float scaleY) {
       return new PointF(@this.X * scaleX, @this.Y * scaleY);
     }

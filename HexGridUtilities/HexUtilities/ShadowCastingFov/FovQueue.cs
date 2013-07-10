@@ -33,10 +33,12 @@ using System.Threading.Tasks;
 
 using PGNapoleonics;
 
-namespace PGNapoleonics.HexUtilities {
-  internal class FovQueue {
-    public FovQueue() : this(0) {}
-    public FovQueue(int capacity) {
+namespace PGNapoleonics.HexUtilities.ShadowCasting {
+  /// <summary>TODO</summary>
+  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+  public class FovQueue {
+    internal FovQueue() : this(0) {}
+    internal FovQueue(int capacity) {
       Queue            = new Queue<FovCone>(capacity);
       IsCacheOccuppied = false;
     }
@@ -45,14 +47,17 @@ namespace PGNapoleonics.HexUtilities {
     bool           IsCacheOccuppied;
     FovCone        Cache;
 
+    /// <summary>TODO</summary>
     public int Count { get { return Queue.Count + (IsCacheOccuppied ? 1 : 0); } }
 
+    /// <summary>TODO</summary>
     public FovCone Dequeue() {
       if (Queue.Count>0)    { return Queue.Dequeue(); }
       if (IsCacheOccuppied) { IsCacheOccuppied = false; return Cache; }
       throw new InvalidOperationException("Queue empty.");
     }
 
+    /// <summary>TODO</summary>
     public void Enqueue(FovCone cone) {
       if (!IsCacheOccuppied) {
         Cache            = cone;

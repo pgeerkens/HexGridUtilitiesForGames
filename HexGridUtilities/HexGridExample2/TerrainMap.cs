@@ -29,14 +29,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
 
-using PGNapoleonics;
 using PGNapoleonics.HexUtilities;
 
-namespace PGNapoleonics.HexGridExample2 {
+/// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexUtilities.HexgridPanel"/> to implement
+/// a terrain map.</summary>
+namespace PGNapoleonics.HexGridExample2.TerrainExample {
   internal sealed class TerrainMap : MapDisplay {
     public TerrainMap() : base(_sizeHexes, (map,coords) => InitializeHex(map,coords)) {}
 

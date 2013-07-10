@@ -28,16 +28,12 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Forms;
 
-using PGNapoleonics;
+using PGNapoleonics.HexGridExample2.MazeExample;
+using PGNapoleonics.HexGridExample2.TerrainExample;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;

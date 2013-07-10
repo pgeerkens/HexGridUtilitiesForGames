@@ -40,17 +40,27 @@ namespace PGNapoleonics.HexUtilities.Common {
   /// row vectors as contravariant and column vectors as covariant.</remarks>
   public struct IntMatrix2D : IEquatable<IntMatrix2D> {
     static IntMatrix2D TransposeMatrix = new IntMatrix2D(0,1, 1,0);
+    /// <summary>TODO</summary>
     public static IntMatrix2D Transpose(IntMatrix2D matrix) {
       return matrix * TransposeMatrix;
     }
 
+    /// <summary>TODO</summary>
     public int M11 { get; private set; }
+    /// <summary>TODO</summary>
     public int M12 { get; private set; }
+    /// <summary>TODO</summary>
     public int M21 { get; private set; }
+    /// <summary>TODO</summary>
     public int M22 { get; private set; }
+    /// <summary>TODO</summary>
+    /// <summary>TODO</summary>
     public int M31 { get; private set; }
+    /// <summary>TODO</summary>
     public int M32 { get; private set; }
+    /// <summary>TODO</summary>
     public int M33 { get; private set; }
+    /// <summary>TODO</summary>
     public static IntMatrix2D Identity { get { return _identity; } }
     static IntMatrix2D _identity = new IntMatrix2D(1,0,0,1,0,0);
 
@@ -117,7 +127,9 @@ namespace PGNapoleonics.HexUtilities.Common {
         m1.M31*m2.M11 + m1.M32*m2.M21 + m2.M31,  m1.M31*m2.M12 + m1.M32*m2.M22 + m2.M32,  m1.M33 * m2.M33
       );
     }
+    /// <summary>Returns the result of applying the (row) vector <c>v</c> to the matrix <c>m</c>.</summary>
     public static IntVector2D Multiply(IntVector2D v, IntMatrix2D m) { return v * m; }
+    /// <summary>Returns the <c>IntMatrix2D</c> representing the transformation <c>m1</c> composed with <c>m2</c>.</summary>
     public static IntMatrix2D Multiply(IntMatrix2D m1, IntMatrix2D m2) { return m1 * m2; }
     #endregion
 
@@ -130,16 +142,20 @@ namespace PGNapoleonics.HexUtilities.Common {
     }
 
     #region Value Equality
+    /// <inheritdoc/>
     public override bool Equals(object obj) { 
       return (obj is IntMatrix2D) && this.Equals((IntMatrix2D)obj); 
     }
     bool IEquatable<IntMatrix2D>.Equals(IntMatrix2D rhs)              { return this == rhs; }
+    /// <inheritdoc/>
     public static bool operator != (IntMatrix2D lhs, IntMatrix2D rhs) { return ! (lhs == rhs); }
+    /// <inheritdoc/>
     public static bool operator == (IntMatrix2D lhs, IntMatrix2D rhs) {
       return lhs.M11== rhs.M11 && lhs.M12 == rhs.M12
           && lhs.M21== rhs.M21 && lhs.M22 == rhs.M22
           && lhs.M31== rhs.M31 && lhs.M32 == rhs.M32 && lhs.M33 == rhs.M33;
     }
+    /// <inheritdoc/>
     public override int GetHashCode() { return M11 ^ M12 ^ M21 ^ M22 ^ M31 ^ M32 ^ M33; }
     #endregion
 

@@ -34,36 +34,49 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities;
 
-namespace PGNapoleonics.HexUtilities {
+namespace PGNapoleonics.HexUtilities.Common {
+  /// <summary>TODO</summary>
   [DebuggerDisplay("NeighbourHex: {Hex.Coords} exits to {HexsideEntry}")]
   public struct NeighbourHex : IEquatable<NeighbourHex> {
+    /// <summary>TODO</summary>
     public IHex    Hex          { get; private set; }
+    /// <summary>TODO</summary>
     public Hexside HexsideEntry { get {return HexsideIndex;} }
+    /// <summary>TODO</summary>
     public Hexside HexsideExit  { get {return HexsideIndex.Reversed();} }
+    /// <summary>TODO</summary>
     public Hexside HexsideIndex { get; private set; }
 
+    /// <summary>TODO</summary>
     public NeighbourHex(IHex hex) : this(hex, null) {}
+    /// <summary>TODO</summary>
     public NeighbourHex(IHex hex, HexsideFlags hexside)  : this(hex,hexside.IndexOf()) {}
+    /// <summary>TODO</summary>
     public NeighbourHex(IHex hex, Hexside? hexsideIndex) : this() {
       Hex          = hex;
       HexsideIndex = hexsideIndex ?? 0;
     }
 
+    /// <inheritdoc/>
     public override string ToString() { 
       return string.Format(CultureInfo.InvariantCulture,
         "NeighbourHex: {0} exits to {1}", Hex.Coords, HexsideEntry);
     }
 
     #region Value Equality - on Hex field only
+    /// <inheritdoc/>
     public override bool Equals(object obj)                  {
       return (obj is NeighbourHex)  &&  Hex.Coords.Equals(((NeighbourHex)obj).Hex.Coords); 
     }
+    /// <inheritdoc/>
     public override int GetHashCode()                        { return Hex.Coords.GetHashCode(); }
     bool IEquatable<NeighbourHex>.Equals(NeighbourHex rhs)   { return this == rhs; }
 
+    /// <summary>TODO</summary>
     public static bool operator != (NeighbourHex lhs, NeighbourHex rhs) { return ! (lhs==rhs); }
+    /// <summary>TODO</summary>
     public static bool operator == (NeighbourHex lhs, NeighbourHex rhs) {
       return lhs.Hex.Coords.Equals(rhs.Hex.Coords);
     }

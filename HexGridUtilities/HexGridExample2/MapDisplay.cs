@@ -27,20 +27,17 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-
-using PGNapoleonics;
 
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.HexUtilities.PathFinding;
+using PGNapoleonics.HexUtilities.Pathfinding;
+using PGNapoleonics.HexUtilities.ShadowCasting;
 
+/// <summary>Example usage of <see cref="HexUtilities"/> with <see cref="HexUtilities.HexgridPanel"/> 
+/// in a simple <see cref="WinForms"/> application.</summary>
 namespace PGNapoleonics.HexGridExample2 {
-  internal abstract class MapDisplay : HexBoard<MapGridHex>, IMapDisplay, IBoard<IHex>, INavigableBoard {
+  internal abstract class MapDisplay : HexBoard<MapGridHex>, IMapDisplay, IBoard<IHex> {
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
       "CA1006:DoNotNestGenericTypesInMemberSignatures")]
@@ -70,7 +67,7 @@ namespace PGNapoleonics.HexGridExample2 {
     } IDirectedPath _path;
 #else
     public          IPath     Path       { 
-      get {return _path ?? (_path = this.GetPath(StartHex, GoalHex));} 
+      get {return _path ?? (_path = this[StartHex].GetPath(this[GoalHex]));} 
     } IPath _path;
 #endif
     public virtual  HexCoords StartHex       { 

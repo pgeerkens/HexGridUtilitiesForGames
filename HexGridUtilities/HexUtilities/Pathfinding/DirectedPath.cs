@@ -35,34 +35,67 @@ using System.Text;
 
 using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexUtilities.PathFinding {
+namespace PGNapoleonics.HexUtilities.Pathfinding {
+  /// <summary>Structure returned by the A* Path Finding utility.</summary>
   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-  public interface IDirectedPath : IPath, IEnumerable<IDirectedPath> { 
-        NeighbourHex  PathStep    { get; }
-    new IDirectedPath PathSoFar   { get; }
+  public interface IDirectedPath : IEnumerable<IDirectedPath> { 
+    /// <summary>The <see cref="Hexside"/> through which an agent must move in taking the first step of this path.</summary>
+    Hexside       HexsideExit { get; }
+
+    /// <summary>The coordinates of the first step on this path.</summary>
+    HexCoords     StepCoords  { get; }
+
+    /// <summary>The total movement cost for this path.</summary>
+    int           TotalCost   { get; }
+
+    /// <summary>The total number of movement steps for this path.</summary>
+    int           TotalSteps  { get; }
+
+    /// <summary>The first step on this path.</summary>
+    NeighbourHex  PathStep    { get; }
+
+    /// <summary>The remaining steps of this path, as an <see cref="IDirectedPath"/> instance.</summary>
+    IDirectedPath PathSoFar   { get; }
   }
 
   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
   internal sealed class DirectedPath : IDirectedPath {
     #region IPath implementation
-    IPath         IPath.PathSoFar   { get { return PathSoFar; } }
+    //IPath         IPath.PathSoFar   { get { return PathSoFar; } }
     IDirectedPath IDirectedPath.PathSoFar { get { return PathSoFar; } }
 
+    /// <inheritdoc/>
     public Hexside      HexsideExit { get { return PathStep.HexsideExit; } }
+    /// <inheritdoc/>
     public NeighbourHex PathStep    { get; private set; }
+    /// <inheritdoc/>
     public HexCoords    StepCoords  { get { return PathStep.Hex.Coords; } }
+    /// <inheritdoc/>
     public DirectedPath PathSoFar   { get; private set; }
+    /// <inheritdoc/>
     public int          TotalCost   { get; private set; }
+    /// <inheritdoc/>
     public int          TotalSteps  { get; private set; }
     #endregion
 
+    /// <summary></summary>
+    /// <param name="hex"></param>
+    /// <param name="hexside"></param>
+    /// <param name="stepCost"></param>
+    /// <returns></returns>
     public DirectedPath AddStep(IHex hex, Hexside hexside, int stepCost) {
       return AddStep(new NeighbourHex(hex,hexside), stepCost);
     }
+    /// <summary></summary>
+    /// <param name="neighbour"></param>
+    /// <param name="stepCost"></param>
+    /// <returns></returns>
     public DirectedPath AddStep(NeighbourHex neighbour, int stepCost) {
       return new DirectedPath(this, neighbour, TotalCost + stepCost);
     }
 
+    /// <summary></summary>
+    /// <returns></returns>
     public override string ToString() {
       if (PathSoFar == null) 
         return string.Format(CultureInfo.InvariantCulture,"Hex: {0} arrives with TotalCost={1,3}",
@@ -72,6 +105,7 @@ namespace PGNapoleonics.HexUtilities.PathFinding {
           PathStep.Hex.Coords, PathStep.HexsideEntry, TotalCost);
     }
 
+    /// <summary></summary>
     public IEnumerator<IDirectedPath> GetEnumerator() {
       yield return this;
       for (var p = (IDirectedPath)this; p.PathSoFar != null; p = p.PathSoFar) 

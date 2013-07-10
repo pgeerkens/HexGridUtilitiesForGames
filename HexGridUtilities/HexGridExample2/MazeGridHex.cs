@@ -27,17 +27,12 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using PGNapoleonics;
 using PGNapoleonics.HexUtilities;
 
-namespace PGNapoleonics.HexGridExample2 {
+namespace PGNapoleonics.HexGridExample2.MazeExample {
   internal abstract class MazeGridHex : MapGridHex {
     protected MazeGridHex(IBoard<MapGridHex> board, HexCoords coords, Size gridSize) 
       : base(board, coords) {

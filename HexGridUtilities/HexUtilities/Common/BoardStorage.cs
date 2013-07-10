@@ -29,41 +29,45 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-using PGNapoleonics;
-using PGNapoleonics.HexUtilities;
-using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.HexUtilities.PathFinding;
-
-namespace PGNapoleonics.HexUtilities {
-  /// <summary>The abstract <c>BoardStorage</c> implementation required by <c>HexBoard</c>.</summary>
+namespace PGNapoleonics.HexUtilities.Common {
+  /// <summary>Abstract specification and implementation of the <c>BoardStorage</c> required by <c>HexBoard</c>.</summary>
   /// <typeparam name="THex">The type of the hex being stored.</typeparam>
   public abstract class BoardStorage<THex> : IDisposable {
+    /// <summary>Initializes a new instance with the specified hex extent.</summary>
+    /// <param name="sizeHexes"></param>
     protected BoardStorage(Size sizeHexes) {
       MapSizeHexes   = sizeHexes;
     }
 
+    /// <summary>Extent in hexes of the board, as a <see cref=" System.Drawing.Size"/> struct.</summary>
     public          Size MapSizeHexes           { get; private set; }
 
+    /// <summary>Returns the <c>THex</c> instance at the specified coordinates.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
       "CA1043:UseIntegralOrStringArgumentForIndexers")]
     public abstract THex this[HexCoords coords] { get; internal set; }
 
+    /// <summary>Returns whether the hex with <see cref="HexCoords"/> <c>coords</c> is 
+    /// within the extent of the board.</summary>
     public          bool IsOnboard(HexCoords coords) { 
       return 0<=coords.User.X && coords.User.X < MapSizeHexes.Width
           && 0<=coords.User.Y && coords.User.Y < MapSizeHexes.Height;
     }
 
+    /// <summary>Performs the specified <c>action</c> serially on all hexes.</summary>
+    public abstract void ForEach(Action<THex> action);
+
+    /// <summary>Performs the specified <c>action</c> in parallel on all hexes.</summary>
     public abstract void ParallelForEach(Action<THex> action);
 
     #region IDisposable implementation with Finalizeer
     bool _isDisposed = false;
     /// <inheritdoc/>
     public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
+    /// <summary>Anchors the Dispose chain for sub-classes.</summary>
     protected virtual void Dispose(bool disposing) {
       if (!_isDisposed) {
         if (disposing) {
@@ -71,14 +75,15 @@ namespace PGNapoleonics.HexUtilities {
         _isDisposed = true;
       }
     }
+    /// <summary>Finalize this instance.</summary>
     ~BoardStorage() { Dispose(false); }
     #endregion
 
-    /// <summary>A <c>BoardStorage</c> implementation optimized for small maps.</summary>
-    /// <typeparam name="THex">Type of the hex being stored.</typeparam>
+    /// <summary>A row-major <c>BoardStorage</c> implementation optimized for small maps.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
       "CA1034:NestedTypesShouldNotBeVisible")]
     public sealed class FlatBoardStorage : BoardStorage<THex> {
+    /// <summary>TODO</summary>
       public FlatBoardStorage(Size sizeHexes, Func<HexCoords,THex> initializer) 
         : base (sizeHexes) {
         if (initializer==null) throw new ArgumentNullException("initializer");
@@ -104,6 +109,7 @@ namespace PGNapoleonics.HexUtilities {
 
       }
 
+      /// <summary>TODO</summary>
       public override THex this[HexCoords coords] { 
         get { 
           return IsOnboard(coords) ? backingStore[coords.User.Y][coords.User.X] 
@@ -115,6 +121,13 @@ namespace PGNapoleonics.HexUtilities {
         }
       }
 
+      /// <inheritdoc/>
+      public override void ForEach(Action<THex> action) {
+        if (action==null) throw new ArgumentNullException("action");
+        foreach(var hex in backingStore.SelectMany(lh=>lh)) action(hex);
+      }
+
+      /// <inheritdoc/>
       public override void ParallelForEach(Action<THex> action) {
         Parallel.ForEach<THex>(backingStore.SelectMany(lh=>lh), hex=>action(hex));
       }
@@ -122,8 +135,8 @@ namespace PGNapoleonics.HexUtilities {
       private List<List<THex>> backingStore { get; set; }
     }
 
-    /// <summary>A <c>BoardStorage</c> implementation optimized for large maps.</summary>
-    /// <typeparam name="THex">Type of the hex being stored.</typeparam>
+    /// <summary>A <c>BoardStorage</c> implementation optimized for large maps by blocking 
+    /// 32 x 32 arrays of hexes for improved caching.</summary>
     /// <remarks>This <c>BoardStorage</c> implementation stores the board cells in blocks
     /// that are 32 x 32 cells to provide better localization for the Path-Finding and
     /// Field-of-View algorithms.</remarks>
@@ -133,6 +146,7 @@ namespace PGNapoleonics.HexUtilities {
       const int _grouping = 32;
       const int _buffer   = _grouping - 1;
 
+      /// <summary>TODO</summary>
       public BlockedBoardStorage32x32(Size sizeHexes, Func<HexCoords,THex> initializer) 
         : base (sizeHexes) {
         backingStore  = new List<List<List<THex>>>((MapSizeHexes.Height+_buffer) / _grouping);
@@ -157,6 +171,7 @@ namespace PGNapoleonics.HexUtilities {
         } );
       }
 
+      /// <summary>TODO</summary>
       public override THex this[HexCoords coords] { 
         get { 
           var v = coords.User;
@@ -174,6 +189,13 @@ namespace PGNapoleonics.HexUtilities {
         }
       }
 
+      /// <inheritdoc/>
+      public override void ForEach(Action<THex> action) {
+        if (action==null) throw new ArgumentNullException("action");
+        foreach(var hex in backingStore.SelectMany(lh=>lh).SelectMany(lh=>lh)) action(hex);
+      }
+
+      /// <summary>TODO</summary>
       public override void ParallelForEach(Action<THex> action) {
         Parallel.ForEach<THex>(
           backingStore.SelectMany(lh=>lh).SelectMany(lh=>lh).Where(h=>h!=null), 

@@ -29,15 +29,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using PGNapoleonics;
 using PGNapoleonics.HexUtilities;
 
-namespace PGNapoleonics.HexGridExample2 {
+/// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexUtilities.HexgridPanel"/> to implement
+/// a maze map.</summary>
+namespace PGNapoleonics.HexGridExample2.MazeExample {
   internal sealed class MazeMap : MapDisplay {
     public MazeMap() : base(_sizeHexes, (map,coords) => InitializeHex(map,coords)) {}
 

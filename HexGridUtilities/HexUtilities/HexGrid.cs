@@ -37,8 +37,11 @@ using PGNapoleonics;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 
+/// <summary>Display-technology-independent utilities for implementation of hex-grids..</summary>
 namespace PGNapoleonics.HexUtilities {
+  /// <summary>Interface defining the functionality required of a form or control hosting an instannce of <see cref="Hexgrid"/>.</summary>
   public interface IHexgridHost {
+    /// <summary>TODO</summary>
     Size    ClientSize      { get; }
 
     /// <summary>Scaled <code>Size</code> of each hexagon in grid, being the 'full-width' and 'full-height'.</summary>
@@ -50,16 +53,17 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>Current scaling factor for map display.</summary>
     float   MapScale        { get; }
 
-    /// <summary></summary>
+    /// <summary>Rectangular extent in pixels of the defined mapboard.</summary>
     Size    MapSizePixels   { get; }
 
-    /// <summary></summary>
+    /// <summary>Returns the current scroll position, as per the <b>WinForms</b> behaviour of <i>AutoScroll</i>.</summary>
     Point   ScrollPosition  { get; }
 
-    /// <summary>IUserCoords for the currently visible extent (location & size), as a Rectangle.</summary>
+    /// <summary>IUserCoords for the currently visible extent (location &amp; size), as a Rectangle.</summary>
     CoordsRectangle     VisibleRectangle { get; }
   }
 
+  /// <summary>TODO</summary>
   public interface IHexgrid {
     /// <summary></summary>
     Point ScrollPosition { get; }
@@ -82,13 +86,19 @@ namespace PGNapoleonics.HexUtilities {
     Point   HexCenterPoint(HexCoords coordsNewULHex);
   }
 
-  /// <summary>C# implementation of the hex-picking algorithm noted  below.</summary>
-  /// <remarks>See "file://Documentation/HexGridAlgorithm.mht"</remarks>
+  /// <summary>C# implementation of the hex-picking algorithm noted below.</summary>
+  /// <remarks>Mathemagically (left as exercise for the reader) our 'picking' matrices are these, assuming: 
+  ///  - origin at upper-left corner of hex (0,0);
+  ///  - 'straight' hex-axis vertically down; and
+  ///  - 'oblique'  hex-axis up-and-to-right (at 120 degrees from 'straight').</remarks>
+  /// <seealso><a href="file://Documentation/HexGridAlgorithm.mht">Hex-grid Algorithms</a></seealso>
   public class Hexgrid : IHexgrid {
+    /// <summary>Return a new instance of <c>Hexgrid</c>.</summary>
     public Hexgrid(IHexgridHost host) { Host = host; }
 
     /// <inheritdoc/>
     public virtual Point ScrollPosition { get { return Host.ScrollPosition; } }
+
     /// <inheritdoc/>
     public virtual Size  Size           { get { return Size.Ceiling(Host.MapSizePixels.Scale(Host.MapScale)); } }
 
@@ -124,15 +134,13 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>Scrolling control hosting this HexGrid.</summary>
     protected IHexgridHost Host { get; private set; }
 
-    /// Mathemagically (left as exercise for the reader) our 'picking' matrices are these, assuming: 
-    ///  - origin at upper-left corner of hex (0,0);
-    ///  - 'straight' hex-axis vertically down; and
-    ///  - 'oblique'  hex-axis up-and-to-right (at 120 degrees from 'straight').
+    /// <summary>Matrix2D for 'picking' the <B>X</B> hex coordinate</summary>
     Matrix matrixX { 
       get { return new Matrix(
           (3.0F/2.0F)/Host.GridSizeF.Width,  (3.0F/2.0F)/Host.GridSizeF.Width,
                  1.0F/Host.GridSizeF.Height,       -1.0F/Host.GridSizeF.Height,  -0.5F,-0.5F); } 
     }
+    /// <summary>Matrix2D for 'picking' the <B>Y</B> hex coordinate</summary>
     Matrix matrixY { 
       get { return new Matrix(
                 0.0F,                        (3.0F/2.0F)/Host.GridSizeF.Width,
@@ -149,6 +157,9 @@ namespace PGNapoleonics.HexUtilities {
 		  return (int) Math.Floor( (pts[0].X + pts[0].Y + 2F) / 3F );
 	  }
 
+    /// <summary>Returns the pixel coordinates of the center of the specified hex.</summary>
+    /// <param name="coords"><see cref="HexCoords"/> specification for which pixel center is desired.</param>
+    /// <returns>Pixel coordinates of the center of the specified hex.</returns>
     Point HexOrigin(HexCoords coords) {
       return new Point(
         (int)(Host.GridSizeF.Width  * coords.User.X),
@@ -157,8 +168,12 @@ namespace PGNapoleonics.HexUtilities {
     }
   }
 
+  /// <summary>A transposed hexgrid with pointy-top/flat-sides hexes; the rectangular x-axis running 
+  /// verticallly down; and the rectnaagular y-axis running out to the right from teh upper-left corner 
+  /// (which remains coordinate (0,0) for both User (rectangular) and Canon (obtuse) coordinate frames.</summary>
   public class TransposedHexgrid : Hexgrid {
-    public TransposedHexgrid(IHexgridHost host) :base(host) {}
+    /// <summary>Returns a <c>TransposedHexgrid</c> instance from the supplied <see cref="IHexgridHost"/>.</summary>
+    public TransposedHexgrid(IHexgridHost host) : base(host) {}
 
     ///<inheritdoc/>
     public override Point ScrollPosition { get { return TransposePoint(base.ScrollPosition); } }

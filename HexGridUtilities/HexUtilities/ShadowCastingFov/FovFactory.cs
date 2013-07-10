@@ -36,13 +36,17 @@ using PGNapoleonics;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexUtilities {
+namespace PGNapoleonics.HexUtilities.ShadowCasting {
+    /// <summary>TODO</summary>
   public enum FovTargetMode {
+    /// <summary>TODO</summary>
     EqualHeights,
+    /// <summary>TODO</summary>
     TargetHeightEqualZero,
+    /// <summary>TODO</summary>
     TargetHeightEqualActual
   }
-    /// <summary>Interface required to make use of ShadowCasting Field-of-View calculation.</summary>
+  /// <summary>Interface required to make use of ShadowCasting Field-of-View calculation.</summary>
   public interface IFovBoard<out THex> where THex : IHex {
     /// <summary>Distance in hexes out to which Field-of-View is to be calculated.</summary>
     int      FovRadius             { get; set; }
@@ -62,11 +66,14 @@ namespace PGNapoleonics.HexUtilities {
     bool     IsPassable(HexCoords coords);
   }
 
+    /// <summary>TODO</summary>
   public static class FovFactory {
+    /// <summary>TODO</summary>
     public static IFov GetFieldOfView(IFovBoard<IHex> board, HexCoords origin) {
       if (board==null) throw new ArgumentNullException("board");
       return GetFieldOfView(board, origin, FovTargetMode.EqualHeights);
     }
+    /// <summary>TODO</summary>
     public static IFov GetFieldOfView(IFovBoard<IHex> board, HexCoords origin, FovTargetMode targetMode) {
       TraceFlags.FieldOfView.Trace("GetFieldOfView");
       var fov = new ArrayFieldOfView(board);

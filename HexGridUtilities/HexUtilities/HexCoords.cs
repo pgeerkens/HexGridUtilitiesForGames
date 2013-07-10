@@ -49,12 +49,18 @@ namespace PGNapoleonics.HexUtilities {
   [DebuggerDisplay("User: {User}")]
   public struct HexCoords : IEquatable<HexCoords>, IEqualityComparer<HexCoords> {
     #region static members
+    /// <summary>TODO</summary>
     public static HexCoords EmptyCanon { get { return _EmptyCanon; } }
+    /// <summary>TODO</summary>
     public static HexCoords EmptyUser  { get { return _EmptyUser; } }
 
+    /// <summary>TODO</summary>
     public static HexCoords NewCanonCoords (IntVector2D vector){ return new HexCoords(true, vector); }
+    /// <summary>TODO</summary>
     public static HexCoords NewUserCoords  (IntVector2D vector){ return new HexCoords(false,vector); }
+    /// <summary>TODO</summary>
     public static HexCoords NewCanonCoords (int x, int y) { return new HexCoords(true, x,y); }
+    /// <summary>TODO</summary>
     public static HexCoords NewUserCoords  (int x, int y) { return new HexCoords(false,x,y); }
 
     static readonly IntMatrix2D MatrixUserToCanon = new IntMatrix2D(2, 1,  0,2,  0,0,  2);
@@ -84,12 +90,14 @@ namespace PGNapoleonics.HexUtilities {
     #endregion
 
     #region Properties
+    /// <summary>Returns an <c>IntVector2D</c> representing the Canonical (obtuse) coordinates of thsi hex.</summary>
     public  IntVector2D Canon {
       get { return canonHasValue ? _Canon : ( Canon = _User * MatrixUserToCanon); }
       set { _Canon = value; canonHasValue = true; userHasValue = false; }
     } private IntVector2D _Canon;
     bool canonHasValue;
 
+    /// <summary>Returns an <c>IntVector2D</c> representing the User (rectangular) coordinates of this hex.</summary>
     public  IntVector2D User  {
       get { return userHasValue ? _User : ( User = _Canon * MatrixCanonToUser); }
       set { _User = value;  userHasValue = true; canonHasValue = false; }
@@ -140,7 +148,9 @@ namespace PGNapoleonics.HexUtilities {
     /// <inheritdoc/>
     public bool Equals(HexCoords other) { return User == other.User; }
 
+    /// <inheritdoc/>
     public static bool operator != (HexCoords lhs, HexCoords rhs) { return ! (lhs==rhs); }
+    /// <inheritdoc/>
     public static bool operator == (HexCoords lhs, HexCoords rhs) { return lhs.User == rhs.User; }
 
     /// <inheritdoc/>

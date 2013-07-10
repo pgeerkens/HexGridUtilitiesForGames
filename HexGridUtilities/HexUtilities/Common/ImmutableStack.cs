@@ -39,16 +39,22 @@ namespace PGNapoleonics.HexUtilities.Common {
   /// <typeparam name="T"></typeparam>
   public class ImmutableStackCollection<T> : IEnumerable<T> {
 
+    /// <summary>TODO</summary>
     public T                 TopItem      { get; protected set; }
+    /// <summary>TODO</summary>
     public ImmutableStackCollection<T> Remainder    { get; protected set; }
+    /// <summary>TODO</summary>
     public ImmutableStackCollection<T> Push(T step) { return new ImmutableStackCollection<T>(step, this); }
 
+    /// <summary>TODO</summary>
     public ImmutableStackCollection(T start) : this(start, null) {}
+    /// <summary>TODO</summary>
     protected ImmutableStackCollection(T topItem, ImmutableStackCollection<T> remainder) {
       TopItem   = topItem;
       Remainder = remainder;
     }
 
+    /// <inheritdoc/>
     public IEnumerator<T> GetEnumerator() {
       for (ImmutableStackCollection<T> p = this; p != null; p = p.Remainder)  yield return p.TopItem;
     }

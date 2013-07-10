@@ -36,7 +36,9 @@ using System.Threading.Tasks;
 using PGNapoleonics;
 using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexUtilities {
+/// <summary>Fast efficient <b>Shadow-Casting</b> 
+/// implementation of 3D Field-of-View on a <see cref="Hexgrid"/> map.</summary>
+namespace PGNapoleonics.HexUtilities.ShadowCasting {
   /// <summary>Credit: Eric Lippert</summary>
   /// <cref>http://blogs.msdn.com/b/ericlippert/archive/2011/12/29/shadowcasting-in-c-part-six.aspx</cref>
   internal static partial class ShadowCasting {

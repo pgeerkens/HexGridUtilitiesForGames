@@ -35,35 +35,54 @@ using System.Threading.Tasks;
 
 using PGNapoleonics;
 
-namespace PGNapoleonics.HexUtilities {
-  internal struct RiseRun : IEquatable<RiseRun>, IComparable<RiseRun> {
-    public int Rise { get; private set; }    // in units of elevation: meters.
-    public int Run  { get; private set; }     // in units of distance:  hexes.
-    public RiseRun(int rise, int run) : this() {
+namespace PGNapoleonics.HexUtilities.ShadowCasting {
+  /// <summary>TODO</summary>
+  public struct RiseRun : IEquatable<RiseRun>, IComparable<RiseRun> {
+
+    /// <summary>Creates a new instance of the RiseRUn struct.</summary>
+    /// <param name="rise"></param>
+    /// <param name="run"></param>
+    internal RiseRun(int rise, int run) : this() {
       this.Rise = rise;
       this.Run  = run;
     }
+    /// <summary>Delta-height in units of elevation: meters.</summary>
+    public int Rise { get; private set; }
+    /// <summary>Delta-width in units of distance:  hexes.</summary>
+    public int Run  { get; private set; }
 
     #region Operators and Interface implementations: IEquatable<RiseRun>, IComparable<RiseRun>
+    /// <summary>TODO</summary>
     public static bool operator <  (RiseRun lhs, RiseRun rhs) {
       return (lhs.Rise * rhs.Run) < (lhs.Run * rhs.Rise);
     }
+    /// <summary>TODO</summary>
     public static bool operator <= (RiseRun lhs, RiseRun rhs) { return ! (lhs > rhs); }
+    /// <summary>TODO</summary>
     public static bool operator >  (RiseRun lhs, RiseRun rhs) {
       return (lhs.Rise * rhs.Run) > (lhs.Run * rhs.Rise);
     }
+    /// <summary>TODO</summary>
     public static bool operator >= (RiseRun lhs, RiseRun rhs) { return ! (lhs < rhs); }
+    /// <summary>TODO</summary>
     public static bool operator == (RiseRun lhs, RiseRun rhs) { return lhs.Equals(rhs); }
+    /// <summary>TODO</summary>
     public static bool operator != (RiseRun lhs, RiseRun rhs) { return ! (lhs == rhs); }
-    public bool Equals(RiseRun rhs) { return (this.Rise * rhs.Run) == (this.Run * rhs.Rise); }
-    public int CompareTo(RiseRun rhs) { 
-      return (this == rhs) ?  0
-           : (this  < rhs) ? -1 
-                           : +1;
+    /// <summary>TODO</summary>
+    public bool Equals(RiseRun other) { return (this.Rise * other.Run) == (this.Run * other.Rise); }
+    /// <summary>TODO</summary>
+    public int CompareTo(RiseRun other) { 
+      return (this == other) ?  0
+           : (this  < other) ? -1 
+                             : +1;
     }
+    /// <summary>TODO</summary>
     public override bool Equals(object obj) { return this == (RiseRun)obj; }
+    /// <summary>TODO</summary>
     public override int GetHashCode() { return Rise ^ Run; }
     #endregion
+
+    /// <inheritdoc/>
     public override string ToString() { return string.Format(CultureInfo.InvariantCulture,"Rise={0}; Run={1}", Rise, Run); }
   }
 }

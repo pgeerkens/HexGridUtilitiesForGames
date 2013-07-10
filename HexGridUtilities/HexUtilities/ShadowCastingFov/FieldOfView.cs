@@ -37,10 +37,10 @@ using PGNapoleonics;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexUtilities {
+namespace PGNapoleonics.HexUtilities.ShadowCasting {
   /// <summary>Structure returned by the Field-of-View factory.</summary>
   public interface IFov {
-    /// <summary>True if the hex at location <c>coords> is visible in this field-of-view.</summary>
+    /// <summary>True if the hex at location <c>coords</c>c> is visible in this field-of-view.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
     bool this[HexCoords coords] { get; }
   }

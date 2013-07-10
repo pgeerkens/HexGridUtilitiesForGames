@@ -33,25 +33,36 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
+///<summary>Shared technoloiges across the library, and useful gadgets.</summary>
 namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>Representation of an immutable integer 2D vector.</summary>
   public struct IntVector2D : IEquatable<IntVector2D> {
+    /// <summary>TODO</summary>
     public static readonly IntVector2D Empty = new IntVector2D(Point.Empty);
 
+    /// <summary>TODO</summary>
     public int X { get; private set; }
+    /// <summary>TODO</summary>
     public int Y { get; private set; }
+    /// <summary>TODO</summary>
     public int W { get; private set; }
 
+    /// <summary>TODO</summary>
     public IntVector2D(Point point)         : this(point.X, point.Y, 1) {}
+    /// <summary>TODO</summary>
     public IntVector2D(Size size)           : this(size.Width, size.Height, 1) {}
+    /// <summary>TODO</summary>
     public IntVector2D(IntVector2D v)       : this(v.X, v.Y, 1) {}
+    /// <summary>TODO</summary>
     public IntVector2D(int x, int y)        : this(x, y, 1) {}
+    /// <summary>TODO</summary>
     public IntVector2D(int x, int y, int w) : this() {
       X = x;
       Y = y;
       W = w;
     }
 
+    /// <summary>TODO</summary>
     public IntVector2D Normalize() {
       switch (W) {
         case 0:   return Empty; // uninitialized!
@@ -68,6 +79,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     #region Scalar operators
     /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
     public static IntVector2D operator * (int s, IntVector2D v) { return v * s; }
+    /// <summary>TODO</summary>
     public static IntVector2D operator * (IntVector2D v, int s) {
       return new IntVector2D(v.X*s, v.Y*s);
     }
@@ -79,9 +91,13 @@ namespace PGNapoleonics.HexUtilities.Common {
     public static IntVector2D operator / (IntVector2D v, float s) {
       return new IntVector2D((int)Math.Floor(v.X/(float)s), (int)Math.Floor(v.Y/(float)s));
     }
+    /// <summary>TODO</summary>
     public static IntVector2D Multiply (int s, IntVector2D v) { return v * s; }
+    /// <summary>TODO</summary>
     public static IntVector2D Multiply (IntVector2D v, int s) { return v * s; }
+    /// <summary>TODO</summary>
     public static IntVector2D Divide (IntVector2D v, int i)   { return v / i; }
+    /// <summary>TODO</summary>
     public static IntVector2D Divide (IntVector2D v, float s) { return v / s; }
     #endregion
 
@@ -105,32 +121,45 @@ namespace PGNapoleonics.HexUtilities.Common {
     public static IntVector2D operator - (IntVector2D v1, IntVector2D v2) {
       return new IntVector2D(v1.X-v2.X, v1.Y-v2.Y);
     }
+    /// <summary>Vector Addition of two <code>IntVector2D</code> as a new <code>IntVector2D</code>.</summary>
     public static IntVector2D Add  (IntVector2D v1, IntVector2D v2) { return v1 + v2; }
+    /// <summary>Vector Subtraction of two <code>IntVector2D</code> as a new <code>IntVector2D</code></summary>
     public static IntVector2D Subtract (IntVector2D v1, IntVector2D v2) { return v1 - v2; }
 
+    /// <summary>TODO</summary>
     public static int InnerProduct (IntVector2D v1, IntVector2D v2) { return v1 * v2; }
+    /// <summary>TODO</summary>
     public static int CrossProduct (IntVector2D v1, IntVector2D v2) { return v1 ^ v2; }
 
     #endregion
 
     #region Casts
+    /// <summary>TODO</summary>
     public static implicit operator IntVector2D (Point p) { return new IntVector2D(p);  }
+    /// <summary>TODO</summary>
     public static implicit operator IntVector2D (Size s)  { return new IntVector2D(s);  }
+    /// <summary>TODO</summary>
     public static implicit operator Point (IntVector2D v) { return new Point(v.X, v.Y); }
+    /// <summary>TODO</summary>
     public static implicit operator Size (IntVector2D v)  { return new Size(v.X, v.Y);  }
     #endregion
 
     #region Value Equality
+    /// <inheritdoc/>
     public override bool Equals(object obj)              { 
       return (obj is IntVector2D) && this == (IntVector2D)obj; }
     bool IEquatable<IntVector2D>.Equals(IntVector2D rhs) { return this == rhs; }
+    /// <summary>TODO</summary>
     public static bool operator != (IntVector2D lhs, IntVector2D rhs) { return ! (lhs == rhs); }
+    /// <summary>TODO</summary>
     public static bool operator == (IntVector2D lhs, IntVector2D rhs) {
       return (lhs.X == rhs.X) && (lhs.Y == rhs.Y) && (lhs.W == rhs.W);
     }
+    /// <inheritdoc/>
     public override int GetHashCode() { return (X<<16) ^ Y ^ W; }
     #endregion
 
+    /// <inheritdoc/>
     public override string ToString() { return string.Format(CultureInfo.InvariantCulture,
       "({0,3},{1,3})",X,Y); }
   }

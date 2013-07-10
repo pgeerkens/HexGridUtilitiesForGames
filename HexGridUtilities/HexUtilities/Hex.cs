@@ -33,9 +33,15 @@ using System.Linq;
 using System.Text;
 
 using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.HexUtilities.PathFinding;
+using PGNapoleonics.HexUtilities.Pathfinding;
+using PGNapoleonics.HexUtilities.ShadowCasting;
+
+/// <summary>Brought to you by <b>PG Software Solutions Inc.</b>, a quality software provider.<br/>
+/// Our software solutions are more than Pretty Good; ... they're <b>great!</b></summary>
+namespace PGNapoleonics { }
 
 namespace PGNapoleonics.HexUtilities {
+  /// <summary>External interface exposed by individual hexes.</summary>
   public interface IHex {
     /// <summary>The <c>IBoard&lt;IHex></c> on which this hex is located.</summary>
     IBoard<IHex> Board            { get; }
@@ -55,9 +61,6 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>Height ASL in <i>game units</i> of any blocking terrian in this hex.</summary>
     int          HeightTerrain    { get; }
 
-    /// <summary>The precalculated <b><c>PathShortcut</c>s</b> from this hex.</summary>
-    IList<PathShortcut> Shortcuts { get; }
-
     /// <summary>Returns the neighbouring hex across <c>Hexside</c> <c>hexside</c>.</summary>
     IHex Neighbour(Hexside hexside);
 
@@ -68,11 +71,15 @@ namespace PGNapoleonics.HexUtilities {
     int  DirectedStepCost(Hexside hexsideExit);
   }
 
+  /// <summary>Abstract implementation of the interface <see Cref="IHex"/>.</summary>
   public abstract class Hex : IHex, IEquatable<Hex> {
+    /// <summary>TODO</summary>
     protected Hex(IBoard<IHex> board, HexCoords coords) { 
       Board     = board;
       Coords    = coords; 
+#if FALSE
       Shortcuts = new List<PathShortcut>(0);
+#endif
     }
 
     /// <inheritdoc/>
@@ -94,9 +101,6 @@ namespace PGNapoleonics.HexUtilities {
     public abstract int          HeightTerrain   { get; }
 
     /// <inheritdoc/>
-    public virtual IList<PathShortcut> Shortcuts { get; private set; }
-
-    /// <inheritdoc/>
     public abstract int  StepCost(Hexside direction);
 
     /// <inheritdoc/>
@@ -104,6 +108,7 @@ namespace PGNapoleonics.HexUtilities {
       return Board[Coords.GetNeighbour(hexsideExit)].StepCost(hexsideExit);
     }
 
+    /// <inheritdoc/>
     public          IHex Neighbour(Hexside hexside) { return Board[Coords.GetNeighbour(hexside)]; }
 
     /// <inheritdoc/>
@@ -124,6 +129,7 @@ namespace PGNapoleonics.HexUtilities {
     #endregion
   }
 
+  /// <summary>Extension methods for <see cref="Hex"/>.</summary>
   public static partial class HexExtensions {
     /// <summary>All neighbours of this hex, as an <c>IEnumerable&lt;NeighbourHex></c></summary>
     public static IEnumerable<NeighbourHex> GetAllNeighbours(this IHex @this) {
@@ -153,14 +159,6 @@ namespace PGNapoleonics.HexUtilities {
     }
 
     /// <summary>Returns a least-cost path from this hex to the hex <c>goal.</c></summary>
-    public static IPath GetPath(this IHex @this, IHex goal) {
-      if (@this==null) throw new ArgumentNullException("this");
-      if (goal==null) throw new ArgumentNullException("goal");
-
-      return Pathfinder.FindPath(@this.Coords, goal.Coords,  @this.Board);
-    }
-
-    /// <summary>Returns a least-cost path from this hex to the hex <c>goal.</c></summary>
     public static IDirectedPath GetDirectedPath(this IHex @this, IHex goal) {
       if (@this==null) throw new ArgumentNullException("this");
       if (goal==null) throw new ArgumentNullException("goal");
@@ -169,12 +167,11 @@ namespace PGNapoleonics.HexUtilities {
 
       return goal.Coords.Range(@this.Coords) > @this.Board.RangeCutoff
             ? BidirectionalPathfinder.FindDirectedPathFwd(@this, goal, @this.Board)
-            : Pathfinder.FindDirectedPath(@this, goal, @this.Board);
+            : BidirectionalPathfinder.FindDirectedPathFwd(@this, goal, @this.Board);
     }
 
     /// <summary>Returns whether this hex is "On Board".</summary>
     public static bool IsOnboard(this IHex @this) {
-//      if (@this==null) throw new ArgumentNullException("this");
       return @this!=null  &&  @this.Board.IsOnboard(@this.Coords);
     }
   }

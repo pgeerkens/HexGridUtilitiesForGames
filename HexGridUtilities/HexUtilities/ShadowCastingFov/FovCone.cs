@@ -36,19 +36,26 @@ using System.Threading.Tasks;
 using PGNapoleonics;
 using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexUtilities {
-  internal struct FovCone : IEquatable<FovCone> {
+namespace PGNapoleonics.HexUtilities.ShadowCasting {
+  /// <summary>TODO</summary>
+  public struct FovCone : IEquatable<FovCone> {
+    /// <summary>TODO</summary>
     public int          Range        { get; private set; }
+    /// <summary>TODO</summary>
     public RiseRun      RiseRun      { get; private set; }
+    /// <summary>TODO</summary>
     public IntVector2D  VectorBottom { get; private set; }
+    /// <summary>TODO</summary>
     public IntVector2D  VectorTop    { get; private set; }
 
-    public FovCone(int range, IntVector2D top, IntVector2D bottom, RiseRun riseRun) : this() {
+    /// <summary>TODO</summary>
+    internal FovCone(int range, IntVector2D top, IntVector2D bottom, RiseRun riseRun) : this() {
       this.Range        = range;
       this.RiseRun      = riseRun;
       this.VectorTop    = top;
       this.VectorBottom = bottom;
     }
+    /// <summary>TODO</summary>
     public override string ToString() {
       return string.Format(CultureInfo.InvariantCulture,
         "Y={0}, TopVector={1}, BottomVector={2}, RiseRun={3}",
@@ -56,20 +63,27 @@ namespace PGNapoleonics.HexUtilities {
     }
 
     #region Value Equality
-    bool IEquatable<FovCone>.Equals(FovCone obj) { return this == obj; }
+    /// <inheritdoc/>
     public override bool Equals(object obj) { 
       return (obj is FovCone) && this == (FovCone)obj;
     }
+    /// <inheritdoc/>
+    public override int GetHashCode() {
+      return VectorTop.GetHashCode() ^ Range.GetHashCode() 
+           ^ RiseRun.GetHashCode()   ^ VectorBottom.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    bool IEquatable<FovCone>.Equals(FovCone obj) { return this == obj; }
+
+    /// <summary>Tests value-equality of two <c>FovCone</c> instances.</summary>
     public static bool operator != (FovCone @this, FovCone obj) { return ! ( @this == obj); }
+    /// <summary>Tests value-inequality of two <c>FovCone</c> instances.</summary>
     public static bool operator == (FovCone @this, FovCone obj) {
       return @this.Range        == obj.Range  
          &&  @this.RiseRun      == obj.RiseRun
          &&  @this.VectorTop    == obj.VectorTop 
          &&  @this.VectorBottom == obj.VectorBottom;
-    }
-    public override int GetHashCode() {
-      return VectorTop.GetHashCode() ^ Range.GetHashCode() 
-           ^ RiseRun.GetHashCode()   ^ VectorBottom.GetHashCode();
     }
     #endregion
   }

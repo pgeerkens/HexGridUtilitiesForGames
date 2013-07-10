@@ -38,20 +38,29 @@ using PGNapoleonics.HexUtilities.Common;
 namespace PGNapoleonics.HexUtilities {
   /// <summary></summary>
   public class HexEventArgs : MouseEventArgs {
+    /// <summary>TODO</summary>
     public HexCoords  Coords       { get; private set; }
 
+    /// <summary>TODO</summary>
     public bool     Alt          { get { return ModifierKeys.HasFlag(Keys.Alt);  } }
+    /// <summary>TODO</summary>
     public bool     Control      { get { return ModifierKeys.HasFlag(Keys.Control); } }
+    /// <summary>TODO</summary>
     public bool     Shift        { get { return ModifierKeys.HasFlag(Keys.Shift); } }
 
+    /// <summary>TODO</summary>
     public Keys     ModifierKeys { get; private set; }
 
+    /// <summary>TODO</summary>
     public HexEventArgs(HexCoords coords) 
       : this(coords, new MouseEventArgs(MouseButtons.None,0,0,0,0)) {}
+    /// <summary>TODO</summary>
     public HexEventArgs(HexCoords coords, Keys modifierKeys) 
       : this(coords, new MouseEventArgs(MouseButtons.None,0,0,0,0), modifierKeys) {}
+    /// <summary>TODO</summary>
     public HexEventArgs(HexCoords coords, MouseEventArgs e) 
       : this(coords, e, Keys.None) {}
+    /// <summary>TODO</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1")]
     public HexEventArgs(HexCoords coords, MouseEventArgs e, Keys modifierKeys)
       : base(e.Button,e.Clicks,e.X,e.Y,e.Delta) {

@@ -27,16 +27,12 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
 
-using PGNapoleonics;
 using PGNapoleonics.HexUtilities;
 
-namespace PGNapoleonics.HexGridExample2 {
+namespace PGNapoleonics.HexGridExample2.TerrainExample {
   internal abstract class TerrainGridHex : MapGridHex {
 
     protected TerrainGridHex(IBoard<IHex> map, HexCoords coords, Size gridSize) 

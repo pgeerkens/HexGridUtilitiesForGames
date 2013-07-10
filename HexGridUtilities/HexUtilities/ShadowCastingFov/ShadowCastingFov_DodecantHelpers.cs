@@ -35,7 +35,7 @@ using System.Threading.Tasks;
 using PGNapoleonics;
 using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexUtilities {
+namespace PGNapoleonics.HexUtilities.ShadowCasting {
   internal static partial class ShadowCasting {
     //         Sextant map
     //                    X-axis

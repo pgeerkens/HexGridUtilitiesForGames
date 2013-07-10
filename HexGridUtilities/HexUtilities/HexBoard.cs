@@ -27,41 +27,57 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using PGNapoleonics;
-using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.HexUtilities.PathFinding;
+using PGNapoleonics.HexUtilities.Pathfinding;
+using PGNapoleonics.HexUtilities.ShadowCasting;
 
 namespace PGNapoleonics.HexUtilities {
+  /// <summary>External interface exposed by the the implementation of <see cref="HexBoard{THex}"/>.</summary>
   public interface IBoard<out THex> : IDirectedNavigableBoard, IFovBoard<THex> where THex : IHex {
-    Size     GridSize  { get; }
-    /// <summary>Range beyond which Fast PathFinding is used instead of Stable PathFinding.</summary>
-    int RangeCutoff { get; }
+    /// <summary>TODO</summary>
+    Size GridSize    { get; }
 
+    /// <summary>Range beyond which Fast PathFinding is used instead of Stable PathFinding.</summary>
+    int  RangeCutoff { get; }
+
+    /// <summary>TODO</summary>
     new bool IsOnboard(HexCoords coords);
+
+    /// <summary>TODO</summary>
     int      ElevationASL(int elevationLevel);
   }
 
+  /// <summary>Abstract implementation of a hexgrid map-board.</summary>
   public abstract class HexBoard<THex> : IBoard<THex>, IDisposable where THex : class, IHex {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="sizeHexes"></param>
-    /// <param name="gridSize"></param>
+    /// <summary>Initializes the internal contents of <see cref="HexBoard{THex}"/> with default 
+    /// landmarks for pathfinding.</summary>
+    /// <param name="sizeHexes">Extent in hexes of the board being initialized, as a 
+    /// <see cref="System.Drawing.Size"/>.</param>
+    /// <param name="gridSize">Extent in pixels of the layout grid for the hexagons, as a 
+    /// <see cref="System.Drawing.Size"/>.</param>
+    /// <param name="initializeBoard">Delegate that creates the <see cref="BoardStorage{THex}"/> backing
+    /// store for this instance.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
       "CA1006:DoNotNestGenericTypesInMemberSignatures")]
     protected HexBoard(Size sizeHexes, Size gridSize, 
                        Func<HexBoard<THex>,BoardStorage<THex>> initializeBoard) 
     : this(sizeHexes, gridSize, initializeBoard, DefaultLandmarks(sizeHexes)) {}
 
+    /// <summary>Initializes the internal contents of <see cref="HexBoard{THex}"/> with the specified set of 
+    /// landmarks for pathfinding.</summary>
+    /// <param name="sizeHexes">Extent in hexes of the board being initialized, as a 
+    /// <see cref="System.Drawing.Size"/>.</param>
+    /// <param name="gridSize">Extent in pixels of the layout grid for the hexagons, as a 
+    /// <see cref="System.Drawing.Size"/>.</param>
+    /// <param name="initializeBoard">Delegate that creates the <see cref="BoardStorage{THex}"/> backing
+    /// store for this instance.</param>
+    /// <param name="landmarkCoords">Collection of <see cref="HexCoords"/> specifying the landmark 
+    /// locations to be used for pathfinding.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
       "CA1006:DoNotNestGenericTypesInMemberSignatures")]
     protected HexBoard(Size sizeHexes, Size gridSize, 
@@ -73,7 +89,7 @@ namespace PGNapoleonics.HexUtilities {
       SetGridSize(sizeHexes, gridSize);
       BoardHexes = initializeBoard(this); 
 
-      Landmarks = LandmarkCollection.CreateLandmarks(this, landmarkCoords);
+      Landmarks  = LandmarkCollection.CreateLandmarks(this, landmarkCoords);
     }
 
     static readonly Func<Size, ReadOnlyCollection<HexCoords>> DefaultLandmarks = size =>new Point[] {
@@ -83,37 +99,38 @@ namespace PGNapoleonics.HexUtilities {
       }.Select(p => HexCoords.NewUserCoords(p)).ToList().AsReadOnly();
 
     #region IBoard<THex> implementation
-    ///  <inheritdoc/>
+    /// <inheritdoc/>
     public virtual  int  FovRadius      { get; set; }
 
     /// <inheritdoc/>
     public          int  RangeCutoff    { get; set; }
 
-    ///  <inheritdoc/>
+    /// <inheritdoc/>
     public virtual  int  Heuristic(int range) { return range; }
 
-    ///  <inheritdoc/>
+    /// <inheritdoc/>
     public abstract int  ElevationASL(int elevationLevel);
 
-    ///  <inheritdoc/>
+    /// <inheritdoc/>
     public          bool IsOnboard(HexCoords coords)  { return BoardHexes.IsOnboard(coords); }
 
-    ///  <inheritdoc/>
+    /// <inheritdoc/>
     public virtual  bool IsPassable(HexCoords coords) { return IsOnboard(coords); }
 
-    ///  <inheritdoc/>
+    /// <inheritdoc/>
     public virtual  int  StepCost(HexCoords coords, Hexside hexsideExit) {
       return IsOnboard(coords) ? this[coords].StepCost(hexsideExit) : -1;
     }
 
-    ///  <inheritdoc/>
+    /// <inheritdoc/>
     public virtual  int  DirectedStepCost(IHex hex, Hexside hexsideExit) {
       return hex==null ? -1 : hex.DirectedStepCost(hexsideExit);
     }
 
-    ///  <inheritdoc/>
+    /// <inheritdoc/>
     public          THex this[HexCoords coords]  { get { return BoardHexes[coords];} }
 
+    /// <inheritdoc/>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
       "CA2227:CollectionPropertiesShouldBeReadOnly")]
     public LandmarkCollection Landmarks { get; protected set; }
@@ -168,7 +185,9 @@ namespace PGNapoleonics.HexUtilities {
 
     #region IDisposable implementation with Finalizer
     bool _isDisposed = false;
+    /// <inheritdoc/>
     public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
+    /// <inheritdoc/>
     protected virtual void Dispose(bool disposing) {
       if (!_isDisposed) {
         if (disposing) {
@@ -177,18 +196,20 @@ namespace PGNapoleonics.HexUtilities {
         _isDisposed = true;
       }
     }
+    /// <inheritdoc/>
     ~HexBoard() { Dispose(false); }
     #endregion
   }
 
+    /// <summary>TODO</summary>
   public static partial class HexBoardExtensions {
-    /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-      "CA1011:ConsiderPassingBaseTypesAsParameters")]
-    public static IPath GetUndirectedPath(this IBoard<IHex> @this, HexCoords start, HexCoords goal) {
-      if (@this == null) throw new ArgumentNullException("this");
-      return Pathfinder.FindPath(start, goal, @this);
-    }
+    ///// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
+    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+    //  "CA1011:ConsiderPassingBaseTypesAsParameters")]
+    //public static IPath GetUndirectedPath(this IBoard<IHex> @this, HexCoords start, HexCoords goal) {
+    //  if (@this == null) throw new ArgumentNullException("this");
+    //  return Pathfinder.FindPath(start, goal, @this);
+    //}
 
     /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
     public static IDirectedPath GetDirectedPath(this IBoard<IHex> @this, IHex start, IHex goal) {
@@ -198,7 +219,7 @@ namespace PGNapoleonics.HexUtilities {
       if (@this.IsPassable(start.Coords) && @this.IsPassable(goal.Coords)) {
         return goal.Coords.Range(start.Coords) > @this.RangeCutoff
               ? BidirectionalPathfinder.FindDirectedPathFwd(start, goal, @this)
-              : Pathfinder.FindDirectedPath(start, goal, @this);
+              : BidirectionalPathfinder.FindDirectedPathFwd(start, goal, @this);
       } else
         return null;
     }

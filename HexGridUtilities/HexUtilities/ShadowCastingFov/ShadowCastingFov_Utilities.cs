@@ -35,7 +35,7 @@ using System.Threading.Tasks;
 using PGNapoleonics;
 using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexUtilities {
+namespace PGNapoleonics.HexUtilities.ShadowCasting {
   internal static partial class ShadowCasting {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "code")]
     static IntVector2D LogAndEnqueue(Action<FovCone> enqueue, int range, IntVector2D top, 

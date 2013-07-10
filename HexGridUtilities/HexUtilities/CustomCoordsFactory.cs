@@ -34,22 +34,29 @@ using System.Text;
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities {
+    /// <summary>TODO</summary>
   public static class CustomCoords {
 
+    /// <summary>TODO</summary>
     public static IntVector2D UserToCustom(this HexCoords @this) {
       return @this.User * MatrixUserToCustom;
     }
+    /// <summary>TODO</summary>
     public static HexCoords CustomToUser(this IntVector2D @this) {
       return HexCoords.NewUserCoords(@this * MatrixUserToCustom);
     }
 
+    /// <summary>TODO</summary>
     public static void SetMatrices(IntMatrix2D matrix) { SetMatrices(matrix,matrix); }
+    /// <summary>TODO</summary>
     public static void SetMatrices(IntMatrix2D userToCustom, IntMatrix2D customToUser) {
       MatrixUserToCustom = userToCustom;
       MatrixCustomToUser = customToUser;
     }
 
+    /// <summary>TODO</summary>
     public static IntMatrix2D MatrixCustomToUser { get; private set; }
+    /// <summary>TODO</summary>
     public static IntMatrix2D MatrixUserToCustom { get; private set; }
   }
 }

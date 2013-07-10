@@ -8,14 +8,15 @@
     <ProjectGuid>{013628E1-60E2-40A6-91D4-8B446F397A0A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PG_Napoleonics.HexUtilities</RootNamespace>
+    <RootNamespace>PGNapoleonics.HexUtilities</RootNamespace>
     <AssemblyName>HexUtilities</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,6 +30,7 @@
     </DocumentationFile>
     <NoWarn>1607</NoWarn>
     <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -40,6 +42,7 @@
     <DocumentationFile>
     </DocumentationFile>
     <NoWarn>1607</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -52,7 +55,8 @@
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
     <DocumentationFile>
     </DocumentationFile>
-    <NoWarn>1607</NoWarn>
+    <NoWarn>1607,1587</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>..\bin\HexUtilities\bin\x86\Release\</OutputPath>
@@ -63,33 +67,37 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
-    <DocumentationFile>
-    </DocumentationFile>
-    <NoWarn>1607</NoWarn>
+    <DocumentationFile>..\bin\HexUtilities\bin\x86\Release\HexUtilities.XML</DocumentationFile>
+    <NoWarn>1607,1587</NoWarn>
     <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\bin\HexUtilities\bin\x64\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <NoWarn>1607</NoWarn>
+    <NoWarn>1607,1587</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>..\bin\HexUtilities\bin\x64\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
-    <NoWarn>1607</NoWarn>
+    <NoWarn>1607,1587</NoWarn>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <DocumentationFile>
+    </DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -108,39 +116,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BoardStorage.cs" />
-    <Compile Include="Common\IHeap.cs" />
-    <Compile Include="Common\MinListHeap.cs" />
-    <Compile Include="Coords.cs" />
+    <Compile Include="Common\BoardStorage.cs" />
     <Compile Include="CustomCoordsFactory.cs" />
     <Compile Include="Common\DebugTracing.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Interfaces.cs" />
-    <Compile Include="PathFinding\BidirectionalPathfinder.cs" />
-    <Compile Include="PathFinding\ConcurrentHashSet.cs" />
-    <Compile Include="PathFinding\DictPriorityQueue.cs" />
+    <Compile Include="Pathfinding\BidirectionalPathfinder.cs" />
+    <Compile Include="Pathfinding\ConcurrentHashSet.cs" />
+    <Compile Include="Pathfinding\DictPriorityQueue.cs" />
     <Compile Include="Common\FastList.cs" />
     <Compile Include="HexCoords.cs" />
     <Compile Include="HexGrid.cs" />
     <Compile Include="Hexside.cs" />
-    <Compile Include="ICoords.cs" />
     <Compile Include="Hex.cs" />
     <Compile Include="HexBoard.cs" />
     <Compile Include="Common\ImmutableStack.cs" />
     <Compile Include="Common\IntMatrix2D.cs" />
     <Compile Include="Common\IntVector2D.cs" />
-    <Compile Include="NeighbourCoords.cs" />
-    <Compile Include="NeighbourHex.cs" />
-    <Compile Include="PathFinding\HotPriorityQueue.cs" />
-    <Compile Include="PathFinding\HotPriorityQueueList.cs" />
-    <Compile Include="PathFinding\IPriorityQueue.cs" />
-    <Compile Include="PathFinding\Landmark.cs" />
-    <Compile Include="PathFinding\Path.cs" />
-    <Compile Include="PathFinding\PathFinder.cs" />
+    <Compile Include="Common\NeighbourCoords.cs" />
+    <Compile Include="Common\NeighbourHex.cs" />
+    <Compile Include="Pathfinding\HotPriorityQueue.cs" />
+    <Compile Include="Pathfinding\HotPriorityQueueList.cs" />
+    <Compile Include="Pathfinding\IPriorityQueue.cs" />
+    <Compile Include="Pathfinding\Landmark.cs" />
+    <Compile Include="Pathfinding\IDirectedNavigableBoard.cs" />
     <Compile Include="Common\PointExtensions.cs" />
-    <Compile Include="PathFinding\PathFinderFwd.cs" />
-    <Compile Include="PathFinding\PathFwd.cs" />
-    <Compile Include="PathFinding\PathShortcut.cs" />
+    <Compile Include="Pathfinding\DirectedPath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShadowCastingFov\FieldOfView.cs" />
     <Compile Include="ShadowCastingFov\FovFactory.cs" />
@@ -151,7 +151,7 @@
     <Compile Include="ShadowCastingFov\ShadowCastingFov_DodecantHelpers.cs" />
     <Compile Include="ShadowCastingFov\ShadowCastingFov_Utilities.cs" />
     <Compile Include="Common\SizeExtensions.cs" />
-    <Compile Include="UserCoordsRectangle.cs" />
+    <Compile Include="Common\UserCoordsRectangle.cs" />
     <Compile Include="Common\Utils.cs" />
   </ItemGroup>
   <ItemGroup>

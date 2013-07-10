@@ -35,26 +35,31 @@ using System.Linq;
 using System.Text;
 
 using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.HexUtilities.PathFinding;
+using PGNapoleonics.HexUtilities.Pathfinding;
 
-namespace PGNapoleonics.HexUtilities.PathFinding {
+namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>Interface required to make use of A* Path Finding utility.</summary>
-  public interface INavigableBoard {
-    ///// <summary>Range beyond which Fast PathFinding is used instead of Stable PathFinding.</summary>
-    //int RangeCutoff { get; }
-
+  public interface IDirectedNavigableBoard {
     /// <summary>The cost of entering the hex at location <c>coords</c> heading <c>hexside</c>.</summary>
     int   StepCost(HexCoords coords, Hexside hexsideExit);
 
     /// <summary>Returns an A* heuristic value from the supplied hexagonal Manhattan distance <c>range</c>.</summary>
     /// <remarks>Returning the supplied range multiplied by the cheapest movement 
-    /// cost for a single hex is usually suffficient. Note that <c>heuristic</c> <b>must</b> be monotonic in order for the algorithm to perform properly.</remarks>
+    /// cost for a single hex is usually suffficient. Note that <c>heuristic</c> <b>must</b> be monotonic 
+    /// in order for the algorithm to perform properly and reliably return an optimum path.</remarks>
     int   Heuristic(int range);
 
     /// <summary>Returns whether the hex at location <c>coords</c>is "on board".</summary>
     bool  IsOnboard(HexCoords coords);
+
+    /// <summary>Cost to extend path by exiting the hex at <c>coords</c> through <c>hexside</c>.</summary>
+    int  DirectedStepCost(IHex hex, Hexside hexsideExit);
+
+    /// <summary>Returns the collecction of defined landmarks on this board.</summary>
+    LandmarkCollection Landmarks { get; }
   }
 
+#if FALSE
   /// <summary>(Adapted) C# implementation of A* path-finding algorithm by Eric Lippert.</summary>
   /// <remarks><quote>
   /// A nice property of the A* algorithm is that it finds the optimal path in a reasonable 
@@ -77,11 +82,12 @@ namespace PGNapoleonics.HexUtilities.PathFinding {
   /// Adapted to hex-grids, and to weight the most direct path favourably for better (visual) 
   /// behaviour on a hexgrid.
   /// </remarks>
-  /// <param name="start"></param>
-  /// <param name="goal"></param>
-  /// <param name="board"></param>
-  /// <returns></returns>
   public static partial class Pathfinder {
+    /// <summary>TODO</summary>
+    /// <param name="start"></param>
+    /// <param name="goal"></param>
+    /// <param name="board"></param>
+    /// <returns></returns>
     public static IPath FindPath(
       HexCoords     start,
       HexCoords     goal,
@@ -97,7 +103,7 @@ namespace PGNapoleonics.HexUtilities.PathFinding {
     /// <param name="goal">Coordinates for the <c>first</c> step on the desired path.</param>
     /// <param name="stepCost">Cost to extend path by hex at <c>coords</c> from hex at direction <c>hexside</c>.</param>
     /// <param name="heuristic">Returns a cost estimate from a range value.</param>
-    /// <param name="isOnBoard">Returns whether the coordinates specified are "on board".</param>
+    /// <param name="isOnboard">Returns whether the coordinates specified are "on board".</param>
     public static IPath FindPath(
       HexCoords   start,
       HexCoords   goal,
@@ -163,4 +169,5 @@ namespace PGNapoleonics.HexUtilities.PathFinding {
     //  return (int) (0x7FFF + vectorGoal * (goal.Canon - hex.Canon));
     //}
   }
+#endif
 }

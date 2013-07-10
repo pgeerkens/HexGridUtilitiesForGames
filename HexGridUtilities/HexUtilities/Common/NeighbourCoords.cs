@@ -33,33 +33,43 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities;
 
-namespace PGNapoleonics.HexUtilities {
+namespace PGNapoleonics.HexUtilities.Common {
+    /// <summary>TODO</summary>
   public struct NeighbourCoords : IEquatable<NeighbourCoords> {
+    /// <summary>TODO</summary>
     public Hexside   Hexside     { get; private set; }
+    /// <summary>TODO</summary>
     public HexCoords Coords    { get; private set; }
 
+    /// <summary>TODO</summary>
     public NeighbourCoords(HexCoords coords, Hexside hexside) : this() {
       Coords = coords; Hexside = hexside;
     }
+    /// <inheritdoc/>
     public override string ToString() { 
       return string.Format(CultureInfo.InvariantCulture,"Neighbour: {0} at {1}", Coords.User,Hexside);
     }
 
+    /// <summary>TODO</summary>
     public static Func<NeighbourCoords,T> Bind<T>(Func<HexCoords,T> f) {
       return n => f(n.Coords);
     }
 
     #region Value Equality - on Coords field only
+    /// <inheritdoc/>
     public override bool Equals(object obj) { 
       return obj is NeighbourCoords  &&  this.Coords.Equals(((NeighbourCoords)obj).Coords);
     }
+    /// <inheritdoc/>
     public override int  GetHashCode() { return Coords.GetHashCode(); }
 
     bool IEquatable<NeighbourCoords>.Equals(NeighbourCoords obj) { return this.Equals(obj); }
 
+    /// <summary>TODO</summary>
     public static bool operator != (NeighbourCoords lhs, NeighbourCoords rhs) { return ! (lhs == rhs); }
+    /// <summary>TODO</summary>
     public static bool operator == (NeighbourCoords lhs, NeighbourCoords rhs) { return lhs.Equals(rhs); }
     #endregion
   }

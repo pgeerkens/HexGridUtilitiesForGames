@@ -39,18 +39,36 @@ using PGNapoleonics.HexUtilities.Common;
 namespace PGNapoleonics.HexUtilities {
   /// <summary>Enumeration of the six hexagonal directions.</summary>
   public enum Hexside {
-    North,    Northeast,    Southeast,    South,    Southwest,    Northwest
+    /// <summary>The hexside on the top of the hex.</summary>
+    North,    
+    /// <summary>The hexside on the upper-right of the hex.</summary>
+    Northeast,    
+    /// <summary>The hexside on the lower-right of the hex</summary>
+    Southeast,    
+    /// <summary>The hexside on the bottom of the hex.</summary>
+    South,    
+    /// <summary>The hexside on the lower-left of the hex.</summary>
+    Southwest,   
+    /// <summary>The hexside on the upper-left of the hex.</summary>
+    Northwest
   }
 
   /// <summary>Flags for combinations of the six hexagonal directions.</summary>
   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags"), Flags]
   public enum HexsideFlags {
+    /// <summary>The selection of no hexsides.</summary>
     None      = 0x00,
+    /// <summary>The hexside on the top of the hex.</summary>
     North     = 1 << Hexside.North,
+    /// <summary>The hexside on the upper-right of the hex.</summary>
     Northeast = 1 << Hexside.Northeast,
+    /// <summary>The hexside on the lower-right of the hex</summary>
     Southeast = 1 << Hexside.Southeast,
+    /// <summary>The hexside on the bottom of the hex.</summary>
     South     = 1 << Hexside.South,
+    /// <summary>The hexside on the lower-left of the hex.</summary>
     Southwest = 1 << Hexside.Southwest,
+    /// <summary>The hexside on the upper-left of the hex.</summary>
     Northwest = 1 << Hexside.Northwest,
   }
 
