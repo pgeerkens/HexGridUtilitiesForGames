@@ -36,26 +36,18 @@ using PGNapoleonics.HexUtilities.ShadowCasting;
 
 /// <summary>Example usage of <see cref="HexUtilities"/> with <see cref="HexUtilities.HexgridPanel"/> 
 /// in a simple <see cref="WinForms"/> application.</summary>
-namespace PGNapoleonics.HexGridExample2 {
-#if true
-  internal abstract class MapDisplay : HexUtilities.MapDisplay<MapGridHex> {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-      "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-    protected MapDisplay(Size sizeHexes, Func<IBoard<MapGridHex>, HexCoords, MapGridHex> initializeHex) 
-      : base(sizeHexes, initializeHex) {}
-
-    public override void PaintMap(Graphics g) {base.PaintMap(g, (h) =>h.Paint(g)); }
-  }
-#else
-  internal abstract class MapDisplay : HexBoard<MapGridHex>, IMapDisplay, IBoard<IHex> {
+namespace PGNapoleonics.HexUtilities {
+  public abstract class MapDisplay<THex> : HexBoard<THex>, IMapDisplay//, IBoard<IHex> 
+    where THex : Hex {
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
       "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-    protected MapDisplay(Size sizeHexes, Func<IBoard<MapGridHex>, HexCoords, MapGridHex> initializeHex) 
+    protected MapDisplay(Size sizeHexes, Func<IBoard<THex>, HexCoords, THex> initializeHex) 
       : base(sizeHexes, new Size(27,30), (map) => 
-          new BoardStorage<MapGridHex>.FlatBoardStorage(sizeHexes, coords => initializeHex(map,coords))
+          new BoardStorage<THex>.FlatBoardStorage(sizeHexes, coords => initializeHex(map,coords))
     ) {
       StartHex   = GoalHex = HotspotHex = HexCoords.EmptyUser;
+      ShowHexgrid   = true;
       ShowPathArrow = true;
     }
 
@@ -84,9 +76,8 @@ namespace PGNapoleonics.HexGridExample2 {
     public          Size      MapMargin      { get; set; }
     public          string    Name           { get {return "MapDisplay";} }
     public          bool      ShowFov        { get; set; }
+    public          bool      ShowHexgrid    { get; set; }
     public          bool      ShowPathArrow  { get; set; }
-
-    IHex IFovBoard<IHex>.this[HexCoords coords] { get { return BoardHexes[coords]; } }
 
     public CoordsRectangle GetClipCells(PointF point, SizeF size) {
       return GetClipHexes( new RectangleF(point,size), MapSizeHexes );
@@ -164,8 +155,14 @@ namespace PGNapoleonics.HexGridExample2 {
       }
     }
 
-    public virtual void PaintMap(Graphics g) { 
+    public virtual void PaintMap(Graphics g) {PaintMap(g,(h) =>{;}); }
+
+    /// <summary>For each visible hex: perform <c>paintAction</c> and then draw its hexgrid outline.</summary>
+    /// <param name="g"></param>
+    /// <param name="paintAction"></param>
+    public virtual void PaintMap(Graphics g, Action<THex> paintAction) { 
       if (g==null) throw new ArgumentNullException("g");
+      if (paintAction==null) throw new ArgumentNullException("paintAction");
       var clipCells = GetClipCells(g.VisibleClipBounds);
       var location  = new Point(GridSize.Width*2/3, GridSize.Height/2);
 
@@ -179,8 +176,8 @@ namespace PGNapoleonics.HexGridExample2 {
           var container = g.BeginContainer();
           g.TranslateTransform(0,  clipCells.Top*GridSize.Height + (x+1)%2 * (GridSize.Height)/2);
           for (int y=clipCells.Top; y<clipCells.Bottom; y++) {
-            this[HexCoords.NewUserCoords(x,y)].Paint(g);
-            g.DrawPath(Pens.Black, HexgridPath);
+            paintAction(this[HexCoords.NewUserCoords(x,y)]);
+            if (ShowHexgrid) g.DrawPath(Pens.Black, HexgridPath);
 
             g.TranslateTransform(0,GridSize.Height);
           }
@@ -208,5 +205,4 @@ namespace PGNapoleonics.HexGridExample2 {
       return HexText(HexCoords.NewUserCoords(x,y),landmarkToShow); 
     }
   }
-#endif
 }

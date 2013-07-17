@@ -48,33 +48,7 @@ namespace PGNapoleonics.HexGridExample2.TerrainExample {
       "CA2233:OperationsShouldNotOverflow", MessageId = "2*range")]
     public override int   Heuristic(int range) { return 2 * range; }
 
-    #region Painting
-    public override void PaintMap(Graphics g) { 
-      if (g==null) throw new ArgumentNullException("g");
-      var clipCells = GetClipCells(g.VisibleClipBounds);
-      var location  = new Point(GridSize.Width*2/3, GridSize.Height/2);
-
-      g.TranslateTransform(MapMargin.Width + clipCells.Right*GridSize.Width, MapMargin.Height);
-
-      using(var font   = new Font("ArialNarrow", 8))
-      using(var format = new StringFormat()) {
-        format.Alignment = format.LineAlignment = StringAlignment.Center;
-        for (int x=clipCells.Right; x-->clipCells.Left; ) {
-          g.TranslateTransform(-GridSize.Width, 0);
-          var container = g.BeginContainer();
-          g.TranslateTransform(0,  clipCells.Top*GridSize.Height + (x+1)%2 * (GridSize.Height)/2);
-          for (int y=clipCells.Top; y<clipCells.Bottom; y++) {
-            this[HexCoords.NewUserCoords(x,y)].Paint(g);
-            g.DrawPath(Pens.Black, HexgridPath);
-
-            g.TranslateTransform(0,GridSize.Height);
-          }
-          g.EndContainer(container);
-        }
-      }
-    }
     public override void PaintUnits(Graphics g) { ; }
-    #endregion
 
     #region static Board definition
     static List<string> _board = new List<string>() {

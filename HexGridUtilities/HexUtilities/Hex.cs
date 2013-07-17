@@ -44,22 +44,22 @@ namespace PGNapoleonics.HexUtilities {
   /// <summary>External interface exposed by individual hexes.</summary>
   public interface IHex {
     /// <summary>The <c>IBoard&lt;IHex></c> on which this hex is located.</summary>
-    IBoard<IHex> Board            { get; }
+    IBoard<IHex> Board          { get; }
 
     /// <summary>The <c>HexCoords</c> coordinates for this hex on <c>Board</c>.</summary>
-    HexCoords    Coords           { get; }
+    HexCoords    Coords         { get; }
 
     /// <summary>Elevation "Above Sea Level" in <i>game units</i> of the ground in this hex.</summary>
-    int          ElevationASL     { get; }
+    int          ElevationASL   { get; }
 
     /// <summary>Height ASL in <i>game units</i> of observer's eyes for FOV calculations.</summary>
-    int          HeightObserver   { get; }
+    int          HeightObserver { get; }
 
     /// <summary>Height ASL in <i>game units</i> of target above ground level to be spotted.</summary>
-    int          HeightTarget     { get; }
+    int          HeightTarget   { get; }
 
     /// <summary>Height ASL in <i>game units</i> of any blocking terrian in this hex.</summary>
-    int          HeightTerrain    { get; }
+    int          HeightTerrain  { get; }
 
     /// <summary>Returns the neighbouring hex across <c>Hexside</c> <c>hexside</c>.</summary>
     IHex Neighbour(Hexside hexside);

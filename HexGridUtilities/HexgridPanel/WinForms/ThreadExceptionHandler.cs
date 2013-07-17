@@ -49,7 +49,10 @@ namespace  PGNapoleonics.WinForms {
     public void ApplicationThreadException(object sender, ThreadExceptionEventArgs e) {
       if (sender==null) throw new ArgumentNullException("sender");
       if (e==null) throw new ArgumentNullException("e");
-      if(e.Exception is NotImplementedException || e.Exception is NotSupportedException) {
+      if(e.Exception is NotImplementedException 
+      || e.Exception is NotSupportedException
+      || e.Exception is InvalidOperationException
+      ) {
           MessageBox.Show(e.Exception.Message, 
             "Application Error", 
             MessageBoxButtons.OK, 
@@ -62,7 +65,7 @@ namespace  PGNapoleonics.WinForms {
         catch {  // Fatal error, terminate program
           try {
             MessageBox.Show("Fatal Error in Unhandled Exception Handler.", 
-              "Application Error", 
+              "Fatal Application Error", 
               MessageBoxButtons.OK, 
               MessageBoxIcon.Stop);
           }
@@ -95,20 +98,21 @@ namespace  PGNapoleonics.WinForms {
     public static void UIThread(this Control @this, Action action) {
       if (@this==null) throw new ArgumentNullException("this");
       if (action==null) throw new ArgumentNullException("action");
-      if (@this.InvokeRequired) {
-        @this.BeginInvoke(action);
-      } else {
-        action.Invoke();
-      }
+
+      if (@this.InvokeRequired)   @this.BeginInvoke(action);
+      else                        action.Invoke();
     }
+
+    /// <summary>Executes Action asynchronously on the UI thread, without blocking the calling thread.</summary>
+    /// <param name="this"></param>
+    /// <param name="action"></param>
     public static void UIThread(this Control @this, Action<object[]> action, params object[] args) {
       if (@this==null) throw new ArgumentNullException("this");
       if (action==null) throw new ArgumentNullException("action");
-      if (@this.InvokeRequired) {
-        @this.BeginInvoke(action,args);
-      } else {
-        action.Invoke(args);
-      }
+
+      if (@this.InvokeRequired)   @this.BeginInvoke(action,args);
+       else                       action.Invoke(args);
+      
     }
   }
 
@@ -120,21 +124,21 @@ namespace  PGNapoleonics.WinForms {
     public static void UIThread(this Form @this, Action action) {
       if (@this==null) throw new ArgumentNullException("this");
       if (action==null) throw new ArgumentNullException("action");
-      if (@this.InvokeRequired) {
-        @this.BeginInvoke(action);
-      } else {
-        action.Invoke();
-      }
+
+      if (@this.InvokeRequired)   @this.BeginInvoke(action);
+      else                        action.Invoke();
     }
+
+    /// <summary>Executes Action asynchronously on the UI thread, without blocking the calling thread.</summary>
+    /// <param name="this"></param>
+    /// <param name="action"></param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
     public static void UIThread(this Form @this, Action<object[]> action, params object[] args) {
       if (@this==null) throw new ArgumentNullException("this");
       if (action==null) throw new ArgumentNullException("action");
-      if (@this.InvokeRequired) {
-        @this.BeginInvoke(action,args);
-      } else {
-        action.Invoke(args);
-      }
+
+      if (@this.InvokeRequired)   @this.BeginInvoke(action,args);
+       else                       action.Invoke(args);
     }
   }
 }

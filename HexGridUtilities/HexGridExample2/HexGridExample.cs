@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -72,7 +73,7 @@ namespace PGNapoleonics.HexGridExample2 {
       menuItemLandmarks.Items.Clear();
       menuItemLandmarks.Items.Add("None");
       foreach(var landmark in _mapBoard.Landmarks) {
-        menuItemLandmarks.Items.Add(string.Format("{0}", landmark.Coords));
+        menuItemLandmarks.Items.Add(string.Format(CultureInfo.InvariantCulture, "{0}", landmark.Coords));
       }
       menuItemLandmarks.SelectedIndexChanged += menuItemLandmarks_SelectedIndexChanged;
       menuItemLandmarks.SelectedIndex = 0; 

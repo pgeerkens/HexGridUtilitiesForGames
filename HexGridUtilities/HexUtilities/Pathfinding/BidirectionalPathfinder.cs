@@ -124,9 +124,11 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       return path;
     }
 
-    int  Estimate(IHex there, int totalCost) {
+    int  Estimate(IHex here, IHex there, int totalCost) {
       var estimate   = _heuristic(there.Coords) + totalCost;
-      var preference = Preference(_vectorGoal, there.Coords.Canon - _start.Coords.Canon );
+//      var preference = Preference(_vectorGoal, there.Coords.Canon - _start.Coords.Canon );
+      var preference = Preference(there.Coords.Canon - here.Coords.Canon,
+                                 _start.Coords.Canon - here.Coords.Canon );
       return (estimate << 16) + preference;
     }
     int  FrontierMinimum() { 
@@ -173,7 +175,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
           if( (path.TotalCost+cost < _getBestSoFar()  ||  ! _open.ContainsKey(there.Coords))
           ) {
             var newPath = _addStep(path, there, hexside, cost);
-            var key     = Estimate(there, newPath.TotalCost);
+            var key     = Estimate(here, there, newPath.TotalCost);
 
             TraceFlags.FindPathEnqueue.Trace("   Enqueue {0}: estimate={1,4}:{2,4}",
                                           there.Coords, key>>16, key & 0xFFFF);
@@ -245,14 +247,13 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     ) {
       _start        = start;
       _getBestSoFar = getBestSoFar;
-
       _vectorGoal   = goal.Coords.Canon - start.Coords.Canon;
       _open         = new Dictionary<HexCoords, DirectedPath>();
       _closed       = closed;
       _queue        = new HotPriorityQueue<DirectedPath>(16);
 
       _landmark     = landmarks
-              .OrderByDescending(l => l.HexDistance(goal.Coords)-l.HexDistance(start.Coords))
+              .OrderByDescending(l => l.HexDistance(goal.Coords) - l.HexDistance(start.Coords))
               .FirstOrDefault();
       _heuristic    = c => _landmark.HexDistance(c) - _landmark.HexDistance(start.Coords);
 

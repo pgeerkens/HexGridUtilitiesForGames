@@ -29,15 +29,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>TODO</summary>
-  public static class Utilities{
+  public static partial class Utilities{
     #region Enum Parsing utilities
     /// <summary>Typesafe wrapper for <c>Enum.GetValues(typeof(TEnum).</c></summary>
     public static IEnumerable<TEnum> EnumGetValues<TEnum>() {
@@ -47,38 +43,51 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>Typesafe wrapper for <c>Enum.ParseEnum()</c> that automatically checks 
     /// constants for membership in the <c>enum</c>.</summary>
     public static T ParseEnum<T>(string value) where T:struct {return ParseEnum<T>(value,true); }
+
     /// <summary>Typesafe wrapper for <c>Enum.ParseEnum()</c> that automatically checks 
     /// constants for membership in the <c>enum</c>.</summary>
     public static T ParseEnum<T>(string value, bool checkConstants) where T:struct {
       T enumValue;
       if (!TryParseEnum<T>(value, out enumValue) && checkConstants) 
-                  ThrowInvalidDataException(typeof(T), enumValue);
+            throw new ArgumentOutOfRangeException("value",value,"Enum type: " + typeof(T).Name);
+
       return enumValue;
     }
+
     /// <summary>Typesafe wrapper for <c>Enum.TryParseEnum()</c> that automatically checks 
     /// constants for membership in the <c>enum</c>.</summary>
     public static bool TryParseEnum<T>(string value, out T enumValue) where T:struct {
       return Enum.TryParse<T>(value, out enumValue)  
          &&  Enum.IsDefined(typeof(T),enumValue);
     }
+
     /// <summary>Typesafe wrapper for <c>Enum.ToObject()</c>.</summary>
     /// <typeparam name="T"></typeparam>
     public static T EnumParse<T>(char c, string lookup) {
       if (lookup==null) throw new ArgumentNullException("lookup");
       var index = lookup.IndexOf(c);
-      if (index == -1) ThrowInvalidDataException(typeof(T), c);
+      if (index == -1) throw new ArgumentOutOfRangeException("c",c,"Enum Type: " + typeof(T).Name);
+
       return (T) Enum.ToObject(typeof(T), index);
     }
     #endregion
-
+  }
+}
+#region Deprecated code
+namespace PGNapoleonics.HexUtilities.Common {
+using System.IO;
+  public static partial class Utilities{
     #region InvalidDataException Throwers
-    /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
+    /// <summary>Deprecated</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+      "CA1062:Validate arguments of public methods", MessageId = "0")]
+    [Obsolete("InvalidDataException is an IO Exception. Subclass and throw a more appropriate error instead.")]
     public static void ThrowInvalidDataException(MemberInfo type, object data) {
       throw new InvalidDataException(string.Format(CultureInfo.InvariantCulture,
           "{0}: Invalid: '{1}'", type.Name, data));
     }
-    /// <summary>TODO</summary>
+    ///  <summary>Deprecated:</summary>
+    [Obsolete("InvalidDataException is an IO Exception. Subclass and throw a more appropriate error instead.")]
     public static void ThrowInvalidDataException(string parseType, int lineNo, 
       object section, string error, Exception ex, object data) {
       throw new InvalidDataException(
@@ -89,3 +98,4 @@ namespace PGNapoleonics.HexUtilities.Common {
     #endregion
   }
 }
+#endregion
