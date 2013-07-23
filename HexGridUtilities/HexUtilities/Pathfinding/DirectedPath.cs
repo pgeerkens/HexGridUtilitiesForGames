@@ -60,41 +60,59 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
   internal sealed class DirectedPath : IDirectedPath {
-    #region IPath implementation
-    //IPath         IPath.PathSoFar   { get { return PathSoFar; } }
+    #region Properties
     IDirectedPath IDirectedPath.PathSoFar { get { return PathSoFar; } }
 
     /// <inheritdoc/>
     public Hexside      HexsideExit { get { return PathStep.HexsideExit; } }
+    /// <summary>TODO</summary>
+    public int          Key         { get; private set; }
+    /// <inheritdoc/>
+    public DirectedPath PathSoFar   { get; private set; }
     /// <inheritdoc/>
     public NeighbourHex PathStep    { get; private set; }
     /// <inheritdoc/>
     public HexCoords    StepCoords  { get { return PathStep.Hex.Coords; } }
-    /// <inheritdoc/>
-    public DirectedPath PathSoFar   { get; private set; }
     /// <inheritdoc/>
     public int          TotalCost   { get; private set; }
     /// <inheritdoc/>
     public int          TotalSteps  { get; private set; }
     #endregion
 
-    /// <summary></summary>
+    /// <summary>TODO</summary>
     /// <param name="hex"></param>
     /// <param name="hexside"></param>
     /// <param name="stepCost"></param>
     /// <returns></returns>
     public DirectedPath AddStep(IHex hex, Hexside hexside, int stepCost) {
-      return AddStep(new NeighbourHex(hex,hexside), stepCost);
+      return AddStep(new NeighbourHex(hex,hexside), stepCost, stepCost);
     }
-    /// <summary></summary>
+    /// <summary>TODO</summary>
+    /// <param name="hex"></param>
+    /// <param name="hexside"></param>
+    /// <param name="stepCost"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public DirectedPath AddStep(IHex hex, Hexside hexside, int stepCost, int key) {
+      return AddStep(new NeighbourHex(hex,hexside), stepCost, key);
+    }
+    /// <summary>TODO</summary>
     /// <param name="neighbour"></param>
     /// <param name="stepCost"></param>
     /// <returns></returns>
     public DirectedPath AddStep(NeighbourHex neighbour, int stepCost) {
-      return new DirectedPath(this, neighbour, TotalCost + stepCost);
+      return AddStep(neighbour, stepCost, stepCost);
+    }
+    /// <summary>TODO</summary>
+    /// <param name="neighbour"></param>
+    /// <param name="stepCost"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public DirectedPath AddStep(NeighbourHex neighbour, int stepCost, int key) {
+      return new DirectedPath(this, neighbour, TotalCost + stepCost, key);
     }
 
-    /// <summary></summary>
+    /// <summary>TODO</summary>
     /// <returns></returns>
     public override string ToString() {
       if (PathSoFar == null) 
@@ -105,7 +123,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
           PathStep.Hex.Coords, PathStep.HexsideEntry, TotalCost);
     }
 
-    /// <summary></summary>
+    /// <summary>TODO</summary>
     public IEnumerator<IDirectedPath> GetEnumerator() {
       yield return this;
       for (var p = (IDirectedPath)this; p.PathSoFar != null; p = p.PathSoFar) 
@@ -115,12 +133,15 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
 
     /////////////////////////////  Internals  //////////////////////////////////
-    internal DirectedPath(IHex start) : this(null, new NeighbourHex(start), 0) {}
+    /// <summary>TODO</summary>
+    internal DirectedPath(IHex start) : this(null, new NeighbourHex(start), 0, 0) {}
 
-    internal DirectedPath(DirectedPath nextSteps, NeighbourHex neighbour, int totalCost) {
-      PathStep        = neighbour;
+    /// <summary>TODO</summary>
+    internal DirectedPath(DirectedPath nextSteps, NeighbourHex neighbour, int totalCost, int key) {
+      PathStep    = neighbour;
       PathSoFar   = nextSteps;
       TotalCost   = totalCost;
+      Key         = key;
       TotalSteps  = nextSteps==null ? 0 : nextSteps.TotalSteps+1;
     }
   }

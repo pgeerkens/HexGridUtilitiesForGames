@@ -30,14 +30,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
-using PGNapoleonics.HexUtilities.ShadowCasting;
 
-/// <summary>Brought to you by <b>PG Software Solutions Inc.</b>, a quality software provider.<br/>
-/// Our software solutions are more than Pretty Good; ... they're <b>great!</b></summary>
+/// <summary>Brought to you by <b>PG Software Solutions Inc&#46;</b>, a quality software provider.</summary>
+/// <remarks>Our software solutions are more than <b>Pretty Good</b>; ... they're <b>great!</b></remarks>
 namespace PGNapoleonics { }
 
 namespace PGNapoleonics.HexUtilities {
@@ -131,9 +129,19 @@ namespace PGNapoleonics.HexUtilities {
 
   /// <summary>Extension methods for <see cref="Hex"/>.</summary>
   public static partial class HexExtensions {
-    /// <summary>All neighbours of this hex, as an <c>IEnumerable&lt;NeighbourHex></c></summary>
+    /// <summary>TODO</summary>
+    /// <param name="this"></param>
+    /// <param name="directions"></param>
+    /// <returns></returns>
+     public static IEnumerable<NeighbourHex> GetNeighbourHexes(this IHex @this, HexsideFlags directions) {
+      return from n in @this.GetNeighbourHexes()
+             where directions.HasFlag(n.HexsideEntry.Direction()) && n.Hex.IsOnboard()
+             select n;
+    }
+   /// <summary>All neighbours of this hex, as an <c>IEnumerable&lt;NeighbourHex></c></summary>
     public static IEnumerable<NeighbourHex> GetAllNeighbours(this IHex @this) {
-      return HexsideList.Select(i => new NeighbourHex(@this.Board[@this.Coords.GetNeighbour(i)], i));
+      return HexsideExtensions.HexsideList.Select(i => 
+            new NeighbourHex(@this.Board[@this.Coords.GetNeighbour(i)], i));
     }
 
     /// <summary>All <i>OnBoard</i> neighbours of this hex, as an <c>IEnumerable&lt;NeighbourHex></c></summary>
@@ -146,28 +154,18 @@ namespace PGNapoleonics.HexUtilities {
       return @this.GetNeighbourHexes().GetEnumerator();
     }
 
-    /// <summary>Returns the field-of-view on <c>board</c> from the hex specified by coordinates <c>coords</c>.</summary>
-    public static IFov GetFov(this IFovBoard<IHex> @this, HexCoords origin) {
-      return FovFactory.GetFieldOfView(@this,origin);
-    }
-
     /// <summary>The <i>Manhattan</i> distance from this hex to that at <c>coords</c>.</summary>
     public static int Range(this IHex @this, IHex target) { 
       if (@this==null) throw new ArgumentNullException("this");
       if (target==null) throw new ArgumentNullException("target");
+
       return @this.Coords.Range(target.Coords); 
     }
 
     /// <summary>Returns a least-cost path from this hex to the hex <c>goal.</c></summary>
     public static IDirectedPath GetDirectedPath(this IHex @this, IHex goal) {
       if (@this==null) throw new ArgumentNullException("this");
-      if (goal==null) throw new ArgumentNullException("goal");
-      if (! @this.Board.IsPassable(goal.Coords) || ! @this.Board.IsPassable(@this.Coords))
-        return null;
-
-      return goal.Coords.Range(@this.Coords) > @this.Board.RangeCutoff
-            ? BidirectionalPathfinder.FindDirectedPathFwd(@this, goal, @this.Board)
-            : BidirectionalPathfinder.FindDirectedPathFwd(@this, goal, @this.Board);
+      return @this.Board.GetDirectedPath(@this,goal);
     }
 
     /// <summary>Returns whether this hex is "On Board".</summary>

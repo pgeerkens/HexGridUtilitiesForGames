@@ -29,45 +29,39 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-
-using PGNapoleonics;
-using PGNapoleonics.HexUtilities;
-using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>Stores a rectangular board region as a a location and extent of <see cref="HexCoords"/>.</summary>
-  public struct CoordsRectangle : IEquatable<CoordsRectangle>, IEqualityComparer<CoordsRectangle> {
+  public struct CoordsRectangle : IEquatable<CoordsRectangle> {
     /// <summary>TODO</summary>
     public CoordsRectangle(HexCoords location, HexCoords size)  : this(new Rectangle(location.User, size.User)) {}
     /// <summary>TODO</summary>
-    public CoordsRectangle(int x, int y, int width, int height) : this(new Rectangle(x,y,width,height)) {}
+    internal CoordsRectangle(int x, int y, int width, int height) : this(new Rectangle(x,y,width,height)) {}
     /// <summary>TODO</summary>
-    public CoordsRectangle(Rectangle rectangle) : this() { Rectangle = rectangle; }
+    private CoordsRectangle(Rectangle rectangle) : this() { Rectangle = rectangle; }
 
     /// <summary>TODO</summary>
-    public int       Bottom   { get { return Rectangle.Bottom; } }
+    public int       Bottom     { get { return Rectangle.Bottom; } }
     /// <summary>TODO</summary>
-    public int       Height   { get { return Rectangle.Height; } }
+    public int       Height     { get { return Rectangle.Height; } }
     /// <summary>TODO</summary>
-    public bool      IsEmpty  { get { return Rectangle.IsEmpty; } }
+    public bool      IsEmpty    { get { return Rectangle.IsEmpty; } }
     /// <summary>TODO</summary>
-    public int       Left     { get { return Rectangle.Left; } }
+    public int       Left       { get { return Rectangle.Left; } }
     /// <summary>TODO</summary>
-    public HexCoords Location { get { return HexCoords.NewUserCoords(Rectangle.Location); } }
+    public HexCoords Location   { get { return HexCoords.NewUserCoords(Rectangle.Location); } }
     /// <summary>TODO</summary>
-    public int       Right    { get { return Rectangle.Right; } }
+    public int       Right      { get { return Rectangle.Right; } }
     /// <summary>TODO</summary>
-    public HexCoords Size     { get { return HexCoords.NewUserCoords(Rectangle.Size); } }
+    public HexCoords Size       { get { return HexCoords.NewUserCoords(Rectangle.Size); } }
     /// <summary>TODO</summary>
-    public int       Top      { get { return Rectangle.Top; } }
+    public int       Top        { get { return Rectangle.Top; } }
     /// <summary>TODO</summary>
-    public int       Width    { get { return Rectangle.Width; } }
+    public int       Width      { get { return Rectangle.Width; } }
     /// <summary>TODO</summary>
-    public int       X        { get { return Rectangle.X; } }
+    public int       X          { get { return Rectangle.X; } }
     /// <summary>TODO</summary>
-    public int       Y        { get { return Rectangle.Y; } }
+    public int       Y          { get { return Rectangle.Y; } }
 
     /// <summary>TODO</summary>
     public Rectangle Rectangle  { get; private set; }
@@ -94,9 +88,6 @@ namespace PGNapoleonics.HexUtilities.Common {
     public static bool operator != (CoordsRectangle lhs, CoordsRectangle rhs) { return ! (lhs == rhs); }
 
     bool IEquatable<CoordsRectangle>.Equals(CoordsRectangle obj) { return this == obj; }
-
-    bool IEqualityComparer<CoordsRectangle>.Equals(CoordsRectangle lhs, CoordsRectangle rhs) { return lhs == rhs; }
-    int  IEqualityComparer<CoordsRectangle>.GetHashCode(CoordsRectangle coords) { return Rectangle.GetHashCode(); }
     #endregion
   }
 }

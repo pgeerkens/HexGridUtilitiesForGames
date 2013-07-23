@@ -38,8 +38,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix"), DebuggerDisplay("Count={Count}")]
   public class ConcurrentHashSet<TKey, TValue> : ISet<TKey> where TKey : IEquatable<TKey>
   {
-    private readonly object _syncLock = new object();
-    private readonly HashSet<TKey> _hashSet = new  HashSet<TKey>();
+    private readonly HashSet<TKey> _hashSet  = new  HashSet<TKey>();
+    private readonly object        _syncLock = new object();
 
     /// <summary>Initializes a new instance of the <c>ConcurrentHashSet</c> class.</summary>
     public ConcurrentHashSet() {}
@@ -55,13 +55,13 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     }
 
     ///<inheritdoc/>
-    public int Count { get { lock (_syncLock) return _hashSet.Count; } }
+    public int                     Count      { get { lock (_syncLock) return _hashSet.Count; } }
 
     ///<inheritdoc/>
-    public IEqualityComparer<TKey> Comparer { get { lock (_syncLock) return _hashSet.Comparer; } }
+    public IEqualityComparer<TKey> Comparer   { get { lock (_syncLock) return _hashSet.Comparer; } }
 
     ///<inheritdoc/>
-    public bool IsReadOnly { get { lock (_syncLock) return false; } }
+    public bool                    IsReadOnly { get { lock (_syncLock) return false; } }
 
     ///<inheritdoc/>
     bool ISet<TKey>.Add(TKey item) { lock (_syncLock) return _hashSet.Add(item); }
@@ -103,6 +103,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     ///<inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
+
     ///<inheritdoc/>
     public IEnumerator<TKey> GetEnumerator()
     {
@@ -112,12 +113,10 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     }
 
     ///<inheritdoc/>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "context"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "info"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "context"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "info")]
     public void GetObjectData(
       System.Runtime.Serialization.SerializationInfo info,
-      System.Runtime.Serialization.StreamingContext context) {
-      throw new NotSupportedException();
-//        lock (_syncLock) _hashSet.GetObjectData(info, context);
+      System.Runtime.Serialization.StreamingContext  context) {
+        lock (_syncLock) _hashSet.GetObjectData(info, context);
     }
 
     ///<inheritdoc/>
@@ -147,7 +146,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <inheritdoc/>
     public virtual void OnDeserialization(Object sender) {
-      throw new NotSupportedException();
+      lock (_syncLock) _hashSet.OnDeserialization(sender);
     }
 
     ///<inheritdoc/>

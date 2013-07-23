@@ -26,7 +26,6 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -35,7 +34,7 @@ using PGNapoleonics.HexUtilities;
 /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexUtilities.HexgridPanel"/> to implement
 /// a maze map.</summary>
 namespace PGNapoleonics.HexGridExample2.MazeExample {
-  internal sealed class MazeMap : MapDisplay {
+  internal sealed class MazeMap : MapDisplay<MapGridHex> {
     public MazeMap() : base(_sizeHexes, (map,coords) => InitializeHex(map,coords)) {}
 
     /// <inheritdoc/>
@@ -51,6 +50,7 @@ namespace PGNapoleonics.HexGridExample2.MazeExample {
       return IsOnboard(coords)  &&  this[coords].Elevation == 0; 
     }
 
+    /// <inheritdoc/>
     public override void PaintUnits(Graphics g) { ; }
 
     #region static Board definition
@@ -89,10 +89,10 @@ namespace PGNapoleonics.HexGridExample2.MazeExample {
     static Size _sizeHexes = new Size(_board[0].Length, _board.Count);
     #endregion
 
-    private static MapGridHex InitializeHex(IBoard<MapGridHex> board, HexCoords coords) {
+    private static MapGridHex InitializeHex(HexBoard<MapGridHex> board, HexCoords coords) {
       switch (_board[coords.User.Y][coords.User.X]) {
-        case '.': return new PathMazeGridHex(board, coords, board.GridSize);
-        default:  return new WallMazeGridHex(board, coords, board.GridSize);
+        case '.': return new PathMazeGridHex(board, coords);
+        default:  return new WallMazeGridHex(board, coords);
       }
     }
   }

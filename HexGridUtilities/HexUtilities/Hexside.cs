@@ -27,12 +27,9 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 
 using PGNapoleonics.HexUtilities.Common;
 
@@ -73,7 +70,7 @@ namespace PGNapoleonics.HexUtilities {
   }
 
   /// <summary>Common <i>extension methods</i> for <c>Hexside</c> and <c>HexSideFlags</c>.</summary>
-  public static partial class HexExtensions {
+  public static partial class HexsideExtensions {
     /// <summary><c>Static List&lt;Hexside></c> for enumerations.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", 
       "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]

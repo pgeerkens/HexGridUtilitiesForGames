@@ -30,8 +30,6 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-using PGNapoleonics;
-
 namespace  PGNapoleonics.WinForms {
 	/// <summary> Transparent Panel control.</summary>
 	/// <remarks>
@@ -39,6 +37,7 @@ namespace  PGNapoleonics.WinForms {
 	/// See "http://www.bobpowell.net/transcontrols.htm"
 	/// </remarks>
 	public class TransparentPanel : Panel {
+    /// <summary>TODO</summary>
 		public TransparentPanel() : base() {
 			SetStyle(ControlStyles.SupportsTransparentBackColor,true);
 			BackColor  = Color.Transparent;
@@ -62,8 +61,8 @@ namespace  PGNapoleonics.WinForms {
 		public virtual void Invalidate2() { 
 			Invalidate2(new Rectangle(this.Location,this.Size));
 		} 
-		///<summary><inheritdoc cref="Invalidate2()" /></summary>
-		/// <param name="rectangle"><c>Rectangle</c> to be invalidated.</param>
+		///<summary>Invalidates the entire surface of the control and causes the control to be redrawn.</summary>
+		/// <param name="rectangle">Clipping <c>Rectangle</c> to be invalidated.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", 
       "CA1300:SpecifyMessageBoxOptions")]
     public virtual void Invalidate2(Rectangle rectangle) { 

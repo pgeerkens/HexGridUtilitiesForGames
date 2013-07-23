@@ -26,14 +26,9 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-#undef TraceFoV
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Net;
-using System.Threading.Tasks;
 
-using PGNapoleonics;
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.ShadowCasting {

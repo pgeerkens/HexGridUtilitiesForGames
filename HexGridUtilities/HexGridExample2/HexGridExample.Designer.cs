@@ -137,7 +137,7 @@ namespace PGNapoleonics.HexGridExample2 {
             this.menuItemDebug});
       this.toolStrip2.Location = new System.Drawing.Point(3, 0);
       this.toolStrip2.Name = "toolStrip2";
-      this.toolStrip2.Size = new System.Drawing.Size(700, 25);
+      this.toolStrip2.Size = new System.Drawing.Size(649, 25);
       this.toolStrip2.TabIndex = 0;
       // 
       // buttonTransposeMap
@@ -205,9 +205,9 @@ namespace PGNapoleonics.HexGridExample2 {
       // lblLandmark
       // 
       this.lblLandmark.Name = "lblLandmark";
-      this.lblLandmark.Size = new System.Drawing.Size(145, 22);
-      this.lblLandmark.Text = "Distances from Landmark:";
-      this.lblLandmark.ToolTipText = "Landmark for which to display distances.";
+      this.lblLandmark.Size = new System.Drawing.Size(63, 22);
+      this.lblLandmark.Text = "Landmark:";
+      this.lblLandmark.ToolTipText = "Landmark from which shortest-paths distances are to be displayed.";
       // 
       // menuItemLandmarks
       // 
@@ -215,7 +215,7 @@ namespace PGNapoleonics.HexGridExample2 {
             "None"});
       this.menuItemLandmarks.Name = "menuItemLandmarks";
       this.menuItemLandmarks.Size = new System.Drawing.Size(100, 25);
-      this.menuItemLandmarks.ToolTipText = "Landmark for which distances are to be shown";
+      this.menuItemLandmarks.ToolTipText = "Landmark from which shortest-paths distances are to be displayed.";
       // 
       // toolStripSeparator1
       // 

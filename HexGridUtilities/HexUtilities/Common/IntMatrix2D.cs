@@ -27,10 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 
 namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>Row-major order representation of an immutable integer matrix.</summary>

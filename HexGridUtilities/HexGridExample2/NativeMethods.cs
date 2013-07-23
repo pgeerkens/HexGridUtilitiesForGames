@@ -27,20 +27,12 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Windows.Forms;
 
 namespace PGNapoleonics.WinForms {
   internal static partial class NativeMethods {
     /// <summary>P/Invoke declaration for user32.dll.WindowFromPoint</summary>
-		/// <remarks><see cref="http://msdn.microsoft.com/en-us/library/windows/desktop/ms633558(v=vs.85).aspx"/></remarks>
+		/// <remarks><a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms633558(v=vs.85).aspx"></a></remarks>
 		/// <param name="pt">(Sign-extended) screen coordinates as a Point structure.</param>
 		/// <returns>Window handle (hWnd).</returns>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "0"), DllImport("user32.dll")]
@@ -49,10 +41,10 @@ namespace PGNapoleonics.WinForms {
     /// <summary>P/Invoke declaration for user32.dll.SendMessage</summary>
 		/// <param name="hWnd">Window handle</param>
 		/// <param name="msg">Windows message</param>
-		/// <param name="wp">WParam</param>
-		/// <param name="lp">LParam</param>
+		/// <param name="wParam">WParam</param>
+		/// <param name="lParam">LParam</param>
 		/// <returns></returns>
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]
-		internal static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+		internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
   }
 }

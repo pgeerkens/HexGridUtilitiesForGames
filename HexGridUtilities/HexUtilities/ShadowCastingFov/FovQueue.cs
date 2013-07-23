@@ -28,10 +28,6 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
-
-using PGNapoleonics;
 
 namespace PGNapoleonics.HexUtilities.ShadowCasting {
   /// <summary>TODO</summary>

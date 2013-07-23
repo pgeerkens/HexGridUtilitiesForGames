@@ -27,14 +27,9 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
 
-using PGNapoleonics;
-using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 
 /// <summary>Display-technology-independent utilities for implementation of hex-grids..</summary>
@@ -91,7 +86,7 @@ namespace PGNapoleonics.HexUtilities {
   ///  - origin at upper-left corner of hex (0,0);
   ///  - 'straight' hex-axis vertically down; and
   ///  - 'oblique'  hex-axis up-and-to-right (at 120 degrees from 'straight').</remarks>
-  /// <seealso><a href="file://Documentation/HexGridAlgorithm.mht">Hex-grid Algorithms</a></seealso>
+  /// <a href="file://Documentation/HexGridAlgorithm.mht">Hex-grid Algorithms</a>
   public class Hexgrid : IHexgrid {
     /// <summary>Return a new instance of <c>Hexgrid</c>.</summary>
     public Hexgrid(IHexgridHost host) { Host = host; }

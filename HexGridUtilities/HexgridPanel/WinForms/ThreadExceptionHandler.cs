@@ -27,13 +27,11 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
 namespace  PGNapoleonics.WinForms {
+  /// <summary>TODO</summary>
   [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage()]
   public class ThreadExceptionHandler {
     ///<summary>Handles the thread exception.</summary> 
@@ -91,6 +89,7 @@ namespace  PGNapoleonics.WinForms {
     }
   }
 
+    /// <summary>TODO</summary>
   public static partial class ControlExtensions {
     /// <summary>Executes Action asynchronously on the UI thread, without blocking the calling thread.</summary>
     /// <param name="this"></param>
@@ -106,6 +105,7 @@ namespace  PGNapoleonics.WinForms {
     /// <summary>Executes Action asynchronously on the UI thread, without blocking the calling thread.</summary>
     /// <param name="this"></param>
     /// <param name="action"></param>
+    /// <param name="args"></param>
     public static void UIThread(this Control @this, Action<object[]> action, params object[] args) {
       if (@this==null) throw new ArgumentNullException("this");
       if (action==null) throw new ArgumentNullException("action");
@@ -116,6 +116,7 @@ namespace  PGNapoleonics.WinForms {
     }
   }
 
+    /// <summary>TODO</summary>
   public static partial class FormExtensions {
     /// <summary>Executes Action asynchronously on the UI thread, without blocking the calling thread.</summary>
     /// <param name="this"></param>
@@ -132,6 +133,7 @@ namespace  PGNapoleonics.WinForms {
     /// <summary>Executes Action asynchronously on the UI thread, without blocking the calling thread.</summary>
     /// <param name="this"></param>
     /// <param name="action"></param>
+    /// <param name="args"></param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
     public static void UIThread(this Form @this, Action<object[]> action, params object[] args) {
       if (@this==null) throw new ArgumentNullException("this");

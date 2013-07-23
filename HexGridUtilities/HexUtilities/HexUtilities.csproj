@@ -39,9 +39,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
-    <NoWarn>1607</NoWarn>
+    <DocumentationFile>..\bin\HexUtilities\bin\Release\HexUtilities.XML</DocumentationFile>
+    <NoWarn>1607,1587</NoWarn>
     <Prefer32Bit>false</Prefer32Bit>
     <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -104,7 +103,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>HexUtilities.key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>PGSoftwareSolutions.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -142,6 +141,7 @@
     <Compile Include="Pathfinding\IDirectedNavigableBoard.cs" />
     <Compile Include="Common\PointExtensions.cs" />
     <Compile Include="Pathfinding\DirectedPath.cs" />
+    <Compile Include="Pathfinding\UnidirectionalPathfinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShadowCastingFov\FieldOfView.cs" />
     <Compile Include="ShadowCastingFov\FovFactory.cs" />
@@ -156,10 +156,10 @@
     <Compile Include="Common\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="HexUtilities.key.snk" />
     <None Include="license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="PGSoftwareSolutions.pfx" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\CustomDictionary.xml">

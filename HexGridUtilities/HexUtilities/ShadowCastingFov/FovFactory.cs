@@ -27,14 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Threading.Tasks;
-
-using PGNapoleonics;
-using PGNapoleonics.HexUtilities;
-using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.ShadowCasting {
     /// <summary>TODO</summary>
@@ -66,46 +59,19 @@ namespace PGNapoleonics.HexUtilities.ShadowCasting {
     bool     IsPassable(HexCoords coords);
   }
 
-    /// <summary>TODO</summary>
+  /// <summary>TODO</summary>
+  [Obsolete("Use Extension methods instead.")]
   public static class FovFactory {
     /// <summary>TODO</summary>
+  [Obsolete("Use Extension methods instead.")]
     public static IFov GetFieldOfView(IFovBoard<IHex> board, HexCoords origin) {
       if (board==null) throw new ArgumentNullException("board");
-      return GetFieldOfView(board, origin, FovTargetMode.EqualHeights);
+      return board.GetFieldOfView(origin);
     }
     /// <summary>TODO</summary>
+  [Obsolete("Use Extension methods instead.")]
     public static IFov GetFieldOfView(IFovBoard<IHex> board, HexCoords origin, FovTargetMode targetMode) {
-      TraceFlags.FieldOfView.Trace("GetFieldOfView");
-      var fov = new ArrayFieldOfView(board);
-      if (board.IsPassable(origin)) {
-        Func<HexCoords,int> target;
-        int               observer;
-        switch (targetMode) {
-          case FovTargetMode.EqualHeights: 
-            observer = board[origin].ElevationASL + 1;
-            target   = coords => board[coords].ElevationASL + 1;
-            break;
-          case FovTargetMode.TargetHeightEqualZero:
-            observer = board[origin].HeightObserver;
-            target   = coords => board[coords].ElevationASL;
-            break;
-          default:
-          case FovTargetMode.TargetHeightEqualActual:
-            observer = board[origin].HeightObserver;
-            target   = coords => board[coords].HeightTarget;
-            break;
-        }
-        ShadowCasting.ComputeFieldOfView(
-          origin, 
-          board.FovRadius, 
-          observer,
-          coords => board.IsOnboard(coords),
-          target,
-          coords => board[coords].HeightTerrain,
-          coords => fov[coords] = true
-        );
-      }
-      return fov;
+      return board.GetFieldOfView(origin, targetMode);
     }
   }
 }

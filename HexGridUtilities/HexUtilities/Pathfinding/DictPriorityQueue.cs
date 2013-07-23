@@ -28,14 +28,12 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>Stable (insertion-order preserving for equal-priority elements) PriorityQueue implementation.</summary>
   /// <remarks>Eric Lippert's C# implementation of PriorityQueue for use by the A* algorithm.</remarks>
-  /// <cref>http://blogs.msdn.com/b/ericlippert/archive/2007/10/08/path-finding-using-a-in-c-3-0-part-three.aspx</cref>
+  /// <a href="http://blogs.msdn.com/b/ericlippert/archive/2007/10/08/path-finding-using-a-in-c-3-0-part-three.aspx">Path Finding Using A* Part Three</a>
   /// <typeparam name="TPriority">Type of the queue-item prioirty.</typeparam>
   /// <typeparam name="TValue">Type of the queue-item value.</typeparam>
   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 

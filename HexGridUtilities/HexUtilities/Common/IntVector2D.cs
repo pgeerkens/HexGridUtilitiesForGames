@@ -27,11 +27,8 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 
 ///<summary>Shared technoloiges across the library, and useful gadgets.</summary>
 namespace PGNapoleonics.HexUtilities.Common {

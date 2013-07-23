@@ -77,13 +77,15 @@
     <OutputPath>..\bin\HexGridExample2\bin\Release\</OutputPath>
     <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
     <Optimize>true</Optimize>
-    <NoWarn>1607</NoWarn>
+    <NoWarn>1607,1587</NoWarn>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
     <Prefer32Bit>true</Prefer32Bit>
+    <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>..\bin\HexGridExample2\bin\Release\HexGridExample2.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>PGNapoleonics.HexGridExample2.Program</StartupObject>
@@ -112,6 +114,12 @@
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>PGSoftwareSolutions.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -132,8 +140,6 @@
     <Compile Include="HexGridExample.Designer.cs">
       <DependentUpon>HexGridExample.cs</DependentUpon>
     </Compile>
-    <Compile Include="MapDisplay.cs" />
-    <Compile Include="MapGridHex.cs" />
     <Compile Include="MazeGridHex.cs" />
     <Compile Include="MazeMap.cs" />
     <Compile Include="NativeMethods.cs" />
@@ -155,6 +161,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
+    <None Include="PGSoftwareSolutions.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

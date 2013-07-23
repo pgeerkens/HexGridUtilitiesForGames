@@ -28,54 +28,57 @@
 #endregion
 using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexGridExample2.MazeExample {
+  /// <summary>Abstract class for <c>MapGridHex</c> as used in the MazeGrid example.</summary>
   internal abstract class MazeGridHex : MapGridHex {
-    protected MazeGridHex(IBoard<MapGridHex> board, HexCoords coords, Size gridSize) 
-      : base(board, coords) {
-      GridSize  = gridSize;
+    /// <summary>Initializes a new instance of a <see cref="MazeGridHex"/>.</summary>
+    /// <param name="board"></param>
+    /// <param name="coords">Board location of this hex.</param>
+    protected MazeGridHex(HexBoard<MapGridHex> board, HexCoords coords)
+      : base(board, coords) {}
 
-      HexgridPath = new GraphicsPath();
-      HexgridPath.AddLines(new Point[] {
-        new Point(GridSize.Width*1/3,                0), 
-        new Point(GridSize.Width*3/3,                0),
-        new Point(GridSize.Width*4/3,GridSize.Height/2),
-        new Point(GridSize.Width*3/3,GridSize.Height  ),
-        new Point(GridSize.Width*1/3,GridSize.Height  ),
-        new Point(                 0,GridSize.Height/2),
-        new Point(GridSize.Width*1/3,                0)
-      } );
-    }
-
+    /// <inheritdoc/>
     public override int    ElevationASL  { get { return Elevation * 10; } }
-    public override void   Paint(Graphics g) {;}
-
-    protected Size         GridSize      { get; private set; }
-    protected GraphicsPath HexgridPath   { get; set; }
   }
 
+  /// <summary>A <c>MazeGridHex</c> representing a passable hex in the maze.</summary>
   internal sealed class PathMazeGridHex : MazeGridHex {
-    public PathMazeGridHex(IBoard<MapGridHex> board, HexCoords coords, Size gridSize) 
-      : base(board, coords, gridSize) {}
+    /// <summary>Create a new instance of a passable <c>MazeGridHex</c>.</summary>
+    /// <param name="board">Reference to the mapboard on which this hex sits.</param>
+    /// <param name="coords">Location of the new hex.</param>
+    public PathMazeGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
+      : base(board, coords) {}
+
+    /// <inheritdoc/>
     public override int  Elevation      { get { return 0; } }
+    /// <inheritdoc/>
     public override int  HeightTerrain  { get { return ElevationASL + 0; } }
+    /// <inheritdoc/>
     public override int  StepCost(Hexside direction) { return  1; }
   }
 
+  /// <summary>A <c>MazeGridHex</c> representing an impassable hex, or wall, in the maze.</summary>
   internal sealed class WallMazeGridHex : MazeGridHex {
-    public WallMazeGridHex(IBoard<MapGridHex> board, HexCoords coords, Size gridSize) 
-      : base(board, coords, gridSize) {}
+    /// <summary>Create a new instance of an impassable <c>MazeGridHex</c>.</summary>
+    /// <param name="board">Reference to the mapboard on which this hex sits.</param>
+    /// <param name="coords">Location of the new hex.</param>
+    public WallMazeGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
+      : base(board, coords) {}
+
+    /// <inheritdoc/>
     public override int  Elevation      { get { return 1; } }
+    /// <inheritdoc/>
     public override int  HeightTerrain  { get { return ElevationASL + 10; } }
+    /// <inheritdoc/>
     public override int  StepCost(Hexside direction) { return -1; }
 
     public override void Paint(Graphics g) {
       if (g==null) throw new ArgumentNullException("g");
       using(var brush = new SolidBrush(Color.FromArgb(78,Color.DarkGray)))
-        g.FillPath(brush, HexgridPath);
+        g.FillPath(brush, Board.HexgridPath);
     }
   }
 }

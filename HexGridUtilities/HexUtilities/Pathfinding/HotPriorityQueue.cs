@@ -26,11 +26,8 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>Heap-On-Top (HOT) Priority Queue implementation with a key of type <c>int</c>.</summary>
@@ -42,7 +39,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
     "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
   public sealed class HotPriorityQueue<TValue> : IPriorityQueue<int,TValue> {
-//    public static int InitialSize { get; set; }
 
     int _baseIndex;
     int  _shift;
@@ -120,6 +116,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     public bool TryPeek(out HexKeyValuePair<int,TValue> result) {
       if (_queue.TryPeek(out result))  {
         return true;
+      //} else if (_lists==null) {
+      //  return false;
       } else {
         var list   = _lists.First();
         _baseIndex = list.Key;

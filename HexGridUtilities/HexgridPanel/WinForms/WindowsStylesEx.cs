@@ -27,11 +27,9 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace  PGNapoleonics.WinForms {
+  /// <summary>TODO</summary>
   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
     "CA1008:EnumsShouldHaveZeroValue"), 
   System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
@@ -40,6 +38,7 @@ namespace  PGNapoleonics.WinForms {
     "CA1711:IdentifiersShouldNotHaveIncorrectSuffix"), Flags]
   public enum WindowStylesEx
   {
+    /// <summary>TODO</summary>
     NONE = 0x00000000,
     /// <summary>Specifies that a window created with this style accepts drag-drop files.</summary>
     ACCEPTFILES = 0x00000010,

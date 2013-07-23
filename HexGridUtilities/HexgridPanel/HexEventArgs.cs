@@ -26,14 +26,7 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-
-using PGNapoleonics.HexUtilities;
-using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities {
   /// <summary></summary>

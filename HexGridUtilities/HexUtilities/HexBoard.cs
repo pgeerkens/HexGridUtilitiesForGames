@@ -31,7 +31,9 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Threading.Tasks;
 
+using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexUtilities.ShadowCasting;
@@ -60,7 +62,7 @@ namespace PGNapoleonics.HexUtilities {
     /// <see cref="System.Drawing.Size"/>.</param>
     /// <param name="gridSize">Extent in pixels of the layout grid for the hexagons, as a 
     /// <see cref="System.Drawing.Size"/>.</param>
-    /// <param name="initializeBoard">Delegate that creates the <see cref="BoardStorage{THex}"/> backing
+    /// <param name="initializeBoard">Delegate that creates the <see cref="BoardStorage{T}"/> backing
     /// store for this instance.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
       "CA1006:DoNotNestGenericTypesInMemberSignatures")]
@@ -74,7 +76,7 @@ namespace PGNapoleonics.HexUtilities {
     /// <see cref="System.Drawing.Size"/>.</param>
     /// <param name="gridSize">Extent in pixels of the layout grid for the hexagons, as a 
     /// <see cref="System.Drawing.Size"/>.</param>
-    /// <param name="initializeBoard">Delegate that creates the <see cref="BoardStorage{THex}"/> backing
+    /// <param name="initializeBoard">Delegate that creates the <see cref="BoardStorage{T}"/> backing
     /// store for this instance.</param>
     /// <param name="landmarkCoords">Collection of <see cref="HexCoords"/> specifying the landmark 
     /// locations to be used for pathfinding.</param>
@@ -151,12 +153,21 @@ namespace PGNapoleonics.HexUtilities {
     ///  <inheritdoc/>
     public Size               MapSizePixels { get; private set; }
 
+    /// <summary>Returns the location and extent in hexes, as a <see cref="CoordsRectangle"/>, of the current clipping region.</summary>
+    protected CoordsRectangle  GetClipInHexes(RectangleF visibleClipBounds, Size boardSizeHexes) {
+      var left    = Math.Max((int)visibleClipBounds.Left  /GridSize.Width  - 1, 0);
+      var top     = Math.Max((int)visibleClipBounds.Top   /GridSize.Height - 1, 0);
+      var right   = Math.Min((int)visibleClipBounds.Right /GridSize.Width  + 1, boardSizeHexes.Width);
+      var bottom  = Math.Min((int)visibleClipBounds.Bottom/GridSize.Height + 1, boardSizeHexes.Height); 
+      return new CoordsRectangle (left, top, right-left, bottom-top);
+    }
+    
     /// <summary>Sets the board layout parameters</summary>
     /// <param name="mapSizeHexes"><c>Size</c> struct of the  board horizontal
     /// and vertical extent in hexes.</param>
     /// <param name="gridSize"><c>Size</c> struct of the horizontal and vertical
     /// extent (in pixels) of the grid on which hexes are to be laid out on.</param>
-    public void SetGridSize(Size mapSizeHexes, Size gridSize) {
+    public void  SetGridSize(Size mapSizeHexes, Size gridSize) {
       MapSizeHexes  = mapSizeHexes;
       GridSize      = gridSize;
       HexgridPath   = SetGraphicsPath();
@@ -206,14 +217,6 @@ namespace PGNapoleonics.HexUtilities {
 
     /// <summary>TODO</summary>
   public static partial class HexBoardExtensions {
-    ///// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
-    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-    //  "CA1011:ConsiderPassingBaseTypesAsParameters")]
-    //public static IPath GetUndirectedPath(this IBoard<IHex> @this, HexCoords start, HexCoords goal) {
-    //  if (@this == null) throw new ArgumentNullException("this");
-    //  return Pathfinder.FindPath(start, goal, @this);
-    //}
-
     /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
     public static IDirectedPath GetDirectedPath(this IBoard<IHex> @this, IHex start, IHex goal) {
       if (@this == null) throw new ArgumentNullException("this");
@@ -222,10 +225,80 @@ namespace PGNapoleonics.HexUtilities {
 
       if (@this.IsPassable(start.Coords) && @this.IsPassable(goal.Coords)) {
         return goal.Coords.Range(start.Coords) > @this.RangeCutoff
-              ? BidirectionalPathfinder.FindDirectedPathFwd(start, goal, @this)
-              : BidirectionalPathfinder.FindDirectedPathFwd(start, goal, @this);
+              ? BidirectionalPathfinder .FindDirectedPathFwd(start, goal, @this)
+              : UnidirectionalPathfinder.FindDirectedPathFwd(start, goal, @this);
       } else
-        return null;
+        return default(IDirectedPath);
+    }
+
+    #pragma warning disable 1998
+    /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal, asynchronously.</c></summary>
+    public static async Task<IDirectedPath> GetDirectedPathAsync(
+      this IBoard<IHex> @this, 
+      IHex start,  IHex goal
+    ) {
+      if (@this == null) throw new ArgumentNullException("this");
+      return @this.GetDirectedPath(start, goal);
+    }
+    #pragma warning restore 1998
+
+    /// <summary>Returns the field-of-view on <c>board</c> from the hex specified by coordinates <c>coords</c>.</summary>
+    [Obsolete("Use GetFieldOfView(HexCoords) instead.")]
+    public static IFov GetFov(this IFovBoard<IHex> @this, HexCoords origin) {
+      return @this.GetFieldOfView(origin);
+    }
+
+    #pragma warning disable 1998
+    /// <summary>TODO</summary>
+    public static async Task<IFov> GetFieldOfViewAsync(this IFovBoard<IHex> @this, HexCoords origin) {
+      return @this.GetFieldOfView(origin);
+    }
+
+    /// <summary>TODO</summary>
+    public static async Task<IFov> GetFieldOfViewAsync(this IFovBoard<IHex> @this, HexCoords origin, FovTargetMode targetMode) {
+      return @this.GetFieldOfView(origin, targetMode);
+    }
+    #pragma warning restore 1998
+    
+    /// <summary>TODO</summary>
+    public static IFov GetFieldOfView(this IFovBoard<IHex> @this, HexCoords origin) {
+      if (@this==null) throw new ArgumentNullException("this");
+      return @this.GetFieldOfView(origin, FovTargetMode.EqualHeights);
+    }
+
+    /// <summary>TODO</summary>
+    public static IFov GetFieldOfView(this IFovBoard<IHex> @this, HexCoords origin, FovTargetMode targetMode) {
+      TraceFlags.FieldOfView.Trace("GetFieldOfView");
+      var fov = new ArrayFieldOfView(@this);
+      if (@this.IsPassable(origin)) {
+        Func<HexCoords,int> target;
+        int               observer;
+        switch (targetMode) {
+          case FovTargetMode.EqualHeights: 
+            observer = @this[origin].ElevationASL + 1;
+            target   = coords => @this[coords].ElevationASL + 1;
+            break;
+          case FovTargetMode.TargetHeightEqualZero:
+            observer = @this[origin].HeightObserver;
+            target   = coords => @this[coords].ElevationASL;
+            break;
+          default:
+          case FovTargetMode.TargetHeightEqualActual:
+            observer = @this[origin].HeightObserver;
+            target   = coords => @this[coords].HeightTarget;
+            break;
+        }
+        ShadowCasting.ShadowCasting.ComputeFieldOfView(
+          origin, 
+          @this.FovRadius, 
+          observer,
+          coords => @this.IsOnboard(coords),
+          target,
+          coords => @this[coords].HeightTerrain,
+          coords => fov[coords] = true
+        );
+      }
+      return fov;
     }
   }
 }

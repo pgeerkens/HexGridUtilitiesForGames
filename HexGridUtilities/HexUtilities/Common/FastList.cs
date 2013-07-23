@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 /// <summary>Joe Duffy's Simple (Fast) List enumerator.</summary>
 namespace PGNapoleonics.HexUtilities.Common.FastIterator {

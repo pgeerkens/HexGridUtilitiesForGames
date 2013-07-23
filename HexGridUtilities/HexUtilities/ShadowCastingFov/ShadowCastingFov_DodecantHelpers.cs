@@ -26,13 +26,9 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-#undef TraceFoV
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 
-using PGNapoleonics;
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.ShadowCasting {
@@ -68,17 +64,5 @@ namespace PGNapoleonics.HexUtilities.ShadowCasting {
       }
       return matrices;
     }
-    #if TraceFoV
-    static void TestMatrices() {
-        var vector_0_1 = new IntVector2D(0,1);
-        var vector_1_2 = new IntVector2D(1,2);
-        for(var dodecant=0; dodecant < matrices.Count; dodecant++) {
-            TraceFlag.FieldOfView.Trace(true,
-              "Dodecant #{0,2} canons:  (0,1) to {1}; (1,2) to {2}", dodecant, 
-                  (vector_0_1 * matrices[dodecant]).ToString(), 
-                  (vector_1_2 * matrices[dodecant]).ToString());
-        }
-      }
-    #endif
   }
 }

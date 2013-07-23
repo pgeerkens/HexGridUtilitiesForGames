@@ -33,11 +33,8 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
-using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
@@ -46,7 +43,7 @@ namespace PGNapoleonics.HexUtilities {
   public interface IMapDisplay {
     /// <summary>TODO</summary>
     Size   GridSize      { get; }
-    /// <summary>TODO</summary>
+    /// <summary>Rectangular extent in pixels of the defined mapboard.</summary>
     Size   MapSizePixels { get; }
     /// <summary>TODO</summary>
     string Name          { get; }
@@ -56,11 +53,11 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>TODO</summary>
     CoordsRectangle GetClipCells(RectangleF visibleClipBounds);
 
-    /// <summary>TODO</summary>
+    /// <summary>Paint the top layer of the display, graphics that changes frequently between refreshes.</summary>
     void  PaintHighlight(Graphics g);
-    /// <summary>TODO</summary>
+    /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
     void  PaintMap(Graphics g);
-    /// <summary>TODO</summary>
+    /// <summary>Paint the intermediate layer of the display, graphics that changes infrequently between refreshes.</summary>
     void  PaintUnits(Graphics g);
   }
 
@@ -79,10 +76,12 @@ namespace PGNapoleonics.HexUtilities {
     }
 
     #region ISupportInitialize implementation
+    /// <inheritdoc/>>
     public virtual void BeginInit() { 
       MapMargin = new System.Drawing.Size(5,5);
       SetScaleList(new List<float>() {1.000F}.AsReadOnly());
     }
+    /// <inheritdoc/>
     public virtual void EndInit() { 
       this.MakeDoubleBuffered(true);
       HotspotHex = HexCoords.EmptyUser;
@@ -109,7 +108,7 @@ namespace PGNapoleonics.HexUtilities {
     } IMapDisplay _host;
 
     /// <summary>TODO</summary>
-    public HexCoords     HotspotHex    { get; private set; }
+    public HexCoords   HotspotHex    { get; private set; }
 
     /// <summary>TODO</summary>
     public bool        IsTransposed  { 
@@ -124,7 +123,7 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>Margin of map in pixels.</summary>
     public Size        MapMargin     { get; private set; }
 
-    /// <summary>Size of map in pixels.</summary>
+    /// <inheritdoc/>
     public Size        MapSizePixels { get {return Host.MapSizePixels + MapMargin.Scale(2);} }
 
     /// <summary>Current scaling factor for map display.</summary>

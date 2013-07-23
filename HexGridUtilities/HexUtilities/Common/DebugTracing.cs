@@ -27,9 +27,11 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+#if DEBUG
 using System.Diagnostics;
 using System.Globalization;
-using System.Runtime.InteropServices;     // For StructLayout, DllImport
+using System.Runtime.InteropServices;
+#endif
 
 namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>TODO</summary>

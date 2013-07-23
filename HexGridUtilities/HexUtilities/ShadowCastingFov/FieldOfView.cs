@@ -28,14 +28,6 @@
 #endregion
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Threading.Tasks;
-
-using PGNapoleonics;
-using PGNapoleonics.HexUtilities;
-using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.ShadowCasting {
   /// <summary>Structure returned by the Field-of-View factory.</summary>

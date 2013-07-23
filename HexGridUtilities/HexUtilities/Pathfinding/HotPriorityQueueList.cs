@@ -31,9 +31,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-
-using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>Heap-On-Top (HOT) Priority Queue implementation.</summary>

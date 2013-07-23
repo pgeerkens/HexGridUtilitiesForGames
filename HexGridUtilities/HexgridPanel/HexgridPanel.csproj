@@ -38,9 +38,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
-    <NoWarn>1607</NoWarn>
+    <DocumentationFile>..\bin\HexgridPanel\bin\Release\HexgridPanel.XML</DocumentationFile>
+    <NoWarn>1607,1587</NoWarn>
     <Prefer32Bit>false</Prefer32Bit>
     <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -102,7 +101,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>HexgridPanel.key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>PGSoftwareSolutions.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
@@ -127,6 +126,7 @@
       <DependentUpon>HexgridPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="MapDisplay.cs" />
+    <Compile Include="MapGridHex.cs" />
     <Compile Include="WinForms\NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WinForms\ExceptionDialog.cs">
@@ -156,10 +156,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="HexgridPanel.key.snk" />
     <None Include="license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="PGSoftwareSolutions.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HexUtilities\HexUtilities.csproj">

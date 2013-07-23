@@ -28,19 +28,34 @@
 #endregion
 using System.Drawing;
 
-using PGNapoleonics.HexUtilities;
+namespace PGNapoleonics.HexUtilities {
+  /// <summary>TODO</summary>
+  public interface IMapGridHex : IHex {
 
-namespace PGNapoleonics.HexGridExample2 {
-  internal interface IMapGridHex : IHex {
-    int              Elevation      { get; }
-    void Paint(Graphics g);
+    /// <summary>TODO</summary>
+    int  Elevation      { get; }
+
+    /// <summary>TODO</summary>
+//    void Paint(Graphics g);
   }
 
-  internal abstract class MapGridHex : Hex, IMapGridHex {
-    protected MapGridHex(IBoard<IHex> board, HexCoords coords) : base(board, coords) { 
+  /// <summary>TODO</summary>
+  public abstract class MapGridHex : Hex, IMapGridHex {
+    /// <summary>TODO</summary>
+    protected MapGridHex(HexBoard<MapGridHex> board, HexCoords coords) : base(board, coords) { 
+      Board = board;
     }
 
-    public virtual  int              Elevation      { get; protected set; }
-    public abstract void Paint(Graphics g);
+    /// <inheritdoc/>
+    new public HexBoard<MapGridHex> Board      { get; set; }
+
+    /// <inheritdoc/>
+    public virtual  int  Elevation      { get; protected set; }
+
+    /// <summary>TODO</summary>
+    protected Size       GridSize       { get { return Board.GridSize; } }
+
+    /// <inheritdoc/>
+    public virtual  void Paint(Graphics g) {;}
   }
 }

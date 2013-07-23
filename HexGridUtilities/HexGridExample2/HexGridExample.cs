@@ -47,7 +47,7 @@ namespace PGNapoleonics.HexGridExample2 {
 
       LoadTraceMenu();
 
-      toolStripComboBox1.SelectedIndex = 0;
+      toolStripComboBox1.SelectedIndex = 1;
       CustomCoords.SetMatrices(new IntMatrix2D(2,0, 0,-2, 0,2*MapBoard.MapSizeHexes.Height-1, 2));
     }
     protected override CreateParams CreateParams { 
@@ -79,10 +79,10 @@ namespace PGNapoleonics.HexGridExample2 {
       menuItemLandmarks.SelectedIndex = 0; 
     }
 
-    MapDisplay          MapBoard { 
+    MapDisplay<MapGridHex>          MapBoard { 
       get {return _mapBoard;}
       set {_mapBoard = value; _mapBoard.RangeCutoff = (int)txtPathCutover.Tag; LoadLandMarkMenu();}
-    } MapDisplay _mapBoard;
+    } MapDisplay<MapGridHex> _mapBoard;
 
     #region Event handlers
     void HexGridExampleForm_Load(object sender, EventArgs e) {
@@ -167,6 +167,7 @@ namespace PGNapoleonics.HexGridExample2 {
       MapBoard.ShowFov     = buttonFieldOfView.Checked;
       MapBoard.FovRadius   =
       MapBoard.RangeCutoff = (int)txtPathCutover.Tag;
+      MapBoard.MapMargin   = hexgridPanel.MapMargin;
       hexgridPanel.Refresh();
     }
 
@@ -184,14 +185,15 @@ namespace PGNapoleonics.HexGridExample2 {
     }
     private void PanelBoard_HotSpotHexChange(object sender, HexEventArgs e) {
       MapBoard.HotspotHex = e.Coords;
-      Refresh();
+//      Refresh();
+      this.hexgridPanel.Refresh();
     }
 
     #region IMessageFilter implementation
     /// <summary>Redirect WM_MouseWheel messages to window under mouse.</summary>
 		/// <remarks>Redirect WM_MouseWheel messages to window under mouse (rather than 
     /// that with focus) with adjusted delta.
-    /// <see cref="http://www.flounder.com/virtual_screen_coordinates.htm"/>
+    /// <a href="http://www.flounder.com/virtual_screen_coordinates.htm">Virtual Screen Coordinates</a>
     /// Dont forget to add this to constructor:
     /// 			Application.AddMessageFilter(this);
     ///</remarks>

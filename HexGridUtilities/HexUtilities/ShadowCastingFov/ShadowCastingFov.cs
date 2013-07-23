@@ -28,19 +28,16 @@
 #endregion
 #undef TraceFoV
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
-using PGNapoleonics;
 using PGNapoleonics.HexUtilities.Common;
 
 /// <summary>Fast efficient <b>Shadow-Casting</b> 
 /// implementation of 3D Field-of-View on a <see cref="Hexgrid"/> map.</summary>
 namespace PGNapoleonics.HexUtilities.ShadowCasting {
   /// <summary>Credit: Eric Lippert</summary>
-  /// <cref>http://blogs.msdn.com/b/ericlippert/archive/2011/12/29/shadowcasting-in-c-part-six.aspx</cref>
+  /// <a href="http://blogs.msdn.com/b/ericlippert/archive/2011/12/29/shadowcasting-in-c-part-six.aspx">Shadow Casting in C# Part Six</a>
   internal static partial class ShadowCasting {
 
     /// <summary></summary>
@@ -76,7 +73,7 @@ namespace PGNapoleonics.HexUtilities.ShadowCasting {
         foreach (var matrix in matrices.Select(m => m*matrixOrigin)) {
           TraceFlags.FieldOfView.Trace(true," - Dodecant: {0}", dodecant++);
       #else
-        Parallel.ForEach (_dodecantMatrices.Select(m => m*matrixOrigin), matrix => {
+        Parallel.ForEach(_dodecantMatrices.Select(m => m*matrixOrigin), matrix => {
       #endif
           ComputeFieldOfViewInDodecantZero(
             radius,
@@ -143,7 +140,7 @@ namespace PGNapoleonics.HexUtilities.ShadowCasting {
     /// (2) computes which portions of the following column are in the field of view, 
     ///     queueing them for later processing. 
     ///
-    /// This algorithm is <quote>center-to-center</quote>; a more sophisticated algorithm 
+    /// This algorithm is "center-to-center"; a more sophisticated algorithm 
     /// would say that a cell is visible if there is *any* straight line segment that 
     /// passes through *any* portion of the origin cell and any portion of the target 
     /// cell, passing through only transparent cells along the way. This is the 

@@ -33,9 +33,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace PGNapoleonics.HexUtilities.Common {
-  /// <summary>Abstract specification and implementation of the <c>BoardStorage</c> required by <c>HexBoard</c>.</summary>
-  /// <typeparam name="THex">The type of the hex being stored.</typeparam>
-  public abstract class BoardStorage<THex> : IDisposable {
+  /// <summary>Abstract specification and partial implementation of the <c>BoardStorage</c> required by <c>HexBoard</c>.</summary>
+  /// <typeparam name="T">The type of the information being stored.</typeparam>
+  public abstract class BoardStorage<T> : IDisposable {
     /// <summary>Initializes a new instance with the specified hex extent.</summary>
     /// <param name="sizeHexes"></param>
     protected BoardStorage(Size sizeHexes) {
@@ -48,7 +48,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>Returns the <c>THex</c> instance at the specified coordinates.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
       "CA1043:UseIntegralOrStringArgumentForIndexers")]
-    public abstract THex this[HexCoords coords] { get; internal set; }
+    public abstract T this[HexCoords coords] { get; internal set; }
 
     /// <summary>Returns whether the hex with <see cref="HexCoords"/> <c>coords</c> is 
     /// within the extent of the board.</summary>
@@ -57,11 +57,17 @@ namespace PGNapoleonics.HexUtilities.Common {
           && 0<=coords.User.Y && coords.User.Y < MapSizeHexes.Height;
     }
 
-    /// <summary>Performs the specified <c>action</c> serially on all hexes.</summary>
-    public abstract void ForEach(Action<THex> action);
+    /// <summary>Perform the specified <c>action</c> serially on all hexes.</summary>
+    public abstract void ForEach(Action<T> action);
 
-    /// <summary>Performs the specified <c>action</c> in parallel on all hexes.</summary>
-    public abstract void ParallelForEach(Action<THex> action);
+    /// <summary>Perform the specified <c>action</c> serially on all hexes satisfying <paramref name="predicate"/>/>.</summary>
+    public abstract void ForEach(Func<T,bool> predicate, Action<T> action);
+
+    /// <summary>Perform the specified <c>action</c> in parallel on all hexes.</summary>
+    public abstract void ParallelForEach(Action<T> action);
+
+    /// <summary>Perform the specified <c>action</c> in parallel on all hexes satisfying <paramref name="predicate"/>.</summary>
+    public abstract void ParallelForEach(Func<T,bool> predicate, Action<T> action);
 
     #region IDisposable implementation with Finalizeer
     bool _isDisposed = false;
@@ -82,22 +88,22 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>A row-major <c>BoardStorage</c> implementation optimized for small maps.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
       "CA1034:NestedTypesShouldNotBeVisible")]
-    public sealed class FlatBoardStorage : BoardStorage<THex> {
+    public sealed class FlatBoardStorage : BoardStorage<T> {
     /// <summary>TODO</summary>
-      public FlatBoardStorage(Size sizeHexes, Func<HexCoords,THex> initializer) 
+      public FlatBoardStorage(Size sizeHexes, Func<HexCoords,T> initializer) 
         : base (sizeHexes) {
         if (initializer==null) throw new ArgumentNullException("initializer");
-        backingStore  = new List<List<THex>>(MapSizeHexes.Height);
+        backingStore  = new List<List<T>>(MapSizeHexes.Height);
   #if DEBUG
         for(var y=0; y< sizeHexes.Height; y++) {
-          backingStore.Add(new List<THex>(MapSizeHexes.Width));
+          backingStore.Add(new List<T>(MapSizeHexes.Width));
           for(var x=0; x<MapSizeHexes.Width; x++) {
             backingStore[y].Add(initializer(HexCoords.NewUserCoords(x,y)));
           }
         }
   #else
         for(var y = 0;  y < backingStore.Capacity;  y++) {
-          backingStore.Add(new List<THex>(MapSizeHexes.Width));
+          backingStore.Add(new List<T>(MapSizeHexes.Width));
         }
         Parallel.For(0, backingStore.Capacity, y => {
           var boardRow    = backingStore[y];
@@ -109,11 +115,11 @@ namespace PGNapoleonics.HexUtilities.Common {
 
       }
 
-      /// <summary>TODO</summary>
-      public override THex this[HexCoords coords] { 
+      /// <inheritdoc/>>
+      public override T this[HexCoords coords] { 
         get { 
           return IsOnboard(coords) ? backingStore[coords.User.Y][coords.User.X] 
-                                   : default(THex);
+                                   : default(T);
         }
         internal set {
           if (IsOnboard(coords))
@@ -122,38 +128,50 @@ namespace PGNapoleonics.HexUtilities.Common {
       }
 
       /// <inheritdoc/>
-      public override void ForEach(Action<THex> action) {
+      public override void ForEach(Action<T> action) {
         if (action==null) throw new ArgumentNullException("action");
         foreach(var hex in backingStore.SelectMany(lh=>lh)) action(hex);
       }
 
       /// <inheritdoc/>
-      public override void ParallelForEach(Action<THex> action) {
-        Parallel.ForEach<THex>(backingStore.SelectMany(lh=>lh), hex=>action(hex));
+      public override void ForEach(Func<T,bool> predicate, Action<T> action) {
+        if (action==null) throw new ArgumentNullException("action");
+        foreach(var hex in backingStore.SelectMany(lh=>lh).Where(lh=>predicate(lh))) action(hex);
       }
 
-      private List<List<THex>> backingStore { get; set; }
+      /// <inheritdoc/>
+      public override void ParallelForEach(Action<T> action) {
+        if (action==null) throw new ArgumentNullException("action");
+        Parallel.ForEach<T>(backingStore.SelectMany(lh=>lh), hex=>action(hex));
+      }
+      /// <inheritdoc/>
+      public override void ParallelForEach(Func<T,bool> predicate, Action<T> action) {
+        if (action==null) throw new ArgumentNullException("action");
+        Parallel.ForEach<T>(backingStore.SelectMany(lh=>lh).Where(lh=>predicate(lh)), hex=>action(hex));
+      }
+
+      private List<List<T>> backingStore { get; set; }
     }
 
     /// <summary>A <c>BoardStorage</c> implementation optimized for large maps by blocking 
-    /// 32 x 32 arrays of hexes for improved caching.</summary>
+    /// 32 x 32 arrays of hexes for improved memory caching.</summary>
     /// <remarks>This <c>BoardStorage</c> implementation stores the board cells in blocks
     /// that are 32 x 32 cells to provide better localization for the Path-Finding and
     /// Field-of-View algorithms.</remarks>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
       "CA1034:NestedTypesShouldNotBeVisible"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "x")]
-    public sealed class BlockedBoardStorage32x32 : BoardStorage<THex> {
+    public sealed class BlockedBoardStorage32x32 : BoardStorage<T> {
       const int _grouping = 32;
       const int _buffer   = _grouping - 1;
 
       /// <summary>TODO</summary>
-      public BlockedBoardStorage32x32(Size sizeHexes, Func<HexCoords,THex> initializer) 
+      public BlockedBoardStorage32x32(Size sizeHexes, Func<HexCoords,T> initializer) 
         : base (sizeHexes) {
-        backingStore  = new List<List<List<THex>>>((MapSizeHexes.Height+_buffer) / _grouping);
+        backingStore  = new List<List<List<T>>>((MapSizeHexes.Height+_buffer) / _grouping);
         for(var y = 0;  y < backingStore.Capacity;  y++) {
-          backingStore.Add(new List<List<THex>>((MapSizeHexes.Width+_buffer) / _grouping));
+          backingStore.Add(new List<List<T>>((MapSizeHexes.Width+_buffer) / _grouping));
           for(var x = 0; x < backingStore[y].Capacity; x++) {
-            backingStore[y].Add(new List<THex>(_grouping*_grouping));
+            backingStore[y].Add(new List<T>(_grouping*_grouping));
           }
         }
 
@@ -164,22 +182,22 @@ namespace PGNapoleonics.HexUtilities.Common {
             for (var i=0; i<_grouping; i++) {
               for (var j=0; j<_grouping; j++) {
                 var coords = HexCoords.NewUserCoords(x*_grouping+j,y*_grouping+i);
-                boardCell.Add(IsOnboard(coords) ? initializer(coords) : default(THex));
+                boardCell.Add(IsOnboard(coords) ? initializer(coords) : default(T));
               }
             }
           }
         } );
       }
 
-      /// <summary>TODO</summary>
-      public override THex this[HexCoords coords] { 
+      /// <inheritdoc/>>
+      public override T this[HexCoords coords] { 
         get { 
           var v = coords.User;
           return IsOnboard(coords) 
             ? backingStore [v.Y/_grouping]
                            [v.X/_grouping]
                            [(v.Y % _grouping) * _grouping + v.X % _grouping]
-            : default(THex);
+            : default(T);
         }
         internal set {
           var v = coords.User;
@@ -190,20 +208,37 @@ namespace PGNapoleonics.HexUtilities.Common {
       }
 
       /// <inheritdoc/>
-      public override void ForEach(Action<THex> action) {
+      public override void ForEach(Action<T> action) {
         if (action==null) throw new ArgumentNullException("action");
         foreach(var hex in backingStore.SelectMany(lh=>lh).SelectMany(lh=>lh)) action(hex);
       }
 
-      /// <summary>TODO</summary>
-      public override void ParallelForEach(Action<THex> action) {
-        Parallel.ForEach<THex>(
+      /// <inheritdoc/>>
+      public override void ForEach(Func<T,bool> predicate, Action<T> action) {
+        if (action==null) throw new ArgumentNullException("action");
+        foreach(var hex in backingStore.SelectMany(lh=>lh).SelectMany(lh=>lh)
+                                       .Where(lh=>predicate(lh))) action(hex);
+      }
+
+      /// <inheritdoc/>>
+      public override void ParallelForEach(Action<T> action) {
+        if (action==null) throw new ArgumentNullException("action");
+        Parallel.ForEach<T>(
           backingStore.SelectMany(lh=>lh).SelectMany(lh=>lh).Where(h=>h!=null), 
           hex => action(hex)
         );
       }
 
-      List<List<List<THex>>> backingStore { get; set; }
+      /// <inheritdoc/>>
+      public override void ParallelForEach(Func<T,bool> predicate, Action<T> action) {
+        if (action==null) throw new ArgumentNullException("action");
+        Parallel.ForEach<T>(
+          backingStore.SelectMany(lh=>lh).SelectMany(lh=>lh).Where(h=>h!=null && predicate(h)), 
+          hex => action(hex)
+        );
+      }
+
+      List<List<List<T>>> backingStore { get; set; }
     }
   }
 }

@@ -27,16 +27,11 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Forms;
 
-using PGNapoleonics;
-
 namespace PGNapoleonics.WinForms {
+  /// <summary>TODO</summary>
   public static partial class WinFormsExtensions {
     /// <summary>Reflect to set Double-Buffering on Control.</summary>
     /// <param name="control">Control to operate on.</param>

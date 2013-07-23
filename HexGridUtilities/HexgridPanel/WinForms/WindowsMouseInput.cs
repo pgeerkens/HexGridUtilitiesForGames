@@ -27,10 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace  PGNapoleonics.WinForms {
 	/// <summary>Enumeration for buttons and modifiers in Windows Mouse messages.</summary>
@@ -54,13 +51,17 @@ namespace  PGNapoleonics.WinForms {
 		XButton2	= 0x40
 	}
 
+  /// <summary>TODO</summary>
 	public static class WindowsMouseInput {
+    /// <summary>TODO</summary>
 		public static MouseKeys GetKeyStateWParam(IntPtr wParam) {
 			return (MouseKeys)(wParam.ToInt64() & 0x0000ffff);
 		}
+    /// <summary>TODO</summary>
 		public static Int16 WheelDelta(IntPtr wParam) {
 			return (Int16)(wParam.ToInt64() >> 16);
 		}
+    /// <summary>TODO</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "WParam"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Param")]
     public static IntPtr WParam (Int16 wheelDelta, MouseKeys mouseKeys) {
 			return IntPtr.Zero + (wheelDelta << 16) + (Int16)mouseKeys;
@@ -74,6 +75,7 @@ namespace  PGNapoleonics.WinForms {
 					 (int)(short)(lParam.ToInt64() >> 16)
 				);
 		}
+    /// <summary>TODO</summary>
 		public static IntPtr LParam(Point point) {
 			if (point.X<Int16.MinValue || point.X > Int16.MaxValue
       ||  point.Y<Int16.MinValue || point.Y > Int16.MaxValue)

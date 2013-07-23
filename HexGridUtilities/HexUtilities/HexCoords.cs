@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 
 using PGNapoleonics.HexUtilities.Common;
 
@@ -47,7 +46,7 @@ namespace PGNapoleonics.HexUtilities {
   /// demand (and caching the result).
   /// </remarks>
   [DebuggerDisplay("User: {User}")]
-  public struct HexCoords : IEquatable<HexCoords>, IEqualityComparer<HexCoords> {
+  public struct HexCoords : IEquatable<HexCoords> {
     #region static members
     /// <summary>TODO</summary>
     public static HexCoords EmptyCanon { get { return _EmptyCanon; } }
@@ -116,8 +115,6 @@ namespace PGNapoleonics.HexUtilities {
       for (var hexside=0; hexside<HexsideVectors.Length; hexside++)
         yield return new NeighbourCoords(NewCanonCoords(Canon + HexsideVectors[hexside]),
                                         (Hexside)hexside); 
-      //foreach (var hexside in HexExtensions.HexsideList)
-      //  yield return new NeighbourCoords(GetNeighbour(hexside), hexside);
     }
 
     ///<summary>Returns set of hexes at direction(s) specified by <c>hexsides</c>, as IEnumerable.</summary>
@@ -152,12 +149,6 @@ namespace PGNapoleonics.HexUtilities {
     public static bool operator != (HexCoords lhs, HexCoords rhs) { return ! (lhs==rhs); }
     /// <inheritdoc/>
     public static bool operator == (HexCoords lhs, HexCoords rhs) { return lhs.User == rhs.User; }
-
-    /// <inheritdoc/>
-    bool IEqualityComparer<HexCoords>.Equals(HexCoords lhs, HexCoords rhs) { return lhs.User == rhs.User; }
-
-    /// <inheritdoc/>
-    int  IEqualityComparer<HexCoords>.GetHashCode(HexCoords coords) { return coords.GetHashCode(); }
     #endregion
   } 
 }
