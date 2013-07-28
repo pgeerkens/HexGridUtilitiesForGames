@@ -79,7 +79,8 @@ namespace PGNapoleonics.HexUtilities {
     /// <inheritdoc/>>
     public virtual void BeginInit() { 
       MapMargin = new System.Drawing.Size(5,5);
-      SetScaleList(new List<float>() {1.000F}.AsReadOnly());
+      //SetScaleList(new List<float>() {1.000F}.AsReadOnly());
+      Scales = new List<float>() {1.000F}.AsReadOnly();
     }
     /// <inheritdoc/>
     public virtual void EndInit() { 
@@ -130,7 +131,7 @@ namespace PGNapoleonics.HexUtilities {
     public float       MapScale      { get { return Scales[ScaleIndex]; } }
 
     /// <summary>Returns <code>HexCoords</code> of the hex closest to the center of the current viewport.</summary>
-    public HexCoords PanelCenterHex    { 
+    public HexCoords PanelCenterHex  { 
       get { return GetHexCoords( Location + Size.Round(ClientSize.Scale(0.50F)) ); }
     }
 
@@ -145,14 +146,11 @@ namespace PGNapoleonics.HexUtilities {
       } 
     } int _scaleIndex;
 
-    /// <summary>Array of supported map scales (float).</summary>
-    public ReadOnlyCollection<float>     Scales        { 
-      get {return _scales;}
-    } ReadOnlyCollection<float> _scales;
-    /// <summary>TODO</summary>
-    public void SetScaleList(ReadOnlyCollection<float> scales) {
-      _scales = scales; if (_scaleIndex!=0) ScaleIndex = _scaleIndex;
-    }
+    /// <summary>Array of supported map scales  as IList&lt;float&gt;.</summary>
+    public ReadOnlyCollection<float>     Scales        { get; set; }
+    /// <summary>Set property Scales (array of supported map scales as IList&lt;float&gt;.</summary>
+    [Obsolete("Use Property Setter 'Scales' instead.")]
+    public void SetScaleList(ReadOnlyCollection<float> scales) { Scales = scales; }
 
     /// <summary>Set ScrollBar increments and bounds from map dimensions.</summary>
     public virtual void SetScroll() {
@@ -223,6 +221,7 @@ namespace PGNapoleonics.HexUtilities {
       base.OnPaint(e);
       if(IsHandleCreated)    PaintPanel(e.Graphics);
     }
+    static readonly Matrix TransposeMatrix = new Matrix(0F,1F, 1F,0F, 0F,0F);
     /// <summary>TODO</summary>
     protected virtual void PaintPanel(Graphics g) {
       if (g==null) throw new ArgumentNullException("g");
@@ -232,7 +231,7 @@ namespace PGNapoleonics.HexUtilities {
       g.Clear(Color.White);
       g.DrawRectangle(Pens.Black, ClientRectangle);
 
-      if (IsTransposed) { g.Transform = new Matrix(0F,1F, 1F,0F, 0F,0F); }
+      if (IsTransposed) { g.Transform = TransposeMatrix; }
       g.TranslateTransform(scroll.X, scroll.Y);
       g.ScaleTransform(MapScale,MapScale);
 
@@ -240,11 +239,11 @@ namespace PGNapoleonics.HexUtilities {
       g.DrawImageUnscaled(MapBuffer, Point.Empty);
 
       g.Restore(state); state = g.Save();
-      g.TranslateTransform(MapMargin.Width, MapMargin.Height);
+//      g.TranslateTransform(MapMargin.Width, MapMargin.Height);
       Host.PaintUnits(g);
 
       g.Restore(state); state = g.Save();
-      g.TranslateTransform(MapMargin.Width, MapMargin.Height);
+//      g.TranslateTransform(MapMargin.Width, MapMargin.Height);
       Host.PaintHighlight(g);
     }
     #endregion

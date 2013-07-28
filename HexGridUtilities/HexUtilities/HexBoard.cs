@@ -231,16 +231,16 @@ namespace PGNapoleonics.HexUtilities {
         return default(IDirectedPath);
     }
 
-    #pragma warning disable 1998
-    /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal, asynchronously.</c></summary>
-    public static async Task<IDirectedPath> GetDirectedPathAsync(
+    /// <summary>Asynchronously returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
+    public static Task<IDirectedPath> GetDirectedPathAsync(
       this IBoard<IHex> @this, 
       IHex start,  IHex goal
     ) {
       if (@this == null) throw new ArgumentNullException("this");
-      return @this.GetDirectedPath(start, goal);
+      return Task.Run<IDirectedPath>(
+          () => @this.GetDirectedPath(start, goal)
+      );
     }
-    #pragma warning restore 1998
 
     /// <summary>Returns the field-of-view on <c>board</c> from the hex specified by coordinates <c>coords</c>.</summary>
     [Obsolete("Use GetFieldOfView(HexCoords) instead.")]
@@ -248,17 +248,17 @@ namespace PGNapoleonics.HexUtilities {
       return @this.GetFieldOfView(origin);
     }
 
-    #pragma warning disable 1998
     /// <summary>TODO</summary>
-    public static async Task<IFov> GetFieldOfViewAsync(this IFovBoard<IHex> @this, HexCoords origin) {
-      return @this.GetFieldOfView(origin);
+    public static Task<IFov> GetFieldOfViewAsync(this IFovBoard<IHex> @this, HexCoords origin) {
+      return @this.GetFieldOfViewAsync(origin, FovTargetMode.EqualHeights);
     }
 
     /// <summary>TODO</summary>
-    public static async Task<IFov> GetFieldOfViewAsync(this IFovBoard<IHex> @this, HexCoords origin, FovTargetMode targetMode) {
-      return @this.GetFieldOfView(origin, targetMode);
+    public static Task<IFov> GetFieldOfViewAsync(this IFovBoard<IHex> @this, HexCoords origin, FovTargetMode targetMode) {
+      return Task.Run<IFov>(
+        () => @this.GetFieldOfView(origin, targetMode)
+      );
     }
-    #pragma warning restore 1998
     
     /// <summary>TODO</summary>
     public static IFov GetFieldOfView(this IFovBoard<IHex> @this, HexCoords origin) {

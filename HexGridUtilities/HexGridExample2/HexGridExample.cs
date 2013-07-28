@@ -86,7 +86,8 @@ namespace PGNapoleonics.HexGridExample2 {
 
     #region Event handlers
     void HexGridExampleForm_Load(object sender, EventArgs e) {
-      hexgridPanel.SetScaleList(new List<float>() {0.707F,  0.841F, 1.000F, 1.189F, 1.414F}.AsReadOnly());
+      //hexgridPanel.SetScaleList(new List<float>() {0.707F,  0.841F, 1.000F, 1.189F, 1.414F}.AsReadOnly());
+      hexgridPanel.Scales = new List<float>() {0.707F,  0.841F, 1.000F, 1.189F, 1.414F}.AsReadOnly();
       hexgridPanel.ScaleIndex = hexgridPanel.Scales
                               .Select((f,i) => new {value=f, index=i})
                               .Where(s => s.value==1.0F)

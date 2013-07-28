@@ -28,6 +28,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 using PGNapoleonics.HexUtilities.Common;
@@ -102,9 +103,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       return pathHalves;
     }
 
-    /// <summary><c>Static Hexside[]></c> for enumerations.</summary>
-    static readonly List<Hexside> Hexsides = Utilities.EnumGetValues<Hexside>().ToList();
-
     /// <summary>TODO</summary>
     /// <param name="vectorGoal"></param>
     /// <param name="vectorHex"></param>
@@ -151,8 +149,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         &&  path.TotalCost + Partner.FrontierMinimum() - Partner.Heuristic(coords) 
                          < _getBestSoFar()
         ) {
-          for (var index = 0; index < Hexsides.Count; index++) {
-            ExpandHex(path, Hexsides[index]);
+          var hexsides = HexsideExtensions.HexsideList;
+          for (var index = 0; index < hexsides.Count; index++) {
+            ExpandHex(path, hexsides[index]);
           }
         }
         _closed.Add(coords);

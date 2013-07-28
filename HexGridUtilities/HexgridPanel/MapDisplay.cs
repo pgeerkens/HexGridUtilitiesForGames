@@ -145,26 +145,27 @@ namespace PGNapoleonics.HexUtilities {
     /// <inheritdoc/>>
     public    virtual  void PaintHighlight(Graphics g) { 
       if (g==null) throw new ArgumentNullException("g");
-      var state = g.Save();
+      var container = g.BeginContainer();
       TranslateGraphicsToHex(g, StartHex);
       g.DrawPath(Pens.Red, HexgridPath);
 
-      g.Restore(state); state = g.Save();
+      g.EndContainer(container); container = g.BeginContainer();
       PaintPath(g,Path);
 
-      g.Restore(state); state = g.Save();
+      g.EndContainer(container); container = g.BeginContainer();
       var clipHexes  = GetClipInHexes(g.VisibleClipBounds);
-      var location   = new Point(GridSize.Width*2/3, GridSize.Height/2);
 
-      var textOffset = new Point(GridSize.Width/2 - 6, GridSize.Height/2 - 6);
       using(var shadeBrush = new SolidBrush(Color.FromArgb(ShadeBrushAlpha, ShadeBrushColor))) {
-        var font  = SystemFonts.MenuFont;
-        var brush = Brushes.Black;
         PaintForEachHex(g, clipHexes, coords => {
           if (ShowFov && Fov!=null && ! Fov[coords]) { g.FillPath(shadeBrush, HexgridPath);  }
 
-          if (LandmarkToShow != -1 )
+          if (LandmarkToShow != -1 ) {
+            var font       = SystemFonts.MenuFont;
+            var brush      = Brushes.Black;
+            var textOffset = new Point(GridSize.Scale(0.50F).ToSize() 
+                           - new SizeF(font.Size,font.Size).Scale(0.8F).ToSize());
             g.DrawString(LandmarkText(coords,LandmarkToShow), font, brush, textOffset);
+          }
         } );
       }
     }

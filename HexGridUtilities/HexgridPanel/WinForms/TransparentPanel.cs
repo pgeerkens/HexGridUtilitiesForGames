@@ -61,8 +61,8 @@ namespace  PGNapoleonics.WinForms {
 		public virtual void Invalidate2() { 
 			Invalidate2(new Rectangle(this.Location,this.Size));
 		} 
-		///<summary>Invalidates the entire surface of the control and causes the control to be redrawn.</summary>
-		/// <param name="rectangle">Clipping <c>Rectangle</c> to be invalidated.</param>
+    /// <summary>Invalidates the entire surface of the control and causes the control to be redrawn.</summary>
+    /// <param name="rectangle">Clipping <c>Rectangle</c> to be invalidated.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", 
       "CA1300:SpecifyMessageBoxOptions")]
     public virtual void Invalidate2(Rectangle rectangle) { 

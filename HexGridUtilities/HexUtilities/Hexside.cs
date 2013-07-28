@@ -72,9 +72,7 @@ namespace PGNapoleonics.HexUtilities {
   /// <summary>Common <i>extension methods</i> for <c>Hexside</c> and <c>HexSideFlags</c>.</summary>
   public static partial class HexsideExtensions {
     /// <summary><c>Static List&lt;Hexside></c> for enumerations.</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", 
-      "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-    public static readonly IEnumerable<Hexside> HexsideList 
+    public static readonly ReadOnlyCollection<Hexside> HexsideList 
       = Utilities.EnumGetValues<Hexside>().ToList().AsReadOnly();
       
     internal static readonly ReadOnlyCollection<HexsideFlags> HexsideFlags
@@ -84,8 +82,6 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>Static List&lt;HexSideFlags> for enumerations.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
       "CA1726:UsePreferredTerms", MessageId = "Flags")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", 
-      "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
     public static readonly IEnumerable<HexsideFlags> HexsideFlagsCollection = HexsideFlags;
 
     /// <summary>The <c>Hexside</c> corresponding to this <c>HexsideFlag</c>, or -1 if it doesn't exist.</summary>
