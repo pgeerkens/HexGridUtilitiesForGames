@@ -63,16 +63,10 @@ namespace PGNapoleonics.HexGridExample2 {
       get { return _hotSpotHex; }
       set { _hotSpotHex = value; Fov = null; }
     } HexCoords _hotSpotHex = HexCoords.EmptyUser;
-#if PathFwd
     public          IDirectedPath Path       { 
       get { return _path ?? ( IsPassable(StartHex) && IsPassable(GoalHex) 
                           ? (_path = this.GetDirectedPath(this[StartHex], this[GoalHex])) : null); } 
     } IDirectedPath _path;
-#else
-    public          IPath     Path       { 
-      get {return _path ?? (_path = this.GetPath(StartHex, GoalHex));} 
-    } IPath _path;
-#endif
     public virtual  HexCoords StartHex       { 
       get { return _startHex; } // ?? (_startHex = HexCoords.EmptyUser); } 
       set { if (IsOnboard(value)) _startHex = value; _path = null; } 
@@ -128,6 +122,7 @@ namespace PGNapoleonics.HexGridExample2 {
       g.TranslateTransform(MapMargin.Width + clipCells.Right*GridSize.Width, MapMargin.Height);
 
       var textOffset = new Point(GridSize.Width/2 - 6, GridSize.Height/2 - 6);
+      var font       = SystemFonts.MenuFont;
       using(var shadeBrush = new SolidBrush(Color.FromArgb(78,Color.Black))) {
         for (int x=clipCells.Right; x-->clipCells.Left; ) {
           g.TranslateTransform(-GridSize.Width, 0);
@@ -137,7 +132,7 @@ namespace PGNapoleonics.HexGridExample2 {
             var coords = HexCoords.NewUserCoords(x,y);
             if (ShowFov && Fov!=null && ! Fov[coords]) { g.FillPath(shadeBrush, HexgridPath);  }
 
-            g.DrawString(HexText(x,y,LandmarkToShow), SystemFonts.MenuFont, Brushes.Black, textOffset);
+            g.DrawString(HexText(x,y,LandmarkToShow), font, Brushes.Black, textOffset);
 
             g.TranslateTransform(0,GridSize.Height);
           }
