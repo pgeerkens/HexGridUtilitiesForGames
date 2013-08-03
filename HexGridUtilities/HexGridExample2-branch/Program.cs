@@ -27,13 +27,13 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
 using PGNapoleonics.WinForms;
 
-/// <summary>Example usage of <see cref="HexUtilities"/> with <see cref="HexUtilities.HexgridPanel"/> 
-/// in a simple <see cref="WinForms"/> application.</summary>
 namespace PGNapoleonics.HexGridExample2 {
   static class Program {
     /// <summary>The main entry point for the application.</summary>

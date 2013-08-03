@@ -47,26 +47,47 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       IBoard<IHex> board, 
       IList<HexCoords> landmarkCoords
     ) {
-      if (board==null)  throw new ArgumentNullException("board");
       if (landmarkCoords==null) throw new ArgumentNullException("landmarkCoords");
 
       var list = new List<Landmark>(landmarkCoords.Count);
 
-      for (var i=0; i<landmarkCoords.Count; i++) list.Add(null);
+      for (var i=0; i<landmarkCoords.Count; i++) 
+        list.Add(new Landmark(landmarkCoords[i], null));
 
-      Parallel.For(0, landmarkCoords.Count, i => {
-        Landmark tempLandmark = null;
-        try {
-          tempLandmark = new Landmark(landmarkCoords[i],board);
-          list[i]      = tempLandmark;
-          tempLandmark = null;
-        } finally { if (tempLandmark!=null) tempLandmark.Dispose(); }
-      } );
+      var landmarks = new LandmarkCollection(list);
+      if (board != null) landmarks.ResetLandmarks(board);
 
-      return new LandmarkCollection(list);
+      return landmarks;
     }
 
     LandmarkCollection(List<Landmark> list) : base(list) {}
+
+    #region IDisposable implementation with Finalizer
+    bool _isDisposed = false;
+    /// <inheritdoc/>
+    public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
+    void Dispose(bool disposing) {
+      if (!_isDisposed) {
+        if (disposing) {
+          for(var i = this.Count;  i-->0; ) if(this[i]!=null) this[i].Dispose();
+        }
+        _isDisposed = true;
+      }
+    }
+    /// <summary>TODO</summary>
+    ~LandmarkCollection() { Dispose(false); }
+    #endregion
+  }
+  /// <summary>TODO</summary>
+  public static class LandmarkCollectionExtensions {
+    /// <summary>(Re)calculates distances for all landmarks using the provided IBoard&lt;IHex&gt; definition.</summary>
+    /// <param name="this">The </param>
+    /// <param name="board">The </param>
+    public static void ResetLandmarks(this LandmarkCollection @this, IBoard<IHex> board) {
+      if (board==null)  throw new ArgumentNullException("board");
+
+      Parallel.For(0, @this.Count, i => @this[i].FillLandmark(board) );
+    }
   }
 
   /// <summary>A board location storing shortest-path distances to every board hex.</summary>
@@ -78,10 +99,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <param name="board">IBoard{IHex} on which the landmark is to be created.</param>
     /// <param name="coords">Coordinates on <c>board</c> where this landmark is to be created.</param>
     public Landmark(HexCoords coords, IBoard<IHex> board) {
-      if (board == null) throw new ArgumentNullException("board"); 
-
-      Coords       = coords;
-      backingStore = new BoardStorage<short>.BlockedBoardStorage32x32(board.MapSizeHexes, c => -1);
+      Coords = coords;
       FillLandmark(board);
     }
 
@@ -93,27 +111,31 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     BoardStorage<short> backingStore;
 
-    void FillLandmark(IBoard<IHex> board) {
-      var start  = board[Coords];
-      var queue  = DictionaryPriorityQueue<int, IHex>.NewQueue();
-      TraceFlags.FindPathDetail.Trace(true, "Find distances from {0}", start.Coords);
+    internal void FillLandmark(IBoard<IHex> board) {
+      if (board != null) {
+        backingStore = new BoardStorage<short>.BlockedBoardStorage32x32(board.MapSizeHexes, c => -1);
 
-      queue.Enqueue (0, start);
+        var start  = board[Coords];
+        var queue  = DictionaryPriorityQueue<int, IHex>.NewQueue();
+        TraceFlags.FindPathDetail.Trace(true, "Find distances from {0}", start.Coords);
 
-      HexKeyValuePair<int,IHex> item;
-      while (queue.TryDequeue(out item)) {
-        var here = item.Value;
-        var key  = item.Key;
-        if( backingStore[here.Coords] > 0 ) continue;
+        queue.Enqueue (0, start);
 
-        TraceFlags.FindPathDetail.Trace("Dequeue Path at {0} w/ cost={1,4}.", here, key);
-        backingStore[here.Coords] = (short)key;
+        HexKeyValuePair<int,IHex> item;
+        while (queue.TryDequeue(out item)) {
+          var here = item.Value;
+          var key  = item.Key;
+          if( backingStore[here.Coords] > 0 ) continue;
 
-        foreach (var there in here.GetAllNeighbours().Where(n => n!=null && n.Hex.IsOnboard())) {
-          var cost = board.DirectedStepCost(here, there.HexsideEntry);
-          if (cost > 0  &&  backingStore[there.Hex.Coords] == -1) {
-            TraceFlags.FindPathDetail.Trace("   Enqueue {0}: {1,4}", there.Hex.Coords, cost);
-            queue.Enqueue(key + cost, there.Hex);
+          TraceFlags.FindPathDetail.Trace("Dequeue Path at {0} w/ cost={1,4}.", here, key);
+          backingStore[here.Coords] = (short)key;
+
+          foreach (var there in here.GetAllNeighbours().Where(n => n!=null && n.Hex.IsOnboard())) {
+            var cost = board.DirectedStepCost(here, there.HexsideEntry);
+            if (cost > 0  &&  backingStore[there.Hex.Coords] == -1) {
+              TraceFlags.FindPathDetail.Trace("   Enqueue {0}: {1,4}", there.Hex.Coords, cost);
+              queue.Enqueue(key + cost, there.Hex);
+            }
           }
         }
       }

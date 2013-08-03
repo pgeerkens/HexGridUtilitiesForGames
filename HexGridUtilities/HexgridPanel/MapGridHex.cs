@@ -26,34 +26,32 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
+using System;
 using System.Drawing;
 
-namespace PGNapoleonics.HexUtilities {
-  /// <summary>TODO</summary>
+using PGNapoleonics.HexUtilities;
+
+namespace PGNapoleonics.HexgridPanel {
+  /// <summary>Deprecated; use interface IHex or abstract class MapGridHex instead.</summary>
+//  [Obsolete("Use interface IHex or abstract class MapGridHex instead.")]
   public interface IMapGridHex : IHex {
-
-    /// <summary>TODO</summary>
-    int  Elevation      { get; }
-
-    /// <summary>TODO</summary>
-//    void Paint(Graphics g);
+    /// <summary></summary>
+    new HexBoard<MapGridHex> Board      { get; set; }
   }
 
   /// <summary>TODO</summary>
   public abstract class MapGridHex : Hex, IMapGridHex {
     /// <summary>TODO</summary>
     protected MapGridHex(HexBoard<MapGridHex> board, HexCoords coords) : base(board, coords) { 
-      Board = board;
+      ((IMapGridHex)this).Board = board;
     }
 
     /// <inheritdoc/>
     new public HexBoard<MapGridHex> Board      { get; set; }
-
-    /// <inheritdoc/>
-    public virtual  int  Elevation      { get; protected set; }
+//    HexBoard<MapGridHex> IMapGridHex.Board      { get; set; }
 
     /// <summary>TODO</summary>
-    protected Size       GridSize       { get { return Board.GridSize; } }
+    protected  Size                 GridSize   { get { return Board.GridSize; } }
 
     /// <inheritdoc/>
     public virtual  void Paint(Graphics g) {;}

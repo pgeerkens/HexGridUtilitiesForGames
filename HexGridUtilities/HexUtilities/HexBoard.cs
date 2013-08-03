@@ -108,6 +108,14 @@ namespace PGNapoleonics.HexUtilities {
     public virtual  int  FovRadius      { get; set; }
 
     /// <inheritdoc/>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
+      "CA2227:CollectionPropertiesShouldBeReadOnly")]
+    public LandmarkCollection Landmarks { 
+      get { return _landmarks; }
+      protected set { if (_landmarks!=null) _landmarks.Dispose();  _landmarks = value; }
+    } LandmarkCollection _landmarks;
+
+    /// <inheritdoc/>
     public          int  RangeCutoff    { get; set; }
 
     /// <inheritdoc/>
@@ -134,11 +142,6 @@ namespace PGNapoleonics.HexUtilities {
 
     /// <inheritdoc/>
     public          THex this[HexCoords coords]  { get { return BoardHexes[coords];} }
-
-    /// <inheritdoc/>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
-      "CA2227:CollectionPropertiesShouldBeReadOnly")]
-    public LandmarkCollection Landmarks { get; protected set; }
     #endregion
 
     #region Drawing support

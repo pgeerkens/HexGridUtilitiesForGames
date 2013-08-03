@@ -28,7 +28,9 @@
 #endregion
 using System.Windows.Forms;
 
-namespace PGNapoleonics.HexUtilities {
+using PGNapoleonics.HexUtilities;
+
+namespace PGNapoleonics.HexgridPanel {
   /// <summary></summary>
   public class HexEventArgs : MouseEventArgs {
     /// <summary>TODO</summary>

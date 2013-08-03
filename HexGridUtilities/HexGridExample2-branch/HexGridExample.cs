@@ -28,15 +28,16 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Drawing;
-using System.Globalization;
+using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-using PGNapoleonics.HexGridExample2.MazeExample;
-using PGNapoleonics.HexGridExample2.TerrainExample;
-using PGNapoleonics.HexgridPanel;
+using PGNapoleonics;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
@@ -47,14 +48,10 @@ namespace PGNapoleonics.HexGridExample2 {
       InitializeComponent();
 			Application.AddMessageFilter(this);
 
-      this.hexgridPanel.ScaleChange += new EventHandler<EventArgs>((o,e) => OnResizeEnd(e));
-
       LoadTraceMenu();
 
-      toolStripComboBox1.SelectedIndex = 1;
+      toolStripComboBox1.SelectedIndex = 0;
       CustomCoords.SetMatrices(new IntMatrix2D(2,0, 0,-2, 0,2*MapBoard.MapSizeHexes.Height-1, 2));
-
-//      helpProvider1.SetShowHelp(this,true);
     }
     protected override CreateParams CreateParams { 
 			get { return this.SetCompositedStyle(base.CreateParams); }
@@ -79,21 +76,20 @@ namespace PGNapoleonics.HexGridExample2 {
       menuItemLandmarks.Items.Clear();
       menuItemLandmarks.Items.Add("None");
       foreach(var landmark in _mapBoard.Landmarks) {
-        menuItemLandmarks.Items.Add(string.Format(CultureInfo.InvariantCulture, "{0}", landmark.Coords));
+        menuItemLandmarks.Items.Add(string.Format("{0}", landmark.Coords));
       }
       menuItemLandmarks.SelectedIndexChanged += menuItemLandmarks_SelectedIndexChanged;
       menuItemLandmarks.SelectedIndex = 0; 
     }
 
-    MapDisplay<MapGridHex>          MapBoard { 
+    MapDisplay          MapBoard { 
       get {return _mapBoard;}
       set {_mapBoard = value; _mapBoard.RangeCutoff = (int)txtPathCutover.Tag; LoadLandMarkMenu();}
-    } MapDisplay<MapGridHex> _mapBoard;
+    } MapDisplay _mapBoard;
 
     #region Event handlers
     void HexGridExampleForm_Load(object sender, EventArgs e) {
-      //hexgridPanel.SetScaleList(new List<float>() {0.707F,  0.841F, 1.000F, 1.189F, 1.414F}.AsReadOnly());
-      hexgridPanel.Scales = new List<float>() {0.707F,  0.841F, 1.000F, 1.189F, 1.414F}.AsReadOnly();
+      hexgridPanel.SetScaleList(new List<float>() {0.707F,  0.841F, 1.000F, 1.189F, 1.414F}.AsReadOnly());
       hexgridPanel.ScaleIndex = hexgridPanel.Scales
                               .Select((f,i) => new {value=f, index=i})
                               .Where(s => s.value==1.0F)
@@ -123,13 +119,11 @@ namespace PGNapoleonics.HexGridExample2 {
       MessageId = "System.Windows.Forms.ToolStripItem.set_Text(System.String)")]
     void hexgridPanel_MouseMove(object sender, MouseEventArgs e) {
       var hotHex       = MapBoard.HotspotHex;
-      var sb = new StringBuilder()
-             + "HotspotHex: " + hotHex.ToString() 
-             + " / Custom=" + hotHex.UserToCustom().ToString()
-             + " / Canon=" + hotHex.Canon.ToString()
-             + "; Range = " + MapBoard.StartHex.Range(hotHex)
-             + "; Path Length = " + (MapBoard.Path==null ? 0 : MapBoard.Path.TotalCost);
-      statusLabel.Text = sb.ToString();
+      statusLabel.Text = "HotspotHex: " + hotHex.ToString() 
+                       + "/ Custom=" + hotHex.UserToCustom().ToString()
+                       + "/ Canon=" + hotHex.Canon.ToString()
+                       + "; Range = " + MapBoard.StartHex.Range(hotHex)
+                       + "; Path Length = " + (MapBoard.Path==null ? 0 : MapBoard.Path.TotalCost);
     }
 
     void buttonTransposeMap_Click(object sender, EventArgs e) {
@@ -166,10 +160,6 @@ namespace PGNapoleonics.HexGridExample2 {
     }
     #endregion
 
-    private void menuItemHelpContents_Click(object sender, EventArgs e) {
-//      helpProvider1.SetShowHelp(this,true);
-    }
-
     private void toolStripComboBox1_Click(object sender, EventArgs e) {
       var name = ((ToolStripItem)sender).Text;
       switch (name) {
@@ -177,25 +167,14 @@ namespace PGNapoleonics.HexGridExample2 {
         case "TerrainMap": hexgridPanel.Host = MapBoard = new TerrainMap(); break;
         default:  break;
       }
-      MapBoard.ShowPathArrow = buttonPathArrow.Checked;
-      MapBoard.ShowFov       = buttonFieldOfView.Checked;
-      MapBoard.FovRadius     =
-      MapBoard.RangeCutoff   = (int)txtPathCutover.Tag;
-      MapBoard.MapMargin     = hexgridPanel.MapMargin;
+      MapBoard.ShowFov     = buttonFieldOfView.Checked;
+      MapBoard.FovRadius   =
+      MapBoard.RangeCutoff = (int)txtPathCutover.Tag;
       hexgridPanel.Refresh();
     }
 
     private void buttonFieldOfView_Click(object sender, EventArgs e) {
       MapBoard.ShowFov = buttonFieldOfView.Checked;
-      Refresh();
-    }
-    private void buttonPathArrow_Click(object sender, EventArgs e) {
-      MapBoard.ShowPathArrow = buttonPathArrow.Checked;
-      Refresh();
-    }
-    private void buttonRangeLine_Click(object sender, EventArgs e) {
-      MapBoard.ShowRangeLine = buttonRangeLine.Checked;
-      Refresh();
     }
 
     private void PanelBoard_GoalHexChange(object sender, HexEventArgs e) {
@@ -208,15 +187,14 @@ namespace PGNapoleonics.HexGridExample2 {
     }
     private void PanelBoard_HotSpotHexChange(object sender, HexEventArgs e) {
       MapBoard.HotspotHex = e.Coords;
-//      Refresh();
-      this.hexgridPanel.Refresh();
+      Refresh();
     }
 
     #region IMessageFilter implementation
     /// <summary>Redirect WM_MouseWheel messages to window under mouse.</summary>
 		/// <remarks>Redirect WM_MouseWheel messages to window under mouse (rather than 
     /// that with focus) with adjusted delta.
-    /// <a href="http://www.flounder.com/virtual_screen_coordinates.htm">Virtual Screen Coordinates</a>
+    /// <see cref="http://www.flounder.com/virtual_screen_coordinates.htm"/>
     /// Dont forget to add this to constructor:
     /// 			Application.AddMessageFilter(this);
     ///</remarks>
@@ -235,7 +213,7 @@ namespace PGNapoleonics.HexGridExample2 {
               DebugTracing.Trace(TraceFlags.ScrollEvents, true," - {0}.WM.{1}: ", Name, 
                 ((WM)m.Msg)); 
             #endif
-            if (ctl is HexgridPanel.HexgridPanel  ||  ctl is HexgridExampleForm) {
+            if (ctl is HexUtilities.HexgridPanel  ||  ctl is HexgridExampleForm) {
               return (NativeMethods.SendMessage(hWnd, m.Msg, m.WParam, m.LParam) == IntPtr.Zero);
             }
             break;

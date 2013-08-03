@@ -35,10 +35,12 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 
+using PGNapoleonics.HexUtilities;
+
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
-namespace PGNapoleonics.HexUtilities {
+namespace PGNapoleonics.HexgridPanel {
   /// <summary>TODO</summary>
   public interface IMapDisplay {
     /// <summary>TODO</summary>
@@ -54,10 +56,13 @@ namespace PGNapoleonics.HexUtilities {
     CoordsRectangle GetClipCells(RectangleF visibleClipBounds);
 
     /// <summary>Paint the top layer of the display, graphics that changes frequently between refreshes.</summary>
+    /// <param name="g">Graphics object for the canvas being painted.</param>
     void  PaintHighlight(Graphics g);
     /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
+    /// <param name="g">Graphics object for the canvas being painted.</param>
     void  PaintMap(Graphics g);
     /// <summary>Paint the intermediate layer of the display, graphics that changes infrequently between refreshes.</summary>
+    /// <param name="g">Graphics object for the canvas being painted.</param>
     void  PaintUnits(Graphics g);
   }
 

@@ -34,7 +34,7 @@ using System.Linq;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
 
-/// <summary>Brought to you by <b>PG Software Solutions Inc&#46;</b>, a quality software provider.</summary>
+/// <summary>Brought to you by <b>PG Software Solutions Inc&dot;.</b>, a quality software provider.</summary>
 /// <remarks>Our software solutions are more than <b>Pretty Good</b>; ... they're <b>great!</b></remarks>
 namespace PGNapoleonics { }
 
@@ -47,7 +47,11 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>The <c>HexCoords</c> coordinates for this hex on <c>Board</c>.</summary>
     HexCoords    Coords         { get; }
 
+    /// <summary>Elevation of this hex in "steps" above the minimum elevation of the board.</summary>
+    int          Elevation      { get; }
+
     /// <summary>Elevation "Above Sea Level" in <i>game units</i> of the ground in this hex.</summary>
+    /// <remarks>Calculated as BaseElevationASL + Elevation * ElevationStep.</remarks>
     int          ElevationASL   { get; }
 
     /// <summary>Height ASL in <i>game units</i> of observer's eyes for FOV calculations.</summary>
@@ -85,6 +89,9 @@ namespace PGNapoleonics.HexUtilities {
 
     /// <inheritdoc/>
     public          HexCoords    Coords          { get; private set; }
+
+    /// <inheritdoc/>
+    public virtual  int          Elevation       { get; protected set; }
 
     /// <inheritdoc/>
     public abstract int          ElevationASL    { get; }

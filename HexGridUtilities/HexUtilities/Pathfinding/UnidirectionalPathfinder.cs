@@ -59,14 +59,16 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// Adapted to hex-grids, and to weight the most direct path favourably for better (visual) 
   /// behaviour on a hexgrid.
   /// </remarks>
-  public static partial class UnidirectionalPathfinder {
+  public static class UnidirectionalPathfinder {
     /// <summary>Returns an <c>IDirectedPath</c> for the optimal path from coordinates <c>start</c> to <c>goal</c>.</summary>
     /// <param name="start">Coordinates for the <c>last</c> step on the desired path.</param>
     /// <param name="goal">Coordinates for the <c>first</c> step on the desired path.</param>
     /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
     /// <returns></returns>
     /// ///<remarks>Note that <c>heuristic</c> <b>must</b> be monotonic in order for the algorithm to perform properly.</remarks>
-    /// <seealso href="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html"/>
+    #pragma warning disable 1658, 1584
+    /// <seealso cref="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html"/>
+    #pragma warning restore 1633, 1658, 1584
     public static IDirectedPath FindDirectedPathFwd(
       IHex start,
       IHex goal,
@@ -83,7 +85,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <param name="heuristic">Returns a monotonic (ie locally admissible) cost estimate from a range value.</param>
     /// <returns></returns>
     /// ///<remarks>Note that <c>heuristic</c> <b>must</b> be monotonic in order for the algorithm to perform properly.</remarks>
-    /// <seealso href="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html"/>
+    #pragma warning disable 1658, 1584
+    /// <seealso cref="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html"/>
+    #pragma warning restore 1658, 1584
     public static IDirectedPath FindDirectedPathFwd (
       IHex start,
       IHex goal,
@@ -138,12 +142,14 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       }
       return null;
     }
+
     static int Estimate(Func<int,int> heuristic, IntVector2D vectorGoal, HexCoords start, 
             HexCoords hex, int totalCost) {
       var estimate   = heuristic(start.Range(hex)) + totalCost;
       var preference = Preference(vectorGoal, start.Canon - hex.Canon);
       return (estimate << 16) + preference;
     }
+
     static int Preference(IntVector2D vectorGoal, IntVector2D vectorHex) {
       return (0xFFFF & Math.Abs(vectorGoal ^ vectorHex ));
     }

@@ -29,6 +29,7 @@
 using System;
 using System.Drawing;
 
+using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexGridExample2.TerrainExample {
@@ -41,6 +42,7 @@ namespace PGNapoleonics.HexGridExample2.TerrainExample {
     protected TerrainGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
       : base(board, coords) {}
 
+    /// <summary>TODO</summary>
     protected virtual  Brush HexBrush      { get { return Brushes.Transparent; } }
     public    override int   Elevation     { get { return  0; }  }
     public    override int   ElevationASL  { get { return Board.ElevationASL(Elevation); } }
@@ -55,6 +57,7 @@ namespace PGNapoleonics.HexGridExample2.TerrainExample {
     public ClearTerrainGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
       : base(board, coords) { }
 
+    /// <inheritdoc/>
     public    override void Paint(Graphics g) { ; }
   }
 
@@ -64,7 +67,9 @@ namespace PGNapoleonics.HexGridExample2.TerrainExample {
     public FordTerrainGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
       : base(board, coords) { }
 
+    /// <inheritdoc/>
     protected override Brush HexBrush { get { return Brushes.Brown; } }
+    /// <inheritdoc/>
     public    override int   StepCost(Hexside direction) { return  5; }
   }
 
@@ -74,7 +79,9 @@ namespace PGNapoleonics.HexGridExample2.TerrainExample {
     public RiverTerrainGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
       : base(board, coords) { }
 
+    /// <inheritdoc/>
     protected override Brush HexBrush { get { return Brushes.DarkBlue; } }
+
     /// <summary>This hex type is always impassable.</summary>
     public    override int   StepCost(Hexside direction) { return -1; }
   }
@@ -84,7 +91,9 @@ namespace PGNapoleonics.HexGridExample2.TerrainExample {
     public PikeTerrainGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
       : base(board, coords) { }
 
+    /// <inheritdoc/>
     public    override int   StepCost(Hexside direction) { return  2; }
+    /// <inheritdoc/>
     public    override void  Paint(Graphics g) { 
       if (g==null) throw new ArgumentNullException("g");
       using(var brush = new SolidBrush(Color.FromArgb(78,Color.DarkGray)))
@@ -97,7 +106,9 @@ namespace PGNapoleonics.HexGridExample2.TerrainExample {
     public RoadTerrainGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
       : base(board, coords) { }
 
+    /// <inheritdoc/>
     public    override int   StepCost(Hexside direction) { return  3; }
+    /// <inheritdoc/>
     public    override void  Paint(Graphics g) { 
       if (g==null) throw new ArgumentNullException("g");
       using(var brush = new SolidBrush(Color.FromArgb(78,Color.SaddleBrown)))
@@ -110,8 +121,11 @@ namespace PGNapoleonics.HexGridExample2.TerrainExample {
     public HillTerrainGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
       : base(board, coords) { }
 
+    /// <inheritdoc/>
     public    override int   Elevation { get { return  1; } }
+    /// <inheritdoc/>
     protected override Brush HexBrush  { get { return Brushes.Khaki; } }
+    /// <inheritdoc/>
     public    override int   StepCost(Hexside direction) { return  5; }
   }
 
@@ -120,8 +134,11 @@ namespace PGNapoleonics.HexGridExample2.TerrainExample {
     public MountainTerrainGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
       : base(board, coords) { }
 
+    /// <inheritdoc/>
     public    override int   Elevation { get { return  2; } }
+    /// <inheritdoc/>
     protected override Brush HexBrush  { get { return Brushes.DarkKhaki; } }
+    /// <inheritdoc/>
     public    override int   StepCost(Hexside direction) { return  6; }
   }
 
@@ -130,8 +147,11 @@ namespace PGNapoleonics.HexGridExample2.TerrainExample {
     public WoodsTerrainGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
       : base(board, coords) { }
 
+    /// <inheritdoc/>
     public    override int   HeightTerrain { get { return ElevationASL + 7; } }
+    /// <inheritdoc/>
     protected override Brush HexBrush      { get { return Brushes.Green; } }
+    /// <inheritdoc/>
     public    override int   StepCost(Hexside direction) { return  8; }
   }
 }

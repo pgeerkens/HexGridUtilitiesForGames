@@ -27,25 +27,32 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Threading;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
 
-using PGNapoleonics.WinForms;
+namespace PGNapoleonics.WinForms {
+  internal static partial class NativeMethods {
+    /// <summary>P/Invoke declaration for user32.dll.WindowFromPoint</summary>
+		/// <remarks><see cref="http://msdn.microsoft.com/en-us/library/windows/desktop/ms633558(v=vs.85).aspx"/></remarks>
+		/// <param name="pt">(Sign-extended) screen coordinates as a Point structure.</param>
+		/// <returns>Window handle (hWnd).</returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "0"), DllImport("user32.dll")]
+		internal static extern IntPtr WindowFromPoint(System.Drawing.Point pt);
 
-/// <summary>Example usage of <see cref="HexUtilities"/> with <see cref="HexUtilities.HexgridPanel"/> 
-/// in a simple <see cref="WinForms"/> application.</summary>
-namespace PGNapoleonics.HexGridExample2 {
-  static class Program {
-    /// <summary>The main entry point for the application.</summary>
-    [STAThread]
-    static void Main()      {
-      Application.EnableVisualStyles();
-      Application.SetCompatibleTextRenderingDefault(false);
-      Application.ThreadException += 
-        new ThreadExceptionEventHandler(
-          (new ThreadExceptionHandler()).ApplicationThreadException);
-
-      Application.Run(new HexgridExampleForm());
-    }
+    /// <summary>P/Invoke declaration for user32.dll.SendMessage</summary>
+		/// <param name="hWnd">Window handle</param>
+		/// <param name="msg">Windows message</param>
+		/// <param name="wp">WParam</param>
+		/// <param name="lp">LParam</param>
+		/// <returns></returns>
+		[DllImport("user32.dll", CharSet = CharSet.Auto)]
+		internal static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
   }
 }

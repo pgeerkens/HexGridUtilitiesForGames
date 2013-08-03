@@ -27,25 +27,26 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Threading;
-using System.Windows.Forms;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Linq;
+using System.Text;
 
-using PGNapoleonics.WinForms;
+using PGNapoleonics;
+using PGNapoleonics.HexUtilities;
 
-/// <summary>Example usage of <see cref="HexUtilities"/> with <see cref="HexUtilities.HexgridPanel"/> 
-/// in a simple <see cref="WinForms"/> application.</summary>
 namespace PGNapoleonics.HexGridExample2 {
-  static class Program {
-    /// <summary>The main entry point for the application.</summary>
-    [STAThread]
-    static void Main()      {
-      Application.EnableVisualStyles();
-      Application.SetCompatibleTextRenderingDefault(false);
-      Application.ThreadException += 
-        new ThreadExceptionEventHandler(
-          (new ThreadExceptionHandler()).ApplicationThreadException);
+  internal interface IMapGridHex : IHex {
+    int              Elevation      { get; }
+    void Paint(Graphics g);
+  }
 
-      Application.Run(new HexgridExampleForm());
+  internal abstract class MapGridHex : Hex, IMapGridHex {
+    protected MapGridHex(IBoard<IHex> board, HexCoords coords) : base(board, coords) { 
     }
+
+    public virtual  int              Elevation      { get; protected set; }
+    public abstract void Paint(Graphics g);
   }
 }

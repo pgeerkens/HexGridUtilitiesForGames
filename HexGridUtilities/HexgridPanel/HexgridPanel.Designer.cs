@@ -26,7 +26,7 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-namespace PGNapoleonics.HexUtilities {
+namespace PGNapoleonics.HexgridPanel {
   public partial class HexgridPanel {
     /// <summary>
     /// Required designer variable.
