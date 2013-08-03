@@ -101,7 +101,8 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>PGSoftwareSolutions.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
@@ -159,7 +160,6 @@
     <None Include="license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="PGSoftwareSolutions.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HexUtilities\HexUtilities.csproj">
