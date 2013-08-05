@@ -211,6 +211,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       public PathHalves() { BestSoFar   = (Int32)Int16.MaxValue; }
 
       public int          BestSoFar { get; private set; }
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
+        "CA1811:AvoidUncalledPrivateCode")]
       public int          KeySoFar  { get; private set; }
       public DirectedPath PathFwd   { get { return MergePaths(_pathFwd, _pathRev); } }
       public DirectedPath PathRev   { get { return MergePaths(_pathRev, _pathFwd); } }

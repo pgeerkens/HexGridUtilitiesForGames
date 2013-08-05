@@ -116,20 +116,12 @@ namespace PGNapoleonics.HexGridExample2 {
       hexgridPanel.SetScroll();
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-      "CA2204:Literals should be spelled correctly", MessageId = "HotspotHex"), 
-    System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", 
-      "CA1303:Do not pass literals as localized parameters", 
-      MessageId = "System.Windows.Forms.ToolStripItem.set_Text(System.String)")]
     void hexgridPanel_MouseMove(object sender, MouseEventArgs e) {
       var hotHex       = MapBoard.HotspotHex;
-      var sb = new StringBuilder()
-             + "HotspotHex: " + hotHex.ToString() 
-             + " / Custom=" + hotHex.UserToCustom().ToString()
-             + " / Canon=" + hotHex.Canon.ToString()
-             + "; Range = " + MapBoard.StartHex.Range(hotHex)
-             + "; Path Length = " + (MapBoard.Path==null ? 0 : MapBoard.Path.TotalCost);
-      statusLabel.Text = sb.ToString();
+      statusLabel.Text = string.Format(CultureInfo.InvariantCulture,
+        "Hotspot Hex: {0:gi3} / {1:uI4} / {2:c5}; {3:r6}; Path Length = {4}",
+        hotHex, hotHex, hotHex,
+        MapBoard.StartHex - hotHex, (MapBoard.Path==null ? 0 : MapBoard.Path.TotalCost));
     }
 
     void buttonTransposeMap_Click(object sender, EventArgs e) {
@@ -151,6 +143,7 @@ namespace PGNapoleonics.HexGridExample2 {
 
     private void menuItemLandmarks_SelectedIndexChanged(object sender, EventArgs e) {
       _mapBoard.LandmarkToShow = menuItemLandmarks.SelectedIndex - 1;
+      hexgridPanel.SetMapDirty(); // .Host = this.MapBoard;
       Update();
     }
 
@@ -164,7 +157,6 @@ namespace PGNapoleonics.HexGridExample2 {
       else
         DebugTracing.EnabledFags &= ~flag;
     }
-    #endregion
 
     private void menuItemHelpContents_Click(object sender, EventArgs e) {
 //      helpProvider1.SetShowHelp(this,true);
@@ -211,6 +203,7 @@ namespace PGNapoleonics.HexGridExample2 {
 //      Refresh();
       this.hexgridPanel.Refresh();
     }
+    #endregion
 
     #region IMessageFilter implementation
     /// <summary>Redirect WM_MouseWheel messages to window under mouse.</summary>

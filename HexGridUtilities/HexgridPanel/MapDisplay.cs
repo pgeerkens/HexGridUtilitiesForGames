@@ -37,9 +37,11 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexUtilities.ShadowCasting;
 
+/// <summary>WinForms-specific utilities, including implementation of the subclasses HexgridPanel
+/// ands MapDisplay<THex>, utilizing the System.Windows.Forms technology.</summary>
 namespace PGNapoleonics.HexgridPanel {
-  /// <summary>TODO</summary>
-  /// <typeparam name="THex"></typeparam>
+  /// <summary>Abstract class representing the basic game board.</summary>
+  /// <typeparam name="THex">Type of the hex for which a game board is desired.</typeparam>
   public abstract class MapDisplay<THex> : HexBoard<THex>, IMapDisplay
     where THex : MapGridHex {
 
@@ -78,6 +80,7 @@ namespace PGNapoleonics.HexgridPanel {
       ShadeBrushAlpha = 78;
       ShadeBrushColor = Color.Black;
       ShowHexgrid     = true;
+      ShowPath        = true;
       ShowPathArrow   = true;
       ShowRangeLine   = false;
     }
@@ -98,14 +101,14 @@ namespace PGNapoleonics.HexgridPanel {
     /// <summary>Gets or sets the <see cref="HexCoords"/> of the hex currently under the mouse.</summary>
     public virtual  HexCoords     HotspotHex      { 
       get { return _hotSpotHex; }
-      set { _hotSpotHex = value; Fov = null; }
+      set { _hotSpotHex = value; if (!ShowRangeLine) _fov = null; }
     } HexCoords _hotSpotHex = HexCoords.EmptyUser;
 
     /// <summary>Gets or sets the index (-1 for none) of the path-finding <see cref="Landmark"/> to show.</summary>
     public          int           LandmarkToShow  { get; set; }
     /// <summary>Gets or sets the thickness in pixels (at 100% scale) of the margin to be painted around the map proper.</summary>
     public          Size          MapMargin       { get; set; }
-    /// <inheritdoc/>>
+    /// <inheritdoc/>
     public          string        Name            { get {return "MapDisplay";} }
     /// <summary>Gets the shortest path from <see cref="StartHex"/> to <see cref="GoalHex"/>.</summary>
     public          IDirectedPath Path            { 
@@ -120,38 +123,40 @@ namespace PGNapoleonics.HexgridPanel {
     /// <summary>Gets or sets whether to display the hexgrid.</summary>
     public          bool          ShowHexgrid     { get; set; }
     /// <summary>Gets or sets whether to display the shortest path from <see cref="StartHex"/> to <see cref="GoalHex"/>.</summary>
+    public          bool          ShowPath        { get; set; }
+    /// <summary>Gets or sets whether to display direction indicators for the current path.</summary>
     public          bool          ShowPathArrow   { get; set; }
     /// <summary>Gets or sets whether to display the shortest path from <see cref="StartHex"/> to <see cref="GoalHex"/>.</summary>
     public          bool          ShowRangeLine   { get; set; }
     /// <summary>Gets or sets the <see cref="HexCoords"/> of the start hex for path-finding.</summary>
     public virtual  HexCoords     StartHex        { 
-      get { return _startHex; } // ?? (_startHex = HexCoords.EmptyUser); } 
-      set { if (IsOnboard(value)) _startHex = value; _path = null; } 
+      get { return _startHex; }
+      set { if (IsOnboard(value)) _startHex = value; _path = null; if (ShowRangeLine) _fov = null; } 
     } HexCoords _startHex = HexCoords.EmptyUser;
     #endregion
 
-    /// <inheritdoc/>>
+    /// <inheritdoc/>
     [Obsolete("Use GetClipInHexes(PointF,SizeF) instead.")]
     public CoordsRectangle GetClipCells(PointF point, SizeF size) {
       return GetClipInHexes( new RectangleF(point,size), MapSizeHexes );
     }
-    /// <inheritdoc/>>
+    /// <inheritdoc/>
     [Obsolete("Use GetClipInHexes(RectangleF) instead.")]
     public CoordsRectangle GetClipCells(RectangleF visibleClipBounds) {
       return GetClipInHexes(visibleClipBounds, MapSizeHexes);
     }
 
-    /// <inheritdoc/>>
+    /// <inheritdoc/>
     public CoordsRectangle GetClipInHexes(PointF point, SizeF size) {
       return GetClipInHexes( new RectangleF(point,size), MapSizeHexes );
     }
 
-    /// <inheritdoc/>>
+    /// <inheritdoc/>
     public CoordsRectangle GetClipInHexes(RectangleF visibleClipBounds) {
       return GetClipInHexes(visibleClipBounds, MapSizeHexes);
     }
 
-    /// <inheritdoc/>>
+    /// <inheritdoc/>
     /// <param name="g">Graphics object for the canvas being painted.</param>
     public    virtual  void PaintHighlight(Graphics g) { 
       if (g==null) throw new ArgumentNullException("g");
@@ -159,8 +164,10 @@ namespace PGNapoleonics.HexgridPanel {
       TranslateGraphicsToHex(g, StartHex);
       g.DrawPath(Pens.Red, HexgridPath);
 
-      g.EndContainer(container); container = g.BeginContainer();
-      PaintPath(g,Path);
+      if (ShowPath) {
+        g.EndContainer(container); container = g.BeginContainer();
+        PaintPath(g,Path);
+      }
 
       if (ShowRangeLine) {
         g.EndContainer(container); container = g.BeginContainer();
@@ -170,51 +177,52 @@ namespace PGNapoleonics.HexgridPanel {
         g.DrawLine(Pens.Red, target.X-8,target.Y+8, target.X+8,target.Y-8);
       }
 
-      g.EndContainer(container); container = g.BeginContainer();
-      var clipHexes  = GetClipInHexes(g.VisibleClipBounds);
-
-      using(var shadeBrush = new SolidBrush(Color.FromArgb(ShadeBrushAlpha, ShadeBrushColor))) {
-        PaintForEachHex(g, clipHexes, coords => {
-          if (ShowFov && Fov!=null && ! Fov[coords]) { g.FillPath(shadeBrush, HexgridPath);  }
-
-          if (LandmarkToShow != -1 ) {
-            var font       = SystemFonts.MenuFont;
-            var brush      = Brushes.Black;
-            var textOffset = new Point(GridSize.Scale(0.50F).ToSize() 
-                           - new SizeF(font.Size,font.Size).Scale(0.8F).ToSize());
-            g.DrawString(LandmarkText(coords,LandmarkToShow), font, brush, textOffset);
-          }
-        } );
+      if (ShowFov) {
+        g.EndContainer(container); container = g.BeginContainer();
+        var clipHexes  = GetClipInHexes(g.VisibleClipBounds);
+        using(var shadeBrush = new SolidBrush(Color.FromArgb(ShadeBrushAlpha, ShadeBrushColor))) {
+          PaintForEachHex(g, clipHexes, coords => {
+            if (Fov!=null && ! Fov[coords]) { g.FillPath(shadeBrush, HexgridPath);  }
+          } );
+        }
       }
     }
 
-    /// <inheritdoc/>>
+    /// <inheritdoc/>
     public    virtual  void PaintMap(Graphics g) { PaintMap(g, (h) =>h.Paint(g)); }
 
     /// <summary>For each visible hex: perform <c>paintAction</c> and then draw its hexgrid outline.</summary>
-    /// <param name="g">Graphics object for the canvas being painted.</param>
-    /// <param name="paintAction"></param>
+    /// <param name="g">TYpe: Graphics<para/>Object representing the canvas being painted.</param>
+    /// <param name="paintAction">Type Action&lt;IHex&gt;<para/>
+    /// The hex-specific action to be performed in painting each hex.</param>
     void PaintMap(Graphics g, Action<THex> paintAction) { 
       if (g==null) throw new ArgumentNullException("g");
       if (paintAction==null) throw new ArgumentNullException("paintAction");
       var clipHexes = GetClipInHexes(g.VisibleClipBounds);
       var location  = new Point(GridSize.Width*2/3, GridSize.Height/2);
 
-      using(var font   = new Font("ArialNarrow", 8))
       using(var format = new StringFormat()) {
         format.Alignment = format.LineAlignment = StringAlignment.Center;
 
         g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+        var font       = SystemFonts.MenuFont;
+        var brush      = Brushes.Black;
+        var textOffset = new Point(GridSize.Scale(0.50F).ToSize() 
+                       - new SizeF(font.Size,font.Size).Scale(0.8F).ToSize());
         PaintForEachHex(g, clipHexes, coords => {
           paintAction(this[coords]);
           if (ShowHexgrid) g.DrawPath(Pens.Black, HexgridPath);
+          if (LandmarkToShow != -1 ) {
+            g.DrawString(LandmarkDistance(coords,LandmarkToShow), font, brush, textOffset);
+          }
         } );
       }
     }
 
     /// <summary>Paint the current shortese path.</summary>
-    /// <param name="g">Graphics object for the canvas being painted.</param>
-    /// <param name="path"></param>
+    /// <param name="g">TYpe: Graphics<para/>Object representing the canvas being painted.</param>
+    /// <param name="path">Type: <see cref="IDirectedPath"/><para/>
+    /// A directed path (ie linked-list> of hexes to be painted.</param>
     protected virtual  void PaintPath(Graphics g, IDirectedPath path) {
       if (g==null) throw new ArgumentNullException("g");
 
@@ -225,38 +233,60 @@ namespace PGNapoleonics.HexgridPanel {
           g.FillPath(brush, HexgridPath);
 
           if (ShowPathArrow) PaintPathArrow(g, path);
+
           path = path.PathSoFar;
         }
       }
     }
 
-    /// <summary>Paint the direction arrow for each hex of the current shortest path.</summary>
-    /// <param name="g">Graphics object for the canvas being painted.</param>
-    /// <param name="path"></param>
+    /// <summary>Paint the direction and destination indicators for each hex of the current shortest path.</summary>
+    /// <param name="g">TYpe: Graphics<para/>Object representing the canvas being painted.</param>
+    /// <param name="path">Type: <see cref="IDirectedPath"/><para/>
+    /// A directed path (ie linked-list> of hexes to be highlighted with a direction arrow.</param>
     protected virtual  void PaintPathArrow(Graphics g, IDirectedPath path) {
       if (g==null) throw new ArgumentNullException("g");
       if (path==null) throw new ArgumentNullException("path");
 
-      g.TranslateTransform(GridSize.Width * 2/3, GridSize.Height/2);
-      var unit = GridSize.Height/8.0F;
-      if (path.PathSoFar == null) {
-        g.DrawLine(Pens.Black, -unit*2,-unit*2, unit*2, unit*2);
-        g.DrawLine(Pens.Black, -unit*2, unit*2, unit*2,-unit*2);
-      } else {
-        g.RotateTransform(60 * (int)path.PathStep.HexsideEntry);
-        g.DrawLine(Pens.Black, 0,unit*4,       0,-unit);
-        g.DrawLine(Pens.Black, 0,unit*4, -unit*3/2, unit*2);
-        g.DrawLine(Pens.Black, 0,unit*4,  unit*3/2, unit*2);
-      }
+      g.TranslateTransform(CentreOfHexOffset.Width, CentreOfHexOffset.Height);
+      if (path.PathSoFar == null)    PaintPathDestination(g);
+      else                           PaintPathArrow(g, path.PathStep.HexsideEntry);
     }
 
-    /// <inheritdoc/>>
+    /// <summary>Paint the direction arrow for each hex of the current shortest path.</summary>
+    /// <param name="g">TYpe: Graphics<para/>Object representing the canvas being painted.</param>
+    /// <param name="hexside">Type: <see cref="Hexside"/><para/>
+    /// Direction from this hex in which the next step is made.</param>
+    /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
+    protected virtual  void PaintPathArrow(Graphics g, Hexside hexside) {
+      if (g==null) throw new ArgumentNullException("g");
+
+      var unit = GridSize.Height/8.0F;
+      g.RotateTransform(60 * (int)hexside);
+      g.DrawLine(Pens.Black, 0,unit*4,       0,  -unit);
+      g.DrawLine(Pens.Black, 0,unit*4, -unit*3/2, unit*2);
+      g.DrawLine(Pens.Black, 0,unit*4,  unit*3/2, unit*2);
+    }
+    /// <summary>Paint the destination indicator for the current shortest path.</summary>
+    /// <param name="g">TYpe: Graphics<para/>Object representing the canvas being painted.</param>
+    /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
+    protected virtual  void PaintPathDestination(Graphics g) {
+      if (g==null) throw new ArgumentNullException("g");
+
+      var unit = GridSize.Height/8.0F;
+      g.DrawLine(Pens.Black, -unit*2,-unit*2, unit*2, unit*2);
+      g.DrawLine(Pens.Black, -unit*2, unit*2, unit*2,-unit*2);
+    }
+
+    /// <inheritdoc/>
     public    abstract void PaintUnits(Graphics g);
 
-    /// <summary>TODO</summary>
+    /// <summary>Paints all the hexes in <paramref name="clipHexes"/> by executing <paramref name="paintAction"/>
+    /// for each hex on <paramref name="g"/>.</summary>
     /// <param name="g">Graphics object for the canvas being painted.</param>
-    /// <param name="clipHexes"></param>
-    /// <param name="paintAction"></param>
+    /// <param name="clipHexes">Type: CoordRectangle<para/>
+    /// The rectangular extent of hexes to be painted.</param>
+    /// <param name="paintAction">Type: Action&lt;HexCoords&gt;<para/>
+    /// The paint action to be performed for each hex.</param>
     void PaintForEachHex(Graphics g, CoordsRectangle clipHexes, Action<HexCoords> paintAction) {
       BoardHexes.ForEach(hex => {
         if (clipHexes.Left <= hex.Coords.User.X  &&  hex.Coords.User.X <= clipHexes.Right
@@ -268,12 +298,14 @@ namespace PGNapoleonics.HexgridPanel {
       return;
     }
 
-    /// <summary>TODO</summary>
-    /// <param name="g">Graphics object for the canvas being painted.</param>
-    /// <param name="coords"></param>
+    /// <summary>Translates the origin of <paramref name="g"/> to the upper-left corner of the hex with 
+    /// coordinates <paramref name="coords"/>.</summary>
+    /// <param name="g">Type: Graphics<para/>The canvas to be painted.</param>
+    /// <param name="coords">Type: HexCoords<para/>
+    /// Coordinates of the hex to be painted next.</param>
     void TranslateGraphicsToHex(Graphics g, HexCoords coords) {
-      var offset = UpperLeftOfHex(coords);
-      g.Transform = new System.Drawing.Drawing2D.Matrix(1,0,0,1, offset.X, offset.Y);
+      var offset  = UpperLeftOfHex(coords);
+      g.Transform = new Matrix(1, 0, 0, 1, offset.X, offset.Y);
     }
 
     /// <summary>Returns pixel coordinates of upper-left corner of specified hex.</summary>
@@ -290,15 +322,18 @@ namespace PGNapoleonics.HexgridPanel {
     /// <param name="coords"></param>
     /// <returns>A Point structure containing pixel coordinates for the (centre of the) specified hex.</returns>
     protected Point CentreOfHex(HexCoords coords) {
-      return UpperLeftOfHex(coords) + new Size(GridSize.Width * 2 / 3, GridSize.Height / 2);
+      return UpperLeftOfHex(coords) + CentreOfHexOffset;
     }
 
-    /// <summary>TODO</summary>
-    protected virtual string LandmarkText(HexCoords coords, int landmarkToShow) { 
-      var index = (0 <= landmarkToShow && landmarkToShow < Landmarks.Count)
-        ? Landmarks[landmarkToShow].HexDistance(coords) 
-        : -1;
-      return index == -1 ? "" : string.Format("{0,3}", index);
+    /// <summary>String representation of the distance from a given landmark to a specified hex</summary>
+    /// <param name="coords">Type HexCoords<para/>
+    /// Hex for which to return Landmark distanace.</param>
+    /// <param name="landmarkToShow">Type int<para/>
+    /// Index of the Landmark from which to display distances.</param>
+    protected virtual string LandmarkDistance(HexCoords coords, int landmarkToShow) { 
+      if (landmarkToShow < 0  ||  Landmarks.Count <= landmarkToShow) return "";
+
+      return string.Format("{0,3}", Landmarks[landmarkToShow].HexDistance(coords));
     }
   }
 }

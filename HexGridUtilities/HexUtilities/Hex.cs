@@ -29,15 +29,50 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
 
-/// <summary>Brought to you by <b>PG Software Solutions Inc&dot;.</b>, a quality software provider.</summary>
-/// <remarks>Our software solutions are more than <b>Pretty Good</b>; ... they're <b>great!</b></remarks>
-namespace PGNapoleonics { }
+/// \mainpage HexgridUtilities V 6.3
+/// 
+/// Summary
+/// ----
+/// A library of utilities and controls for buillding strategy simulation games on hexagonal-grid 
+/// mapboards.
+/// 
+/// Detailed Description
+/// ----
+/// - <b>PGNapoleonics</b> is the top level namespace for software develoepd by PGSoftware Solutions Inc.,
+/// and comprises three subsidiary namespaces:
+///   + <b>HexUtilities</b> is the display-technology independent utilities underpinnign the provision of hex-grid utilities.
+///   + <see cref="HexgridPanel"/> is the <b>WinForms</b> specific extensions to support hex-grid panels in <b>Winforms</b> applications.
+///   + <b>HexGridExample2</b> is a sample <b>WinForms</b> application demonstrating some straight-forward usage of the library.
+/// 
+/// Getting Started
+/// ----
+/// To get started, explore how the two sample maps <see cref="TerrainMap"/> and <see cref="MazeMap"/> override
+/// the base class <see cref="MapDisplay<THex>"/>, and how the sample form <see cref="HexgridExampleForm"/>
+/// overrides the base control <see cref="HexgridPanel"/>. The Collaboration diagram for MapDisplay&lt;THex&gt;
+/// provides a good overview fof the library structure.
+/// 
+/// Brought to you by <b>PG Software Solutions Inc.</b>, a quality software provider.
+/// 
+/// Our software are more than <b>Pretty Good Solutions</b>; ... they're <b>Pretty Great Solutions!</b>
 
+/// \namespace PGNapoleonics
+/// <summary>A library of utilities and controls for buillding strategy simulation games on hexagonal-grid 
+/// mapboards.</summary>
+/// <remarks>
+/// To get started, explore how the two sample maps <see cref="TerrainMap"/> and <see cref="MazeMap"/> override
+/// the base class <see cref="MapDisplay<THex>"/>, and how the sample form <see cref="HexgridExampleForm"/>
+/// overrides the base control <see cref="HexgridPanel"/>. The Collaboration diagram for MapDisplay<THex>
+/// provides a good overview fof the library structure.
+/// 
+/// Brought to you by <b>PG Software Solutions Inc.</b>, a quality software provider.
+/// 
+/// Our products are more than <b>Pretty Good Software</b>; ... they're <b>Pretty Great Solutions!</b></remarks>
 namespace PGNapoleonics.HexUtilities {
   /// <summary>External interface exposed by individual hexes.</summary>
   public interface IHex {
@@ -74,6 +109,7 @@ namespace PGNapoleonics.HexUtilities {
   }
 
   /// <summary>Abstract implementation of the interface <see Cref="IHex"/>.</summary>
+  [DebuggerDisplay("Coords: {Coords} / ElevASL: {ElevationASL}m")]
   public abstract class Hex : IHex, IEquatable<Hex> {
     /// <summary>TODO</summary>
     protected Hex(IBoard<IHex> board, HexCoords coords) { 

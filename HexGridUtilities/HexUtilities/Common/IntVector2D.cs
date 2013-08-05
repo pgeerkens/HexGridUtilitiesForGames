@@ -29,11 +29,12 @@
 using System;
 using System.Drawing;
 using System.Globalization;
+using System.Text;
 
 ///<summary>Shared technoloiges across the library, and useful gadgets.</summary>
 namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>Representation of an immutable integer 2D vector.</summary>
-  public struct IntVector2D : IEquatable<IntVector2D> {
+  public struct IntVector2D : IEquatable<IntVector2D>, IFormattable {
     /// <summary>TODO</summary>
     public static readonly IntVector2D Empty = new IntVector2D(Point.Empty);
 
@@ -156,8 +157,47 @@ namespace PGNapoleonics.HexUtilities.Common {
     public override int GetHashCode() { return (X<<16) ^ Y ^ W; }
     #endregion
 
-    /// <inheritdoc/>
-    public override string ToString() { return string.Format(CultureInfo.InvariantCulture,
-      "({0,3},{1,3})",X,Y); }
+    /// <summary>Culture-invariant string representation of this instance's value.</summary>
+    public override string ToString() { return ToString("G", CultureInfo.InvariantCulture); }
+
+    /// <summary>Converts the value of this instance to its equivalent string representation using the 
+    /// specified format and culture-specific format information.</summary>
+    /// <param name="format">Type: System.String. 
+    /// 
+    /// > A standard or custom numeric format string.</param>
+    /// <param name="formatProvider">Type: IFormatProvider<para/>
+    /// 
+    /// > An object that supplies culture-specific formatting information.</param>
+    /// <remarks>Format characters:
+    /// - 'V' or 'v': Vector formatting - Vector output like (nn,mm);
+    /// - 'G' or 'g': General formatting - same as 'V' or 'v';  
+    /// - 'I': 2-Dimensional  vector formatting as 11I + 22J;
+    /// - 'i': 2-Dimensional  vector formatting as 11i + 22j;
+    /// - 'K': 3-Dimensional  vector formatting as 11I + 22J = 33K;
+    /// - 'k': 3-Dimensional  vector formatting as 11i + 22j + 33k;
+    /// In all cases the leading character of the format string is stripped off and parsed, 
+    /// with the remainder passed to the formatter completing the display formatting.
+    /// </remarks>
+    public string ToString(string format, IFormatProvider formatProvider) {
+      if (format==null || format.Length==0 || Char.IsDigit(format[0])) format = "G";
+      var formatChar = format[0];
+      var sb = new StringBuilder();
+      format = "D" + format.Substring(1);
+      string layout;
+      switch(formatChar) {
+        default:    throw new FormatException();
+        case 'G':
+        case 'g': 
+        case 'V':
+        case 'v':   layout = "({0}, {1})"; break;
+        case 'I':   layout = "{0}I + {1}J"; break;
+        case 'i':   layout = "{0}i + {1}j"; break;
+        case 'W':   layout = "{0}I + {1}J + {2}K"; break;
+        case 'w':   layout = "{0}i + {1}j + {2}k"; break;
+      }
+      return string.Format(layout, X.ToString(format,formatProvider),
+                                   Y.ToString(format,formatProvider),
+                                   W.ToString(format,formatProvider));
+    }
   }
 }

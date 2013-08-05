@@ -84,6 +84,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <param name="this">The </param>
     /// <param name="board">The </param>
     public static void ResetLandmarks(this LandmarkCollection @this, IBoard<IHex> board) {
+      if (@this==null)  throw new ArgumentNullException("this");
       if (board==null)  throw new ArgumentNullException("board");
 
       Parallel.For(0, @this.Count, i => @this[i].FillLandmark(board) );

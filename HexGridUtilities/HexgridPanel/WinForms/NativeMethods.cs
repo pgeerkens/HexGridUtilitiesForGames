@@ -29,6 +29,7 @@
 using System;
 using System.Runtime.InteropServices;
 
+/// <summary>Extensions to the System.Windows.Forms technologies used by namespace PGNapoleonics.HexgridPanel.</summary>
 namespace PGNapoleonics.WinForms {
   internal static partial class NativeMethods {
     /// <summary>P/Invoke declaration for user32.dll.WindowFromPoint</summary>

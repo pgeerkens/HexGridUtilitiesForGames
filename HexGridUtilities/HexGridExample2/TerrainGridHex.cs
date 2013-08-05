@@ -48,7 +48,10 @@ namespace PGNapoleonics.HexGridExample2.TerrainExample {
     public    override int   ElevationASL  { get { return Board.ElevationASL(Elevation); } }
     public    override int   HeightTerrain { get { return ElevationASL; } }
 
-    public    override void  Paint(Graphics g) { g.FillPath(HexBrush, Board.HexgridPath); }
+    public    override void  Paint(Graphics g) { 
+      if (g==null) throw new ArgumentNullException("g");
+      g.FillPath(HexBrush, Board.HexgridPath);
+    }
     public    override int   StepCost(Hexside direction) { return  4; }
   }
   /// <summary>A <see cref="TerrainGridHex"/> representing clear terrain.</summary>

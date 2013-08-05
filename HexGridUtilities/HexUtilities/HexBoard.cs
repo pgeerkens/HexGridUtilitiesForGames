@@ -41,16 +41,16 @@ using PGNapoleonics.HexUtilities.ShadowCasting;
 namespace PGNapoleonics.HexUtilities {
   /// <summary>External interface exposed by the the implementation of <see cref="HexBoard{THex}"/>.</summary>
   public interface IBoard<out THex> : IDirectedNavigableBoard, IFovBoard<THex> where THex : IHex {
-    /// <summary>TODO</summary>
+    /// <summary>Gets the extent in pixels o fhte grid on which hexes are to be laid out. </summary>
     Size GridSize    { get; }
 
     /// <summary>Range beyond which Fast PathFinding is used instead of Stable PathFinding.</summary>
     int  RangeCutoff { get; }
 
-    /// <summary>TODO</summary>
+    /// <summary>Returns whether the specified hex coordinates as a valid hex on this board.</summary>
     new bool IsOnboard(HexCoords coords);
 
-    /// <summary>TODO</summary>
+    /// <summary>Returns the Elevation Above-Sea-Level for a hex with the specified ElevationLevel.</summary>
     int      ElevationASL(int elevationLevel);
   }
 
@@ -146,15 +146,18 @@ namespace PGNapoleonics.HexUtilities {
 
     #region Drawing support
     ///  <inheritdoc/>
-    public BoardStorage<THex> BoardHexes    { get; protected set; }
+    public BoardStorage<THex> BoardHexes        { get; protected set; }
+
+    /// <summary>Offset of hex centre from upper-left corner, as a <see cref="Size"/> struct.</summary>
+    public Size               CentreOfHexOffset { get; private set; }
     ///  <inheritdoc/>
-    public Size               GridSize      { get; private set; }
+    public Size               GridSize          { get; private set; }
     ///  <inheritdoc/>
-    public GraphicsPath       HexgridPath   { get; private set; }
+    public GraphicsPath       HexgridPath       { get; private set; }
     ///  <inheritdoc/>
-    public Size               MapSizeHexes  { get; private set; }
+    public Size               MapSizeHexes      { get; private set; }
     ///  <inheritdoc/>
-    public Size               MapSizePixels { get; private set; }
+    public Size               MapSizePixels     { get; private set; }
 
     /// <summary>Returns the location and extent in hexes, as a <see cref="CoordsRectangle"/>, of the current clipping region.</summary>
     protected CoordsRectangle  GetClipInHexes(RectangleF visibleClipBounds, Size boardSizeHexes) {
@@ -171,13 +174,14 @@ namespace PGNapoleonics.HexUtilities {
     /// <param name="gridSize"><c>Size</c> struct of the horizontal and vertical
     /// extent (in pixels) of the grid on which hexes are to be laid out on.</param>
     public void  SetGridSize(Size mapSizeHexes, Size gridSize) {
-      MapSizeHexes  = mapSizeHexes;
-      GridSize      = gridSize;
-      HexgridPath   = SetGraphicsPath();
-      MapSizePixels = MapSizeHexes 
-                    * new IntMatrix2D(GridSize.Width,                 0, 
-                                                   0,    GridSize.Height, 
-                                      GridSize.Width/3,  GridSize.Height/2);;
+      MapSizeHexes      = mapSizeHexes;
+      GridSize          = gridSize;
+      CentreOfHexOffset = new Size(GridSize.Width * 2 / 3, GridSize.Height / 2);
+      HexgridPath       = SetGraphicsPath();
+      MapSizePixels     = MapSizeHexes 
+                        * new IntMatrix2D(GridSize.Width,                 0, 
+                                                       0,    GridSize.Height, 
+                                          GridSize.Width/3,  GridSize.Height/2);;
     }
     GraphicsPath SetGraphicsPath() {
       GraphicsPath path     = null;
@@ -218,7 +222,7 @@ namespace PGNapoleonics.HexUtilities {
     #endregion
   }
 
-    /// <summary>TODO</summary>
+    /// <summary>Extensions for the HexBoard class.</summary>
   public static partial class HexBoardExtensions {
     /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
     public static IDirectedPath GetDirectedPath(this IBoard<IHex> @this, IHex start, IHex goal) {
@@ -251,25 +255,25 @@ namespace PGNapoleonics.HexUtilities {
       return @this.GetFieldOfView(origin);
     }
 
-    /// <summary>TODO</summary>
+    /// <summary>Gets a Field-of-View for this board asynchronously.</summary>
     public static Task<IFov> GetFieldOfViewAsync(this IFovBoard<IHex> @this, HexCoords origin) {
       return @this.GetFieldOfViewAsync(origin, FovTargetMode.EqualHeights);
     }
 
-    /// <summary>TODO</summary>
+    /// <summary>Gets a Field-of-View for this board asynchronously.</summary>
     public static Task<IFov> GetFieldOfViewAsync(this IFovBoard<IHex> @this, HexCoords origin, FovTargetMode targetMode) {
       return Task.Run<IFov>(
         () => @this.GetFieldOfView(origin, targetMode)
       );
     }
     
-    /// <summary>TODO</summary>
+    /// <summary>Gets a Field-of-View for this board synchronously.</summary>
     public static IFov GetFieldOfView(this IFovBoard<IHex> @this, HexCoords origin) {
       if (@this==null) throw new ArgumentNullException("this");
       return @this.GetFieldOfView(origin, FovTargetMode.EqualHeights);
     }
 
-    /// <summary>TODO</summary>
+    /// <summary>Gets a Field-of-View for this board synchronously.</summary>
     public static IFov GetFieldOfView(this IFovBoard<IHex> @this, HexCoords origin, FovTargetMode targetMode) {
       TraceFlags.FieldOfView.Trace("GetFieldOfView");
       var fov = new ArrayFieldOfView(@this);

@@ -46,7 +46,7 @@ namespace PGNapoleonics.HexUtilities {
   /// demand (and caching the result).
   /// </remarks>
   [DebuggerDisplay("User: {User}")]
-  public struct HexCoords : IEquatable<HexCoords> {
+  public struct HexCoords : IEquatable<HexCoords>, IFormattable  {
     #region static members
     /// <summary>TODO</summary>
     public static HexCoords EmptyCanon { get { return _EmptyCanon; } }
@@ -129,9 +129,67 @@ namespace PGNapoleonics.HexUtilities {
       return ( Math.Abs(deltaX) + Math.Abs(deltaY) + Math.Abs(deltaX-deltaY) ) / 2;
     }
 
-    /// <inheritDoc/>
-    public override string ToString() { return string.Format(CultureInfo.InvariantCulture,
-      "User: {0}", User); }
+    /// <summary>Culture-invariant string representation of this instance's value.</summary>
+    public override string ToString() { return ToString("g", CultureInfo.InvariantCulture); }
+
+    /// <summary>Converts the value of this instance to its equivalent string representation using the 
+    /// specified format and culture-specific format information.</summary>
+    /// <param name="format">Type: System.String. 
+    /// 
+    /// > A standard or custom numeric format string.</param>
+    /// <param name="formatProvider">Type: IFormatProvider<para/>
+    /// 
+    /// > An object that supplies culture-specific formatting information.</param>
+    /// <remarks>Format characters:
+    /// - 'C': Canonical formatting - Int2Vector output of the Canonical coordinates for this hex;
+    /// - 'G': General formatting - same as 'R';  
+    /// - 'N': Norm formatting - Scalar output of the Range of this hex from canonical (0,0);
+    /// - 'R': Rectangular formatting - Int2Vector output of the User coordinates for this hex;
+    /// - 'U': Custom formatting - Int2Vector output of the Custom coordinates for this hex;
+    /// In all cases the leading character of the format string is stripped off and parsed, 
+    /// with the remainder passed to the formatter completing the display formatting.
+    /// </remarks>
+    public string ToString(string format, IFormatProvider formatProvider) {
+      if (format==null || format.Length==0) format = "G";
+      var formatChar = format[0];
+      format = format.Substring(1);
+      switch(formatChar) {
+        default:    throw new FormatException();
+        case 'G':   return this.User.ToString(format, formatProvider);
+        case 'C':   return this.Canon.ToString(format, formatProvider);
+        case 'U':   return this.UserToCustom().ToString(format, formatProvider);
+        case 'R':   if (Char.IsDigit(format[0])) format =  "G" + format;
+                    return this.Range(HexCoords.EmptyCanon).ToString(format, formatProvider);
+
+        case 'g':   return "User: " + this.User.ToString(format, formatProvider);
+        case 'c':   return "Canon: " + this.Canon.ToString(format, formatProvider);
+        case 'u':   return "Custom: " + this.UserToCustom().ToString(format, formatProvider);
+        case 'r':   if (Char.IsDigit(format[0])) format =  "G" + format;
+                    return "Range: " + this.Range(HexCoords.EmptyCanon).ToString(format, formatProvider);
+      }
+    }
+
+    /// <summary>Vector sum; <see cref="Add"/>.</summary>
+    public static HexCoords operator + (HexCoords lhs, HexCoords rhs) {
+      return HexCoords.NewCanonCoords(lhs.Canon + rhs.Canon);
+    }
+
+    /// <summary>Vector difference; <see cref="Subtract"/>.</summary>
+    public static HexCoords operator - (HexCoords lhs, HexCoords rhs) {
+      return HexCoords.NewCanonCoords(lhs.Canon - rhs.Canon);
+    }
+    /// <summary>(Canonical) vector sum of lhs plus rhs.</summary>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <returns>A new HexCoords struct containing the vector sum of lhs and rhs calculated 
+    /// in the Canonical frame of reference.</returns>
+    public static HexCoords Add(HexCoords lhs, HexCoords rhs) { return lhs + rhs; }
+    /// <summary>(Canonical) vector difference of lhs plus rhs.</summary>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <returns>A new HexCoords struct containing the vector sum of lhs and rhs calculated 
+    /// in the Canonical frame of reference.</returns>
+    public static HexCoords Subtract(HexCoords lhs, HexCoords rhs) { return lhs - rhs; }
     #endregion
 
     #region Value Equality

@@ -37,25 +37,25 @@ namespace PGNapoleonics.HexUtilities {
   /// <summary>Interface defining the functionality required of a form or control hosting an instannce of <see cref="Hexgrid"/>.</summary>
   public interface IHexgridHost {
     /// <summary>TODO</summary>
-    Size    ClientSize      { get; }
+    Size            ClientSize       { get; }
 
     /// <summary>Scaled <code>Size</code> of each hexagon in grid, being the 'full-width' and 'full-height'.</summary>
-    SizeF   GridSizeF       { get; }
+    SizeF           GridSizeF        { get; }
 
     /// <summary>Margin of map in pixels.</summary>
-    Size    MapMargin       { get; }
+    Size            MapMargin        { get; }
 
     /// <summary>Current scaling factor for map display.</summary>
-    float   MapScale        { get; }
+    float           MapScale         { get; }
 
     /// <summary>Rectangular extent in pixels of the defined mapboard.</summary>
-    Size    MapSizePixels   { get; }
+    Size            MapSizePixels    { get; }
 
     /// <summary>Returns the current scroll position, as per the <b>WinForms</b> behaviour of <i>AutoScroll</i>.</summary>
-    Point   ScrollPosition  { get; }
+    Point           ScrollPosition   { get; }
 
     /// <summary>IUserCoords for the currently visible extent (location &amp; size), as a Rectangle.</summary>
-    CoordsRectangle     VisibleRectangle { get; }
+    CoordsRectangle VisibleRectangle { get; }
   }
 
   /// <summary>TODO</summary>

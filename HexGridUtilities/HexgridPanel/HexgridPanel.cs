@@ -41,38 +41,44 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
-  /// <summary>TODO</summary>
+  /// <summary>Interface contract required of a map board to be displayed by the HexgridPanel.</summary>
   public interface IMapDisplay {
-    /// <summary>TODO</summary>
+    /// <summary>Gets the extens in pixels of the grid upon whch hexes are to be laid out.</summary>
+    /// <remarks>>Width is 3/4 of the point-to-point width of each hex, and Height is the full height.
+    /// Hexes should be defined assumed flat-topped and pointy-sided, and the entire board transposed 
+    /// if necessary.</remarks>
     Size   GridSize      { get; }
     /// <summary>Rectangular extent in pixels of the defined mapboard.</summary>
     Size   MapSizePixels { get; }
-    /// <summary>TODO</summary>
+    /// <summary>Gets the display name for this HexgridPanel host.</summary>
     string Name          { get; }
 
-    /// <summary>TODO</summary>
+    /// <summary>Gets the CoordsRectangle description of the clipping region.</summary>
+    /// <param name="point">Upper-left corner in pixels of the clipping region.</param>
+    /// <param name="size">Width and height of the clipping region in pixels.</param>
     CoordsRectangle GetClipCells(PointF point, SizeF size);
-    /// <summary>TODO</summary>
+    /// <summary>Gets the CoordsRectangle description of the clipping region.</summary>
+    /// <param name="visibleClipBounds">Rectangular extent in pixels of the clipping region.</param>
     CoordsRectangle GetClipCells(RectangleF visibleClipBounds);
 
     /// <summary>Paint the top layer of the display, graphics that changes frequently between refreshes.</summary>
     /// <param name="g">Graphics object for the canvas being painted.</param>
     void  PaintHighlight(Graphics g);
     /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
-    /// <param name="g">Graphics object for the canvas being painted.</param>
+    /// <param name="g">TYpe: Graphics<para/>Object representing the canvas being painted.</param>
     void  PaintMap(Graphics g);
     /// <summary>Paint the intermediate layer of the display, graphics that changes infrequently between refreshes.</summary>
-    /// <param name="g">Graphics object for the canvas being painted.</param>
+    /// <param name="g">TYpe: Graphics<para/>Object representing the canvas being painted.</param>
     void  PaintUnits(Graphics g);
   }
 
   /// <summary>Sub-class implementation of a <b>WinForms</b> Panel with integrated <see cref="Hexgrid"/> support.</summary>
   public partial class HexgridPanel : Panel, ISupportInitialize, IHexgridHost {
-    /// <summary>TODO</summary>
+    /// <summary>Creates a new instance of HexgridPanel.</summary>
     public HexgridPanel() {
       InitializeComponent();
     }
-    /// <summary>TODO</summary>
+    /// <summary>Creates a new instance of HexgridPanel.</summary>
     public HexgridPanel(IContainer container) {
       if (container==null) throw new ArgumentNullException("container");
       container.Add(this);
@@ -81,42 +87,45 @@ namespace PGNapoleonics.HexgridPanel {
     }
 
     #region ISupportInitialize implementation
-    /// <inheritdoc/>>
+    /// <summary>Signals the object that initialization is starting.</summary>
     public virtual void BeginInit() { 
       MapMargin = new System.Drawing.Size(5,5);
       //SetScaleList(new List<float>() {1.000F}.AsReadOnly());
       Scales = new List<float>() {1.000F}.AsReadOnly();
     }
-    /// <inheritdoc/>
+    /// <summary>Signals the object that initialization is complete.</summary>
     public virtual void EndInit() { 
       this.MakeDoubleBuffered(true);
       HotspotHex = HexCoords.EmptyUser;
     }
     #endregion
 
-    /// <summary>TODO</summary>
+    /// <summary>Announces that the mouse is now over a new hex.</summary>
     public event EventHandler<HexEventArgs> HotspotHexChange;
-    /// <summary>TODO</summary>
+    /// <summary>Announces occurrence of a mouse left-click with the <b>Alt</b> key depressed.</summary>
     public event EventHandler<HexEventArgs> MouseAltClick;
-    /// <summary>TODO</summary>
+    /// <summary>Announces occurrence of a mouse left-click with the <b>Ctl</b> key depressed.</summary>
     public event EventHandler<HexEventArgs> MouseCtlClick;
-    /// <summary>TODO</summary>
+    /// <summary>Announces a mouse left-click with no <i>shift</i> keys depressed.</summary>
     public event EventHandler<HexEventArgs> MouseLeftClick;
-    /// <summary>TODO</summary>
+    /// <summary>Announces a mouse right-click. </summary>
     public event EventHandler<HexEventArgs> MouseRightClick;
-    /// <summary>TODO</summary>
+    /// <summary>Announces a change of drawing scale on this HexgridPanel.</summary>
     public event EventHandler<EventArgs>    ScaleChange;
 
     /// <summary>MapBoard hosting this panel.</summary>
     public IMapDisplay Host          {
       get { return _host; }
-      set { _host = value; MapBuffer = null; }
+      set { _host = value; SetMapDirty(); }
     } IMapDisplay _host;
 
-    /// <summary>TODO</summary>
+    /// <summary>Force repaint of backing buffer for Map underlay.</summary>
+    public void SetMapDirty() { MapBuffer = null; }
+
+    /// <summary>Gets or sets the coordinates of the hex currently underneath the mouse.</summary>
     public HexCoords   HotspotHex    { get; private set; }
 
-    /// <summary>TODO</summary>
+    /// <summary>Gets or sets whether the board is transposed from flat-topped hexes to pointy-topped hexes.</summary>
     public bool        IsTransposed  { 
       get { return _isTransposed; }
       set { _isTransposed = value;  
@@ -180,9 +189,9 @@ namespace PGNapoleonics.HexgridPanel {
     ///<inheritdoc/>
     protected Hexgrid    Hexgrid        { get; private set; }
     Size    IHexgridHost.ClientSize     { get { return ClientSize; } }
-    /// <summary>TODO</summary>
+    /// <summary>Gets a SizeF struct for the hex GridSize under the current scaling.</summary>
     public SizeF   GridSizeF      { get { return Host.GridSize.Scale(MapScale); } }
-    /// <summary>TODO</summary>
+    /// <summary>Gets the current Panel AutoScrollPosition.</summary>
     public Point   ScrollPosition { get { return AutoScrollPosition; } }
 
     CoordsRectangle GetClipCells(PointF point, SizeF size) {
@@ -218,16 +227,16 @@ namespace PGNapoleonics.HexgridPanel {
     #endregion
 
     #region Painting
-    /// <summary>TODO</summary>
+    /// <summary>Internal handler for the OnPaintBackground event.</summary>
     protected override void OnPaintBackground(PaintEventArgs e) { ; }
-    /// <summary>TODO</summary>
+    /// <summary>Internal handler for the OnPaint event.</summary>
     protected override void OnPaint(PaintEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       base.OnPaint(e);
       if(IsHandleCreated)    PaintPanel(e.Graphics);
     }
     static readonly Matrix TransposeMatrix = new Matrix(0F,1F, 1F,0F, 0F,0F);
-    /// <summary>TODO</summary>
+    /// <summary>Service routien to paint the current clipping region.</summary>
     protected virtual void PaintPanel(Graphics g) {
       if (g==null) throw new ArgumentNullException("g");
       var scroll = Hexgrid.ScrollPosition;
@@ -244,23 +253,21 @@ namespace PGNapoleonics.HexgridPanel {
       g.DrawImageUnscaled(MapBuffer, Point.Empty);
 
       g.Restore(state); state = g.Save();
-//      g.TranslateTransform(MapMargin.Width, MapMargin.Height);
       Host.PaintUnits(g);
 
       g.Restore(state); state = g.Save();
-//      g.TranslateTransform(MapMargin.Width, MapMargin.Height);
       Host.PaintHighlight(g);
     }
     #endregion
 
     #region Double-Buffering
-    /// <summary>TODO</summary>
+    /// <summary>Gets or sets the backing buffer for the map underlay. Setting to null  forces a repaint.</summary>
     Bitmap MapBuffer     { 
       get { return _mapBuffer ?? ( _mapBuffer = PaintBuffer()); } 
       set { if (_mapBuffer!=null) _mapBuffer.Dispose(); _mapBuffer = value; }
     } Bitmap _mapBuffer;
 
-    /// <summary>TODO</summary>
+    /// <summary>Service routine to paint the backing store bitmap for the map underlay.</summary>
     Bitmap PaintBuffer() {
       var size      = MapSizePixels;
 
@@ -280,15 +287,15 @@ namespace PGNapoleonics.HexgridPanel {
     }
     #endregion
 
-    /// <summary>TODO</summary>
+    /// <summary>Gets whether the <b>Alt</b> <i>shift</i> key is depressed.</summary>
     protected static  bool  IsAltKeyDown   { get {return ModifierKeys.HasFlag(Keys.Alt);} }
-    /// <summary>TODO</summary>
+    /// <summary>Gets whether the <b>Ctl</b> <i>shift</i> key is depressed.</summary>
     protected static  bool  IsCtlKeyDown   { get {return ModifierKeys.HasFlag(Keys.Control);} }
-    /// <summary>TODO</summary>
+    /// <summary>Gets whether the <b>Shift</b> <i>shift</i> key is depressed.</summary>
     protected static  bool  IsShiftKeyDown { get {return ModifierKeys.HasFlag(Keys.Shift);} }
 
     #region Mouse & Scroll events
-    /// <summary>TODO</summary>
+    /// <inheritdoc/>
     protected override void OnMouseClick(MouseEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       TraceFlags.Mouse.Trace(" - {0}.OnMouseClick - Shift: {1}; Ctl: {2}; Alt: {3}", 
@@ -302,7 +309,7 @@ namespace PGNapoleonics.HexgridPanel {
       else if (IsCtlKeyDown)                      OnMouseCtlClick(eventArgs);
       else                                        OnMouseLeftClick(eventArgs);
     }
-    /// <summary>TODO</summary>
+    /// <inheritdoc/>
     protected override void OnMouseMove(MouseEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       var newHex = GetHexCoords(e.Location);
@@ -312,7 +319,7 @@ namespace PGNapoleonics.HexgridPanel {
 
       base.OnMouseMove(e);
     }
-    /// <summary>TODO</summary>
+    /// <inheritdoc/>
     protected override void OnMouseWheel(MouseEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       TraceFlags.ScrollEvents.Trace(" - {0}.OnMouseWheel: {1}", Host.Name, e.ToString()); 
@@ -326,38 +333,38 @@ namespace PGNapoleonics.HexgridPanel {
       Invalidate();
     }
 
-    /// <summary>TODO</summary>
+    /// <inheritdoc/>
     protected virtual void OnMouseAltClick(HexEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       var handler = MouseAltClick;
       if( handler != null ) handler(this, e);
     }
-    /// <summary>TODO</summary>
+    /// <summary>Internal handler for the MouseCtlClick event.</summary>
     protected virtual void OnMouseCtlClick(HexEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       var handler = MouseCtlClick;
       if( handler != null ) handler(this, e);
     }
-    /// <summary>TODO</summary>
+    /// <summary>Internal handler for the MouseLeftClic event.</summary>
     protected virtual void OnMouseLeftClick(HexEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       var handler = MouseLeftClick;
       if( handler != null ) handler(this, e);
     }
-    /// <summary>TODO</summary>
+    /// <summary>Internal handler for the MouseRightClick event.</summary>
     protected virtual void OnMouseRightClick(HexEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       var handler = MouseRightClick;
       if( handler != null ) handler(this, e);
     }
 
-    /// <summary>TODO</summary>
+    /// <summary>Internal handler for the HotspotHexChange event.</summary>
     protected virtual void OnHotspotHexChange(HexEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       var handler = HotspotHexChange;
       if( handler != null ) handler(this, e);
     }
-    /// <summary>TODO</summary>
+    /// <summary>Internal handler for the SclaeChange event.</summary>
     protected virtual void OnScaleChange(EventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       var handler = ScaleChange;
@@ -391,7 +398,7 @@ namespace PGNapoleonics.HexgridPanel {
       }
       return remainder;
     }
-    /// <summary>TODO</summary>
+    /// <summary>Service routine to execute a Panel scroll.</summary>
     public void ScrollPanel(ScrollEventType type, ScrollOrientation orientation, int sign) {
       if( sign != 0 ) {
         ScrollProperties          scroll;
