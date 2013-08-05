@@ -31,7 +31,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 namespace  PGNapoleonics.WinForms {
-  /// <summary>TODO</summary>
+  /// <summary>A Last-chance THread Exception handler.</summary>
   [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage()]
   public class ThreadExceptionHandler {
     ///<summary>Handles the thread exception.</summary> 
@@ -39,7 +39,8 @@ namespace  PGNapoleonics.WinForms {
       "CA1031:DoNotCatchGeneralExceptionTypes"), 
     System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", 
       "CA1303:Do not pass literals as localized parameters", 
-      MessageId = "System.Windows.Forms.MessageBox.Show(System.String,System.String,System.Windows.Forms.MessageBoxButtons,System.Windows.Forms.MessageBoxIcon)"), 
+      MessageId = "System.Windows.Forms.MessageBox.Show(System.String,System.String,"
+                + "System.Windows.Forms.MessageBoxButtons,System.Windows.Forms.MessageBoxIcon)"), 
     System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
       "CA1804:RemoveUnusedLocals", MessageId = "result"), 
     System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", 
@@ -86,61 +87,6 @@ namespace  PGNapoleonics.WinForms {
         dialog.Show();
       } finally { if (dialog!=null) dialog.Dispose(); }
       return DialogResult.Abort;
-    }
-  }
-
-    /// <summary>TODO</summary>
-  public static partial class ControlExtensions {
-    /// <summary>Executes Action asynchronously on the UI thread, without blocking the calling thread.</summary>
-    /// <param name="this"></param>
-    /// <param name="action"></param>
-    public static void UIThread(this Control @this, Action action) {
-      if (@this==null) throw new ArgumentNullException("this");
-      if (action==null) throw new ArgumentNullException("action");
-
-      if (@this.InvokeRequired)   @this.BeginInvoke(action);
-      else                        action.Invoke();
-    }
-
-    /// <summary>Executes Action asynchronously on the UI thread, without blocking the calling thread.</summary>
-    /// <param name="this"></param>
-    /// <param name="action"></param>
-    /// <param name="args"></param>
-    public static void UIThread(this Control @this, Action<object[]> action, params object[] args) {
-      if (@this==null) throw new ArgumentNullException("this");
-      if (action==null) throw new ArgumentNullException("action");
-
-      if (@this.InvokeRequired)   @this.BeginInvoke(action,args);
-       else                       action.Invoke(args);
-      
-    }
-  }
-
-    /// <summary>TODO</summary>
-  public static partial class FormExtensions {
-    /// <summary>Executes Action asynchronously on the UI thread, without blocking the calling thread.</summary>
-    /// <param name="this"></param>
-    /// <param name="action"></param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-    public static void UIThread(this Form @this, Action action) {
-      if (@this==null) throw new ArgumentNullException("this");
-      if (action==null) throw new ArgumentNullException("action");
-
-      if (@this.InvokeRequired)   @this.BeginInvoke(action);
-      else                        action.Invoke();
-    }
-
-    /// <summary>Executes Action asynchronously on the UI thread, without blocking the calling thread.</summary>
-    /// <param name="this"></param>
-    /// <param name="action"></param>
-    /// <param name="args"></param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-    public static void UIThread(this Form @this, Action<object[]> action, params object[] args) {
-      if (@this==null) throw new ArgumentNullException("this");
-      if (action==null) throw new ArgumentNullException("action");
-
-      if (@this.InvokeRequired)   @this.BeginInvoke(action,args);
-       else                       action.Invoke(args);
     }
   }
 }

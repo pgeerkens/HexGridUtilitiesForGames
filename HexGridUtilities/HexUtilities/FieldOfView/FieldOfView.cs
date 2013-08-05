@@ -27,42 +27,38 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
+using System.Collections;
 
-using PGNapoleonics.HexUtilities.Common;
+namespace PGNapoleonics.HexUtilities.FieldOfView {
+  /// <summary>Structure returned by the Field-of-View factory.</summary>
+  public interface IFov {
+    /// <summary>True if the hex at location <c>coords</c>c> is visible in this field-of-view.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
+    bool this[HexCoords coords] { get; }
+  }
 
-namespace PGNapoleonics.HexUtilities.ShadowCasting {
-  internal static partial class ShadowCasting {
-    //         Sextant map
-    //                    X-axis
-    //         \     |     /
-    //           \ 3 | 2 /
-    //             \ | / 
-    //          4    +    1     
-    //             / | \
-    //           / 5 | 0 \  
-    //         /     |     \
-    //             Y-axis
-    private static List<IntMatrix2D> _dodecantMatrices = BuildDodecantMatrices();
-    private static Action<HexCoords> TranslateDodecant(IntMatrix2D matrix, Action<HexCoords> action) {
-      return (v) => action(HexCoords.NewCanonCoords(v.Canon*matrix));
-    }
-    private static Func<HexCoords,T> TranslateDodecant<T>(IntMatrix2D matrix, Func<HexCoords,T> func) {
-      return (v) => func(HexCoords.NewCanonCoords(v.Canon*matrix));
+  /// <summary>Implementation of IFov using a backing array of BitArray.</summary>
+  internal class ArrayFieldOfView : IFov {
+    private readonly object _syncLock = new object();
+
+    public ArrayFieldOfView(IFovBoard<IHex> board) {
+      _isOnboard  = h => board.IsOnboard(h);
+      _fovBacking = new BitArray[board.MapSizeHexes.Width]; 
+      for (var i=0; i< board.MapSizeHexes.Width; i++)
+        _fovBacking[i] = new BitArray(board.MapSizeHexes.Height);
     }
 
-    /// <summary>Build dodecant matrices from sextant matrices and reflection about theta=30.</summary>
-    static List<IntMatrix2D> BuildDodecantMatrices() {
-      var matrixRotate  = new IntMatrix2D( 0,-1, 1,1);
-      var matrixReflect = new IntMatrix2D(-1, 0, 1,1);
-      var matrices = new List<IntMatrix2D>(12);
-      matrices.Add(IntMatrix2D.Identity);
-      matrices.Add(matrixReflect);
-      for (int i=2; i<12; i+=2) {
-        matrices.Add(matrixRotate  * matrices[i-2]);
-        matrices.Add(matrixReflect * matrices[i]);
+    public bool this[HexCoords coords] { 
+      get { 
+        return _isOnboard(coords) && _fovBacking[coords.User.X][coords.User.Y];
+      } 
+      internal set { 
+        lock(_syncLock) {
+          if (_isOnboard(coords)) { _fovBacking[coords.User.X][coords.User.Y] = value; } 
+        }
       }
-      return matrices;
-    }
+    } BitArray[] _fovBacking;
+
+    Func<HexCoords,bool> _isOnboard;
   }
 }

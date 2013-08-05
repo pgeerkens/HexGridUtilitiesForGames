@@ -27,30 +27,32 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Diagnostics;
 using System.Globalization;
 
 using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexUtilities.ShadowCasting {
-  /// <summary>TODO</summary>
+namespace PGNapoleonics.HexUtilities.FieldOfView {
+  /// <summary>Field-of-View cone for shadow-casting implementation.</summary>
+  [DebuggerDisplay("{RiseRun} at {Range}; VTop: {VectorTop}; VBot: {VectorBottom}")]
   public struct FovCone : IEquatable<FovCone> {
-    /// <summary>TODO</summary>
+    /// <summary>The distance from the observer at which this FovCone was generated.</summary>
     public int          Range        { get; private set; }
-    /// <summary>TODO</summary>
+    /// <summary>The pitch angle at which visibility begisn for this FovCone. </summary>
     public RiseRun      RiseRun      { get; private set; }
-    /// <summary>TODO</summary>
+    /// <summary>The maximum yaw angle for this FovCone.</summary>
     public IntVector2D  VectorBottom { get; private set; }
-    /// <summary>TODO</summary>
+    /// <summary>The minimum yaw angle for this FovCone.</summary>
     public IntVector2D  VectorTop    { get; private set; }
 
-    /// <summary>TODO</summary>
+    /// <summary>Construct a new FovCone instance.</summary>
     internal FovCone(int range, IntVector2D top, IntVector2D bottom, RiseRun riseRun) : this() {
       this.Range        = range;
       this.RiseRun      = riseRun;
       this.VectorTop    = top;
       this.VectorBottom = bottom;
     }
-    /// <summary>TODO</summary>
+    /// <inheritdoc/>
     public override string ToString() {
       return string.Format(CultureInfo.InvariantCulture,
         "Y={0}, TopVector={1}, BottomVector={2}, RiseRun={3}",
@@ -71,14 +73,14 @@ namespace PGNapoleonics.HexUtilities.ShadowCasting {
     /// <inheritdoc/>
     bool IEquatable<FovCone>.Equals(FovCone obj) { return this == obj; }
 
-    /// <summary>Tests value-equality of two <c>FovCone</c> instances.</summary>
-    public static bool operator != (FovCone @this, FovCone obj) { return ! ( @this == obj); }
     /// <summary>Tests value-inequality of two <c>FovCone</c> instances.</summary>
-    public static bool operator == (FovCone @this, FovCone obj) {
-      return @this.Range        == obj.Range  
-         &&  @this.RiseRun      == obj.RiseRun
-         &&  @this.VectorTop    == obj.VectorTop 
-         &&  @this.VectorBottom == obj.VectorBottom;
+    public static bool operator != (FovCone @this, FovCone rhs) { return ! ( @this == rhs); }
+    /// <summary>Tests value-equality of two <c>FovCone</c> instances.</summary>
+    public static bool operator == (FovCone @this, FovCone rhs) {
+      return @this.Range        == rhs.Range  
+         &&  @this.RiseRun      == rhs.RiseRun
+         &&  @this.VectorTop    == rhs.VectorTop 
+         &&  @this.VectorBottom == rhs.VectorBottom;
     }
     #endregion
   }

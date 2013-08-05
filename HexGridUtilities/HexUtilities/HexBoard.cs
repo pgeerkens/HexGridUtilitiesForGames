@@ -36,7 +36,7 @@ using System.Threading.Tasks;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
-using PGNapoleonics.HexUtilities.ShadowCasting;
+using PGNapoleonics.HexUtilities.FieldOfView;
 
 namespace PGNapoleonics.HexUtilities {
   /// <summary>External interface exposed by the the implementation of <see cref="HexBoard{THex}"/>.</summary>
@@ -249,63 +249,5 @@ namespace PGNapoleonics.HexUtilities {
       );
     }
 
-    /// <summary>Returns the field-of-view on <c>board</c> from the hex specified by coordinates <c>coords</c>.</summary>
-    [Obsolete("Use GetFieldOfView(HexCoords) instead.")]
-    public static IFov GetFov(this IFovBoard<IHex> @this, HexCoords origin) {
-      return @this.GetFieldOfView(origin);
-    }
-
-    /// <summary>Gets a Field-of-View for this board asynchronously.</summary>
-    public static Task<IFov> GetFieldOfViewAsync(this IFovBoard<IHex> @this, HexCoords origin) {
-      return @this.GetFieldOfViewAsync(origin, FovTargetMode.EqualHeights);
-    }
-
-    /// <summary>Gets a Field-of-View for this board asynchronously.</summary>
-    public static Task<IFov> GetFieldOfViewAsync(this IFovBoard<IHex> @this, HexCoords origin, FovTargetMode targetMode) {
-      return Task.Run<IFov>(
-        () => @this.GetFieldOfView(origin, targetMode)
-      );
-    }
-    
-    /// <summary>Gets a Field-of-View for this board synchronously.</summary>
-    public static IFov GetFieldOfView(this IFovBoard<IHex> @this, HexCoords origin) {
-      if (@this==null) throw new ArgumentNullException("this");
-      return @this.GetFieldOfView(origin, FovTargetMode.EqualHeights);
-    }
-
-    /// <summary>Gets a Field-of-View for this board synchronously.</summary>
-    public static IFov GetFieldOfView(this IFovBoard<IHex> @this, HexCoords origin, FovTargetMode targetMode) {
-      TraceFlags.FieldOfView.Trace("GetFieldOfView");
-      var fov = new ArrayFieldOfView(@this);
-      if (@this.IsPassable(origin)) {
-        Func<HexCoords,int> target;
-        int               observer;
-        switch (targetMode) {
-          case FovTargetMode.EqualHeights: 
-            observer = @this[origin].ElevationASL + 1;
-            target   = coords => @this[coords].ElevationASL + 1;
-            break;
-          case FovTargetMode.TargetHeightEqualZero:
-            observer = @this[origin].HeightObserver;
-            target   = coords => @this[coords].ElevationASL;
-            break;
-          default:
-          case FovTargetMode.TargetHeightEqualActual:
-            observer = @this[origin].HeightObserver;
-            target   = coords => @this[coords].HeightTarget;
-            break;
-        }
-        ShadowCasting.ShadowCasting.ComputeFieldOfView(
-          origin, 
-          @this.FovRadius, 
-          observer,
-          coords => @this.IsOnboard(coords),
-          target,
-          coords => @this[coords].HeightTerrain,
-          coords => fov[coords] = true
-        );
-      }
-      return fov;
-    }
   }
 }

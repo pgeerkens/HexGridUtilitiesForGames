@@ -36,22 +36,22 @@ namespace PGNapoleonics.HexUtilities.Common {
   /// <typeparam name="T"></typeparam>
   public class ImmutableStackCollection<T> : IEnumerable<T> {
 
-    /// <summary>TODO</summary>
-    public T                 TopItem      { get; protected set; }
-    /// <summary>TODO</summary>
-    public ImmutableStackCollection<T> Remainder    { get; protected set; }
-    /// <summary>TODO</summary>
-    public ImmutableStackCollection<T> Push(T step) { return new ImmutableStackCollection<T>(step, this); }
+    /// <summary>Gets the top item on the stack.</summary>
+    public T                 TopItem      { get; private set; }
+    /// <summary>Gets the remainder of the stack.</summary>
+    public ImmutableStackCollection<T> Remainder    { get; private set; }
+    /// <summary>Returns a new ImmutableStack by adding <paramref name="item"/> to this stack.</summary>
+    public ImmutableStackCollection<T> Push(T item) { return new ImmutableStackCollection<T>(item, this); }
 
-    /// <summary>TODO</summary>
+    /// <summary>Construct a new empty instance.</summary>
     public ImmutableStackCollection(T start) : this(start, null) {}
-    /// <summary>TODO</summary>
-    protected ImmutableStackCollection(T topItem, ImmutableStackCollection<T> remainder) {
-      TopItem   = topItem;
+    /// <summary>Construct a new instance by Push-ing <paramref name="item"/> onto <paramref name="remainder"/>.</summary>
+    private ImmutableStackCollection(T item, ImmutableStackCollection<T> remainder) {
+      TopItem   = item;
       Remainder = remainder;
     }
 
-    /// <inheritdoc/>
+    /// <summary>Returns the stackitems in order from top to bottom.</summary>
     public IEnumerator<T> GetEnumerator() {
       for (ImmutableStackCollection<T> p = this; p != null; p = p.Remainder)  yield return p.TopItem;
     }

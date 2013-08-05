@@ -95,7 +95,7 @@ namespace PGNapoleonics.HexGridExample2 {
             this.statusLabel});
       this.toolStrip1.Location = new System.Drawing.Point(3, 0);
       this.toolStrip1.Name = "toolStrip1";
-      this.toolStrip1.Size = new System.Drawing.Size(174, 25);
+      this.toolStrip1.Size = new System.Drawing.Size(143, 25);
       this.toolStrip1.TabIndex = 0;
       // 
       // toolStripLabel1
@@ -252,7 +252,7 @@ namespace PGNapoleonics.HexGridExample2 {
       this.menuItemLandmarks.Items.AddRange(new object[] {
             "None"});
       this.menuItemLandmarks.Name = "menuItemLandmarks";
-      this.menuItemLandmarks.Size = new System.Drawing.Size(100, 25);
+      this.menuItemLandmarks.Size = new System.Drawing.Size(75, 25);
       this.menuItemLandmarks.ToolTipText = "Landmark from which shortest-paths distances are to be displayed.";
       // 
       // toolStripSeparator1
@@ -265,7 +265,7 @@ namespace PGNapoleonics.HexGridExample2 {
       this.menuItemDebug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.menuItemDebug.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.menuItemDebug.Name = "menuItemDebug";
-      this.menuItemDebug.Size = new System.Drawing.Size(87, 19);
+      this.menuItemDebug.Size = new System.Drawing.Size(87, 22);
       this.menuItemDebug.Text = "&Debug Trace";
       this.menuItemDebug.ToolTipText = "Build with DEBUG to enable this feature.";
       // 
@@ -287,6 +287,7 @@ namespace PGNapoleonics.HexGridExample2 {
       this.menuItemHelp.ShowDropDownArrow = false;
       this.menuItemHelp.Size = new System.Drawing.Size(36, 19);
       this.menuItemHelp.Text = "&Help";
+      this.menuItemHelp.Visible = false;
       // 
       // menuItemHelpContents
       // 

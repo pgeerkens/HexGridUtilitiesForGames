@@ -30,6 +30,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
+
 namespace  PGNapoleonics.WinForms {
 	/// <summary> Transparent Panel control.</summary>
 	/// <remarks>

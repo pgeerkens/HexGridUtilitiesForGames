@@ -27,10 +27,12 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Diagnostics;
 using System.Globalization;
 
-namespace PGNapoleonics.HexUtilities.ShadowCasting {
+namespace PGNapoleonics.HexUtilities.FieldOfView {
   /// <summary>TODO</summary>
+  [DebuggerDisplay("RiseRun: ({Rise} over {Run})")]
   public struct RiseRun : IEquatable<RiseRun>, IComparable<RiseRun> {
 
     /// <summary>Creates a new instance of the RiseRUn struct.</summary>
@@ -46,34 +48,34 @@ namespace PGNapoleonics.HexUtilities.ShadowCasting {
     public int Run  { get; private set; }
 
     #region Operators and Interface implementations: IEquatable<RiseRun>, IComparable<RiseRun>
-    /// <summary>TODO</summary>
+    /// <summary>Less Than operator</summary>
     public static bool operator <  (RiseRun lhs, RiseRun rhs) {
       return (lhs.Rise * rhs.Run) < (lhs.Run * rhs.Rise);
     }
-    /// <summary>TODO</summary>
+    /// <summary>Less Than or Equals operator</summary>
     public static bool operator <= (RiseRun lhs, RiseRun rhs) { return ! (lhs > rhs); }
-    /// <summary>TODO</summary>
+    /// <summary>Greater Thanoperator</summary>
     public static bool operator >  (RiseRun lhs, RiseRun rhs) {
       return (lhs.Rise * rhs.Run) > (lhs.Run * rhs.Rise);
     }
-    /// <summary>TODO</summary>
+    /// <summary>Greater Than or Equals operator</summary>
     public static bool operator >= (RiseRun lhs, RiseRun rhs) { return ! (lhs < rhs); }
-    /// <summary>TODO</summary>
+    /// <summary>Equality operator</summary>
     public static bool operator == (RiseRun lhs, RiseRun rhs) { return lhs.Equals(rhs); }
-    /// <summary>TODO</summary>
+    /// <summary>Inequality operator</summary>
     public static bool operator != (RiseRun lhs, RiseRun rhs) { return ! (lhs == rhs); }
-    /// <summary>TODO</summary>
+    /// <summary>Tests value-equality</summary>
     public bool Equals(RiseRun other) { return (this.Rise * other.Run) == (this.Run * other.Rise); }
-    /// <summary>TODO</summary>
+    /// <summary>Less-Than comparaator.</summary>
     public int CompareTo(RiseRun other) { 
       return (this == other) ?  0
            : (this  < other) ? -1 
                              : +1;
     }
-    /// <summary>TODO</summary>
+    /// <inheritdoc/>
     public override bool Equals(object obj) { return this == (RiseRun)obj; }
-    /// <summary>TODO</summary>
-    public override int GetHashCode() { return Rise ^ Run; }
+    /// <inheritdoc/>
+    public override int GetHashCode() { return (Rise << 16) ^ Run; }
     #endregion
 
     /// <inheritdoc/>

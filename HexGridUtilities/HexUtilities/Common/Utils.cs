@@ -32,7 +32,7 @@ using System.Globalization;
 using System.Reflection;
 
 namespace PGNapoleonics.HexUtilities.Common {
-    /// <summary>TODO</summary>
+    /// <summary>Type-safe extension methods for parsing Enums.</summary>
   public static partial class Utilities{
     #region Enum Parsing utilities
     /// <summary>Typesafe wrapper for <c>Enum.GetValues(typeof(TEnum).</c></summary>

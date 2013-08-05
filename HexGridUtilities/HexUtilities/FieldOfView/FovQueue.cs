@@ -29,12 +29,13 @@
 using System;
 using System.Collections.Generic;
 
-namespace PGNapoleonics.HexUtilities.ShadowCasting {
-  /// <summary>TODO</summary>
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
-  public class FovQueue {
-    internal FovQueue() : this(0) {}
-    internal FovQueue(int capacity) {
+namespace PGNapoleonics.HexUtilities.FieldOfView {
+  /// <summary>A queue of FovCOne objects to be processed</summary>
+  //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
+  //  "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+  internal class FovConeQueue {
+    internal FovConeQueue() : this(0) {}
+    internal FovConeQueue(int capacity) {
       Queue            = new Queue<FovCone>(capacity);
       IsCacheOccuppied = false;
     }
@@ -43,17 +44,17 @@ namespace PGNapoleonics.HexUtilities.ShadowCasting {
     bool           IsCacheOccuppied;
     FovCone        Cache;
 
-    /// <summary>TODO</summary>
+    /// <summary>Returns the number of elemnts in the queue.</summary>
     public int Count { get { return Queue.Count + (IsCacheOccuppied ? 1 : 0); } }
 
-    /// <summary>TODO</summary>
+    /// <summary>Returns and removes the top item in the queue.</summary>
     public FovCone Dequeue() {
       if (Queue.Count>0)    { return Queue.Dequeue(); }
       if (IsCacheOccuppied) { IsCacheOccuppied = false; return Cache; }
       throw new InvalidOperationException("Queue empty.");
     }
 
-    /// <summary>TODO</summary>
+    /// <summary>Adds a new item to the queue.</summary>
     public void Enqueue(FovCone cone) {
       if (!IsCacheOccuppied) {
         Cache            = cone;

@@ -27,6 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Text;
@@ -34,33 +35,34 @@ using System.Text;
 ///<summary>Shared technoloiges across the library, and useful gadgets.</summary>
 namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>Representation of an immutable integer 2D vector.</summary>
+  [DebuggerDisplay("({X},{Y},{W})")]
   public struct IntVector2D : IEquatable<IntVector2D>, IFormattable {
-    /// <summary>TODO</summary>
+    /// <summary>Returns the origin vector.</summary>
     public static readonly IntVector2D Empty = new IntVector2D(Point.Empty);
 
-    /// <summary>TODO</summary>
+    /// <summary>Get the x-component.</summary>
     public int X { get; private set; }
-    /// <summary>TODO</summary>
+    /// <summary>Get the y-component.</summary>
     public int Y { get; private set; }
-    /// <summary>TODO</summary>
+    /// <summary>Get the w-component (ie scale factor).</summary>
     public int W { get; private set; }
 
-    /// <summary>TODO</summary>
-    public IntVector2D(Point point)         : this(point.X, point.Y, 1) {}
-    /// <summary>TODO</summary>
-    public IntVector2D(Size size)           : this(size.Width, size.Height, 1) {}
-    /// <summary>TODO</summary>
-    public IntVector2D(IntVector2D v)       : this(v.X, v.Y, 1) {}
-    /// <summary>TODO</summary>
-    public IntVector2D(int x, int y)        : this(x, y, 1) {}
-    /// <summary>TODO</summary>
-    public IntVector2D(int x, int y, int w) : this() {
+    /// <summary>Construct a new instance from <paramref name="point"/>.</summary>
+    public IntVector2D(Point point)             : this(point.X, point.Y, 1) {}
+    /// <summary>Construct a new instance from <paramref name="size"/>.</summary>
+    public IntVector2D(Size size)               : this(size.Width, size.Height, 1) {}
+    /// <summary>Construct a new instance from <paramref name="intVector2D"/>.</summary>
+    public IntVector2D(IntVector2D intVector2D) : this(intVector2D.X, intVector2D.Y, 1) {}
+    /// <summary>Construct a new instance from <paramref name="x"/> and .</summary>
+    public IntVector2D(int x, int y)            : this(x, y, 1) {}
+    /// <summary>Construct a new instance from x, y, and w.</summary>
+    public IntVector2D(int x, int y, int w)     : this() {
       X = x;
       Y = y;
       W = w;
     }
 
-    /// <summary>TODO</summary>
+    /// <summary>Returns a new instance with coordinates normalized using integer arithmetic.</summary>
     public IntVector2D Normalize() {
       switch (W) {
         case 0:   return Empty; // uninitialized!
@@ -77,7 +79,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     #region Scalar operators
     /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
     public static IntVector2D operator * (int s, IntVector2D v) { return v * s; }
-    /// <summary>TODO</summary>
+    /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
     public static IntVector2D operator * (IntVector2D v, int s) {
       return new IntVector2D(v.X*s, v.Y*s);
     }
@@ -89,13 +91,13 @@ namespace PGNapoleonics.HexUtilities.Common {
     public static IntVector2D operator / (IntVector2D v, float s) {
       return new IntVector2D((int)Math.Floor(v.X/(float)s), (int)Math.Floor(v.Y/(float)s));
     }
-    /// <summary>TODO</summary>
+    /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
     public static IntVector2D Multiply (int s, IntVector2D v) { return v * s; }
-    /// <summary>TODO</summary>
+    /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
     public static IntVector2D Multiply (IntVector2D v, int s) { return v * s; }
-    /// <summary>TODO</summary>
+    /// <summary>Scalar Division into a new IntegerVector2D.</summary>
     public static IntVector2D Divide (IntVector2D v, int i)   { return v / i; }
-    /// <summary>TODO</summary>
+    /// <summary>Scalar Division into a new IntegerVector2D.</summary>
     public static IntVector2D Divide (IntVector2D v, float s) { return v / s; }
     #endregion
 
@@ -124,22 +126,22 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>Vector Subtraction of two <code>IntVector2D</code> as a new <code>IntVector2D</code></summary>
     public static IntVector2D Subtract (IntVector2D v1, IntVector2D v2) { return v1 - v2; }
 
-    /// <summary>TODO</summary>
+    /// <summary>Returns the inner- / scalar / dot-product of v1 and v2.</summary>
     public static int InnerProduct (IntVector2D v1, IntVector2D v2) { return v1 * v2; }
-    /// <summary>TODO</summary>
+    /// <summary>Returns the vector corss-product of v1 and v2.</summary>
     public static int CrossProduct (IntVector2D v1, IntVector2D v2) { return v1 ^ v2; }
 
     #endregion
 
     #region Casts
-    /// <summary>TODO</summary>
-    public static implicit operator IntVector2D (Point p) { return new IntVector2D(p);  }
-    /// <summary>TODO</summary>
-    public static implicit operator IntVector2D (Size s)  { return new IntVector2D(s);  }
-    /// <summary>TODO</summary>
-    public static implicit operator Point (IntVector2D v) { return new Point(v.X, v.Y); }
-    /// <summary>TODO</summary>
-    public static implicit operator Size (IntVector2D v)  { return new Size(v.X, v.Y);  }
+    /// <summary>Returns a new instance initialized from point.</summary>
+    public static implicit operator IntVector2D (Point point) { return new IntVector2D(point);  }
+    /// <summary>Returns a new instance initialized from size.</summary>
+    public static implicit operator IntVector2D (Size size)   { return new IntVector2D(size);  }
+    /// <summary>Returns a new Point instance initialized from vector.</summary>
+    public static implicit operator Point (IntVector2D vector) { return new Point(vector.X, vector.Y); }
+    /// <summary>Returns a new Size instance initialized from vector.</summary>
+    public static implicit operator Size (IntVector2D vector)  { return new Size(vector.X, vector.Y);  }
     #endregion
 
     #region Value Equality
@@ -147,9 +149,9 @@ namespace PGNapoleonics.HexUtilities.Common {
     public override bool Equals(object obj)              { 
       return (obj is IntVector2D) && this == (IntVector2D)obj; }
     bool IEquatable<IntVector2D>.Equals(IntVector2D rhs) { return this == rhs; }
-    /// <summary>TODO</summary>
+    /// <summary>Tests value-inequality.</summary>
     public static bool operator != (IntVector2D lhs, IntVector2D rhs) { return ! (lhs == rhs); }
-    /// <summary>TODO</summary>
+    /// <summary>Teste value-equality.</summary>
     public static bool operator == (IntVector2D lhs, IntVector2D rhs) {
       return (lhs.X == rhs.X) && (lhs.Y == rhs.Y) && (lhs.W == rhs.W);
     }

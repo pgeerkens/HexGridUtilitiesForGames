@@ -35,10 +35,10 @@ using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
-using PGNapoleonics.HexUtilities.ShadowCasting;
+using PGNapoleonics.HexUtilities.FieldOfView;
 
 /// <summary>WinForms-specific utilities, including implementation of the subclasses HexgridPanel
-/// ands MapDisplay<THex>, utilizing the System.Windows.Forms technology.</summary>
+/// and MapDisplay<THex>, utilizing the System.Windows.Forms technology.</summary>
 namespace PGNapoleonics.HexgridPanel {
   /// <summary>Abstract class representing the basic game board.</summary>
   /// <typeparam name="THex">Type of the hex for which a game board is desired.</typeparam>
@@ -47,6 +47,7 @@ namespace PGNapoleonics.HexgridPanel {
 
     #region Constructors
     /// <summary>Creates a new instance of th eMapDisplay class.</summary>
+    [Obsolete("Use MapDisplay(Size,Size,Func<HexBoard<THex>, HexCoords, THex>) instead; client should set hex size.")]
     protected MapDisplay(Size sizeHexes, Func<HexBoard<THex>, HexCoords, THex> initializeHex) 
       : this(sizeHexes, new Size(27,30), initializeHex) {}
 
@@ -59,6 +60,7 @@ namespace PGNapoleonics.HexgridPanel {
     }
 
     /// <summary>Creates a new instance of th eMapDisplay class.</summary>
+    [Obsolete("Use MapDisplay(Size,Size,Func<HexBoard<THex>, HexCoords, THex>) instead; client should set hex size.")]
     protected MapDisplay(Size sizeHexes, Func<HexBoard<THex>, HexCoords, THex> initializeHex, 
                        ReadOnlyCollection<HexCoords> landmarkCoords) 
     : this(sizeHexes, new Size(27,30), initializeHex, landmarkCoords) {}

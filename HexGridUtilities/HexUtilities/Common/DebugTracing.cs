@@ -34,7 +34,7 @@ using System.Runtime.InteropServices;
 #endif
 
 namespace PGNapoleonics.HexUtilities.Common {
-    /// <summary>TODO</summary>
+    /// <summary>enumerationof known debugging trace flags.</summary>
   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags"), Flags]
   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
   public enum TraceFlags  {

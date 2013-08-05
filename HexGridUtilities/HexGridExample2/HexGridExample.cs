@@ -34,8 +34,6 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-using PGNapoleonics.HexGridExample2.MazeExample;
-using PGNapoleonics.HexGridExample2.TerrainExample;
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;

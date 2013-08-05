@@ -32,7 +32,7 @@ using System.Drawing;
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
-namespace PGNapoleonics.HexGridExample2.MazeExample {
+namespace PGNapoleonics.HexGridExample2 {
   /// <summary>Abstract class for <c>MapGridHex</c> as used in the MazeGrid example.</summary>
   internal abstract class MazeGridHex : MapGridHex {
     /// <summary>Initializes a new instance of a <see cref="MazeGridHex"/>.</summary>

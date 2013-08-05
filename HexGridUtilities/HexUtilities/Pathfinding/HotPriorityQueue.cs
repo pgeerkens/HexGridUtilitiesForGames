@@ -41,25 +41,30 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
   public sealed class HotPriorityQueue<TValue> : IPriorityQueue<int,TValue> {
 
     int _baseIndex;
-    int  _shift;
+    int  _preferenceWidth;
     IPriorityQueue<int, TValue>                        _queue;
     IDictionary<int, HotPriorityQueueList<int,TValue>> _lists;
 
-    /// <summary>TODO</summary>
+    /// <summary>Constructs a new instance with a preferenceWidth of 0 bits.</summary>
+    /// <remarks>PreferenceWidth is the number of low-order bits on the key that are for 
+    /// alignment, the remainder being the actual left-shifted distance estimate.</remarks>
     public HotPriorityQueue() : this(0) {}
-    /// <summary>TODO</summary>
-    public HotPriorityQueue(int shift) { 
+    /// <summary>returns a new instnace with a preferenceWidthof shift bits.</summary>
+    /// <remarks>The <paramref name="preferenceWidth"/> is the number of low-order bits on 
+    /// the key that are for alignment, the remainder being the actual left-shifted distance 
+    /// estimate.</remarks>
+    public HotPriorityQueue(int preferenceWidth) { 
       const int initialSize = 2048;
-      PoolSize   = initialSize * 7/8;
-      _baseIndex = 0;
-      _shift     = shift; 
-      _queue     = new HotPriorityQueueList<int,TValue>(initialSize).PriorityQueue;
+      PoolSize         = initialSize * 7/8;
+      _baseIndex       = 0;
+      _preferenceWidth = preferenceWidth; 
+      _queue           = new HotPriorityQueueList<int,TValue>(initialSize).PriorityQueue;
     }
 
-    /// <inheritdoc/>
+    /// <summary>Returns whether any elements exist in the heap.</summary>
     public bool Any()    { return _queue.Any()  ||  (_lists!=null && _lists.Any()); }
 
-    /// <inheritdoc/>
+    /// <summary>Returns the number of elements in the heap.</summary>
     public int  Count    { get { return _queue.Count; } }
 
     /// <summary>The number of elements which are handled by a straight HeapPriorityQueue.</summary>
@@ -75,7 +80,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     }
     /// <inheritdoc/>
     public void Enqueue(HexKeyValuePair<int,TValue> item) {
-      var index = item.Key >> _shift;
+      var index = item.Key >> _preferenceWidth;
       if (index <= _baseIndex) {
         _queue.Enqueue(item);
       } else if (_lists == null && _queue.Count < PoolSize) {

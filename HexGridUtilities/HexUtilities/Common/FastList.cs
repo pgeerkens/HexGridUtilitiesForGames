@@ -15,7 +15,7 @@ namespace PGNapoleonics.HexUtilities.Common.FastIterator {
     IForEachable<TItem>, IForEachable2<TItem>{
     private TItem[] m_array;
 
-    /// <summary>TODO</summary>
+    /// <summary>Constructs a new instance from <paramref name="array"/>.</summary>
     public FastList(TItem[] array) { m_array = array; }
 
     IEnumerator<TItem> IEnumerable<TItem>.GetEnumerator(){
@@ -46,7 +46,7 @@ namespace PGNapoleonics.HexUtilities.Common.FastIterator {
       for (int i = 0; i < a.Length; i++)    functor.Invoke(a[i]);
     }
 
-    /// <summary>TODO</summary>
+    /// <summary>Gets the item at location <paramref name="index"/>.</summary>
     public TItem this[int index] { get { return m_array[index]; } }
   }
 
@@ -59,12 +59,12 @@ namespace PGNapoleonics.HexUtilities.Common.FastIterator {
   /// </remarks>
   /// <typeparam name="TItem"></typeparam>
   public interface IFastEnumerable<TItem> {
-    /// <summary>TODO</summary>
+    /// <summary>Returns the items of a list in order.</summary>
     IFastEnumerator<TItem> GetEnumerator();
   }
-    /// <summary>TODO</summary>
+    /// <summary>Returns the items of a list in order.</summary>
   public interface IFastEnumerator<T>{
-    /// <summary>TODO</summary>
+    /// <summary>Return the next item in the enumeration.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "0#")]
     bool MoveNext(ref T item);
   }
@@ -81,7 +81,7 @@ namespace PGNapoleonics.HexUtilities.Common.FastIterator {
   /// </remarks>
   /// <typeparam name="TItem"></typeparam>
   public interface IForEachable<TItem>{
-    /// <summary>TODO</summary>
+    /// <summary>Perform the supplied <paramref name="action"/> for every item in the enumeration.</summary>
     void ForEach(Action<TItem> action);
   }
 
@@ -92,13 +92,13 @@ namespace PGNapoleonics.HexUtilities.Common.FastIterator {
   /// IForEachable&amp;T>’s, just with virtual method calls in place of delegate calls:
   /// </remarks>
   public interface IForEachable2<TItem> {
-    /// <summary>TODO</summary>
+    /// <summary>Perform the action specified by <paramref name="functor"/> for every item in the enumeration.</summary>
     void ForEach(FastIteratorFunctor<TItem> functor);
   }
 
-  /// <summary>TODO</summary>
+  /// <summary>Abstract base class for a FastList functor.</summary>
   public abstract class FastIteratorFunctor<TItem>{
-    /// <summary>TODO</summary>
+    /// <summary>Perform the action associated with this functor on <paramref name="item"/>.</summary>
     public abstract void Invoke(TItem item);
   }
 
@@ -108,37 +108,37 @@ namespace PGNapoleonics.HexUtilities.Common.FastIterator {
     private int m_index = -1;
     internal ClassicEnumerable(TItem[] a) { m_a = a; }
 
-    /// <summary>TODO</summary>
+    /// <summary>Return the next item in the enumeration.</summary>
     public bool MoveNext() { return ++m_index < m_a.Length; }
-    /// <summary>TODO</summary>
+    /// <summary>Return the current item in the enumeation</summary>
     public TItem Current { get { return m_a[m_index]; } }
     object System.Collections.IEnumerator.Current { get { return Current; } }
-    /// <summary>TODO</summary>
+    /// <summary>Reset the enumerator to the start of the enumeration.</summary>
     public void Reset() { m_index = -1; }
 
     #region IDisposable implementation with Finalizer
     private bool isDisposed = false;
-    /// <summary>TODO</summary>
-    public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
     /// <inheritdoc/>
+    public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
+    /// <summary>Utility routine to do the hard-lifting for Dispose().</summary>
     protected virtual void Dispose(bool disposing) {
       if (!isDisposed) {
         if (disposing) {
         }
       }
     }
-    /// <summary>TODO</summary>
+    /// <summary>Destructor.</summary>
     ~ClassicEnumerable() { Dispose(false); }
     #endregion
   }
 
-    /// <summary>TODO</summary>
+    /// <summary>Construct a new instance.</summary>
   public class FastEnumerable<TItem> : IFastEnumerator<TItem> {
     private TItem[] m_a;
     private int m_index = -1;
     internal FastEnumerable(TItem[] a) { m_a = a; } 
 
-    /// <summary>TODO</summary>
+    /// <summary>Return the next item in the enumeration.</summary>
     public bool MoveNext(ref TItem item) {
       TItem[] a = m_a;
       int i;

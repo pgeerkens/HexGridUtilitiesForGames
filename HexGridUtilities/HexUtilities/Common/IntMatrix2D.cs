@@ -42,24 +42,22 @@ namespace PGNapoleonics.HexUtilities.Common {
       return matrix * TransposeMatrix;
     }
 
-    /// <summary>TODO</summary>
+    /// <summary>Get the x-scale component.</summary>
     public int M11 { get; private set; }
-    /// <summary>TODO</summary>
+    /// <summary>Get the X-shear component</summary>
     public int M12 { get; private set; }
-    /// <summary>TODO</summary>
+    /// <summary>Get the y-shear component</summary>
     public int M21 { get; private set; }
-    /// <summary>TODO</summary>
+    /// <summary>Get the Y-scale component</summary>
     public int M22 { get; private set; }
-    /// <summary>TODO</summary>
-    /// <summary>TODO</summary>
+    /// <summary>Get the x-translation component</summary>
     public int M31 { get; private set; }
-    /// <summary>TODO</summary>
+    /// <summary>Get the y-translationcomponent</summary>
     public int M32 { get; private set; }
-    /// <summary>TODO</summary>
+    /// <summary>Ge the normalization component</summary>
     public int M33 { get; private set; }
-    /// <summary>TODO</summary>
-    public static IntMatrix2D Identity { get { return _identity; } }
-    static IntMatrix2D _identity = new IntMatrix2D(1,0,0,1,0,0);
+    /// <summary>Get the identity matrix.</summary>
+    public static readonly IntMatrix2D Identity = new IntMatrix2D(1,0,0,1,0,0);
 
     #region Constructors
     /// <summary> Initializes a new <code>IntMatrix2D</code> as the translation defined by the vector v.</summary>

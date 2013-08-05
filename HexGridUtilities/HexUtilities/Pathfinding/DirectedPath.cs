@@ -65,7 +65,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <inheritdoc/>
     public Hexside      HexsideExit { get { return PathStep.HexsideExit; } }
-    /// <summary>TODO</summary>
+    /// <summary>Priority value (ie Estimaed distance to target + preference) for this DirectedPath.</summary>
     public int          Key         { get; private set; }
     /// <inheritdoc/>
     public DirectedPath PathSoFar   { get; private set; }
@@ -79,7 +79,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     public int          TotalSteps  { get; private set; }
     #endregion
 
-    /// <summary>TODO</summary>
+    /// <summary>Returns a new instance composed by extending this DirectedPath by one hex.</summary>
     /// <param name="hex"></param>
     /// <param name="hexside"></param>
     /// <param name="stepCost"></param>
@@ -87,7 +87,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     public DirectedPath AddStep(IHex hex, Hexside hexside, int stepCost) {
       return AddStep(new NeighbourHex(hex,hexside), stepCost, stepCost);
     }
-    /// <summary>TODO</summary>
+    /// <summary>Returns a new instance composed by extending this DirectedPath by one hex.</summary>
     /// <param name="hex"></param>
     /// <param name="hexside"></param>
     /// <param name="stepCost"></param>
@@ -96,14 +96,14 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     public DirectedPath AddStep(IHex hex, Hexside hexside, int stepCost, int key) {
       return AddStep(new NeighbourHex(hex,hexside), stepCost, key);
     }
-    /// <summary>TODO</summary>
+    /// <summary>Returns a new instance composed by extending this DirectedPath by one hex.</summary>
     /// <param name="neighbour"></param>
     /// <param name="stepCost"></param>
     /// <returns></returns>
     public DirectedPath AddStep(NeighbourHex neighbour, int stepCost) {
       return AddStep(neighbour, stepCost, stepCost);
     }
-    /// <summary>TODO</summary>
+    /// <summary>Returns a new instance composed by extending this DirectedPath by one hex.</summary>
     /// <param name="neighbour"></param>
     /// <param name="stepCost"></param>
     /// <param name="key"></param>
@@ -112,8 +112,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       return new DirectedPath(this, neighbour, TotalCost + stepCost, key);
     }
 
-    /// <summary>TODO</summary>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public override string ToString() {
       if (PathSoFar == null) 
         return string.Format(CultureInfo.InvariantCulture,"Hex: {0} arrives with TotalCost={1,3}",
@@ -123,7 +122,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
           PathStep.Hex.Coords, PathStep.HexsideEntry, TotalCost);
     }
 
-    /// <summary>TODO</summary>
+    /// <summary>Returns the ordered sequence of sub-paths comprising this DirectedPath.</summary>
     public IEnumerator<IDirectedPath> GetEnumerator() {
       yield return this;
       for (var p = (IDirectedPath)this; p.PathSoFar != null; p = p.PathSoFar) 
@@ -133,10 +132,10 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
 
     /////////////////////////////  Internals  //////////////////////////////////
-    /// <summary>TODO</summary>
+    /// <summary>Returns a DirectedPath composed by extending this DirectedPath by one hex.</summary>
     internal DirectedPath(IHex start) : this(null, new NeighbourHex(start), 0, 0) {}
 
-    /// <summary>TODO</summary>
+    /// <summary>Returns a DirectedPath composed by extending this DirectedPath by one hex.</summary>
     internal DirectedPath(DirectedPath nextSteps, NeighbourHex neighbour, int totalCost, int key) {
       PathStep    = neighbour;
       PathSoFar   = nextSteps;

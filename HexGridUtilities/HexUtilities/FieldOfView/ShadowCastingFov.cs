@@ -35,21 +35,84 @@ using PGNapoleonics.HexUtilities.Common;
 
 /// <summary>Fast efficient <b>Shadow-Casting</b> 
 /// implementation of 3D Field-of-View on a <see cref="Hexgrid"/> map.</summary>
-namespace PGNapoleonics.HexUtilities.ShadowCasting {
+namespace PGNapoleonics.HexUtilities.FieldOfView {
+    /// <summary>Enumeration of line-of-sight modes</summary>
+  public enum FovTargetMode {
+    /// <summary>Target height and observer height both set to the same constant value (ShadowCasting.DefaultHeight) above ground eleevation</summary>
+    EqualHeights,
+    /// <summary>Use actual observer height and ground level as target height.</summary>
+    TargetHeightEqualZero,
+    /// <summary>Use actual observer and target height.</summary>
+    TargetHeightEqualActual
+  }
+
   /// <summary>Credit: Eric Lippert</summary>
   /// <a href="http://blogs.msdn.com/b/ericlippert/archive/2011/12/29/shadowcasting-in-c-part-six.aspx">Shadow Casting in C# Part Six</a>
-  internal static partial class ShadowCasting {
+  public static partial class ShadowCasting {
+    /// <summary>Height used for observer and target when FovTargetMode = EqualHeights. </summary>
+    public static int DefaultHeight { 
+      get {return _defaultHeight;}
+      set {_defaultHeight = value;}
+    } static int _defaultHeight = 1;
 
-    /// <summary></summary>
+    /// <summary>Calculate Field-of-View from a specified TargetMode.</summary>
     /// <remarks>
-    /// Takes a circle in the form of a center point and radius, and a function
-    /// that can tell whether a given cell is opaque. Calls the setFoV action on
-    /// every cell that is both within the radius and visible from the center. 
+    /// It is important for realiism that observerHeight > board[observerCoords].ElevationASL, 
+    /// or no parallax over the current ground elevation will be observed. TerrainHeight is the 
+    /// ElevationASL of the hex, plus the height of any blocking in the hex, usually due to terrain 
+    /// but sometimes occuppying units will block vision as well. Control this in the implementation 
+    /// of IFovBoard&lt;IHex&gt;.</remarks>
+    /// <param name="observerCoords">Cordinates of observer;s hex.</param>
+    /// <param name="board">A reference to an IFovBoard&lt;IHex&gt; instance.</param>
+    /// <param name="targetMode">TargetMode value for determining target visibility.</param>
+    /// <param name="setFieldOfView">Sets a hex as visible in the Field-of-View.</param>
+    public static void ComputeFieldOfView(
+      HexCoords            observerCoords,
+      IFovBoard<IHex>      board,
+      FovTargetMode        targetMode, 
+      Action<HexCoords>    setFieldOfView
+    ) {
+      Func<HexCoords,int> targetHeight;
+      int                 observerHeight;
+      switch (targetMode) {
+        case FovTargetMode.EqualHeights: 
+          targetHeight   = coords => board[coords].ElevationASL + DefaultHeight;
+          observerHeight = targetHeight(observerCoords);
+          break;
+        case FovTargetMode.TargetHeightEqualZero:
+          targetHeight   = coords => board[coords].ElevationASL;
+          observerHeight = board[observerCoords].HeightObserver;
+          break;
+        default:
+        case FovTargetMode.TargetHeightEqualActual:
+          targetHeight   = coords => board[coords].HeightTarget;
+          observerHeight = board[observerCoords].HeightObserver;
+          break;
+      }
+
+      ShadowCasting.ComputeFieldOfView(
+        observerCoords, 
+        board.FovRadius, 
+        observerHeight,
+        board.IsOnboard,
+        targetHeight,
+        coords => board[coords].HeightTerrain,
+        setFieldOfView
+      );
+    }
+
+    /// <summary>Calculate Field-of-View from a detailed prescription.</summary>
+    /// <remarks>
+    /// It is important for realiism that observerHeight > board[observerCoords].ElevationASL, 
+    /// or no parallax over the current ground elevation will be observed. TerrainHeight is the 
+    /// ElevationASL of the hex, plus the height of any blocking in the hex, usually due to terrain 
+    /// but sometimes occuppying units will block vision as well. Control this with the definition 
+    /// of the observerHeight, targetHeight, and terrainHeight delegates.
     /// </remarks>
     /// <param name="observerCoords">Cordinates of observer;s hex.</param>
     /// <param name="radius">Maximum radius for Field-of-View.</param>
     /// <param name="observerHeight">Height (ASL) of the observer's eyes.</param>
-    /// <param name="isOnBoard">Is this hex on the baoard.</param>
+    /// <param name="isOnboard">Returns whether this hex on the baoard.</param>
     /// <param name="targetHeight">Returns ground level (ASL) of supplied hex.</param>
     /// <param name="terrainHeight">Returns height (ASL) of terrain in supplied hex.</param>
     /// <param name="setFieldOfView">Sets a hex as visible in the Field-of-View.</param>
@@ -57,7 +120,7 @@ namespace PGNapoleonics.HexUtilities.ShadowCasting {
       HexCoords            observerCoords, 
       int                  radius, 
       int                  observerHeight,
-      Func<HexCoords,bool> isOnBoard,
+      Func<HexCoords,bool> isOnboard,
       Func<HexCoords,int>  targetHeight, 
       Func<HexCoords,int>  terrainHeight,
       Action<HexCoords>    setFieldOfView
@@ -78,7 +141,7 @@ namespace PGNapoleonics.HexUtilities.ShadowCasting {
           ComputeFieldOfViewInDodecantZero(
             radius,
             observerHeight,
-            TranslateDodecant(matrix, isOnBoard),
+            TranslateDodecant(matrix, isOnboard),
             TranslateDodecant(matrix, targetHeight),
             TranslateDodecant(matrix, terrainHeight),
             TranslateDodecant(matrix, setFieldOfView));
@@ -91,7 +154,7 @@ namespace PGNapoleonics.HexUtilities.ShadowCasting {
     private static void ComputeFieldOfViewInDodecantZero(
       int                  radius,
       int                  observerHeight,
-      Func<HexCoords,bool> isOnBoard,
+      Func<HexCoords,bool> isOnboard,
       Func<HexCoords, int> targetHeight,
       Func<HexCoords, int> terrainHeight,
       Action<HexCoords>    setFieldOfView)
@@ -102,11 +165,11 @@ namespace PGNapoleonics.HexUtilities.ShadowCasting {
       #endif
 
       var currentCoords = HexCoords.NewCanonCoords(0,1);
-      if ( ! isOnBoard(currentCoords) ) return;
+      if ( ! isOnboard(currentCoords) ) return;
 
       if (radius > 0) setFieldOfView(currentCoords);
 
-      var queue   = new FovQueue();
+      var queue   = new FovConeQueue();
       var current = new FovCone(
                     2, 
                     new IntVector2D(1,2), 
@@ -116,7 +179,7 @@ namespace PGNapoleonics.HexUtilities.ShadowCasting {
         current = ComputeFoVForRange(
           observerHeight,
           current,
-          isOnBoard,
+          isOnboard,
           targetHeight,
           terrainHeight,
           setFieldOfView,
@@ -124,10 +187,10 @@ namespace PGNapoleonics.HexUtilities.ShadowCasting {
       }
     }
 
-    /// <summary></summary>
+    /// <summary>Processes the supplied FovCone and returns the next FovCone to process.</summary>
     /// <param name="observerHeight"></param>
     /// <param name="cone"></param>
-    /// <param name="isOnBoard"></param>
+    /// <param name="isOnboard"></param>
     /// <param name="targetHeight"></param>
     /// <param name="terrainHeight"></param>
     /// <param name="setFieldOfView"></param>
@@ -153,11 +216,11 @@ namespace PGNapoleonics.HexUtilities.ShadowCasting {
     private static FovCone ComputeFoVForRange(
       int                  observerHeight,
       FovCone              cone,
-      Func<HexCoords,bool> isOnBoard,
+      Func<HexCoords,bool> isOnboard,
       Func<HexCoords, int> targetHeight,
       Func<HexCoords, int> terrainHeight,
       Action<HexCoords>    setFieldOfView,
-      FovQueue             queue)
+      FovConeQueue         queue)
     {
       Action<FovCone> enqueue = queue.Enqueue;
 
@@ -177,7 +240,7 @@ namespace PGNapoleonics.HexUtilities.ShadowCasting {
         while (overlapVector.GT(bottomVector)) {
           var coordsCurrent   = HexCoords.NewCanonCoords(hexX,range);
           var hexVectorBottom = VectorHexBottom(coordsCurrent);
-          if (isOnBoard(coordsCurrent)) { 
+          if (isOnboard(coordsCurrent)) { 
             #region Set current hex parameters
             var hexVectorTop  = VectorHexTop(coordsCurrent);
             var hexElevation  = targetHeight(coordsCurrent);
@@ -239,7 +302,7 @@ namespace PGNapoleonics.HexUtilities.ShadowCasting {
           topRiseRun  = cone.RiseRun;
         } else if (cone.RiseRun < topRiseRun) {
           topVector   = LogAndEnqueue(enqueue, range, topVector, overlapVector, topRiseRun, 6);
-          topRiseRun  = cone.RiseRun;  // TODO Why is this commented out?
+          topRiseRun  = cone.RiseRun;
         }
         #endregion
 

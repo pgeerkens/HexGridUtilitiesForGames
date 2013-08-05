@@ -32,28 +32,28 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>TODO</summary>
   public static class CustomCoords {
 
-    /// <summary>TODO</summary>
+    /// <summary>Return the coordinate vector of this hex in the Custom frame.</summary>
     public static IntVector2D UserToCustom(this HexCoords @this) {
       return @this.User * MatrixUserToCustom;
     }
-    /// <summary>TODO</summary>
+    /// <summary>Return the coordinate vector of this hex in the User frame.</summary>
     public static HexCoords CustomToUser(this IntVector2D @this) {
       return HexCoords.NewUserCoords(@this * MatrixUserToCustom);
     }
 
-    /// <summary>TODO</summary>
+    /// <summary>Initialize the conversion matrices for the Custom coordinate frame.</summary>
     public static void SetMatrices(IntMatrix2D matrix) { SetMatrices(matrix,matrix); }
 
-    /// <summary>TODO</summary>
+    /// <summary>Initialize the conversion matrices for the Custom coordinate frame.</summary>
     public static void SetMatrices(IntMatrix2D userToCustom, IntMatrix2D customToUser) {
       MatrixUserToCustom = userToCustom;
       MatrixCustomToUser = customToUser;
     }
 
-    /// <summary>TODO</summary>
+    /// <summary>Gets the conversion matrix from Custom to Rectangular (User) coordinates.</summary>
     public static IntMatrix2D MatrixCustomToUser { get; private set; }
 
-    /// <summary>TODO</summary>
+    /// <summary>Gets the conversion matrix from Rectangular (User) to Custom coordinates.</summary>
     public static IntMatrix2D MatrixUserToCustom { get; private set; }
   }
 }

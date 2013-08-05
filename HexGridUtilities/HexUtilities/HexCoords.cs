@@ -48,18 +48,18 @@ namespace PGNapoleonics.HexUtilities {
   [DebuggerDisplay("User: {User}")]
   public struct HexCoords : IEquatable<HexCoords>, IFormattable  {
     #region static members
-    /// <summary>TODO</summary>
+    /// <summary>Origin of the Canon(ical) coordinate frame.</summary>
     public static HexCoords EmptyCanon { get { return _EmptyCanon; } }
-    /// <summary>TODO</summary>
+    /// <summary>Origin of the Rectangular (User) coordinate frame.</summary>
     public static HexCoords EmptyUser  { get { return _EmptyUser; } }
 
-    /// <summary>TODO</summary>
+    /// <summary>Create a new instance located at the specified vector offset as interpreted in the Canon(ical) frame.</summary>
     public static HexCoords NewCanonCoords (IntVector2D vector){ return new HexCoords(true, vector); }
-    /// <summary>TODO</summary>
+    /// <summary>Create a new instance located at the specified vector offset as interpreted in the Rectangular (User) frame.</summary>
     public static HexCoords NewUserCoords  (IntVector2D vector){ return new HexCoords(false,vector); }
-    /// <summary>TODO</summary>
+    /// <summary>Create a new instance located at the specified x and y offsets as interpreted in the Canon(ical) frame.</summary>
     public static HexCoords NewCanonCoords (int x, int y) { return new HexCoords(true, x,y); }
-    /// <summary>TODO</summary>
+    /// <summary>Create a new instance located at the specified x and y offsets as interpreted in the ectangular (User) frame.</summary>
     public static HexCoords NewUserCoords  (int x, int y) { return new HexCoords(false,x,y); }
 
     static readonly IntMatrix2D MatrixUserToCanon = new IntMatrix2D(2, 1,  0,2,  0,0,  2);
@@ -89,7 +89,7 @@ namespace PGNapoleonics.HexUtilities {
     #endregion
 
     #region Properties
-    /// <summary>Returns an <c>IntVector2D</c> representing the Canonical (obtuse) coordinates of thsi hex.</summary>
+    /// <summary>Returns an <c>IntVector2D</c> representing the Canonical (obtuse) coordinates of this hex.</summary>
     public  IntVector2D Canon {
       get { return canonHasValue ? _Canon : ( Canon = _User * MatrixUserToCanon); }
       set { _Canon = value; canonHasValue = true; userHasValue = false; }

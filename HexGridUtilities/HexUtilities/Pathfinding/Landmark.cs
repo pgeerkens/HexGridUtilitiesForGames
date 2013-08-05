@@ -74,11 +74,11 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         _isDisposed = true;
       }
     }
-    /// <summary>TODO</summary>
+    /// <inheritdoc/>
     ~LandmarkCollection() { Dispose(false); }
     #endregion
   }
-  /// <summary>TODO</summary>
+  /// <summary>Extension methods for LandmarkCollection.</summary>
   public static class LandmarkCollectionExtensions {
     /// <summary>(Re)calculates distances for all landmarks using the provided IBoard&lt;IHex&gt; definition.</summary>
     /// <param name="this">The </param>
@@ -154,7 +154,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         _isDisposed = true;
       }
     }
-    /// <summary>TODO</summary>
+    /// <inheritdoc/>
     ~Landmark() { Dispose(false); }
     #endregion
   }

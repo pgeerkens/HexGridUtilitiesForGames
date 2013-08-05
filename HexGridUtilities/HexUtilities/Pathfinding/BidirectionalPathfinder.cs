@@ -103,7 +103,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       return pathHalves;
     }
 
-    /// <summary>TODO</summary>
+    /// <summary>Returns a measure of deviation from <paramref name="vectorGoal"/> of <paramref name="vectorGoal"/>.</summary>
     /// <param name="vectorGoal"></param>
     /// <param name="vectorHex"></param>
     /// <returns></returns>

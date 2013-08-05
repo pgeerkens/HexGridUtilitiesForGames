@@ -133,6 +133,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DocMainPage.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HexGridExample.cs">
       <SubType>Form</SubType>

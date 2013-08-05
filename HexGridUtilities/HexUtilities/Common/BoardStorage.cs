@@ -89,7 +89,8 @@ namespace PGNapoleonics.HexUtilities.Common {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
       "CA1034:NestedTypesShouldNotBeVisible")]
     public sealed class FlatBoardStorage : BoardStorage<T> {
-    /// <summary>TODO</summary>
+      /// <summary>Construct a new instance of extent <paramref name="sizeHexes"/> and 
+      /// initialized using <paramref name="initializer"/>.</summary>
       public FlatBoardStorage(Size sizeHexes, Func<HexCoords,T> initializer) 
         : base (sizeHexes) {
         if (initializer==null) throw new ArgumentNullException("initializer");
@@ -164,7 +165,8 @@ namespace PGNapoleonics.HexUtilities.Common {
       const int _grouping = 32;
       const int _buffer   = _grouping - 1;
 
-      /// <summary>TODO</summary>
+      /// <summary>Construct a new instance of extent <paramref name="sizeHexes"/> and 
+      /// initialized using <paramref name="initializer"/>.</summary>
       public BlockedBoardStorage32x32(Size sizeHexes, Func<HexCoords,T> initializer) 
         : base (sizeHexes) {
         backingStore  = new List<List<List<T>>>((MapSizeHexes.Height+_buffer) / _grouping);
