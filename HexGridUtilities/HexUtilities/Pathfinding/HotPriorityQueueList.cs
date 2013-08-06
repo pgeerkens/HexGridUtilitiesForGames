@@ -141,7 +141,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
       /// <inheritdoc/>
       public bool TryDequeue(out HexKeyValuePair<TKey,TValue> result) {
-        if (_items.Count == 0) {
+        if (!_items.Any()) {
           result = default(HexKeyValuePair<TKey,TValue>);
           return false;
         }
@@ -163,7 +163,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
       /// <inheritdoc/>
       public bool TryPeek(out HexKeyValuePair<TKey,TValue> result) {
-        if (_items.Count == 0) {
+        if (! _items.Any()) {
           result = default(HexKeyValuePair<TKey,TValue>); 
           return false;
         } 

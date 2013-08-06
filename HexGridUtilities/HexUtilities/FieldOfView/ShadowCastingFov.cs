@@ -38,7 +38,8 @@ using PGNapoleonics.HexUtilities.Common;
 namespace PGNapoleonics.HexUtilities.FieldOfView {
     /// <summary>Enumeration of line-of-sight modes</summary>
   public enum FovTargetMode {
-    /// <summary>Target height and observer height both set to the same constant value (ShadowCasting.DefaultHeight) above ground eleevation</summary>
+    /// <summary>Target height and observer height both set to the same constant value 
+    /// (ShadowCasting.DefaultHeight) above ground eleevation</summary>
     EqualHeights,
     /// <summary>Use actual observer height and ground level as target height.</summary>
     TargetHeightEqualZero,

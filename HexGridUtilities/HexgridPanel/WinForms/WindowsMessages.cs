@@ -947,12 +947,14 @@ namespace PGNapoleonics.WinForms {
     /// <summary>
     /// An application sends the WM_CPL_LAUNCH message to Windows Control Panel to request that a Control Panel application be started. 
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
+      "CA1707:IdentifiersShouldNotContainUnderscores")]
     CPL_LAUNCH = USER+0x1000,
     /// <summary>
     /// The WM_CPL_LAUNCHED message is sent when a Control Panel application, started by the WM_CPL_LAUNCH message, has closed. The WM_CPL_LAUNCHED message is sent to the window identified by the wParam parameter of the WM_CPL_LAUNCH message that started the application. 
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
+      "CA1707:IdentifiersShouldNotContainUnderscores")]
     CPL_LAUNCHED = USER+0x1001,
     /// <summary>
     /// WM_SYSTIMER is a well-known yet still undocumented message. Windows uses WM_SYSTIMER for internal actions like scrolling.

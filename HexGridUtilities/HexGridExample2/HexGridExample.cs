@@ -39,6 +39,8 @@ using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
+using HexGridExampleCommon;
+
 namespace PGNapoleonics.HexGridExample2 {
   internal sealed partial class HexgridExampleForm : Form, IMessageFilter {
     public HexgridExampleForm() {
@@ -90,7 +92,6 @@ namespace PGNapoleonics.HexGridExample2 {
 
     #region Event handlers
     void HexGridExampleForm_Load(object sender, EventArgs e) {
-      //hexgridPanel.SetScaleList(new List<float>() {0.707F,  0.841F, 1.000F, 1.189F, 1.414F}.AsReadOnly());
       hexgridPanel.Scales = new List<float>() {0.707F,  0.841F, 1.000F, 1.189F, 1.414F}.AsReadOnly();
       hexgridPanel.ScaleIndex = hexgridPanel.Scales
                               .Select((f,i) => new {value=f, index=i})
@@ -141,7 +142,7 @@ namespace PGNapoleonics.HexGridExample2 {
 
     private void menuItemLandmarks_SelectedIndexChanged(object sender, EventArgs e) {
       _mapBoard.LandmarkToShow = menuItemLandmarks.SelectedIndex - 1;
-      hexgridPanel.SetMapDirty(); // .Host = this.MapBoard;
+      hexgridPanel.SetMapDirty();
       Update();
     }
 
@@ -185,20 +186,21 @@ namespace PGNapoleonics.HexGridExample2 {
     }
     private void buttonRangeLine_Click(object sender, EventArgs e) {
       MapBoard.ShowRangeLine = buttonRangeLine.Checked;
-      Refresh();
+      hexgridPanel.SetMapDirty();
+      MapBoard.StartHex = MapBoard.StartHex; // Indirect, but it works.
+      Update();
     }
 
     private void PanelBoard_GoalHexChange(object sender, HexEventArgs e) {
       MapBoard.GoalHex = e.Coords;
-      Refresh();
+      this.hexgridPanel.Refresh();
     }
     private void PanelBoard_StartHexChange(object sender, HexEventArgs e) {
       MapBoard.StartHex = e.Coords;
-      Refresh();
+      this.hexgridPanel.Refresh();
     }
     private void PanelBoard_HotSpotHexChange(object sender, HexEventArgs e) {
       MapBoard.HotspotHex = e.Coords;
-//      Refresh();
       this.hexgridPanel.Refresh();
     }
     #endregion

@@ -7,9 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridPanel", "HexgridPane
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexGridExample2", "HexGridExample2\HexGridExample2.csproj", "{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridExampleWpf", "HexgridExampleWpf\HexgridExampleWpf.csproj", "{6CEB2C15-1E1A-446C-92C6-77BC49833742}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexGridExampleCommon", "HexGridExampleCommon\HexGridExampleCommon.csproj", "{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 6
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs37
 		SccLocalPath0 = .
@@ -22,6 +26,12 @@ Global
 		SccProjectUniqueName3 = HexGridExample2\\HexGridExample2.csproj
 		SccProjectName3 = HexGridExample2
 		SccLocalPath3 = HexGridExample2
+		SccProjectUniqueName4 = HexgridExampleWpf\\HexgridExampleWpf.csproj
+		SccProjectName4 = HexgridExampleWpf
+		SccLocalPath4 = HexgridExampleWpf
+		SccProjectUniqueName5 = HexGridExampleCommon\\HexGridExampleCommon.csproj
+		SccProjectName5 = HexGridExampleCommon
+		SccLocalPath5 = HexGridExampleCommon
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +78,22 @@ Global
 		{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}.Release|x64.Build.0 = Release|x64
 		{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}.Release|x86.ActiveCfg = Release|x86
 		{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}.Release|x86.Build.0 = Release|x86
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Release|x64.ActiveCfg = Release|Any CPU
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Release|x86.ActiveCfg = Release|Any CPU
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Release|x64.ActiveCfg = Release|Any CPU
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

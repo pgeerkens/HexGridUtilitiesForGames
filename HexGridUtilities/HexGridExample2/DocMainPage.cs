@@ -52,7 +52,7 @@ namespace PGNapoleonics.HexgridPanel {
 /// @subsection Getting_Started Getting Started
 ///
 /// To get started, explore how the two sample maps in HexGridExample2 override
-/// the base class MapDisplay<THex>, and how the sample form /// overrides the base control HexgridPanel. 
+/// the base class MapDisplay<THex>, and how the sample form overrides the base control HexgridPanel. 
 /// 
 /// The Collaboration diagram for MapDisplay<THex> provides a good overview of the library structure.
 /// 

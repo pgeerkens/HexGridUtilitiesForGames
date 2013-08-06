@@ -90,8 +90,7 @@ namespace PGNapoleonics.HexgridPanel {
     /// <summary>Signals the object that initialization is starting.</summary>
     public virtual void BeginInit() { 
       MapMargin = new System.Drawing.Size(5,5);
-      //SetScaleList(new List<float>() {1.000F}.AsReadOnly());
-      Scales = new List<float>() {1.000F}.AsReadOnly();
+      Scales    = new List<float>() {1.000F}.AsReadOnly();
     }
     /// <summary>Signals the object that initialization is complete.</summary>
     public virtual void EndInit() { 

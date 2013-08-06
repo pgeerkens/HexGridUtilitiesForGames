@@ -34,8 +34,8 @@ using PGNapoleonics.HexUtilities;
 
 /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexUtilities.HexgridPanel"/> to implement
 /// a terrain map.</summary>
-namespace PGNapoleonics.HexGridExample2 {
-  internal sealed class TerrainMap : MapDisplay<MapGridHex> {
+namespace HexGridExampleCommon {
+  public sealed class TerrainMap : MapDisplay<MapGridHex> {
     public TerrainMap() : base(_sizeHexes, new Size(26,30), (map,coords) => InitializeHex(map,coords)) {}
 
     /// <inheritdoc/>
