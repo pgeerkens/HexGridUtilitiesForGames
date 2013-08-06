@@ -51,7 +51,7 @@ namespace PGNapoleonics.HexGridExample2 {
 
       LoadTraceMenu();
 
-      toolStripComboBox1.SelectedIndex = 1;
+      comboBoxMapSelection.SelectedIndex = 1;
       CustomCoords.SetMatrices(new IntMatrix2D(2,0, 0,-2, 0,2*MapBoard.MapSizeHexes.Height-1, 2));
 
 //      helpProvider1.SetShowHelp(this,true);
@@ -75,19 +75,19 @@ namespace PGNapoleonics.HexGridExample2 {
       #endif
     }
 
-    void LoadLandMarkMenu() {
+    void LoadLandmarkMenu() {
       menuItemLandmarks.Items.Clear();
       menuItemLandmarks.Items.Add("None");
       foreach(var landmark in _mapBoard.Landmarks) {
         menuItemLandmarks.Items.Add(string.Format(CultureInfo.InvariantCulture, "{0}", landmark.Coords));
       }
-      menuItemLandmarks.SelectedIndexChanged += menuItemLandmarks_SelectedIndexChanged;
+      menuItemLandmarks.SelectedIndexChanged += new EventHandler(menuItemLandmarks_SelectedIndexChanged);
       menuItemLandmarks.SelectedIndex = 0; 
     }
 
     MapDisplay<MapGridHex>          MapBoard { 
       get {return _mapBoard;}
-      set {_mapBoard = value; _mapBoard.RangeCutoff = (int)txtPathCutover.Tag; LoadLandMarkMenu();}
+      set {_mapBoard = value; _mapBoard.RangeCutoff = (int)txtPathCutover.Tag; LoadLandmarkMenu();}
     } MapDisplay<MapGridHex> _mapBoard;
 
     #region Event handlers
@@ -123,11 +123,8 @@ namespace PGNapoleonics.HexGridExample2 {
         MapBoard.StartHex - hotHex, (MapBoard.Path==null ? 0 : MapBoard.Path.TotalCost));
     }
 
-    void buttonTransposeMap_Click(object sender, EventArgs e) {
-      hexgridPanel.IsTransposed = buttonTransposeMap.Checked;
-    }
 
-    private void txtPathCutover_TextChanged(object sender, EventArgs e) {
+    void txtPathCutover_TextChanged(object sender, EventArgs e) {
       int value;
       if (Int32.TryParse(txtPathCutover.Text, out value)) {
         txtPathCutover.Tag = value;
@@ -140,13 +137,13 @@ namespace PGNapoleonics.HexGridExample2 {
       Refresh();
     }
 
-    private void menuItemLandmarks_SelectedIndexChanged(object sender, EventArgs e) {
+    void menuItemLandmarks_SelectedIndexChanged(object sender, EventArgs e) {
       _mapBoard.LandmarkToShow = menuItemLandmarks.SelectedIndex - 1;
       hexgridPanel.SetMapDirty();
       Update();
     }
 
-    private void menuItemDebugTracing_Click(object sender, EventArgs e) {
+    void menuItemDebugTracing_Click(object sender, EventArgs e) {
       var item = (ToolStripMenuItem)sender;
       item.CheckState = item.Checked ? CheckState.Checked : CheckState.Unchecked;
       var name = item.Name.Replace("menuItemDebugTracing","");
@@ -157,11 +154,11 @@ namespace PGNapoleonics.HexGridExample2 {
         DebugTracing.EnabledFags &= ~flag;
     }
 
-    private void menuItemHelpContents_Click(object sender, EventArgs e) {
+    void menuItemHelpContents_Click(object sender, EventArgs e) {
 //      helpProvider1.SetShowHelp(this,true);
     }
 
-    private void toolStripComboBox1_Click(object sender, EventArgs e) {
+    void toolStripComboBox1_Click(object sender, EventArgs e) {
       var name = ((ToolStripItem)sender).Text;
       switch (name) {
         case "MazeMap":    hexgridPanel.Host = MapBoard = new MazeMap();    break;
@@ -176,30 +173,33 @@ namespace PGNapoleonics.HexGridExample2 {
       hexgridPanel.Refresh();
     }
 
-    private void buttonFieldOfView_Click(object sender, EventArgs e) {
+    void buttonFieldOfView_Click(object sender, EventArgs e) {
       MapBoard.ShowFov = buttonFieldOfView.Checked;
-      Refresh();
+      this.hexgridPanel.Refresh();
     }
-    private void buttonPathArrow_Click(object sender, EventArgs e) {
+    void buttonPathArrow_Click(object sender, EventArgs e) {
       MapBoard.ShowPathArrow = buttonPathArrow.Checked;
-      Refresh();
+      this.hexgridPanel.Refresh();
     }
-    private void buttonRangeLine_Click(object sender, EventArgs e) {
+    void buttonRangeLine_Click(object sender, EventArgs e) {
       MapBoard.ShowRangeLine = buttonRangeLine.Checked;
       hexgridPanel.SetMapDirty();
       MapBoard.StartHex = MapBoard.StartHex; // Indirect, but it works.
-      Update();
+      this.hexgridPanel.Refresh();
+    }
+    void buttonTransposeMap_Click(object sender, EventArgs e) {
+      hexgridPanel.IsTransposed = buttonTransposeMap.Checked;
     }
 
-    private void PanelBoard_GoalHexChange(object sender, HexEventArgs e) {
+    void PanelBoard_GoalHexChange(object sender, HexEventArgs e) {
       MapBoard.GoalHex = e.Coords;
       this.hexgridPanel.Refresh();
     }
-    private void PanelBoard_StartHexChange(object sender, HexEventArgs e) {
+    void PanelBoard_StartHexChange(object sender, HexEventArgs e) {
       MapBoard.StartHex = e.Coords;
       this.hexgridPanel.Refresh();
     }
-    private void PanelBoard_HotSpotHexChange(object sender, HexEventArgs e) {
+    void PanelBoard_HotSpotHexChange(object sender, HexEventArgs e) {
       MapBoard.HotspotHex = e.Coords;
       this.hexgridPanel.Refresh();
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ using System.Windows.Shapes;
 
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
+using PGNapoleonics.HexUtilities.Common;
 
 using HexGridExampleCommon;
 
@@ -29,27 +31,22 @@ namespace HexgridExampleWpf {
     private void Window_Loaded (object sender, RoutedEventArgs e) {
       HexgridPanel = GetHexgridPanel();
 
-      toolStripComboBox1_Click(this,EventArgs.Empty);
+      //this.hexgridPanel.ScaleChange += new EventHandler<EventArgs>((o,e) => OnResizeEnd(e));
+
+      //LoadTraceMenu();
+
+//      CustomCoords.SetMatrices(new IntMatrix2D(2,0, 0,-2, 0,2*MapBoard.MapSizeHexes.Height-1, 2));
+
+      comboBoxMapSelection.SelectedIndex = 0;
 
       _host.Child = HexgridPanel;
 
+      Width  = 1464;
+      Height = 1014;
+
+      LoadLandmarkMenu();
       HexgridPanel.SetScroll();
       HexgridPanel.Refresh();
-
-    }
-
-    private void toolStripComboBox1_Click(object sender, EventArgs e) {
-      var name = "TerrainMap"; //((ToolStripItem)sender).Text;
-      switch (name) {
-        case "MazeMap":    HexgridPanel.Host = MapBoard = new MazeMap();    break;
-        case "TerrainMap": HexgridPanel.Host = MapBoard = new TerrainMap(); break;
-        default:  break;
-      }
-      MapBoard.ShowPathArrow = true; //buttonPathArrow.Checked;
-      MapBoard.ShowFov       = true; //buttonFieldOfView.Checked;
-      MapBoard.FovRadius     =
-      MapBoard.RangeCutoff   = 20; //(int)txtPathCutover.Tag;
-      MapBoard.MapMargin     = HexgridPanel.MapMargin;
     }
 
     HexgridPanel           HexgridPanel { get; set; }
@@ -95,28 +92,97 @@ namespace HexgridExampleWpf {
       return hexgridPanel;
     }
 
-  
+    void LoadLandmarkMenu() {
+      menuItemLandmarks.Items.Clear();
+      menuItemLandmarks.Items.Add("None");
+      foreach(var landmark in _mapBoard.Landmarks) {
+        menuItemLandmarks.Items.Add(string.Format(CultureInfo.InvariantCulture, "{0}", landmark.Coords));
+      }
+      menuItemLandmarks.SelectionChanged += new SelectionChangedEventHandler(menuItemLandmarks_SelectedIndexChanged);
+      menuItemLandmarks.SelectedIndex = 0; 
+    }
+
     #region Event handlers
     void hexgridPanel_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e) {
       var hotHex       = MapBoard.HotspotHex;
-      //statusLabel.Text = string.Format(CultureInfo.InvariantCulture,
-      //  "Hotspot Hex: {0:gi3} / {1:uI4} / {2:c5}; {3:r6}; Path Length = {4}",
-      //  hotHex, hotHex, hotHex,
-      //  MapBoard.StartHex - hotHex, (MapBoard.Path==null ? 0 : MapBoard.Path.TotalCost));
+      statusLabel.Content = string.Format(CultureInfo.InvariantCulture,
+        "Hotspot Hex: {0:gi3} / {1:uI4} / {2:c5}; {3:r6}; Path Length = {4}",
+        hotHex, hotHex, hotHex,
+        MapBoard.StartHex - hotHex, (MapBoard.Path==null ? 0 : MapBoard.Path.TotalCost));
     }
 
-    private void PanelBoard_GoalHexChange(object sender, HexEventArgs e) {
+    void buttonFieldOfView_Click(object sender, RoutedEventArgs e) {
+      MapBoard.ShowFov = buttonFieldOfView.IsChecked ?? false;
+      HexgridPanel.Refresh();
+    }
+    void buttonPathArrow_Click(object sender, RoutedEventArgs e) {
+      MapBoard.ShowPathArrow = buttonPathArrow.IsChecked ?? false;
+      HexgridPanel.Refresh();
+    }
+    void buttonRangeLine_Click(object sender, RoutedEventArgs e) {
+      MapBoard.ShowRangeLine = buttonRangeLine.IsChecked ?? false;
+      HexgridPanel.SetMapDirty();
+      MapBoard.StartHex = MapBoard.StartHex; // Indirect, but it works.
+      HexgridPanel.Refresh();
+    }
+    void buttonTransposeMap_Click(object sender, RoutedEventArgs e) {
+      HexgridPanel.IsTransposed = buttonTransposeMap.IsChecked ?? false;
+    }
+
+    void menuItemLandmarks_SelectedIndexChanged(object sender, EventArgs e) {
+      _mapBoard.LandmarkToShow = menuItemLandmarks.SelectedIndex - 1;
+      HexgridPanel.SetMapDirty();
+      HexgridPanel.Refresh();
+    }
+
+    void PanelBoard_GoalHexChange(object sender, HexEventArgs e) {
       MapBoard.GoalHex = e.Coords;
       HexgridPanel.Refresh();
     }
-    private void PanelBoard_StartHexChange(object sender, HexEventArgs e) {
+    void PanelBoard_StartHexChange(object sender, HexEventArgs e) {
       MapBoard.StartHex = e.Coords;
       HexgridPanel.Refresh();
     }
-    private void PanelBoard_HotSpotHexChange(object sender, HexEventArgs e) {
+    void PanelBoard_HotSpotHexChange(object sender, HexEventArgs e) {
       MapBoard.HotspotHex = e.Coords;
       HexgridPanel.Refresh();
     }
     #endregion
+
+    void comboBoxMapSelection_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+      SetMap(((ListBoxItem)e.AddedItems[0]).Content.ToString());
+    }
+
+    void SetMap(string mapName) {
+      switch (mapName) {
+        case "Maze Map":    HexgridPanel.Host = MapBoard = new MazeMap();    break;
+        case "Terrain Map": HexgridPanel.Host = MapBoard = new TerrainMap(); break;
+        default:  break;
+      }
+      MapBoard.ShowPathArrow = buttonPathArrow.IsChecked ?? false;
+      MapBoard.ShowFov       = buttonFieldOfView.IsChecked ?? false;
+      MapBoard.FovRadius     =
+      MapBoard.RangeCutoff   = Int32.Parse(txtPathCutover.Tag.ToString());
+      MapBoard.MapMargin     = HexgridPanel.MapMargin;
+    }
+
+    void txtPathCutover_TextChanged(object sender, TextChangedEventArgs e) {
+      if (this.IsInitialized) {
+        int value;
+        if (Int32.TryParse(txtPathCutover.Text, out value)) {
+          txtPathCutover.Tag = value;
+        } else {
+          txtPathCutover.Text = txtPathCutover.Tag.ToString();
+          value = (int)txtPathCutover.Tag;
+        }
+        MapBoard.FovRadius   =
+        MapBoard.RangeCutoff = value;
+        HexgridPanel.Refresh();
+      }
+    }
+
+    private void _host_MouseWheel(object sender, MouseWheelEventArgs e) {
+      MessageBox.Show("In!");
+    }
   }
 }

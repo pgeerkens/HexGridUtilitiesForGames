@@ -39,10 +39,10 @@ namespace PGNapoleonics.HexGridExample2 {
       this.hexgridPanel = new PGNapoleonics.HexgridPanel.HexgridPanel(this.components);
       this.toolStrip2 = new System.Windows.Forms.ToolStrip();
       this.buttonTransposeMap = new System.Windows.Forms.ToolStripButton();
-      this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
-      this.buttonFieldOfView = new System.Windows.Forms.ToolStripButton();
       this.buttonRangeLine = new System.Windows.Forms.ToolStripButton();
+      this.buttonFieldOfView = new System.Windows.Forms.ToolStripButton();
       this.buttonPathArrow = new System.Windows.Forms.ToolStripButton();
+      this.comboBoxMapSelection = new System.Windows.Forms.ToolStripComboBox();
       this.lblPathCutover = new System.Windows.Forms.ToolStripLabel();
       this.txtPathCutover = new System.Windows.Forms.ToolStripTextBox();
       this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -133,10 +133,10 @@ namespace PGNapoleonics.HexGridExample2 {
       this.toolStrip2.Dock = System.Windows.Forms.DockStyle.None;
       this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.buttonTransposeMap,
-            this.toolStripComboBox1,
-            this.buttonFieldOfView,
             this.buttonRangeLine,
+            this.buttonFieldOfView,
             this.buttonPathArrow,
+            this.comboBoxMapSelection,
             this.lblPathCutover,
             this.txtPathCutover,
             this.toolStripSeparator2,
@@ -153,32 +153,39 @@ namespace PGNapoleonics.HexGridExample2 {
       // 
       // buttonTransposeMap
       // 
+      this.buttonTransposeMap.AutoSize = false;
+      this.buttonTransposeMap.BackColor = System.Drawing.SystemColors.ControlLight;
       this.buttonTransposeMap.CheckOnClick = true;
       this.buttonTransposeMap.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.buttonTransposeMap.Image = ((System.Drawing.Image)(resources.GetObject("buttonTransposeMap.Image")));
       this.buttonTransposeMap.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.buttonTransposeMap.Name = "buttonTransposeMap";
-      this.buttonTransposeMap.Size = new System.Drawing.Size(65, 22);
+      this.buttonTransposeMap.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
+      this.buttonTransposeMap.Size = new System.Drawing.Size(75, 22);
       this.buttonTransposeMap.Text = "Transpose";
       this.buttonTransposeMap.ToolTipText = "Toggles transposition of the current map.";
       this.buttonTransposeMap.Click += new System.EventHandler(this.buttonTransposeMap_Click);
       // 
-      // toolStripComboBox1
+      // buttonRangeLine
       // 
-      this.toolStripComboBox1.AutoSize = false;
-      this.toolStripComboBox1.CausesValidation = false;
-      this.toolStripComboBox1.Items.AddRange(new object[] {
-            "MazeMap",
-            "TerrainMap"});
-      this.toolStripComboBox1.Name = "toolStripComboBox1";
-      this.toolStripComboBox1.Size = new System.Drawing.Size(121, 23);
-      this.toolStripComboBox1.Sorted = true;
-      this.toolStripComboBox1.Text = "Map:";
-      this.toolStripComboBox1.ToolTipText = "Selects map to display.";
-      this.toolStripComboBox1.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBox1_Click);
+      this.buttonRangeLine.AutoSize = false;
+      this.buttonRangeLine.BackColor = System.Drawing.SystemColors.ControlLight;
+      this.buttonRangeLine.CheckOnClick = true;
+      this.buttonRangeLine.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.buttonRangeLine.Image = ((System.Drawing.Image)(resources.GetObject("buttonRangeLine.Image")));
+      this.buttonRangeLine.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.buttonRangeLine.Name = "buttonRangeLine";
+      this.buttonRangeLine.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
+      this.buttonRangeLine.Size = new System.Drawing.Size(75, 22);
+      this.buttonRangeLine.Text = "Range Line";
+      this.buttonRangeLine.ToolTipText = "Toggles (a) display of Range Line; and (b) Field-of-View source between Start-Hex" +
+    " and Hotspot-Hex.";
+      this.buttonRangeLine.CheckedChanged += new System.EventHandler(this.buttonRangeLine_Click);
       // 
       // buttonFieldOfView
       // 
+      this.buttonFieldOfView.AutoSize = false;
+      this.buttonFieldOfView.BackColor = System.Drawing.SystemColors.ControlLight;
       this.buttonFieldOfView.Checked = true;
       this.buttonFieldOfView.CheckOnClick = true;
       this.buttonFieldOfView.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -186,26 +193,16 @@ namespace PGNapoleonics.HexGridExample2 {
       this.buttonFieldOfView.Image = ((System.Drawing.Image)(resources.GetObject("buttonFieldOfView.Image")));
       this.buttonFieldOfView.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.buttonFieldOfView.Name = "buttonFieldOfView";
-      this.buttonFieldOfView.Size = new System.Drawing.Size(33, 22);
+      this.buttonFieldOfView.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
+      this.buttonFieldOfView.Size = new System.Drawing.Size(75, 22);
       this.buttonFieldOfView.Text = "FOV";
       this.buttonFieldOfView.ToolTipText = "Toggles display of current Field-of-View";
       this.buttonFieldOfView.Click += new System.EventHandler(this.buttonFieldOfView_Click);
       // 
-      // buttonRangeLine
-      // 
-      this.buttonRangeLine.CheckOnClick = true;
-      this.buttonRangeLine.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-      this.buttonRangeLine.Image = ((System.Drawing.Image)(resources.GetObject("buttonRangeLine.Image")));
-      this.buttonRangeLine.ImageTransparentColor = System.Drawing.Color.Magenta;
-      this.buttonRangeLine.Name = "buttonRangeLine";
-      this.buttonRangeLine.Size = new System.Drawing.Size(69, 22);
-      this.buttonRangeLine.Text = "Range Line";
-      this.buttonRangeLine.ToolTipText = "Toggles (a) display of Range Line; and (b) Field-of-View source between Start-Hex" +
-    " and Hotspot-Hex.";
-      this.buttonRangeLine.CheckedChanged += new System.EventHandler(this.buttonRangeLine_Click);
-      // 
       // buttonPathArrow
       // 
+      this.buttonPathArrow.AutoSize = false;
+      this.buttonPathArrow.BackColor = System.Drawing.SystemColors.ControlLight;
       this.buttonPathArrow.Checked = true;
       this.buttonPathArrow.CheckOnClick = true;
       this.buttonPathArrow.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -213,10 +210,25 @@ namespace PGNapoleonics.HexGridExample2 {
       this.buttonPathArrow.Image = ((System.Drawing.Image)(resources.GetObject("buttonPathArrow.Image")));
       this.buttonPathArrow.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.buttonPathArrow.Name = "buttonPathArrow";
-      this.buttonPathArrow.Size = new System.Drawing.Size(70, 22);
+      this.buttonPathArrow.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
+      this.buttonPathArrow.Size = new System.Drawing.Size(75, 22);
       this.buttonPathArrow.Text = "Path Arrow";
       this.buttonPathArrow.ToolTipText = "Toggle display of Path Arrow.";
       this.buttonPathArrow.CheckedChanged += new System.EventHandler(this.buttonPathArrow_Click);
+      // 
+      // toolStripComboBox1
+      // 
+      this.comboBoxMapSelection.AutoSize = false;
+      this.comboBoxMapSelection.CausesValidation = false;
+      this.comboBoxMapSelection.Items.AddRange(new object[] {
+            "MazeMap",
+            "TerrainMap"});
+      this.comboBoxMapSelection.Name = "toolStripComboBox1";
+      this.comboBoxMapSelection.Size = new System.Drawing.Size(121, 23);
+      this.comboBoxMapSelection.Sorted = true;
+      this.comboBoxMapSelection.Text = "Map:";
+      this.comboBoxMapSelection.ToolTipText = "Selects map to display.";
+      this.comboBoxMapSelection.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBox1_Click);
       // 
       // lblPathCutover
       // 
@@ -265,7 +277,7 @@ namespace PGNapoleonics.HexGridExample2 {
       this.menuItemDebug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.menuItemDebug.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.menuItemDebug.Name = "menuItemDebug";
-      this.menuItemDebug.Size = new System.Drawing.Size(87, 22);
+      this.menuItemDebug.Size = new System.Drawing.Size(87, 19);
       this.menuItemDebug.Text = "&Debug Trace";
       this.menuItemDebug.ToolTipText = "Build with DEBUG to enable this feature.";
       // 
@@ -342,7 +354,7 @@ namespace PGNapoleonics.HexGridExample2 {
     private System.Windows.Forms.ToolStrip toolStrip2;
     private System.Windows.Forms.ToolStripButton buttonTransposeMap;
     private System.Windows.Forms.ToolStripLabel statusLabel;
-    private System.Windows.Forms.ToolStripComboBox toolStripComboBox1;
+    private System.Windows.Forms.ToolStripComboBox comboBoxMapSelection;
     private System.Windows.Forms.ToolStripButton buttonFieldOfView;
     private System.Windows.Forms.ToolStripLabel lblPathCutover;
     private System.Windows.Forms.ToolStripTextBox txtPathCutover;

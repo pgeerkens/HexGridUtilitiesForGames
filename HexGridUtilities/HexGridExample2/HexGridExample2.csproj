@@ -133,7 +133,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DocMainPage.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HexGridExample.cs">
       <SubType>Form</SubType>
@@ -159,8 +158,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
-    <None Include="HexgridUtilities.Doxyfile" />
-    <None Include="HexgridUtilities.HtmlHelp.Doxyfile" />
     <None Include="PGSoftwareSolutions.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

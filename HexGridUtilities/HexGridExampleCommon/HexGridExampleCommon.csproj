@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DocMainPage.cs" />
     <Compile Include="MazeGridHex.cs" />
     <Compile Include="MazeMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -67,7 +68,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="HexgridUtilities.Doxyfile" />
+    <None Include="HexgridUtilities.HtmlHelp.Doxyfile" />
     <None Include="PGSoftwareSolutions.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="CustomDictionary.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

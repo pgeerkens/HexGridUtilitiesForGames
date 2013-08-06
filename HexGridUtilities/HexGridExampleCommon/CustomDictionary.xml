@@ -1,0 +1,55 @@
+﻿<Dictionary>
+      <Words>
+         <Unrecognized>
+           <Word>cb</Word>
+         </Unrecognized>
+         <Recognized>
+           <Word>Alt</Word>
+           <Word>coloured</Word>
+           <Word>Coords</Word>
+           <Word>Ctl</Word>
+           <Word>Eachable</Word>
+           <Word>Fov</Word>
+           <Word>Fwd</Word>
+           <Word>functor</Word>      <Word>functors</Word>
+           <Word>hexgrid</Word>
+           <Word>HexgridUtilities</Word>
+           <Word>hexside</Word>      <Word>hexsides</Word>
+           <Word>Hotspot</Word>
+           <Word>lhs</Word>
+           <Word>m11</Word>   <Word>m12</Word>  <Word>m13</Word>
+           <Word>m21</Word>   <Word>m22</Word>  <Word>m23</Word>
+           <Word>m31</Word>   <Word>m32</Word>  <Word>m33</Word>
+           <Word>Napoleonics</Word>
+           <Word>Neighbour</Word>    <Word>Neighbours</Word>
+           <Word>rhs</Word>
+           <Word>c</Word>
+           <Word>f</Word>
+           <Word>g</Word>
+           <Word>h</Word>
+           <Word>i</Word>   <Word>j</Word>   <Word>k</Word>
+           <Word>m</Word>
+           <Word>p</Word>
+           <Word>Pathfinding</Word>
+           <Word>s</Word>
+           <Word>v</Word>
+           <Word>w</Word>
+           <Word>x</Word>      <Word>dx</Word>
+           <Word>y</Word>      <Word>dy</Word>
+           <Word>z</Word>      <Word>dz</Word>
+           <Word>wParam</Word>
+           <Word>lParam</Word>
+           <Word>params</Word>
+         </Recognized>
+         <Deprecated>
+           <Term PreferredAlternate="EnterpriseServices">ComPlus</Term>
+         </Deprecated>
+      </Words>
+      <Acronyms>
+         <CasingExceptions>
+           <Acronym>ASL</Acronym>
+           <Acronym>Fov</Acronym>
+           <Acronym>PG</Acronym>
+         </CasingExceptions>
+      </Acronyms>
+   </Dictionary>
