@@ -167,7 +167,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <param name="format">Type: System.String. 
     /// 
     /// > A standard or custom numeric format string.</param>
-    /// <param name="formatProvider">Type: IFormatProvider<para/>
+    /// <param name="formatProvider">Type: IFormatProvider - 
     /// 
     /// > An object that supplies culture-specific formatting information.</param>
     /// <remarks>Format characters:

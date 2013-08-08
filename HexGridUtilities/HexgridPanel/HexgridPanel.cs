@@ -65,10 +65,10 @@ namespace PGNapoleonics.HexgridPanel {
     /// <param name="g">Graphics object for the canvas being painted.</param>
     void  PaintHighlight(Graphics g);
     /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
-    /// <param name="g">TYpe: Graphics<para/>Object representing the canvas being painted.</param>
+    /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
     void  PaintMap(Graphics g);
     /// <summary>Paint the intermediate layer of the display, graphics that changes infrequently between refreshes.</summary>
-    /// <param name="g">TYpe: Graphics<para/>Object representing the canvas being painted.</param>
+    /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
     void  PaintUnits(Graphics g);
   }
 

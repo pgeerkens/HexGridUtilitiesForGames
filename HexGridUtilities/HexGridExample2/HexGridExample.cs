@@ -47,12 +47,11 @@ namespace PGNapoleonics.HexGridExample2 {
       InitializeComponent();
 			Application.AddMessageFilter(this);
 
-      this.hexgridPanel.ScaleChange += new EventHandler<EventArgs>((o,e) => OnResizeEnd(e));
+      this._hexgridPanel.ScaleChange += new EventHandler<EventArgs>((o,e) => OnResizeEnd(e));
 
       LoadTraceMenu();
 
       comboBoxMapSelection.SelectedIndex = 1;
-      CustomCoords.SetMatrices(new IntMatrix2D(2,0, 0,-2, 0,2*MapBoard.MapSizeHexes.Height-1, 2));
 
 //      helpProvider1.SetShowHelp(this,true);
     }
@@ -85,19 +84,16 @@ namespace PGNapoleonics.HexGridExample2 {
       menuItemLandmarks.SelectedIndex = 0; 
     }
 
-    MapDisplay<MapGridHex>          MapBoard { 
-      get {return _mapBoard;}
-      set {_mapBoard = value; _mapBoard.RangeCutoff = (int)txtPathCutover.Tag; LoadLandmarkMenu();}
-    } MapDisplay<MapGridHex> _mapBoard;
+    MapDisplay<MapGridHex>          _mapBoard { get; set; }
 
     #region Event handlers
     void HexGridExampleForm_Load(object sender, EventArgs e) {
-      hexgridPanel.Scales = new List<float>() {0.707F,  0.841F, 1.000F, 1.189F, 1.414F}.AsReadOnly();
-      hexgridPanel.ScaleIndex = hexgridPanel.Scales
+      _hexgridPanel.Scales = new List<float>() {0.707F,  0.841F, 1.000F, 1.189F, 1.414F}.AsReadOnly();
+      _hexgridPanel.ScaleIndex = _hexgridPanel.Scales
                               .Select((f,i) => new {value=f, index=i})
                               .Where(s => s.value==1.0F)
                               .Select(s => s.index).FirstOrDefault(); 
-      Size = hexgridPanel.MapSizePixels + new Size(21,93);
+      Size = _hexgridPanel.MapSizePixels + new Size(21,93);
     }
 
     bool isPanelResizeSuppressed = false;
@@ -107,22 +103,21 @@ namespace PGNapoleonics.HexGridExample2 {
     }
     protected override void OnResize(EventArgs e) {
       base.OnResize(e);
-      if (IsHandleCreated && ! isPanelResizeSuppressed) hexgridPanel.SetScroll();
+      if (IsHandleCreated && ! isPanelResizeSuppressed) _hexgridPanel.SetScroll();
     }
     protected override void OnResizeEnd(EventArgs e) {
       base.OnResizeEnd(e);
       isPanelResizeSuppressed = false;
-      hexgridPanel.SetScroll();
+      _hexgridPanel.SetScroll();
     }
 
     void hexgridPanel_MouseMove(object sender, MouseEventArgs e) {
-      var hotHex       = MapBoard.HotspotHex;
+      var hotHex       = _mapBoard.HotspotHex;
       statusLabel.Text = string.Format(CultureInfo.InvariantCulture,
         "Hotspot Hex: {0:gi3} / {1:uI4} / {2:c5}; {3:r6}; Path Length = {4}",
         hotHex, hotHex, hotHex,
-        MapBoard.StartHex - hotHex, (MapBoard.Path==null ? 0 : MapBoard.Path.TotalCost));
+        _mapBoard.StartHex - hotHex, (_mapBoard.Path==null ? 0 : _mapBoard.Path.TotalCost));
     }
-
 
     void txtPathCutover_TextChanged(object sender, EventArgs e) {
       int value;
@@ -132,14 +127,14 @@ namespace PGNapoleonics.HexGridExample2 {
         txtPathCutover.Text = txtPathCutover.Tag.ToString();
         value = (int)txtPathCutover.Tag;
       }
-      MapBoard.FovRadius   =
-      MapBoard.RangeCutoff = value;
+      _mapBoard.FovRadius   =
+      _mapBoard.RangeCutoff = value;
       Refresh();
     }
 
     void menuItemLandmarks_SelectedIndexChanged(object sender, EventArgs e) {
       _mapBoard.LandmarkToShow = menuItemLandmarks.SelectedIndex - 1;
-      hexgridPanel.SetMapDirty();
+      _hexgridPanel.SetMapDirty();
       Update();
     }
 
@@ -158,50 +153,57 @@ namespace PGNapoleonics.HexGridExample2 {
 //      helpProvider1.SetShowHelp(this,true);
     }
 
-    void toolStripComboBox1_Click(object sender, EventArgs e) {
-      var name = ((ToolStripItem)sender).Text;
-      switch (name) {
-        case "MazeMap":    hexgridPanel.Host = MapBoard = new MazeMap();    break;
-        case "TerrainMap": hexgridPanel.Host = MapBoard = new TerrainMap(); break;
-        default:  break;
+   void comboBoxMapSelection_SelectionChanged(object sender, EventArgs e) {
+      var mapName = ((ToolStripItem)sender).Text;
+      switch (mapName) {
+        case "Maze Map":    SetMapBoard(new MazeMap());    break;
+        case "Terrain Map": SetMapBoard(new TerrainMap()); break;
+        default:            throw new ArgumentException(mapName,"mapName");
       }
-      MapBoard.ShowPathArrow = buttonPathArrow.Checked;
-      MapBoard.ShowFov       = buttonFieldOfView.Checked;
-      MapBoard.FovRadius     =
-      MapBoard.RangeCutoff   = (int)txtPathCutover.Tag;
-      MapBoard.MapMargin     = hexgridPanel.MapMargin;
-      hexgridPanel.Refresh();
+    }
+
+    void SetMapBoard(MapDisplay<MapGridHex> mapBoard) {
+      _hexgridPanel.Host      = 
+      _mapBoard               = mapBoard;
+      _mapBoard.ShowPathArrow = buttonPathArrow.Checked;
+      _mapBoard.ShowFov       = buttonFieldOfView.Checked;
+      _mapBoard.FovRadius     =
+      _mapBoard.RangeCutoff   = Int32.Parse(txtPathCutover.Tag.ToString());
+      _mapBoard.MapMargin     = _hexgridPanel.MapMargin;
+      LoadLandmarkMenu();
+
+      CustomCoords.SetMatrices(new IntMatrix2D(2,0, 0,-2, 0,2*_mapBoard.MapSizeHexes.Height-1, 2));
     }
 
     void buttonFieldOfView_Click(object sender, EventArgs e) {
-      MapBoard.ShowFov = buttonFieldOfView.Checked;
-      this.hexgridPanel.Refresh();
+      _mapBoard.ShowFov = buttonFieldOfView.Checked;
+      this._hexgridPanel.Refresh();
     }
     void buttonPathArrow_Click(object sender, EventArgs e) {
-      MapBoard.ShowPathArrow = buttonPathArrow.Checked;
-      this.hexgridPanel.Refresh();
+      _mapBoard.ShowPathArrow = buttonPathArrow.Checked;
+      this._hexgridPanel.Refresh();
     }
     void buttonRangeLine_Click(object sender, EventArgs e) {
-      MapBoard.ShowRangeLine = buttonRangeLine.Checked;
-      hexgridPanel.SetMapDirty();
-      MapBoard.StartHex = MapBoard.StartHex; // Indirect, but it works.
-      this.hexgridPanel.Refresh();
+      _mapBoard.ShowRangeLine = buttonRangeLine.Checked;
+      _hexgridPanel.SetMapDirty();
+      _mapBoard.StartHex = _mapBoard.StartHex; // Indirect, but it works.
+      this._hexgridPanel.Refresh();
     }
     void buttonTransposeMap_Click(object sender, EventArgs e) {
-      hexgridPanel.IsTransposed = buttonTransposeMap.Checked;
+      _hexgridPanel.IsTransposed = buttonTransposeMap.Checked;
     }
 
     void PanelBoard_GoalHexChange(object sender, HexEventArgs e) {
-      MapBoard.GoalHex = e.Coords;
-      this.hexgridPanel.Refresh();
+      _mapBoard.GoalHex = e.Coords;
+      this._hexgridPanel.Refresh();
     }
     void PanelBoard_StartHexChange(object sender, HexEventArgs e) {
-      MapBoard.StartHex = e.Coords;
-      this.hexgridPanel.Refresh();
+      _mapBoard.StartHex = e.Coords;
+      this._hexgridPanel.Refresh();
     }
     void PanelBoard_HotSpotHexChange(object sender, HexEventArgs e) {
-      MapBoard.HotspotHex = e.Coords;
-      this.hexgridPanel.Refresh();
+      _mapBoard.HotspotHex = e.Coords;
+      this._hexgridPanel.Refresh();
     }
     #endregion
 

@@ -194,8 +194,8 @@ namespace PGNapoleonics.HexgridPanel {
     public    virtual  void PaintMap(Graphics g) { PaintMap(g, (h) =>h.Paint(g)); }
 
     /// <summary>For each visible hex: perform <c>paintAction</c> and then draw its hexgrid outline.</summary>
-    /// <param name="g">TYpe: Graphics<para/>Object representing the canvas being painted.</param>
-    /// <param name="paintAction">Type Action&lt;IHex&gt;<para/>
+    /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
+    /// <param name="paintAction">Type Action&lt;IHex&gt; - 
     /// The hex-specific action to be performed in painting each hex.</param>
     void PaintMap(Graphics g, Action<THex> paintAction) { 
       if (g==null) throw new ArgumentNullException("g");
@@ -222,8 +222,8 @@ namespace PGNapoleonics.HexgridPanel {
     }
 
     /// <summary>Paint the current shortese path.</summary>
-    /// <param name="g">TYpe: Graphics<para/>Object representing the canvas being painted.</param>
-    /// <param name="path">Type: <see cref="IDirectedPath"/><para/>
+    /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
+    /// <param name="path">Type: <see cref="IDirectedPath"/> - 
     /// A directed path (ie linked-list> of hexes to be painted.</param>
     protected virtual  void PaintPath(Graphics g, IDirectedPath path) {
       if (g==null) throw new ArgumentNullException("g");
@@ -242,8 +242,8 @@ namespace PGNapoleonics.HexgridPanel {
     }
 
     /// <summary>Paint the direction and destination indicators for each hex of the current shortest path.</summary>
-    /// <param name="g">TYpe: Graphics<para/>Object representing the canvas being painted.</param>
-    /// <param name="path">Type: <see cref="IDirectedPath"/><para/>
+    /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
+    /// <param name="path">Type: <see cref="IDirectedPath"/> - 
     /// A directed path (ie linked-list> of hexes to be highlighted with a direction arrow.</param>
     protected virtual  void PaintPathArrow(Graphics g, IDirectedPath path) {
       if (g==null) throw new ArgumentNullException("g");
@@ -255,8 +255,8 @@ namespace PGNapoleonics.HexgridPanel {
     }
 
     /// <summary>Paint the direction arrow for each hex of the current shortest path.</summary>
-    /// <param name="g">TYpe: Graphics<para/>Object representing the canvas being painted.</param>
-    /// <param name="hexside">Type: <see cref="Hexside"/><para/>
+    /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
+    /// <param name="hexside">Type: <see cref="Hexside"/> - 
     /// Direction from this hex in which the next step is made.</param>
     /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
     protected virtual  void PaintPathArrow(Graphics g, Hexside hexside) {
@@ -269,7 +269,7 @@ namespace PGNapoleonics.HexgridPanel {
       g.DrawLine(Pens.Black, 0,unit*4,  unit*3/2, unit*2);
     }
     /// <summary>Paint the destination indicator for the current shortest path.</summary>
-    /// <param name="g">TYpe: Graphics<para/>Object representing the canvas being painted.</param>
+    /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
     /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
     protected virtual  void PaintPathDestination(Graphics g) {
       if (g==null) throw new ArgumentNullException("g");
@@ -285,9 +285,9 @@ namespace PGNapoleonics.HexgridPanel {
     /// <summary>Paints all the hexes in <paramref name="clipHexes"/> by executing <paramref name="paintAction"/>
     /// for each hex on <paramref name="g"/>.</summary>
     /// <param name="g">Graphics object for the canvas being painted.</param>
-    /// <param name="clipHexes">Type: CoordRectangle<para/>
+    /// <param name="clipHexes">Type: CoordRectangle - 
     /// The rectangular extent of hexes to be painted.</param>
-    /// <param name="paintAction">Type: Action&lt;HexCoords&gt;<para/>
+    /// <param name="paintAction">Type: Action&lt;HexCoords&gt; - 
     /// The paint action to be performed for each hex.</param>
     void PaintForEachHex(Graphics g, CoordsRectangle clipHexes, Action<HexCoords> paintAction) {
       BoardHexes.ForEach(hex => {
@@ -302,8 +302,8 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>Translates the origin of <paramref name="g"/> to the upper-left corner of the hex with 
     /// coordinates <paramref name="coords"/>.</summary>
-    /// <param name="g">Type: Graphics<para/>The canvas to be painted.</param>
-    /// <param name="coords">Type: HexCoords<para/>
+    /// <param name="g">Type: Graphics - The canvas to be painted.</param>
+    /// <param name="coords">Type: HexCoords - 
     /// Coordinates of the hex to be painted next.</param>
     void TranslateGraphicsToHex(Graphics g, HexCoords coords) {
       var offset  = UpperLeftOfHex(coords);
@@ -328,9 +328,9 @@ namespace PGNapoleonics.HexgridPanel {
     }
 
     /// <summary>String representation of the distance from a given landmark to a specified hex</summary>
-    /// <param name="coords">Type HexCoords<para/>
+    /// <param name="coords">Type HexCoords - 
     /// Hex for which to return Landmark distanace.</param>
-    /// <param name="landmarkToShow">Type int<para/>
+    /// <param name="landmarkToShow">Type int - 
     /// Index of the Landmark from which to display distances.</param>
     protected virtual string LandmarkDistance(HexCoords coords, int landmarkToShow) { 
       if (landmarkToShow < 0  ||  Landmarks.Count <= landmarkToShow) return "";
