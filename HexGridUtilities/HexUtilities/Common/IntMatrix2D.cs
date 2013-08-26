@@ -27,6 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace PGNapoleonics.HexUtilities.Common {
@@ -35,7 +36,8 @@ namespace PGNapoleonics.HexUtilities.Common {
   /// This representation is standard for computer graphics, though opposite 
   /// to standard mathematical (and physics) representation, and treats 
   /// row vectors as contravariant and column vectors as covariant.</remarks>
-  public struct IntMatrix2D : IEquatable<IntMatrix2D> {
+  [DebuggerDisplay("(({M11},{M12}), ({M21},{M22}), ({M31},{M32}), {M33}))")]
+  public struct IntMatrix2D : IEquatable<IntMatrix2D>, IFormattable {
     static IntMatrix2D TransposeMatrix = new IntMatrix2D(0,1, 1,0);
     /// <summary>TODO</summary>
     public static IntMatrix2D Transpose(IntMatrix2D matrix) {
@@ -57,7 +59,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>Ge the normalization component</summary>
     public int M33 { get; private set; }
     /// <summary>Get the identity matrix.</summary>
-    public static readonly IntMatrix2D Identity = new IntMatrix2D(1,0,0,1,0,0);
+    public static readonly IntMatrix2D Identity = new IntMatrix2D(1,0,0,1,0,0, 1);
 
     #region Constructors
     /// <summary> Initializes a new <code>IntMatrix2D</code> as the translation defined by the vector v.</summary>
@@ -95,6 +97,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <param name="dy">Y-translate component</param>
     /// <param name="norm">Normalization component</param>
     public IntMatrix2D(int m11, int m12, int m21, int m22, int dx, int dy, int norm) : this() {
+      if (norm <= 0) throw new ArgumentOutOfRangeException("norm", norm, "Parameter must be > 0.");
       M11 = m11;  M12 = m12;
       M21 = m21;  M22 = m22;
       M31 = dx;   M32 = dy;   M33 = norm;
@@ -141,7 +144,8 @@ namespace PGNapoleonics.HexUtilities.Common {
     public override bool Equals(object obj) { 
       return (obj is IntMatrix2D) && this.Equals((IntMatrix2D)obj); 
     }
-    bool IEquatable<IntMatrix2D>.Equals(IntMatrix2D rhs)              { return this == rhs; }
+    /// <inheritdoc/>
+    public bool          Equals(IntMatrix2D other)              { return this == other; }
     /// <inheritdoc/>
     public static bool operator != (IntMatrix2D lhs, IntMatrix2D rhs) { return ! (lhs == rhs); }
     /// <inheritdoc/>
@@ -156,8 +160,17 @@ namespace PGNapoleonics.HexUtilities.Common {
 
     /// <inheritdoc/>
     public override string ToString() {
-      return string.Format(CultureInfo.InvariantCulture,
-        "(({0},{1}),({2},{3}),({4},{5}),{6})",  M11,M12,M21,M22,M31,M32,M33);
+      return ToString("G", CultureInfo.InvariantCulture);
+    }
+    /// <summary>Returns a string representation of the matrix.</summary>
+    /// <param name="format"></param>
+    /// <param name="formatProvider"></param>
+    /// <returns></returns>
+    public string ToString(string format, IFormatProvider formatProvider) {
+      return string.Format("(({0},{1}), ({2},{3}), ({4},{5}), {6})",  
+        M11.ToString(format,formatProvider), M12.ToString(format,formatProvider),
+        M21.ToString(format,formatProvider), M22.ToString(format,formatProvider),
+        M31.ToString(format,formatProvider), M32.ToString(format,formatProvider), M33.ToString(format,formatProvider));
     }
   }
 }

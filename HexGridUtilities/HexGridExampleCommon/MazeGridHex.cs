@@ -51,10 +51,12 @@ namespace HexGridExampleCommon {
     /// <param name="board">Reference to the mapboard on which this hex sits.</param>
     /// <param name="coords">Location of the new hex.</param>
     public PathMazeGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
-      : base(board, coords) {}
+      : base(board, coords) {
+      Elevation = 0;
+    }
 
     /// <inheritdoc/>
-    public override int  Elevation      { get { return 0; } }
+//    public override int  Elevation      { get { return 0; } }
     /// <inheritdoc/>
     public override int  HeightTerrain  { get { return ElevationASL + 0; } }
     /// <inheritdoc/>
@@ -67,10 +69,12 @@ namespace HexGridExampleCommon {
     /// <param name="board">Reference to the mapboard on which this hex sits.</param>
     /// <param name="coords">Location of the new hex.</param>
     public WallMazeGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
-      : base(board, coords) {}
+      : base(board, coords) {
+      Elevation = 1;
+    }
 
     /// <inheritdoc/>
-    public override int  Elevation      { get { return 1; } }
+//    public override int  Elevation      { get { return 1; } }
     /// <inheritdoc/>
     public override int  HeightTerrain  { get { return ElevationASL + 10; } }
     /// <inheritdoc/>

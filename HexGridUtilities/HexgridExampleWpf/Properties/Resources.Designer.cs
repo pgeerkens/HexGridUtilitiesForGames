@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace PGNapoleonics.HexGridExampleWpf.Properties {
+namespace PGNapoleonics.HexgridExampleWpf.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace PGNapoleonics.HexGridExampleWpf.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PGNapoleonics.HexGridExampleWpf.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PGNapoleonics.HexgridExampleWpf.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

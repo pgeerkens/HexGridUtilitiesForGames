@@ -120,6 +120,7 @@
     <Compile Include="CustomCoordsFactory.cs" />
     <Compile Include="Common\DebugTracing.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="HexsideFlags.cs" />
     <Compile Include="Pathfinding\BidirectionalPathfinder.cs" />
     <Compile Include="Pathfinding\ConcurrentHashSet.cs" />
     <Compile Include="Pathfinding\DictPriorityQueue.cs" />
@@ -134,8 +135,9 @@
     <Compile Include="Common\IntVector2D.cs" />
     <Compile Include="Common\NeighbourCoords.cs" />
     <Compile Include="Common\NeighbourHex.cs" />
+    <Compile Include="Pathfinding\HexKeyValuePair.cs" />
     <Compile Include="Pathfinding\HotPriorityQueue.cs" />
-    <Compile Include="Pathfinding\HotPriorityQueueList.cs" />
+    <Compile Include="Pathfinding\HotPriorityQueueueList.cs" />
     <Compile Include="Pathfinding\IPriorityQueue.cs" />
     <Compile Include="Pathfinding\Landmark.cs" />
     <Compile Include="Pathfinding\IDirectedNavigableBoard.cs" />
@@ -153,7 +155,7 @@
     <Compile Include="FieldOfView\ShadowCastingFov_Utilities.cs" />
     <Compile Include="Common\SizeExtensions.cs" />
     <Compile Include="Common\UserCoordsRectangle.cs" />
-    <Compile Include="Common\Utils.cs" />
+    <Compile Include="Common\EnumExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="license.txt">

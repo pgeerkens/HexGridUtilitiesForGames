@@ -92,16 +92,16 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>Returns an <c>IntVector2D</c> representing the Canonical (obtuse) coordinates of this hex.</summary>
     public  IntVector2D Canon {
       get { return canonHasValue ? _Canon : ( Canon = _User * MatrixUserToCanon); }
-      set { _Canon = value; canonHasValue = true; userHasValue = false; }
+      private set { _Canon = value; canonHasValue = true; userHasValue = false; }
     } private IntVector2D _Canon;
-    bool canonHasValue;
+    private bool canonHasValue;
 
     /// <summary>Returns an <c>IntVector2D</c> representing the User (rectangular) coordinates of this hex.</summary>
     public  IntVector2D User  {
       get { return userHasValue ? _User : ( User = _Canon * MatrixCanonToUser); }
-      set { _User = value;  userHasValue = true; canonHasValue = false; }
+      private set { _User = value;  userHasValue = true; canonHasValue = false; }
     } private IntVector2D _User;
-    bool userHasValue;
+    private bool userHasValue;
     #endregion
 
     #region Methods
@@ -118,7 +118,7 @@ namespace PGNapoleonics.HexUtilities {
     }
 
     ///<summary>Returns set of hexes at direction(s) specified by <c>hexsides</c>, as IEnumerable.</summary>
-    public IEnumerable<NeighbourCoords> GetNeighbours(HexsideFlags hexsides) { 
+    public IEnumerable<NeighbourCoords> GetNeighbours(Hexsides hexsides) { 
       return GetNeighbours().Where(n=>hexsides.HasFlag(n.Hexside));
     }
 
@@ -141,13 +141,15 @@ namespace PGNapoleonics.HexUtilities {
     /// 
     /// > An object that supplies culture-specific formatting information.</param>
     /// <remarks>Format characters:
-    /// - 'C': Canonical formatting - Int2Vector output of the Canonical coordinates for this hex;
-    /// - 'G': General formatting - same as 'R';  
-    /// - 'N': Norm formatting - Scalar output of the Range of this hex from canonical (0,0);
-    /// - 'R': Rectangular formatting - Int2Vector output of the User coordinates for this hex;
-    /// - 'U': Custom formatting - Int2Vector output of the Custom coordinates for this hex;
+    /// - 'C' or 'c': Canonical formatting - Int2Vector output of the Canonical coordinates for this hex;
+    /// - 'G' or 'g': General formatting - same as 'R';  
+    /// - 'R' or 'r': Range formatting - Scalar output of the Range of this hex from canonical (0,0);
+    /// - 'U' or 'u': Custom formatting - Int2Vector output of the Custom coordinates for this hex;
     /// In all cases the leading character of the format string is stripped off and parsed, 
     /// with the remainder passed to the formatter completing the display formatting.
+    /// 
+    /// The lower-case format comands prefix a descriptive string on the output (ie one of "Canon: ",
+    /// "User: ", "Custom: ", or "Range: " respectivelly), while the upper-case commands do not.
     /// </remarks>
     public string ToString(string format, IFormatProvider formatProvider) {
       if (format==null || format.Length==0) format = "G";
@@ -155,17 +157,17 @@ namespace PGNapoleonics.HexUtilities {
       format = format.Substring(1);
       switch(formatChar) {
         default:    throw new FormatException();
-        case 'G':   return this.User.ToString(format, formatProvider);
         case 'C':   return this.Canon.ToString(format, formatProvider);
+        case 'G':   return this.User.ToString(format, formatProvider);
         case 'U':   return this.UserToCustom().ToString(format, formatProvider);
         case 'R':   if (Char.IsDigit(format[0])) format =  "G" + format;
                     return this.Range(HexCoords.EmptyCanon).ToString(format, formatProvider);
 
-        case 'g':   return "User: " + this.User.ToString(format, formatProvider);
-        case 'c':   return "Canon: " + this.Canon.ToString(format, formatProvider);
+        case 'c':   return "Canon: "  + this.Canon.ToString(format, formatProvider);
+        case 'g':   return "User: "   + this.User.ToString(format, formatProvider);
         case 'u':   return "Custom: " + this.UserToCustom().ToString(format, formatProvider);
         case 'r':   if (Char.IsDigit(format[0])) format =  "G" + format;
-                    return "Range: " + this.Range(HexCoords.EmptyCanon).ToString(format, formatProvider);
+                    return "Range: "  + this.Range(HexCoords.EmptyCanon).ToString(format, formatProvider);
       }
     }
 
@@ -195,17 +197,19 @@ namespace PGNapoleonics.HexUtilities {
     #region Value Equality
     /// <inheritdoc/>
     public override bool Equals(object obj) { 
-      return obj is HexCoords  &&  User == ((HexCoords)obj).User;
+      var other = obj as HexCoords?;
+      return other.HasValue  &&  this == other.Value;
     }
     /// <inheritdoc/>
     public override int GetHashCode() { return User.GetHashCode(); }
 
     /// <inheritdoc/>
-    public bool Equals(HexCoords other) { return User == other.User; }
+    public bool Equals(HexCoords other) { return this == other; }
 
-    /// <inheritdoc/>
-    public static bool operator != (HexCoords lhs, HexCoords rhs) { return ! (lhs==rhs); }
-    /// <inheritdoc/>
+    /// <summary>Tests value-inequality.</summary>
+    public static bool operator != (HexCoords lhs, HexCoords rhs) { return ! (lhs == rhs); }
+
+    /// <summary>Tests value-equality.</summary>
     public static bool operator == (HexCoords lhs, HexCoords rhs) { return lhs.User == rhs.User; }
     #endregion
   } 

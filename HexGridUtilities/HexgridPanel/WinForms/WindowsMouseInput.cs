@@ -31,8 +31,9 @@ using System.Drawing;
 
 namespace  PGNapoleonics.WinForms {
 	/// <summary>Enumeration for buttons and modifiers in Windows Mouse messages.</summary>
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1028:EnumStorageShouldBeInt32"), Flags]
-	public enum MouseKeys : short {
+  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+    "CA1028:EnumStorageShouldBeInt32")]
+	[Flags]public enum MouseKeys : short {
 		/// <summary>None.</summary>
 		None		= 0x00,
 		/// <summary>Left mouse button.</summary>
@@ -62,7 +63,10 @@ namespace  PGNapoleonics.WinForms {
 			return (Int16)(wParam.ToInt64() >> 16);
 		}
     /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "WParam"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Param")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
+      "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "WParam")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
+      "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Param")]
     public static IntPtr WParam (Int16 wheelDelta, MouseKeys mouseKeys) {
 			return IntPtr.Zero + (wheelDelta << 16) + (Int16)mouseKeys;
 		}

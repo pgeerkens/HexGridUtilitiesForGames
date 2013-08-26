@@ -34,24 +34,30 @@ namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>TODO</summary>
   [DebuggerDisplay("NeighbourHex: {Hex.Coords} exits to {HexsideEntry}")]
   public struct NeighbourHex : IEquatable<NeighbourHex> {
-    /// <summary>TODO</summary>
-    public IHex    Hex          { get; private set; }
-    /// <summary>TODO</summary>
-    public Hexside HexsideEntry { get {return HexsideIndex;} }
-    /// <summary>TODO</summary>
-    public Hexside HexsideExit  { get {return HexsideIndex.Reversed();} }
-    /// <summary>TODO</summary>
-    public Hexside HexsideIndex { get; private set; }
-
+    #region Constructors
     /// <summary>TODO</summary>
     public NeighbourHex(IHex hex) : this(hex, null) {}
     /// <summary>TODO</summary>
-    public NeighbourHex(IHex hex, HexsideFlags hexside)  : this(hex,hexside.IndexOf()) {}
+    public NeighbourHex(IHex hex, Hexsides hexside)  : this(hex,hexside.IndexOf()) {}
     /// <summary>TODO</summary>
     public NeighbourHex(IHex hex, Hexside? hexsideIndex) : this() {
       Hex          = hex;
-      HexsideIndex = hexsideIndex ?? 0;
+      HexsideEntry = hexsideIndex ?? 0;
     }
+    #endregion
+
+    #region Properties
+    /// <summary>TODO</summary>
+    public IHex    Hex          { get; private set; }
+    /// <summary>TODO</summary>
+    public Hexside HexsideEntry { get; private set; }
+    /// <summary>TODO</summary>
+    public Hexside HexsideExit  { get {return HexsideEntry.Reversed();} }
+    /// <summary>TODO</summary>
+    /// <deprecated/>
+    [Obsolete("Use HexsideEntry instead.")]
+    public Hexside HexsideIndex { get {return HexsideEntry;} }
+    #endregion
 
     /// <inheritdoc/>
     public override string ToString() { 
@@ -62,17 +68,22 @@ namespace PGNapoleonics.HexUtilities.Common {
     #region Value Equality - on Hex field only
     /// <inheritdoc/>
     public override bool Equals(object obj)                  {
-      return (obj is NeighbourHex)  &&  Hex.Coords.Equals(((NeighbourHex)obj).Hex.Coords); 
+      var other = obj as NeighbourHex?;
+      return other.HasValue  &&  this == other.Value;
     }
-    /// <inheritdoc/>
-    public override int GetHashCode()                        { return Hex.Coords.GetHashCode(); }
-    bool IEquatable<NeighbourHex>.Equals(NeighbourHex rhs)   { return this == rhs; }
 
-    /// <summary>TODO</summary>
-    public static bool operator != (NeighbourHex lhs, NeighbourHex rhs) { return ! (lhs==rhs); }
-    /// <summary>TODO</summary>
+    /// <inheritdoc/>
+    public override int GetHashCode() { return Hex.Coords.GetHashCode(); }
+
+    /// <inheritdoc/>
+    public bool Equals(NeighbourHex other) { return this == other; }
+
+    /// <summary>Tests value-inequality.</summary>
+    public static bool operator != (NeighbourHex lhs, NeighbourHex rhs) { return ! (lhs == rhs); }
+
+    /// <summary>Tests value-equality.</summary>
     public static bool operator == (NeighbourHex lhs, NeighbourHex rhs) {
-      return lhs.Hex.Coords.Equals(rhs.Hex.Coords);
+      return lhs.Hex.Coords == rhs.Hex.Coords;
     }
     #endregion
   }

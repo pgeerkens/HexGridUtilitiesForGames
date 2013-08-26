@@ -26,6 +26,10 @@ namespace HexgridExampleWpf {
   public partial class MainWindow : Window {
     public MainWindow() {
       InitializeComponent();
+      this.AddHandler(MainWindow.MouseWheelEvent, new RoutedEventHandler(Window_MouseWheel), true);
+      this.AddHandler(DockPanel.MouseWheelEvent, new RoutedEventHandler(Window_MouseWheel), true);
+      this.AddHandler(ScrollViewer.MouseWheelEvent, new RoutedEventHandler(Window_MouseWheel), true);
+      this.AddHandler(WindowsFormsHost.MouseWheelEvent, new RoutedEventHandler(Window_MouseWheel), true);
     }
 
     private void Window_Loaded (object sender, RoutedEventArgs e) {
@@ -35,8 +39,15 @@ namespace HexgridExampleWpf {
 
       comboBoxMapSelection.SelectedIndex = 0;
 
-      _hexgridPanel.SetScroll();
+      _hexgridPanel.SetScrollLimits();
       _host.Child  = _hexgridPanel;
+
+      _host.Child.Focus();
+
+      var sink = sender as System.Windows.Interop.IKeyboardInputSink;
+      if (sink != null) 
+        ((System.Windows.Interop.IKeyboardInputSink)sender)
+            .TabInto(new System.Windows.Input.TraversalRequest(FocusNavigationDirection.First));
     }
 
     HexgridPanel           _hexgridPanel;
@@ -94,12 +105,12 @@ namespace HexgridExampleWpf {
     }
     protected void OnResize(EventArgs e) {
 //      base.OnResize(e);
-      if (IsInitialized && ! isPanelResizeSuppressed) _hexgridPanel.SetScroll();
+      if (IsInitialized && ! isPanelResizeSuppressed) _hexgridPanel.SetScrollLimits();
     }
     protected void OnResizeEnd(EventArgs e) {
 //      base.OnResizeEnd(e);
       isPanelResizeSuppressed = false;
-      _hexgridPanel.SetScroll();
+      _hexgridPanel.SetScrollLimits();
     }
 
     void hexgridPanel_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e) {
@@ -190,6 +201,18 @@ namespace HexgridExampleWpf {
 
     private void _scrollViewer_MouseWheel(object sender, MouseWheelEventArgs e) {
       MessageBox.Show("In - _scrollViewer_MouseWheel!");
+    }
+
+    private void _dockPanel_MouseWheel(object sender, MouseWheelEventArgs e) {
+      MessageBox.Show("In - _dockPanel_MouseWheel!");
+    }
+
+    private void Window_MouseWheel(object sender, MouseWheelEventArgs e) {
+      MessageBox.Show("In - Window_MouseWheel!");
+    }
+
+    private void Window_MouseWheel(object sender, RoutedEventArgs e) {
+      MessageBox.Show("In - Window_MouseWheel!");
     }
   }
 }

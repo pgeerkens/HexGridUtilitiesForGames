@@ -118,14 +118,6 @@ namespace PGNapoleonics.HexUtilities {
       ));
     }
 
-    /// <inheritdoc/>
-    public virtual Point   HexCenterPoint(HexCoords coordsNewULHex) {
-      if (coordsNewULHex == null) return new Point();
-      var offset = new Size((int)(Host.GridSizeF.Width*2F/3F), (int)Host.GridSizeF.Height);
-      var margin = Size.Round( Host.MapMargin.Scale(Host.MapScale) );
-      return HexOrigin(coordsNewULHex) + margin + offset;
-    }
-
     /// <summary>Scrolling control hosting this HexGrid.</summary>
     protected IHexgridHost Host { get; private set; }
 
@@ -151,6 +143,14 @@ namespace PGNapoleonics.HexUtilities {
       matrix.TransformPoints(pts);
 		  return (int) Math.Floor( (pts[0].X + pts[0].Y + 2F) / 3F );
 	  }
+
+    /// <inheritdoc/>
+    public virtual Point   HexCenterPoint(HexCoords coordsNewULHex) {
+      if (coordsNewULHex == null) return new Point();
+      var offset = new Size((int)(Host.GridSizeF.Width*2F/3F), (int)Host.GridSizeF.Height);
+      var margin = Size.Round( Host.MapMargin.Scale(Host.MapScale) );
+      return HexOrigin(coordsNewULHex) + margin + offset;
+    }
 
     /// <summary>Returns the pixel coordinates of the center of the specified hex.</summary>
     /// <param name="coords"><see cref="HexCoords"/> specification for which pixel center is desired.</param>

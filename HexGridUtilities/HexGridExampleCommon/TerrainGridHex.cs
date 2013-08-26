@@ -40,11 +40,13 @@ namespace HexGridExampleCommon {
     /// <param name="board"></param>
     /// <param name="coords">Board location of this hex.</param>
     protected TerrainGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
-      : base(board, coords) {}
+      : base(board, coords) {
+      Elevation = 0;
+    }
 
     /// <summary>TODO</summary>
     protected virtual  Brush HexBrush      { get { return Brushes.Transparent; } }
-    public    override int   Elevation     { get { return  0; }  }
+//    public    override int   Elevation     { get; protected set; }
     public    override int   ElevationASL  { get { return Board.ElevationASL(Elevation); } }
     public    override int   HeightTerrain { get { return ElevationASL; } }
 
@@ -122,10 +124,12 @@ namespace HexGridExampleCommon {
   /// <summary>A <see cref="TerrainGridHex"/> representing elevated terrain.</summary>
   internal sealed class HillTerrainGridHex     : TerrainGridHex {
     public HillTerrainGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
-      : base(board, coords) { }
+      : base(board, coords) { 
+      Elevation = 1;
+    }
 
     /// <inheritdoc/>
-    public    override int   Elevation { get { return  1; } }
+//    public    override int   Elevation { get { return  1; } }
     /// <inheritdoc/>
     protected override Brush HexBrush  { get { return Brushes.Khaki; } }
     /// <inheritdoc/>
@@ -135,10 +139,12 @@ namespace HexGridExampleCommon {
   /// <summary>A <see cref="TerrainGridHex"/> representing double elevated terrain.</summary>
   internal sealed class MountainTerrainGridHex : TerrainGridHex {
     public MountainTerrainGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
-      : base(board, coords) { }
+      : base(board, coords) {
+      Elevation = 2;
+    }
 
     /// <inheritdoc/>
-    public    override int   Elevation { get { return  2; } }
+//    public    override int   Elevation { get { return  2; } }
     /// <inheritdoc/>
     protected override Brush HexBrush  { get { return Brushes.DarkKhaki; } }
     /// <inheritdoc/>

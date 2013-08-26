@@ -36,7 +36,8 @@ namespace PGNapoleonics.HexGridExample2 {
       this.toolStrip1 = new System.Windows.Forms.ToolStrip();
       this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
       this.statusLabel = new System.Windows.Forms.ToolStripLabel();
-      this._hexgridPanel = new PGNapoleonics.HexgridPanel.HexgridPanel(this.components);
+      this._hexgridPanel = new PGNapoleonics.HexgridPanel.HexgridScrollable(this.components);
+//      this._hexgridPanel = new PGNapoleonics.HexgridPanel.HexgridPanel(this.components);
       this.toolStrip2 = new System.Windows.Forms.ToolStrip();
       this.buttonTransposeMap = new System.Windows.Forms.ToolStripButton();
       this.buttonRangeLine = new System.Windows.Forms.ToolStripButton();
@@ -351,7 +352,8 @@ namespace PGNapoleonics.HexGridExample2 {
     private System.Windows.Forms.ToolStripContainer toolStripContainer1;
     private System.Windows.Forms.ToolStrip toolStrip1;
     private System.Windows.Forms.ToolStripLabel toolStripLabel1;
-    private PGNapoleonics.HexgridPanel.HexgridPanel _hexgridPanel;
+    private PGNapoleonics.HexgridPanel.HexgridScrollable _hexgridPanel;
+//    private PGNapoleonics.HexgridPanel.HexgridPanel _hexgridPanel;
     private System.Windows.Forms.ToolStrip toolStrip2;
     private System.Windows.Forms.ToolStripButton buttonTransposeMap;
     private System.Windows.Forms.ToolStripLabel statusLabel;

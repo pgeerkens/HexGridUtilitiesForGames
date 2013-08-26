@@ -36,6 +36,17 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
   /// <summary>Field-of-View cone for shadow-casting implementation.</summary>
   [DebuggerDisplay("{RiseRun} at {Range}; VTop: {VectorTop}; VBot: {VectorBottom}")]
   public struct FovCone : IEquatable<FovCone> {
+    #region Constructors
+    /// <summary>Construct a new FovCone instance.</summary>
+    internal FovCone(int range, IntVector2D top, IntVector2D bottom, RiseRun riseRun) : this() {
+      this.Range        = range;
+      this.RiseRun      = riseRun;
+      this.VectorTop    = top;
+      this.VectorBottom = bottom;
+    }
+    #endregion
+
+    #region Properties
     /// <summary>The distance from the observer at which this FovCone was generated.</summary>
     public int          Range        { get; private set; }
     /// <summary>The pitch angle at which visibility begisn for this FovCone. </summary>
@@ -44,14 +55,8 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     public IntVector2D  VectorBottom { get; private set; }
     /// <summary>The minimum yaw angle for this FovCone.</summary>
     public IntVector2D  VectorTop    { get; private set; }
+    #endregion
 
-    /// <summary>Construct a new FovCone instance.</summary>
-    internal FovCone(int range, IntVector2D top, IntVector2D bottom, RiseRun riseRun) : this() {
-      this.Range        = range;
-      this.RiseRun      = riseRun;
-      this.VectorTop    = top;
-      this.VectorBottom = bottom;
-    }
     /// <inheritdoc/>
     public override string ToString() {
       return string.Format(CultureInfo.InvariantCulture,
@@ -62,7 +67,8 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     #region Value Equality
     /// <inheritdoc/>
     public override bool Equals(object obj) { 
-      return (obj is FovCone) && this == (FovCone)obj;
+      var other = obj as FovCone?;
+      return other.HasValue  &&  this == other.Value;
     }
     /// <inheritdoc/>
     public override int GetHashCode() {
@@ -71,10 +77,11 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     }
 
     /// <inheritdoc/>
-    bool IEquatable<FovCone>.Equals(FovCone obj) { return this == obj; }
+    public bool Equals(FovCone other) { return this == other; }
 
     /// <summary>Tests value-inequality of two <c>FovCone</c> instances.</summary>
     public static bool operator != (FovCone @this, FovCone rhs) { return ! ( @this == rhs); }
+
     /// <summary>Tests value-equality of two <c>FovCone</c> instances.</summary>
     public static bool operator == (FovCone @this, FovCone rhs) {
       return @this.Range        == rhs.Range  

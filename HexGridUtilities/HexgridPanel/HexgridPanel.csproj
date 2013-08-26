@@ -125,6 +125,18 @@
     <Compile Include="HexgridPanel.Designer.cs">
       <DependentUpon>HexgridPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="HexgridScrollable.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HexgridScrollable.Designer.cs">
+      <DependentUpon>HexgridScrollable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LayeredScrollable.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="LayeredScrollable.Designer.cs">
+      <DependentUpon>LayeredScrollable.cs</DependentUpon>
+    </Compile>
     <Compile Include="MapDisplay.cs" />
     <Compile Include="MapGridHex.cs" />
     <Compile Include="WinForms\NativeMethods.cs" />
@@ -145,7 +157,7 @@
     <Compile Include="WinForms\WinFormsExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="HexGridPanel.resx">
+    <EmbeddedResource Include="HexgridPanel.resx">
       <DependentUpon>HexgridPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="WinForms\ExceptionDialog.en-US.resx">

@@ -4,7 +4,7 @@
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:PGNapoleonics.HexUtilities.Common;assembly=HexUtilities"
         Title="MainWindow" Height="444" Width="700" Loaded="Window_Loaded" 
-        SizeToContent="WidthAndHeight">
+        SizeToContent="WidthAndHeight" ScrollViewer.VerticalScrollBarVisibility="Disabled">
     <Window.Resources>
         <ObjectDataProvider x:Key="TraceFlagsList"
                             MethodName="GetNames"
@@ -14,10 +14,12 @@
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </Window.Resources>
-    <DockPanel x:Name="_dockPanel" Cursor="Arrow" ScrollViewer.VerticalScrollBarVisibility="Disabled" DataContext="{Binding Source={StaticResource TraceFlagsList}}">
-        <StackPanel Height="25" 
+    <DockPanel x:Name="_dockPanel" Cursor="Arrow" 
+               ScrollViewer.VerticalScrollBarVisibility="Disabled" 
+               DataContext="{Binding Source={StaticResource TraceFlagsList}}">
+        <StackPanel DockPanel.Dock="Top" 
+                    Height="25" 
                     VerticalAlignment="Top" 
-                    DockPanel.Dock="Top" 
                     Orientation="Horizontal">
             <ToggleButton x:Name="buttonTransposeMap" 
                           Content="Transpose" 
@@ -70,21 +72,20 @@
             <Label Content="Landmark:" HorizontalContentAlignment="Right"/>
             <ComboBox x:Name="menuItemLandmarks" Width="60"/>
         </StackPanel>
-        <StackPanel Height="25" VerticalAlignment="Top" DockPanel.Dock="Bottom">
+        <StackPanel DockPanel.Dock="Bottom" 
+                    Height="25" 
+                    VerticalAlignment="Top">
             <Label x:Name="statusLabel" Content="Status display"/>
         </StackPanel>
-        <ScrollViewer x:Name="_scrollViewer" 
+        <ScrollViewer DockPanel.Dock="Bottom" 
+                      x:Name="_scrollViewer" 
                       ClipToBounds="True" 
                       HorizontalContentAlignment="Stretch" 
                       VerticalContentAlignment="Stretch" 
-                      DockPanel.Dock="Bottom" 
-                      VerticalScrollBarVisibility="Auto" 
-                      HorizontalScrollBarVisibility="Auto" 
-                      MouseWheel="_scrollViewer_MouseWheel">
+                      VerticalScrollBarVisibility="Disabled">
             <WindowsFormsHost x:Name="_host" 
-                              MouseWheel="_host_MouseWheel" 
-                              ScrollViewer.HorizontalScrollBarVisibility="Auto" 
-                              ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+                              ScrollViewer.VerticalScrollBarVisibility="Disabled" 
+                              ScrollViewer.CanContentScroll="True" />
         </ScrollViewer>
     </DockPanel>
 </Window>

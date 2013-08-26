@@ -37,7 +37,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// </remarks>
   /// <a href="http://en.wikipedia.org/wiki/Heapsort">Wikepedia - Heapsort</a>/>
   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-    "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+    "CA1711:IdentifiersShouldNotHaveIncorrectSuffix", 
+    Justification="PriorityQueue has different interface from Queue")]
   public sealed class HotPriorityQueue<TValue> : IPriorityQueue<int,TValue> {
 
     int _baseIndex;
@@ -89,7 +90,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       } else {
         if (_lists == null) {
 #if UseSortedDictionary
-          _lists = new SortedDictionary<ushort, HotPriorityQueueList<PathPriority, TValue>>();
+          _lists = new SortedDictionary<int, HotPriorityQueueList<int, TValue>>();
 #else
           _lists = new SortedList<int, HotPriorityQueueList<int,TValue>>();
 #endif

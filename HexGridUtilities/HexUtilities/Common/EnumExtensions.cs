@@ -28,16 +28,24 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 
 namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>Type-safe extension methods for parsing Enums.</summary>
-  public static partial class Utilities{
+  public static partial class EnumExtensions{
     #region Enum Parsing utilities
     /// <summary>Typesafe wrapper for <c>Enum.GetValues(typeof(TEnum).</c></summary>
-    public static IEnumerable<TEnum> EnumGetValues<TEnum>() {
-      return (IEnumerable<TEnum>)(Enum.GetValues(typeof(TEnum)));
+    public static ReadOnlyCollection<TEnum> EnumGetValues<TEnum>() {
+      return new ReadOnlyCollection<TEnum>((TEnum[])(Enum.GetValues(typeof(TEnum))));
+    }
+    /// <summary>TODO</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+      "CA1004:GenericMethodsShouldProvideTypeParameter")]
+    public static ReadOnlyCollection<string> EnumGetNames<TEnum>() {
+      return new ReadOnlyCollection<string>((string[])(Enum.GetNames(typeof(TEnum))));
     }
 
     /// <summary>Typesafe wrapper for <c>Enum.ParseEnum()</c> that automatically checks 
@@ -76,18 +84,20 @@ namespace PGNapoleonics.HexUtilities.Common {
 #region Deprecated code
 namespace PGNapoleonics.HexUtilities.Common {
 using System.IO;
-  public static partial class Utilities{
+  public static partial class EnumExtensions{
     #region InvalidDataException Throwers
     /// <summary>Deprecated</summary>
+    /// <deprecated/>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
       "CA1062:Validate arguments of public methods", MessageId = "0")]
-    [Obsolete("InvalidDataException is an IO Exception. Subclass and throw a more appropriate error instead.")]
+    [Obsolete("InvalidDataException is an IOException; subclass and throw a more appropriate error instead.")]
     public static void ThrowInvalidDataException(MemberInfo type, object data) {
       throw new InvalidDataException(string.Format(CultureInfo.InvariantCulture,
           "{0}: Invalid: '{1}'", type.Name, data));
     }
     ///  <summary>Deprecated:</summary>
-    [Obsolete("InvalidDataException is an IO Exception. Subclass and throw a more appropriate error instead.")]
+    /// <deprecated/>
+    [Obsolete("InvalidDataException is an IOException; subclass and throw a more appropriate error instead.")]
     public static void ThrowInvalidDataException(string parseType, int lineNo, 
       object section, string error, Exception ex, object data) {
       throw new InvalidDataException(

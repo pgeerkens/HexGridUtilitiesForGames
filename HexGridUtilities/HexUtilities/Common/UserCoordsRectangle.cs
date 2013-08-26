@@ -28,18 +28,23 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 
 namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>Stores a rectangular board region as a a location and extent of <see cref="HexCoords"/>.</summary>
+  [DebuggerDisplay("({Location}):({Size})")]
   public struct CoordsRectangle : IEquatable<CoordsRectangle> {
+    #region Constructors
     /// <summary>TODO</summary>
     public CoordsRectangle(HexCoords location, HexCoords size)  : this(new Rectangle(location.User, size.User)) {}
     /// <summary>TODO</summary>
     internal CoordsRectangle(int x, int y, int width, int height) : this(new Rectangle(x,y,width,height)) {}
     /// <summary>TODO</summary>
     private CoordsRectangle(Rectangle rectangle) : this() { Rectangle = rectangle; }
+    #endregion
 
+    #region Properties
     /// <summary>TODO</summary>
     public int       Bottom     { get { return Rectangle.Bottom; } }
     /// <summary>TODO</summary>
@@ -73,21 +78,33 @@ namespace PGNapoleonics.HexUtilities.Common {
     public HexCoords LowerLeft  { get { return HexCoords.NewUserCoords(Left,Bottom); } }
     /// <summary>TODO</summary>
     public HexCoords LowerRight { get { return HexCoords.NewUserCoords(Right,Bottom); } }
+    #endregion
+
+    /// <inheritdoc/>
+    public override string ToString() {
+      return string.Format("({0},{1}):({2},{3})",X,Y,Width,Height);
+    }
 
     #region Value Equality
     /// <inheritdoc/>
-    public override bool Equals(object obj) { return (obj is CoordsRectangle) && this == (CoordsRectangle)obj; }
+    public override bool Equals(object obj) { 
+      var other = obj as CoordsRectangle?;
+      return other.HasValue  &&  this == other.Value;
+    }
+
     /// <inheritdoc/>
     public override int GetHashCode() { return Rectangle.GetHashCode(); }
+
+    /// <inheritdoc/>
+    public bool Equals(CoordsRectangle other) { return this == other; }
+
+    /// <summary>Tests value inequality of two CoordsRectangle instances.</summary>
+    public static bool operator != (CoordsRectangle lhs, CoordsRectangle rhs) { return ! (lhs == rhs); }
 
     /// <summary>Tests value equality of two CoordsRectangle instances.</summary>
     public static bool operator == (CoordsRectangle lhs, CoordsRectangle rhs) { 
       return lhs.Rectangle == rhs.Rectangle; 
     }
-    /// <summary>Tests value inequality of two CoordsRectangle instances.</summary>
-    public static bool operator != (CoordsRectangle lhs, CoordsRectangle rhs) { return ! (lhs == rhs); }
-
-    bool IEquatable<CoordsRectangle>.Equals(CoordsRectangle obj) { return this == obj; }
     #endregion
   }
 }

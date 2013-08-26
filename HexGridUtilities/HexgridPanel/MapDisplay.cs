@@ -30,6 +30,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
@@ -159,10 +160,9 @@ namespace PGNapoleonics.HexgridPanel {
     }
 
     /// <inheritdoc/>
-    /// <param name="g">Graphics object for the canvas being painted.</param>
     public    virtual  void PaintHighlight(Graphics g) { 
       if (g==null) throw new ArgumentNullException("g");
-      var container = g.BeginContainer();
+      var container = g.BeginContainer(); // Set all transformations relative to current origin!
       TranslateGraphicsToHex(g, StartHex);
       g.DrawPath(Pens.Red, HexgridPath);
 
@@ -188,37 +188,28 @@ namespace PGNapoleonics.HexgridPanel {
           } );
         }
       }
+      g.EndContainer(container); 
     }
 
     /// <inheritdoc/>
-    public    virtual  void PaintMap(Graphics g) { PaintMap(g, (h) =>h.Paint(g)); }
-
-    /// <summary>For each visible hex: perform <c>paintAction</c> and then draw its hexgrid outline.</summary>
-    /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
-    /// <param name="paintAction">Type Action&lt;IHex&gt; - 
-    /// The hex-specific action to be performed in painting each hex.</param>
-    void PaintMap(Graphics g, Action<THex> paintAction) { 
+    public    virtual  void PaintMap(Graphics g) { 
       if (g==null) throw new ArgumentNullException("g");
-      if (paintAction==null) throw new ArgumentNullException("paintAction");
-      var clipHexes = GetClipInHexes(g.VisibleClipBounds);
-      var location  = new Point(GridSize.Width*2/3, GridSize.Height/2);
 
-      using(var format = new StringFormat()) {
-        format.Alignment = format.LineAlignment = StringAlignment.Center;
-
-        g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-        var font       = SystemFonts.MenuFont;
-        var brush      = Brushes.Black;
-        var textOffset = new Point(GridSize.Scale(0.50F).ToSize() 
-                       - new SizeF(font.Size,font.Size).Scale(0.8F).ToSize());
-        PaintForEachHex(g, clipHexes, coords => {
-          paintAction(this[coords]);
-          if (ShowHexgrid) g.DrawPath(Pens.Black, HexgridPath);
-          if (LandmarkToShow != -1 ) {
-            g.DrawString(LandmarkDistance(coords,LandmarkToShow), font, brush, textOffset);
-          }
-        } );
-      }
+      var container = g.BeginContainer(); // Set all transformations relative to current origin!
+      var clipHexes  = GetClipInHexes(g.VisibleClipBounds);
+      g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+      var font       = SystemFonts.MenuFont;
+      var brush      = Brushes.Black;
+      var textOffset = new Point((GridSize.Scale(0.50F)
+                                - new SizeF(font.Size,font.Size).Scale(0.8F)).ToSize());
+      PaintForEachHex(g, clipHexes, coords => {
+        this[coords].Paint(g);
+        if (ShowHexgrid) g.DrawPath(Pens.Black, HexgridPath);
+        if (LandmarkToShow != -1 ) {
+          g.DrawString(LandmarkDistance(coords,LandmarkToShow), font, brush, textOffset);
+        }
+      } );
+      g.EndContainer(container); 
     }
 
     /// <summary>Paint the current shortese path.</summary>
@@ -268,6 +259,7 @@ namespace PGNapoleonics.HexgridPanel {
       g.DrawLine(Pens.Black, 0,unit*4, -unit*3/2, unit*2);
       g.DrawLine(Pens.Black, 0,unit*4,  unit*3/2, unit*2);
     }
+
     /// <summary>Paint the destination indicator for the current shortest path.</summary>
     /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
     /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>

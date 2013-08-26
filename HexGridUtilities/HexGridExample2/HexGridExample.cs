@@ -42,10 +42,9 @@ using PGNapoleonics.WinForms;
 using HexGridExampleCommon;
 
 namespace PGNapoleonics.HexGridExample2 {
-  internal sealed partial class HexgridExampleForm : Form, IMessageFilter {
+  internal sealed partial class HexgridExampleForm : Form {
     public HexgridExampleForm() {
       InitializeComponent();
-			Application.AddMessageFilter(this);
 
       this._hexgridPanel.ScaleChange += new EventHandler<EventArgs>((o,e) => OnResizeEnd(e));
 
@@ -103,12 +102,12 @@ namespace PGNapoleonics.HexGridExample2 {
     }
     protected override void OnResize(EventArgs e) {
       base.OnResize(e);
-      if (IsHandleCreated && ! isPanelResizeSuppressed) _hexgridPanel.SetScroll();
+      if (IsHandleCreated && ! isPanelResizeSuppressed) _hexgridPanel.SetScrollLimits();
     }
     protected override void OnResizeEnd(EventArgs e) {
       base.OnResizeEnd(e);
       isPanelResizeSuppressed = false;
-      _hexgridPanel.SetScroll();
+      _hexgridPanel.SetScrollLimits();
     }
 
     void hexgridPanel_MouseMove(object sender, MouseEventArgs e) {
@@ -153,13 +152,20 @@ namespace PGNapoleonics.HexGridExample2 {
 //      helpProvider1.SetShowHelp(this,true);
     }
 
+   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", 
+     "CA2000:Dispose objects before losing scope")]
    void comboBoxMapSelection_SelectionChanged(object sender, EventArgs e) {
       var mapName = ((ToolStripItem)sender).Text;
-      switch (mapName) {
-        case "Maze Map":    SetMapBoard(new MazeMap());    break;
-        case "Terrain Map": SetMapBoard(new TerrainMap()); break;
-        default:            throw new ArgumentException(mapName,"mapName");
-      }
+      MapDisplay<MapGridHex> tempMapBoard = null;
+      try {
+        switch (mapName) {
+          case "Maze Map":    tempMapBoard = new MazeMap();    break;
+          case "Terrain Map": tempMapBoard = new TerrainMap(); break;
+          default:            throw new ArgumentException("'" + mapName + "' is invalid value.","sender");
+        }
+        SetMapBoard(tempMapBoard);
+        tempMapBoard = null;
+      } finally { if (tempMapBoard!=null) tempMapBoard.Dispose(); }
     }
 
     void SetMapBoard(MapDisplay<MapGridHex> mapBoard) {
@@ -168,7 +174,7 @@ namespace PGNapoleonics.HexGridExample2 {
       _mapBoard.ShowPathArrow = buttonPathArrow.Checked;
       _mapBoard.ShowFov       = buttonFieldOfView.Checked;
       _mapBoard.FovRadius     =
-      _mapBoard.RangeCutoff   = Int32.Parse(txtPathCutover.Tag.ToString());
+      _mapBoard.RangeCutoff   = Int32.Parse(txtPathCutover.Tag.ToString(),CultureInfo.InvariantCulture);
       _mapBoard.MapMargin     = _hexgridPanel.MapMargin;
       LoadLandmarkMenu();
 
@@ -205,39 +211,6 @@ namespace PGNapoleonics.HexGridExample2 {
       _mapBoard.HotspotHex = e.Coords;
       this._hexgridPanel.Refresh();
     }
-    #endregion
-
-    #region IMessageFilter implementation
-    /// <summary>Redirect WM_MouseWheel messages to window under mouse.</summary>
-		/// <remarks>Redirect WM_MouseWheel messages to window under mouse (rather than 
-    /// that with focus) with adjusted delta.
-    /// <a href="http://www.flounder.com/virtual_screen_coordinates.htm">Virtual Screen Coordinates</a>
-    /// Dont forget to add this to constructor:
-    /// 			Application.AddMessageFilter(this);
-    ///</remarks>
-		/// <param name="m">The Windows Message to filter and/or process.</param>
-		/// <returns>Success (true) or failure (false) to OS.</returns>
-		[System.Security.Permissions.PermissionSetAttribute(
-			System.Security.Permissions.SecurityAction.Demand, Name="FullTrust")]
-		bool IMessageFilter.PreFilterMessage(ref Message m) {
-			var hWnd  = NativeMethods.WindowFromPoint( WindowsMouseInput.GetPointLParam(m.LParam) );
-			var ctl	  = Control.FromHandle(hWnd);
-      if (hWnd != IntPtr.Zero  &&  hWnd != m.HWnd  &&  ctl != null) {
-        switch((WM)m.Msg) {
-          default:  break;
-          case WM.MOUSEWHEEL:
-            #if DEBUG
-              DebugTracing.Trace(TraceFlags.ScrollEvents, true," - {0}.WM.{1}: ", Name, 
-                ((WM)m.Msg)); 
-            #endif
-            if (ctl is HexgridPanel.HexgridPanel  ||  ctl is HexgridExampleForm) {
-              return (NativeMethods.SendMessage(hWnd, m.Msg, m.WParam, m.LParam) == IntPtr.Zero);
-            }
-            break;
-        }
-      }
-      return false;
-		}
     #endregion
   }
 }

@@ -28,12 +28,13 @@
 #endregion
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 
 /// <summary>Extensions to the System.Windows.Forms technologies used by namespace PGNapoleonics.HexgridPanel.</summary>
 namespace PGNapoleonics.WinForms {
   /// <summary>Extern declarations from the Win32 API.</summary>
-  internal static class NativeMethods {
+  internal static partial class NativeMethods {
     /// <summary>P/Invoke declaration for user32.dll.WindowFromPoint</summary>
 		/// <remarks><a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms633558(v=vs.85).aspx"></a></remarks>
 		/// <param name="pt">(Sign-extended) screen coordinates as a Point structure.</param>
@@ -54,6 +55,11 @@ namespace PGNapoleonics.WinForms {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
       "CA1811:AvoidUncalledPrivateCode"), DllImport("user32.dll", CharSet = CharSet.Auto)]
 		internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+
+    [DllImport("Gdi32.dll", SetLastError=true, ExactSpelling=true, CharSet=CharSet.Auto)]
+    [ResourceExposure(ResourceScope.None)] 
+    public static extern bool BitBlt(HandleRef hDC, int x, int y, int nWidth, int nHeight, 
+                                     HandleRef hSrcDC, int xSrc, int ySrc, int dwRop);
   }
 
     /// <summary>Extension methods for System.Windows.Forms.Control.</summary>

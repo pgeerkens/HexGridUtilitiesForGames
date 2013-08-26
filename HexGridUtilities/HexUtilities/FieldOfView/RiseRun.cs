@@ -34,7 +34,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
   /// <summary>TODO</summary>
   [DebuggerDisplay("RiseRun: ({Rise} over {Run})")]
   public struct RiseRun : IEquatable<RiseRun>, IComparable<RiseRun> {
-
+    #region Constructors
     /// <summary>Creates a new instance of the RiseRUn struct.</summary>
     /// <param name="rise"></param>
     /// <param name="run"></param>
@@ -42,12 +42,16 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       this.Rise = rise;
       this.Run  = run;
     }
+    #endregion
+
+    #region Properties
     /// <summary>Delta-height in units of elevation: meters.</summary>
     public int Rise { get; private set; }
     /// <summary>Delta-width in units of distance:  hexes.</summary>
     public int Run  { get; private set; }
+    #endregion
 
-    #region Operators and Interface implementations: IEquatable<RiseRun>, IComparable<RiseRun>
+    #region Operators and  IComparable<RiseRun> implementations: 
     /// <summary>Less Than operator</summary>
     public static bool operator <  (RiseRun lhs, RiseRun rhs) {
       return (lhs.Rise * rhs.Run) < (lhs.Run * rhs.Rise);
@@ -60,25 +64,37 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     }
     /// <summary>Greater Than or Equals operator</summary>
     public static bool operator >= (RiseRun lhs, RiseRun rhs) { return ! (lhs < rhs); }
-    /// <summary>Equality operator</summary>
-    public static bool operator == (RiseRun lhs, RiseRun rhs) { return lhs.Equals(rhs); }
-    /// <summary>Inequality operator</summary>
-    public static bool operator != (RiseRun lhs, RiseRun rhs) { return ! (lhs == rhs); }
-    /// <summary>Tests value-equality</summary>
-    public bool Equals(RiseRun other) { return (this.Rise * other.Run) == (this.Run * other.Rise); }
     /// <summary>Less-Than comparaator.</summary>
     public int CompareTo(RiseRun other) { 
       return (this == other) ?  0
            : (this  < other) ? -1 
                              : +1;
     }
-    /// <inheritdoc/>
-    public override bool Equals(object obj) { return this == (RiseRun)obj; }
-    /// <inheritdoc/>
-    public override int GetHashCode() { return (Rise << 16) ^ Run; }
     #endregion
 
     /// <inheritdoc/>
     public override string ToString() { return string.Format(CultureInfo.InvariantCulture,"Rise={0}; Run={1}", Rise, Run); }
+
+    #region Value equality
+    /// <inheritdoc/>
+    public override bool Equals(object obj) { 
+      var other = obj as RiseRun?;
+      return other.HasValue  &&  this == other.Value;
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode() { return (Rise << 16) ^ Run; }
+
+    /// <inheritdoc/>
+    public bool Equals(RiseRun other) { return this == other; }
+
+    /// <summary>Inequality operator</summary>
+    public static bool operator != (RiseRun lhs, RiseRun rhs) { return ! (lhs == rhs); }
+
+    /// <summary>Equality operator</summary>
+    public static bool operator == (RiseRun lhs, RiseRun rhs) { 
+      return (lhs.Rise * rhs.Run) == (lhs.Run * rhs.Rise);
+    }
+    #endregion
   }
 }

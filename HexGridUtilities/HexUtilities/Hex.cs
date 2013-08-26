@@ -101,7 +101,8 @@ namespace PGNapoleonics.HexUtilities {
     public          HexCoords    Coords          { get; private set; }
 
     /// <inheritdoc/>
-    public virtual  int          Elevation       { get; protected set; }
+//    public virtual  int          Elevation       { get; protected set; }
+    public          int          Elevation       { get; protected set; }
 
     /// <inheritdoc/>
     public abstract int          ElevationASL    { get; }
@@ -140,7 +141,7 @@ namespace PGNapoleonics.HexUtilities {
     public override int GetHashCode()       { return Coords.GetHashCode(); }
 
     /// <inheritdoc/>
-    bool IEquatable<Hex>.Equals(Hex rhs)    { return rhs!=null  &&  this.Coords.Equals(rhs.Coords); }
+    public bool Equals(Hex other)    { return other!=null  &&  this.Coords.Equals(other.Coords); }
     #endregion
   }
 
@@ -150,7 +151,7 @@ namespace PGNapoleonics.HexUtilities {
     /// <param name="this"></param>
     /// <param name="directions">A HexsideFlags specification of requested neighbours.</param>
     /// <returns></returns>
-     public static IEnumerable<NeighbourHex> GetNeighbourHexes(this IHex @this, HexsideFlags directions) {
+     public static IEnumerable<NeighbourHex> GetNeighbourHexes(this IHex @this, Hexsides directions) {
       return from n in @this.GetNeighbourHexes()
              where directions.HasFlag(n.HexsideEntry.Direction()) && n.Hex.IsOnboard()
              select n;

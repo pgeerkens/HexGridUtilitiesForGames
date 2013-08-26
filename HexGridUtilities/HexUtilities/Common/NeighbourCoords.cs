@@ -27,21 +27,28 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Diagnostics;
 using System.Globalization;
 
 
 namespace PGNapoleonics.HexUtilities.Common {
-    /// <summary>TODO</summary>
+  /// <summary>TODO</summary>
+  [DebuggerDisplay("{Coords} at {Hexside}")]
   public struct NeighbourCoords : IEquatable<NeighbourCoords> {
-    /// <summary>TODO</summary>
-    public Hexside   Hexside     { get; private set; }
-    /// <summary>TODO</summary>
-    public HexCoords Coords    { get; private set; }
-
+    #region Constructors
     /// <summary>TODO</summary>
     public NeighbourCoords(HexCoords coords, Hexside hexside) : this() {
       Coords = coords; Hexside = hexside;
     }
+    #endregion
+
+    #region Properties
+    /// <summary>TODO</summary>
+    public Hexside   Hexside   { get; private set; }
+    /// <summary>TODO</summary>
+    public HexCoords Coords    { get; private set; }
+    #endregion
+
     /// <inheritdoc/>
     public override string ToString() { 
       return string.Format(CultureInfo.InvariantCulture,"Neighbour: {0} at {1}", Coords.User,Hexside);
@@ -55,17 +62,23 @@ namespace PGNapoleonics.HexUtilities.Common {
     #region Value Equality - on Coords field only
     /// <inheritdoc/>
     public override bool Equals(object obj) { 
-      return obj is NeighbourCoords  &&  this.Coords.Equals(((NeighbourCoords)obj).Coords);
+      var other = obj as NeighbourCoords?;
+      return other.HasValue  &&  this == other.Value;
     }
+
     /// <inheritdoc/>
     public override int  GetHashCode() { return Coords.GetHashCode(); }
 
-    bool IEquatable<NeighbourCoords>.Equals(NeighbourCoords obj) { return this.Equals(obj); }
+    /// <inheritdoc/>
+    public bool Equals(NeighbourCoords other) { return this == other; }
 
-    /// <summary>TODO</summary>
+    /// <summary>Tests value-inequality.</summary>
     public static bool operator != (NeighbourCoords lhs, NeighbourCoords rhs) { return ! (lhs == rhs); }
-    /// <summary>TODO</summary>
-    public static bool operator == (NeighbourCoords lhs, NeighbourCoords rhs) { return lhs.Equals(rhs); }
+
+    /// <summary>Tests value-equality.</summary>
+    public static bool operator == (NeighbourCoords lhs, NeighbourCoords rhs) { 
+      return lhs.Coords == rhs.Coords; 
+    }
     #endregion
   }
 }

@@ -30,7 +30,6 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
-using System.Text;
 
 ///<summary>Shared technoloiges across the library, and useful gadgets.</summary>
 namespace PGNapoleonics.HexUtilities.Common {
@@ -40,39 +39,46 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>Returns the origin vector.</summary>
     public static readonly IntVector2D Empty = new IntVector2D(Point.Empty);
 
+    #region Properties
     /// <summary>Get the x-component.</summary>
     public int X { get; private set; }
     /// <summary>Get the y-component.</summary>
     public int Y { get; private set; }
     /// <summary>Get the w-component (ie scale factor).</summary>
     public int W { get; private set; }
+    #endregion
 
+    #region Constructors
     /// <summary>Construct a new instance from <paramref name="point"/>.</summary>
-    public IntVector2D(Point point)             : this(point.X, point.Y, 1) {}
+    public IntVector2D(Point point)              : this(point.X, point.Y, 1) {}
     /// <summary>Construct a new instance from <paramref name="size"/>.</summary>
-    public IntVector2D(Size size)               : this(size.Width, size.Height, 1) {}
+    public IntVector2D(Size size)                : this(size.Width, size.Height, 1) {}
     /// <summary>Construct a new instance from <paramref name="intVector2D"/>.</summary>
-    public IntVector2D(IntVector2D intVector2D) : this(intVector2D.X, intVector2D.Y, 1) {}
+    public IntVector2D(IntVector2D intVector2D)  : this(intVector2D.X, intVector2D.Y, 1) {}
     /// <summary>Construct a new instance from <paramref name="x"/> and .</summary>
-    public IntVector2D(int x, int y)            : this(x, y, 1) {}
+    public IntVector2D(int x, int y)             : this(x, y, 1) {}
     /// <summary>Construct a new instance from x, y, and w.</summary>
-    public IntVector2D(int x, int y, int w)     : this() {
+    internal IntVector2D(int x, int y, int norm) : this() {
+      if (norm <= 0) throw new ArgumentOutOfRangeException("norm", norm, "Parameter 'norm' must be > 0.");
       X = x;
       Y = y;
-      W = w;
+      W = norm;
     }
+    #endregion
 
     /// <summary>Returns a new instance with coordinates normalized using integer arithmetic.</summary>
     public IntVector2D Normalize() {
       switch (W) {
-        case 0:   return Empty; // uninitialized!
+        case 0:   throw new InvalidOperationException("IntVector2D is uninitialized.");
         case 1:   return this;
         case 2:   return new IntVector2D(X >> 1, Y >> 1);
         case 4:   return new IntVector2D(X >> 2, Y >> 2);
+        case 8:   return new IntVector2D(X >> 3, Y >> 3);
+
         case 3:                                
-        default:  var x = (X >= 0) ? X : X - W;
-                  var y = (Y >= 0) ? Y : Y - W;
-                  return new IntVector2D(x/W, y/W);
+        default:  var x = X; var i = 0; while(x<0) {i--; x+=W;} // TODO - Is there a better way?
+                  var y = Y; var j = 0; while(y<0) {j--; y+=W;}
+                  return new IntVector2D(i, j);
       }
     }
 
@@ -146,17 +152,24 @@ namespace PGNapoleonics.HexUtilities.Common {
 
     #region Value Equality
     /// <inheritdoc/>
-    public override bool Equals(object obj)              { 
-      return (obj is IntVector2D) && this == (IntVector2D)obj; }
-    bool IEquatable<IntVector2D>.Equals(IntVector2D rhs) { return this == rhs; }
+    public override bool Equals(object obj) { 
+      var other = obj as IntVector2D?;
+      return other.HasValue  &&  this == other.Value;
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode() { return X << 16  ^  Y  ^  W; }
+
+    /// <inheritdoc/>
+    public bool Equals(IntVector2D other) { return this == other; }
+
     /// <summary>Tests value-inequality.</summary>
     public static bool operator != (IntVector2D lhs, IntVector2D rhs) { return ! (lhs == rhs); }
-    /// <summary>Teste value-equality.</summary>
+
+    /// <summary>Tests value-equality.</summary>
     public static bool operator == (IntVector2D lhs, IntVector2D rhs) {
-      return (lhs.X == rhs.X) && (lhs.Y == rhs.Y) && (lhs.W == rhs.W);
+      return (lhs.X == rhs.X)  &&  (lhs.Y == rhs.Y)  &&  (lhs.W == rhs.W);
     }
-    /// <inheritdoc/>
-    public override int GetHashCode() { return (X<<16) ^ Y ^ W; }
     #endregion
 
     /// <summary>Culture-invariant string representation of this instance's value.</summary>
@@ -173,17 +186,17 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <remarks>Format characters:
     /// - 'V' or 'v': Vector formatting - Vector output like (nn,mm);
     /// - 'G' or 'g': General formatting - same as 'V' or 'v';  
-    /// - 'I': 2-Dimensional  vector formatting as 11I + 22J;
-    /// - 'i': 2-Dimensional  vector formatting as 11i + 22j;
-    /// - 'K': 3-Dimensional  vector formatting as 11I + 22J = 33K;
-    /// - 'k': 3-Dimensional  vector formatting as 11i + 22j + 33k;
+    /// - 'I' or 'i': 2-Dimensional  vector formatting as 11I + 22J;
+    /// - 'W' or 'w': 3-Dimensional  vector formatting as 11I + 22J = 33K;
     /// In all cases the leading character of the format string is stripped off and parsed, 
     /// with the remainder passed to the formatter completing the display formatting.
+    /// 
+    /// For the 2-D and 3-D vector formatting (ie 'I', 'i', 'W', or 'w'), the case of the 
+    /// unit vectors follows that of the supplied formatting command character.
     /// </remarks>
     public string ToString(string format, IFormatProvider formatProvider) {
       if (format==null || format.Length==0 || Char.IsDigit(format[0])) format = "G";
       var formatChar = format[0];
-      var sb = new StringBuilder();
       format = "D" + format.Substring(1);
       string layout;
       switch(formatChar) {

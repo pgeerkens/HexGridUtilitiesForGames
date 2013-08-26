@@ -40,7 +40,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
   public sealed class DictionaryPriorityQueue<TPriority,TValue> 
     : IPriorityQueue<TPriority,TValue>
-    where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority>, IComparable
+    where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority>
   {
     /// <summary>TODO</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 

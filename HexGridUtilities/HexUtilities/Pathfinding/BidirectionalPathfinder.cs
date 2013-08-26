@@ -119,7 +119,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       return path;
     }
 
-    int  Estimate(IHex here, IHex there, int totalCost) {
+    int  Estimate(IHex there, int totalCost) {
       var estimate   = _heuristic(there.Coords) + totalCost;
       var preference = Preference(_start.Coords.Canon - there.Coords.Canon,
                                   _start.Coords.Canon - _goal.Coords.Canon );
@@ -168,7 +168,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
           if( (path.TotalCost+cost < _getBestSoFar()  ||  ! _open.ContainsKey(there.Coords))
           ) {
             var totalCost = cost + path.TotalCost;
-            var key       = Estimate(here, there, totalCost);
+            var key       = Estimate(there, totalCost);
             var newPath   = _addStep(path, there, hexside, cost);
 
             TraceFlags.FindPathEnqueue.Trace("   Enqueue {0}: estimate={1,4}:{2,4}",

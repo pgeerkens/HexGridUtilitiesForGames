@@ -30,9 +30,10 @@ using System;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>TODO</summary>
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
+    "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
   public interface IPriorityQueue<TPriority,TValue> 
-    where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority>, IComparable
+    where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority>
   {
     /// <summary>Returns whether any elements exist in the heap.</summary>
     bool Any();
@@ -57,55 +58,4 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     bool TryPeek(out HexKeyValuePair<TPriority,TValue> result);
   }
 
-  /// <summary>TODO</summary>
-  public struct HexKeyValuePair<TKey,TValue> : IComparable<HexKeyValuePair<TKey,TValue>>
-    where TKey : struct, IComparable<TKey>, IComparable
-  {
-    /// <summary>TODO</summary>
-    public TKey   Key     { get; private set; }
-    /// <summary>TODO</summary>
-    public TValue Value   { get; private set; }
-
-    /// <summary>TODO</summary>
-    public HexKeyValuePair(TKey key, TValue value) : this() {
-      Key   = key;
-      Value = value;
-    }
-    /// <summary>TODO</summary>
-    public int CompareTo(HexKeyValuePair<TKey,TValue> other) { 
-      return Key.CompareTo(other.Key); 
-    }
-    /// <summary>TODO</summary>
-    public override bool Equals(object obj) {
-      return obj is HexKeyValuePair<TKey,TValue> 
-        &&  Key.Equals(((HexKeyValuePair<TKey,TValue>)obj).Key);
-    }
-    /// <summary>TODO</summary>
-    public override int GetHashCode() { return Key.GetHashCode(); }
-
-    /// <summary>TODO</summary>
-    public static bool operator == (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
-      return lhs.Key.Equals(rhs.Key);
-    }
-    /// <summary>TODO</summary>
-    public static bool operator != (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
-      return ! (lhs == rhs);
-    }
-    /// <summary>TODO</summary>
-    public static bool operator <  (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
-      return lhs.Key.CompareTo(rhs.Key) < 0;;
-    }
-    /// <summary>TODO</summary>
-    public static bool operator <= (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
-      return lhs.Key.CompareTo(rhs.Key) <= 0;;
-    }
-    /// <summary>TODO</summary>
-    public static bool operator >= (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
-      return lhs.Key.CompareTo(rhs.Key) >= 0;
-    }
-    /// <summary>TODO</summary>
-    public static bool operator >  (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
-      return lhs.Key.CompareTo(rhs.Key) > 0;
-    }
-  }
 }

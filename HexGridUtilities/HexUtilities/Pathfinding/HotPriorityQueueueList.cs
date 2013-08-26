@@ -40,11 +40,10 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// 
   /// </remarks>
   /// <a href="http://en.wikipedia.org/wiki/Heapsort">Wikepedia - Heapsort</a>/>
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-    "CA1710:IdentifiersShouldHaveCorrectSuffix"), DebuggerDisplay("Count={Count}")]
-  public sealed class HotPriorityQueueList<TKey, TValue> 
+  [DebuggerDisplay("Count={Count}")]
+  internal sealed class HotPriorityQueueList<TKey, TValue> 
     : ICollection<HexKeyValuePair<TKey,TValue>>
-    where TKey : struct, IEquatable<TKey>, IComparable<TKey>, IComparable
+    where TKey : struct, IEquatable<TKey>, IComparable<TKey>
   {
     /// <inheritdoc/>
     public HotPriorityQueueList() : this(1024) {}
@@ -56,6 +55,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <inheritdoc/>
     public int  Count      { get {return _list.Count;} }
+
     /// <inheritdoc/>
     public bool IsReadOnly { get {return false;} }
 
@@ -92,10 +92,11 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     IEnumerator IEnumerable.GetEnumerator() { return _list.GetEnumerator(); }
 
-    List<HexKeyValuePair<TKey,TValue>> _list;
+    List<HexKeyValuePair<TKey,TValue>> _list;  // < backing store
 
     /// <summary>List implementation of a binary MinHeap PriorityQueue.</summary>    
-    private sealed class MinListHeap : IPriorityQueue<TKey,TValue> {  
+    private sealed class MinListHeap : IPriorityQueue<TKey,TValue> {
+      #region Constructors
       /// <summary>Construct a new heap with default capacity of 16.</summary>
       public MinListHeap() : this(16) { }
 
@@ -111,6 +112,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         for(var start = (_items.Count-1) / 2; start >=0; start--) MinHeapifyDown(start);
         list = null;
       }
+      #endregion
 
       /// <inheritdoc/>
       public int Count    { get { return _items.Count; } }
@@ -172,7 +174,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         return true;
       }
 
-      List<HexKeyValuePair<TKey,TValue>> _items;  // backing store
+      List<HexKeyValuePair<TKey,TValue>> _items;  // < backing store
 
       /// <summary>Min-Heapify by sifting-down from last parent in heap.</summary>
       void MinHeapifyDown(int current) {
