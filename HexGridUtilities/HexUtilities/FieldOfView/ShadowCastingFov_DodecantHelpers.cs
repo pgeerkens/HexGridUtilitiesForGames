@@ -53,15 +53,25 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
 
     /// <summary>Build dodecant matrices from sextant matrices and reflection about theta=30.</summary>
     static List<IntMatrix2D> BuildDodecantMatrices() {
-      var matrixRotate  = new IntMatrix2D( 0,-1, 1,1);
-      var matrixReflect = new IntMatrix2D(-1, 0, 1,1);
-      var matrices = new List<IntMatrix2D>(12);
-      matrices.Add(IntMatrix2D.Identity);
-      matrices.Add(matrixReflect);
-      for (int i=2; i<12; i+=2) {
-        matrices.Add(matrixRotate  * matrices[i-2]);
-        matrices.Add(matrixReflect * matrices[i]);
-      }
+      //var matrixRotate  = new IntMatrix2D( 0,-1, 1,1);
+      //var matrixReflect = new IntMatrix2D(-1, 0, 1,1);
+      //var matrices = new List<IntMatrix2D>(12);
+      //matrices.Add(IntMatrix2D.Identity);
+      //matrices.Add(matrixReflect);
+      //for (int i=2; i<12; i+=2) {
+      //  matrices.Add(matrixRotate  * matrices[i-2]);
+      //  matrices.Add(matrixReflect * matrices[i]);
+      //}
+
+      var matrices = new List<IntMatrix2D>(12) {
+        new IntMatrix2D( 1, 0,  0, 1),  new IntMatrix2D(-1, 0,  1, 1),
+        new IntMatrix2D( 0,-1,  1, 1),  new IntMatrix2D( 0, 1,  1, 0),
+        new IntMatrix2D(-1,-1,  1, 0),  new IntMatrix2D( 1, 1,  0,-1),
+        new IntMatrix2D(-1, 0,  0,-1),  new IntMatrix2D( 1, 0, -1,-1),
+        new IntMatrix2D( 0, 1, -1,-1),  new IntMatrix2D( 0,-1, -1, 0),
+        new IntMatrix2D( 1, 1, -1, 0),  new IntMatrix2D(-1,-1,  0, 1)
+      };
+
       return matrices;
     }
   }

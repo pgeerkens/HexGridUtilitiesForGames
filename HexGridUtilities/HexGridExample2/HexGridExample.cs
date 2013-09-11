@@ -39,9 +39,9 @@ using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
-using HexGridExampleCommon;
+using HexgridExampleCommon;
 
-namespace PGNapoleonics.HexGridExample2 {
+namespace HexgridExampleWinForms {
   internal sealed partial class HexgridExampleForm : Form {
     public HexgridExampleForm() {
       InitializeComponent();
@@ -113,7 +113,8 @@ namespace PGNapoleonics.HexGridExample2 {
     void hexgridPanel_MouseMove(object sender, MouseEventArgs e) {
       var hotHex       = _mapBoard.HotspotHex;
       statusLabel.Text = string.Format(CultureInfo.InvariantCulture,
-        "Hotspot Hex: {0:gi3} / {1:uI4} / {2:c5}; {3:r6}; Path Length = {4}",
+        // "Hotspot Hex: {0:gi3} / {1:uI4} / {2:c5}; {3:r6}; Path Length = {4}",
+        PGNapoleonics.HexGridExample2.Properties.Resources.StatusLabelText,
         hotHex, hotHex, hotHex,
         _mapBoard.StartHex - hotHex, (_mapBoard.Path==null ? 0 : _mapBoard.Path.TotalCost));
     }
@@ -212,5 +213,26 @@ namespace PGNapoleonics.HexGridExample2 {
       this._hexgridPanel.Refresh();
     }
     #endregion
+
+    public event EventHandler<MouseEventArgs> MouseHWheel;
+    void FireMouseHWheel(IntPtr wParam, IntPtr lParam) {
+      var wheelDelta = WindowsMouseInput.WheelDelta(wParam);
+      var buttons    = WindowsMouseInput.GetKeyStateWParam(wParam);
+      var point      = WindowsMouseInput.GetPointLParam(lParam);
+
+      MouseHWheel.Raise(this, 
+        new MouseEventArgs(MouseButtons.None,wheelDelta,point.X,point.Y,wheelDelta));
+    }
+
+    protected override void WndProc(ref Message m) {
+      base.WndProc(ref m);
+//      if (m.HWnd != this.Handle) return;
+      switch (m.Msg) {
+        case (int)WM.MOUSEHWHEEL: FireMouseHWheel(m.WParam, m.LParam);
+                                  m.Result = (IntPtr)1;
+                                  break;
+        default:                  break;
+      }
+    }
   }
 }

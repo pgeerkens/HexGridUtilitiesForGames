@@ -37,7 +37,6 @@ using System.Runtime.Versioning;
 using System.Windows.Forms;
 
 using PGNapoleonics.HexUtilities;
-
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
@@ -65,8 +64,8 @@ namespace PGNapoleonics.HexgridPanel {
     }
     /// <summary>Signals the object that initialization is complete.</summary>
     public virtual void EndInit() { 
-      HotspotHex = HexCoords.EmptyUser;
 			Application.AddMessageFilter(this);
+      HotspotHex = HexCoords.EmptyUser;
 
       SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
       SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
@@ -89,8 +88,6 @@ namespace PGNapoleonics.HexgridPanel {
     public event EventHandler<EventArgs>    ScaleChange;
     #endregion
 
-    BufferedGraphicsContext _bufferedGraphicsContext = new BufferedGraphicsContext();
-
     #region Properties
     /// <summary>MapBoard hosting this panel.</summary>
     public IMapDisplay Host            {
@@ -111,11 +108,9 @@ namespace PGNapoleonics.HexgridPanel {
     /// <summary>Gets or sets whether the board is transposed from flat-topped hexes to pointy-topped hexes.</summary>
     public bool        IsTransposed    { 
       get { return _isTransposed; }
-      set { //if (_isTransposed == value) return;
-            _isTransposed = value;  
+      set { _isTransposed = value;  
             Hexgrid       = IsTransposed ? new TransposedHexgrid(this) 
                                          : new Hexgrid(this);
-//            ResizeBuffer();
             if (IsHandleCreated) SetScrollLimits();   
           }
     } bool _isTransposed;
@@ -149,16 +144,18 @@ namespace PGNapoleonics.HexgridPanel {
     public ReadOnlyCollection<float> Scales        { get; set; }
     #endregion
 
-    /// <summary>Set property Scales (array of supported map scales as IList&lt;float&gt;.</summary>
-    [Obsolete("Use Property Setter 'Scales' instead.")]
-    public void SetScaleList(ReadOnlyCollection<float> scales) { Scales = scales; }
+    BufferedGraphicsContext _bufferedGraphicsContext = new BufferedGraphicsContext();
 
     /// <summary>Force repaint of backing buffer for Map underlay.</summary>
     //public void SetMapDirty() { if (MapBuffer!=null) MapBuffer.Dispose(); MapBuffer = null; }
     public void SetMapDirty() { 
-      if (MapBuffer!=null) PaintBuffer(DisplayRectangle); 
+      if (MapBuffer!=null) PaintBuffer(ClientRectangle); 
       Invalidate(ClientRectangle); 
     }
+
+    /// <summary>Set property Scales (array of supported map scales as IList&lt;float&gt;.</summary>
+    [Obsolete("Use Property Setter 'Scales' instead.")]
+    public void SetScaleList(ReadOnlyCollection<float> scales) { Scales = scales; }
 
     /// <summary>Set ScrollBar increments and bounds from map dimensions.</summary>
     public virtual void SetScrollLimits() {
@@ -221,88 +218,46 @@ namespace PGNapoleonics.HexgridPanel {
     #endregion
 
     #region Painting
-    /// <summary>Internal handler for the OnPaintBackground event.</summary>
+    /// <inheritdoc/>
     protected override void OnPaintBackground(PaintEventArgs e) { ; }
 
-    /// <summary>Internal handler for the OnPaint event.</summary>
+    /// <inheritdoc/>
     protected override void OnPaint(PaintEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
 
-//      base.OnPaint(e);
       if(IsHandleCreated) { 
-        PaintPanel(e); 
+        var g      = e.Graphics;
+        if (DesignMode) { g.FillRectangle(Brushes.Gray, ClientRectangle);  return; }
+
+        g.Clip = new Region(e.ClipRectangle);
+        if (IsTransposed) { g.Transform = TransposeMatrix; }
+
+        var scroll = Hexgrid.ScrollPosition;  //!< scroll position on the transposed HexGrid
+        g.TranslateTransform(scroll.X, scroll.Y);
+        g.ScaleTransform(MapScale,MapScale);
+        TraceFlags.PaintDetail.Trace("{0}.PaintPanel: ({1})", Name, g.VisibleClipBounds);
+
+        var state = g.Save();
+        Render(MapBuffer, g, Point.Empty);
+
+        g.Restore(state); state = g.Save();
+        Host.PaintUnits(g);
+
+        g.Restore(state); state = g.Save();
+        Host.PaintHighlight(g);
+
+        g.Restore(state);
       }
     }
-    /// <summary>TODO</summary>
-    /// <param name="e"></param>
-    /// <deprecated>Use OnPaint(PaintEventArgs) instead.</deprecated>/>
+    /// <summary>Use OnPaint(PaintEventArgs) instead.</summary>
     [Obsolete("Use OnPaint(PaintEventArgs) instead.")]
-    protected virtual void PaintPanel(PaintEventArgs e) {
-      if (e==null) throw new ArgumentNullException("e");
-
-      var g      = e.Graphics;
-      if (DesignMode) { g.FillRectangle(Brushes.Gray, ClientRectangle);  return; }
-
-      g.Clip = new Region(e.ClipRectangle);
-      if (IsTransposed) { g.Transform = TransposeMatrix; }
-
-      var scroll = Hexgrid.ScrollPosition;  // scroll position on the transposed HexGrid
-      g.TranslateTransform(scroll.X, scroll.Y);
-      g.ScaleTransform(MapScale,MapScale);
-      TraceFlags.PaintDetail.Trace("{0}.PaintPanel: ({1})", Name, g.VisibleClipBounds);
-
-      var state = g.Save();
-      Render(g, AutoScrollPosition);
-
-      g.Restore(state); state = g.Save();
-      Host.PaintUnits(g);
-
-      g.Restore(state); state = g.Save();
-      Host.PaintHighlight(g);
-
-      g.Restore(state);
-    }
+    protected virtual void PaintPanel(PaintEventArgs e) {}
     static readonly Matrix TransposeMatrix = new Matrix(0F,1F, 1F,0F, 0F,0F);
     #endregion
 
-    /// <summary>TODO</summary>
-    /// <param name="target"></param>
-    /// <param name="scrollPosition"></param>
-    [ResourceExposure(ResourceScope.None)]
-    [ResourceConsumption(ResourceScope.Process, ResourceScope.Process)] 
-    public void Render(Graphics target, Point scrollPosition) {
-      if (target != null) {
-        IntPtr targetDC = target.GetHdc();
- 
-        try { RenderInternal(new HandleRef(target, targetDC), MapBuffer, scrollPosition); } 
-        finally { target.ReleaseHdcInternal(targetDC);  }
-      }
-    }
-    /// <summary>TODO</summary>
-    [ResourceExposure(ResourceScope.None)]
-    [ResourceConsumption(ResourceScope.Process, ResourceScope.Process)]
-    private void RenderInternal(HandleRef refTargetDC, BufferedGraphics buffer, Point scrollPosition) {
-      const int  rop = GdiRasterOps.SrcCopy; // 0xcc0020; // RasterOp.SOURCE.GetRop();
-
-      var sourceDC    = buffer.Graphics.GetHdc(); 
-      var virtualSize = DisplayRectangle.Size;
-      try { 
-        NativeMethods.BitBlt(refTargetDC, scrollPosition.X,  scrollPosition.Y, 
-                                          virtualSize.Width, virtualSize.Height, 
-                            new HandleRef(buffer.Graphics, sourceDC), 0, 0, rop);
-      } 
-      finally { buffer.Graphics.ReleaseHdcInternal(sourceDC); }
-    } 
-
-    /// <inheritdoc/>
-    protected override void OnResize(EventArgs e) {
-      ResizeBuffer();
-      base.OnResize(e);
-    }
-
     #region Double-Buffering
-    /// <summary>Gets or sets the backing buffer for the map underlay. Setting to null  forces a repaint.</summary>
-    protected BufferedGraphics MapBuffer { get; set; }
+    BufferedGraphics MapBuffer { get; set; }  //!< <summary>Gets or sets  backing buffer for the map underlay.</summary>
+    BufferedGraphics MapSpare { get; set; }
 
     /// <summary>Service routine to paint the backing store bitmap for the map underlay.</summary>
     protected virtual void PaintBuffer(Rectangle clipBounds) {
@@ -314,28 +269,35 @@ namespace PGNapoleonics.HexgridPanel {
         g.Clip = new Region(clipBounds);
         if (IsTransposed) { g.Transform = TransposeMatrix; }
 
+        var scroll = Hexgrid.ScrollPosition;  // scroll position on the transposed HexGrid
+        g.TranslateTransform(scroll.X, scroll.Y);
         g.ScaleTransform(MapScale,MapScale);
         TraceFlags.PaintDetail.Trace("{0}.PaintPanel: ({1})", Name, g.VisibleClipBounds);
 
-        g.Clear(this.BackColor);
+        using(var brush = new SolidBrush(this.BackColor)) g.FillRectangle(brush, g.VisibleClipBounds);
         Host.PaintMap(g);
         g.Restore(state);
       }
     }
 
     void ResizeBuffer() {
-      var rectangle = new Rectangle(Point.Empty, DisplayRectangle.Size);
-      if (DisplayRectangle.Size != _bufferedGraphicsContext.MaximumBuffer) {
-        _bufferedGraphicsContext.MaximumBuffer = DisplayRectangle.Size;
+      var rectangle = new Rectangle(Point.Empty, ClientSize);
+      if (ClientSize != _bufferedGraphicsContext.MaximumBuffer) {
+        _bufferedGraphicsContext.MaximumBuffer = ClientSize;
+
         if (MapBuffer != null) MapBuffer.Dispose();
         MapBuffer = _bufferedGraphicsContext.Allocate(
+          this.CreateGraphics(), rectangle);
+
+        if (MapSpare != null) MapSpare.Dispose();
+        MapSpare  = _bufferedGraphicsContext.Allocate(
           this.CreateGraphics(), rectangle);
       }
       PaintBuffer(rectangle);
     }
     #endregion
 
-    #region Mouse & Scroll events
+    #region Mouse & Scroll event handlers
     /// <inheritdoc/>
     protected override void OnMouseClick(MouseEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
@@ -366,80 +328,143 @@ namespace PGNapoleonics.HexgridPanel {
       TraceFlags.ScrollEvents.Trace(" - {0}.OnMouseWheel: {1}", Host.Name, e.ToString()); 
       var oldValue    = IsShiftKeyDown ? AutoScrollPosition.X
                                        : AutoScrollPosition.Y;
-      base.OnMouseWheel(e);
-      if( Control.ModifierKeys.HasFlag(Keys.Control)) {
+      if( Control.ModifierKeys.HasFlag(Keys.Control)) 
         ScaleIndex += Math.Sign(e.Delta);  
-        Invalidate();
-      } else {
-        const ScrollEventType scrollType = ScrollEventType.ThumbPosition;
-        var orientation = IsShiftKeyDown ? ScrollOrientation.HorizontalScroll
-                                         : ScrollOrientation.VerticalScroll;
-        var newValue    = IsShiftKeyDown ? AutoScrollPosition.X
-                                         : AutoScrollPosition.Y;
-        OnScroll(new ScrollEventArgs(scrollType, oldValue, newValue, orientation));
-      }
+      else
+        MouseScroll(IsShiftKeyDown, e.Delta);
+    }
+    void MouseScroll(bool isHorizontal, int delta) {
+      var oldScrollPosition = AutoScrollPosition;
+
+      AutoScrollPosition = isHorizontal
+        ? WheelPanel(HorizontalScroll, -delta, ref scrollRemainderHorizontal,
+            (amount) => new Point(-AutoScrollPosition.X + amount, -AutoScrollPosition.Y))
+        : WheelPanel(VerticalScroll,   -delta, ref scrollRemainderVertical,
+            (amount) => new Point(-AutoScrollPosition.X, -AutoScrollPosition.Y + amount));
+
+      OnScroll(GetScrollEventArgs(isHorizontal,oldScrollPosition,AutoScrollPosition));
+    }
+    int scrollRemainderHorizontal = 0;  //!< <summary>Unapplied horizontal scroll.</summary>
+    int scrollRemainderVertical   = 0;  //!< <summary>Unapplied vertical scroll.</summary>
+    /// <summary>Return new AutoScrollPosition for applied muse-wheel scroll.</summary>
+    static Point WheelPanel(ScrollProperties scroll, int delta, ref int remainder,
+      Func<int,Point> newAutoScroll)
+    {
+      if (Math.Sign(delta) != Math.Sign(remainder)) remainder = 0;
+      var steps = (delta+remainder) 
+                / (SystemInformation.MouseWheelScrollDelta / SystemInformation.MouseWheelScrollLines);
+      remainder = (delta+remainder) 
+                % (SystemInformation.MouseWheelScrollDelta / SystemInformation.MouseWheelScrollLines);
+      return newAutoScroll(scroll.SmallChange * steps);
+    }
+    ScrollEventArgs GetScrollEventArgs(bool isHorizontal, Point oldScroll, Point newScroll) {
+      return new ScrollEventArgs(
+            ScrollEventType.ThumbTrack,
+            isHorizontal ? -oldScroll.X : -oldScroll.Y,
+            isHorizontal ? -newScroll.X : -newScroll.Y,
+            isHorizontal ? ScrollOrientation.HorizontalScroll : ScrollOrientation.VerticalScroll
+        );
     }
 
-    /// <summary>Internal handler for the MouseAltClick event.</summary>
-    protected virtual void OnMouseAltClick(HexEventArgs e) {
-      if (e==null) throw new ArgumentNullException("e");
-      var handler = MouseAltClick;
-      if( handler != null ) handler(this, e);
-    }
-    /// <summary>Internal handler for the MouseCtlClick event.</summary>
-    protected virtual void OnMouseCtlClick(HexEventArgs e) {
-      if (e==null) throw new ArgumentNullException("e");
-      var handler = MouseCtlClick;
-      if( handler != null ) handler(this, e);
-    }
-    /// <summary>Internal handler for the MouseLeftClic event.</summary>
-    protected virtual void OnMouseLeftClick(HexEventArgs e) {
-      if (e==null) throw new ArgumentNullException("e");
-      var handler = MouseLeftClick;
-      if( handler != null ) handler(this, e);
-    }
-    /// <summary>Internal handler for the MouseRightClick event.</summary>
-    protected virtual void OnMouseRightClick(HexEventArgs e) {
-      if (e==null) throw new ArgumentNullException("e");
-      var handler = MouseRightClick;
-      if( handler != null ) handler(this, e);
+    /// <summary>Raise the MouseAltClick event.</summary>
+    protected virtual void OnMouseAltClick(HexEventArgs e) { MouseAltClick.Raise(this,e);}
+    /// <summary>Raise the MouseCtlClick event.</summary>
+    protected virtual void OnMouseCtlClick(HexEventArgs e) { MouseCtlClick.Raise(this,e); }
+    /// <summary>Raise the MouseLeftClic event.</summary>
+    protected virtual void OnMouseLeftClick(HexEventArgs e) { MouseLeftClick.Raise(this,e); }
+    /// <summary>Raise the MouseRightClick event.</summary>
+    protected virtual void OnMouseRightClick(HexEventArgs e) { MouseRightClick.Raise(this,e); }
+   /// <summary>Raise the HotspotHexChange event.</summary>
+    protected virtual void OnHotspotHexChange(HexEventArgs e) { HotspotHexChange.Raise(this,e); }
+
+    /// <summary>Raise the ScaleChange event.</summary>
+    protected virtual void OnScaleChange(EventArgs e) {
+      ScaleChange.Raise(this,e);
+      ResizeBuffer();
+      Invalidate();
     }
 
-    /// <summary>Internal handler for the HotspotHexChange event.</summary>
-    protected virtual void OnHotspotHexChange(HexEventArgs e) {
-      if (e==null) throw new ArgumentNullException("e");
-      var handler = HotspotHexChange;
-      if( handler != null ) handler(this, e);
+    /// <inheritdoc/>
+    protected override void OnResize(EventArgs e) {
+      ResizeBuffer();
+      base.OnResize(e);
     }
     #endregion
 
-    /// <summary>Internal handler for the SclaeChange event.</summary>
-    protected virtual void OnScaleChange(EventArgs e) {
-      if (e==null) throw new ArgumentNullException("e");
-      var handler = ScaleChange;
-      if( handler != null ) handler(this, e);
-//      SetScrollLimits();
-      ResizeBuffer();
+    /// <inheritdoc/>
+    protected override void OnScroll(ScrollEventArgs se) {
+      Rectangle clip;
+      if (se.ScrollOrientation == ScrollOrientation.HorizontalScroll) 
+        clip = HorizontalScrollBufferedGraphics(se.NewValue - se.OldValue);
+      else
+        clip = VerticalScrollBufferedGraphics(se.NewValue - se.OldValue);
+
+      PaintBuffer(clip);
+      base.OnScroll(se);
     }
 
-    /// <summary>Service routine to execute a Panel scroll from keyboard.</summary>
-    public void ScrollPanel(ScrollEventType type, ScrollOrientation orientation, int sign) {
-      if( sign != 0 ) {
-        ScrollProperties          scroll;
-        Func<Point,int,int,Point> func;
-        if( orientation == ScrollOrientation.VerticalScroll ) {
-          scroll = VerticalScroll;
-          func   = (p,sgn,stp) => new Point(-p.X, -p.Y + stp * sgn);
-        } else {
-          scroll = HorizontalScroll;
-          func   = (p,sgn,stp) => new Point(-p.X + stp * sgn, -p.Y);
-        }
+    Rectangle HorizontalScrollBufferedGraphics(int delta) {
+      if (delta == 0)        return Rectangle.Empty;
 
-        var step = type.HasFlag(ScrollEventType.LargeIncrement) || type.HasFlag(ScrollEventType.LargeDecrement)
-                 ? scroll.LargeChange
-                 : scroll.SmallChange;
-        AutoScrollPosition = func(AutoScrollPosition, sign, step);
+      Render(MapBuffer, MapSpare.Graphics, new Point(-delta,0));
+      var temp = MapBuffer; MapBuffer = MapSpare; MapSpare = temp;
+      if (delta < 0) 
+        return new Rectangle(0, 0, -delta,ClientSize.Height);
+      else
+        return new Rectangle(ClientSize.Width-delta,0, delta,ClientSize.Height);
+    }
+
+    Rectangle VerticalScrollBufferedGraphics(int delta) {
+      if (delta == 0)        return Rectangle.Empty;
+
+      Render(MapBuffer, MapSpare.Graphics, new Point(0,-delta));
+      var temp = MapBuffer; MapBuffer = MapSpare; MapSpare = temp;
+      if (delta < 0) 
+        return new Rectangle(0, 0, ClientSize.Width,-delta);
+      else
+        return new Rectangle(0,ClientSize.Height-delta, ClientSize.Width,delta);
+    }
+
+    /// <summary>TODO</summary>
+    /// <param name="buffer"></param>
+    /// <param name="target"></param>
+    /// <param name="scrollPosition"></param>
+    [ResourceExposure(ResourceScope.None)]
+    [ResourceConsumption(ResourceScope.Process, ResourceScope.Process)] 
+    public void Render(BufferedGraphics buffer, Graphics target, Point scrollPosition) {
+      if (target != null) {
+        IntPtr targetDC = target.GetHdc();
+ 
+        try { RenderInternal(new HandleRef(target, targetDC), buffer, scrollPosition); } 
+        finally { target.ReleaseHdcInternal(targetDC);  }
       }
+    }
+    /// <summary>TODO</summary>
+    [ResourceExposure(ResourceScope.None)]
+    [ResourceConsumption(ResourceScope.Process, ResourceScope.Process)]
+    private void RenderInternal(HandleRef refTargetDC, BufferedGraphics buffer, Point scrollPosition) {
+      const int  rop = GdiRasterOps.SrcCopy;
+
+      var sourceDC    = buffer.Graphics.GetHdc(); 
+      var virtualSize = ClientSize;
+      try { 
+        NativeMethods.BitBlt(refTargetDC, scrollPosition.X,  scrollPosition.Y, 
+                                          virtualSize.Width, virtualSize.Height, 
+                            new HandleRef(buffer.Graphics, sourceDC), 0, 0, rop);
+      } 
+      finally { buffer.Graphics.ReleaseHdcInternal(sourceDC); }
+    } 
+
+    /// <summary>Service routine to execute a Panel scroll.</summary>
+    public void ScrollPanel(ScrollEventType type, ScrollOrientation orientation, int sign) {
+      var scroll = orientation==ScrollOrientation.HorizontalScroll 
+                 ? (ScrollProperties)HorizontalScroll : VerticalScroll;
+      var delta  = sign * (IsLargeStep(type) ? scroll.LargeChange
+                                             : scroll.SmallChange);
+      MouseScroll(orientation == ScrollOrientation.HorizontalScroll, -delta);
+    }
+    bool IsLargeStep(ScrollEventType type) { 
+      return type == ScrollEventType.LargeIncrement || type == ScrollEventType.LargeDecrement; 
     }
  
     #region IMessageFilter implementation
@@ -454,74 +479,33 @@ namespace PGNapoleonics.HexgridPanel {
 		/// <returns>Success (true) or failure (false) to OS.</returns>
 		[System.Security.Permissions.PermissionSetAttribute(
 			System.Security.Permissions.SecurityAction.Demand, Name="FullTrust")]
-		bool IMessageFilter.PreFilterMessage(ref Message m) {
+		public bool PreFilterMessage(ref Message m) {
 			var hWnd  = NativeMethods.WindowFromPoint( WindowsMouseInput.GetPointLParam(m.LParam) );
 			var ctl	  = Control.FromHandle(hWnd);
-      //if (hWnd != IntPtr.Zero  &&  hWnd != m.HWnd  &&  ctl != null) {
       if (hWnd != IntPtr.Zero  &&  ctl != null) {
         switch((WM)m.Msg) {
           default:  break;
-          case WM.MOUSEWHEEL:
           case WM.MOUSEHWHEEL:
+          case WM.MOUSEWHEEL:
             DebugTracing.Trace(TraceFlags.ScrollEvents, true," - {0}.WM.{1}: ", Name, ((WM)m.Msg)); 
-            //if (! IsCtlKeyDown  &&  IsShiftKeyDown)
-            //  m.Msg = (int)WM.MOUSEHWHEEL;
-
             return (NativeMethods.SendMessage(hWnd, m.Msg, m.WParam, m.LParam) == IntPtr.Zero);
         }
       }
       return false;
 		}
     #endregion
-
-    /// <summary>TODO</summary>
-    protected override void WndProc(ref System.Windows.Forms.Message m)  {
-        base.WndProc(ref m);
-
-        const int WM_MOUSEHWHEEL = 0x020E;
-        if (m.Msg == WM_MOUSEHWHEEL)
-        {
-            m.Result = new IntPtr((((int)m.WParam >> 16) & 0xFFFF) / 120);
-        }
-    }
   }
-
-  #pragma warning disable 1570,1591
+}
+namespace PGNapoleonics.WinForms {
   /// <summary>TODO</summary>
-  public enum ScrollBarCommand {
-      SB_LINEUP           = 0,  ///< TODO
-      SB_LINELEFT         = 0,  ///< TODO
-      SB_LINEDOWN         = 1,  ///< TODO
-      SB_LINERIGHT        = 1,  ///< TODO
-      SB_PAGEUP           = 2,  ///< TODO
-      SB_PAGELEFT         = 2,  ///< TODO
-      SB_PAGEDOWN         = 3,  ///< TODO
-      SB_PAGERIGHT        = 3,  ///< TODO
-      SB_THUMBPOSITION    = 4,  ///< TODO
-      SB_THUMBTRACK       = 5,  ///< TODO
-      SB_TOP              = 6,  ///< TODO
-      SB_LEFT             = 6,  ///< TODO
-      SB_BOTTOM           = 7,  ///< TODO
-      SB_RIGHT            = 7,  ///< TODO
-      SB_ENDSCROLL        = 8   ///< TODO
-  }
-  #pragma warning restore 1570,1591
-  internal static partial class GdiRasterOps {
-    public const int SrcCopy                 = 0x00CC0020; /* dest = source                   */ 
-    public const int SrcPaint                = 0x00EE0086; /* dest = source OR dest           */
-    public const int SrcAnd                  = 0x008800C6; /* dest = source AND dest          */
-    public const int SrcInvert               = 0x00660046; /* dest = source XOR dest          */
-    public const int SrcErase                = 0x00440328; /* dest = source AND (NOT dest )   */ 
-    public const int NotSrcCopy              = 0x00330008; /* dest = (NOT source)             */
-    public const int NotSrcErase             = 0x001100A6; /* dest = (NOT src) AND (NOT dest) */ 
-    public const int MergeCopy               = 0x00C000CA; /* dest = (source AND pattern)     */ 
-    public const int MergePaint              = 0x00BB0226; /* dest = (NOT source) OR dest     */
-    public const int PatCopy                 = 0x00F00021; /* dest = pattern                  */ 
-    public const int PatPaint                = 0x00FB0A09; /* dest = DPSnoo                   */
-    public const int PatInvert               = 0x005A0049; /* dest = pattern XOR dest         */
-    public const int DstInvert               = 0x00550009; /* dest = (NOT dest)               */
-    public const int Blackness               = 0x00000042; /* dest = BLACK                    */ 
-    public const int Whiteness               = 0x00FF0062; /* dest = WHITE                    */
-//    public const int CaptureBlt              = 0x40000000; /* Include layered windows */ 
+  public static class EventHandlerExtensions {
+    /// <summary>Raises an event in a standard (mostly thread-safe) manner.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+      "CA1030:UseEventsWhereAppropriate", Justification="Not an event, just an event raiser.")]
+    public static void Raise<T>(this EventHandler<T> @this, object sender, T e) 
+      where T : EventArgs {
+      var handler = @this;
+      if( handler != null ) handler(sender, e);
+    }
   }
 }

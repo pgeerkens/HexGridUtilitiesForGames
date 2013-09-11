@@ -84,7 +84,7 @@ namespace PGNapoleonics.HexUtilities {
 
   /// <summary>Abstract implementation of the interface <see Cref="IHex"/>.</summary>
   [DebuggerDisplay("Coords: {Coords} / ElevASL: {ElevationASL}m")]
-  public abstract class Hex : IHex, IEquatable<Hex> {
+  public abstract class Hex<THex> : IHex, IEquatable<Hex<THex>> where THex : IHex {
     /// <summary>Construct a new Hex instance on <paramref name="board"/> at location <paramref name="coords"/>.</summary>
     protected Hex(IBoard<IHex> board, HexCoords coords) { 
       Board     = board;
@@ -133,7 +133,7 @@ namespace PGNapoleonics.HexUtilities {
     #region Value Equality
     /// <inheritdoc/>
     public override bool Equals(object obj) {
-      var hex = obj as Hex;
+      var hex = obj as Hex<THex>;
       return hex!=null && Coords.Equals(hex.Coords);
     }
 
@@ -141,7 +141,7 @@ namespace PGNapoleonics.HexUtilities {
     public override int GetHashCode()       { return Coords.GetHashCode(); }
 
     /// <inheritdoc/>
-    public bool Equals(Hex other)    { return other!=null  &&  this.Coords.Equals(other.Coords); }
+    public bool Equals(Hex<THex> other)    { return other!=null  &&  this.Coords.Equals(other.Coords); }
     #endregion
   }
 

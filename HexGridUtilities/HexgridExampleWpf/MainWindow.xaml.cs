@@ -1,25 +1,47 @@
-﻿using System;
+﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
+/////////////////////////////////////////////////////////////////////////////////////////
+//                PG Software Solutions Inc. - Hex-Grid Utilities
+/////////////////////////////////////////////////////////////////////////////////////////
+// The MIT License:
+// ----------------
+// 
+// Copyright (c) 2012-2013 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, 
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+// permit persons to whom the Software is furnished to do so, subject to the following 
+// conditions:
+//     The above copyright notice and this permission notice shall be 
+//     included in all copies or substantial portions of the Software.
+// 
+//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+//     OTHER DEALINGS IN THE SOFTWARE.
+/////////////////////////////////////////////////////////////////////////////////////////
+#endregion
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 
-using HexGridExampleCommon;
+using HexgridExampleCommon;
 
 namespace HexgridExampleWpf {
   /// <summary></summary>
@@ -33,9 +55,11 @@ namespace HexgridExampleWpf {
     }
 
     private void Window_Loaded (object sender, RoutedEventArgs e) {
-      _hexgridPanel = GetHexgridPanel();
+      _hexgridPanel = GetHexgridPanel(
+        new List<float> {0.707F,  0.841F, 1.000F, 1.189F, 1.414F}
+        );
 
-      _hexgridPanel.ScaleChange += new EventHandler<EventArgs>((o,ea) => OnResizeEnd(ea));
+      _hexgridPanel.ScaleChange += (o,ea) => OnResizeEnd(ea);
 
       comboBoxMapSelection.SelectedIndex = 0;
 
@@ -46,43 +70,42 @@ namespace HexgridExampleWpf {
 
       var sink = sender as System.Windows.Interop.IKeyboardInputSink;
       if (sink != null) 
-        ((System.Windows.Interop.IKeyboardInputSink)sender)
-            .TabInto(new System.Windows.Input.TraversalRequest(FocusNavigationDirection.First));
+        ((System.Windows.Interop.IKeyboardInputSink)sender).TabInto
+              (new System.Windows.Input.TraversalRequest(FocusNavigationDirection.First));
     }
 
     HexgridPanel           _hexgridPanel;
     MapDisplay<MapGridHex> _mapBoard;
 
     HexgridPanel GetHexgridPanel() {
+      return GetHexgridPanel(new List<float> {0.841F, 1.000F, 1.189F});
+    }
+    HexgridPanel GetHexgridPanel(IList<float> scales) {
       var hexgridPanel = new HexgridPanel();
 
-      ((System.ComponentModel.ISupportInitialize)(hexgridPanel)).BeginInit();
+      hexgridPanel.BeginInit();
 
       // 
       // hexgridPanel
       // 
-      hexgridPanel.AutoScroll = true;
-      hexgridPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-      hexgridPanel.Host = null;
+      hexgridPanel.AutoScroll   = true;
+      hexgridPanel.Dock         = System.Windows.Forms.DockStyle.Fill;
+      hexgridPanel.Host         = null;
       hexgridPanel.IsTransposed = false;
-      hexgridPanel.Location = new System.Drawing.Point(0, 0);
-      hexgridPanel.Name = "hexgridPanel";
-      hexgridPanel.ScaleIndex = 0;
-//      hexgridPanel.Scales = ((System.Collections.ObjectModel.ReadOnlyCollection<float>)(resources.GetObject("hexgridPanel.Scales")));
-      hexgridPanel.Size = new System.Drawing.Size(766, 366);
-      hexgridPanel.TabIndex = 0;
-      hexgridPanel.HotspotHexChange += new System.EventHandler<PGNapoleonics.HexgridPanel.HexEventArgs>(this.PanelBoard_HotSpotHexChange);
-      hexgridPanel.MouseCtlClick += new System.EventHandler<PGNapoleonics.HexgridPanel.HexEventArgs>(this.PanelBoard_GoalHexChange);
-      hexgridPanel.MouseLeftClick += new System.EventHandler<PGNapoleonics.HexgridPanel.HexEventArgs>(this.PanelBoard_StartHexChange);
-      hexgridPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(hexgridPanel_MouseMove);
+      hexgridPanel.Location     = new System.Drawing.Point(0, 0);
+      hexgridPanel.Name         = "hexgridPanel";
+      hexgridPanel.Scales       = scales.ToList().AsReadOnly();
+      hexgridPanel.ScaleIndex   = scales.Select((f,i) => new {value=f, index=i})
+                                        .Where(s => s.value==1.0F)
+                                        .Select(s => s.index).FirstOrDefault(); 
+      hexgridPanel.Size         = new System.Drawing.Size(766, 366);
+      hexgridPanel.TabIndex     = 0;
+      hexgridPanel.HotspotHexChange += this.PanelBoard_HotSpotHexChange;
+      hexgridPanel.MouseCtlClick    += this.PanelBoard_GoalHexChange;
+      hexgridPanel.MouseLeftClick   += this.PanelBoard_StartHexChange;
+      hexgridPanel.MouseMove        += this.hexgridPanel_MouseMove;
 
-      ((System.ComponentModel.ISupportInitialize)(hexgridPanel)).EndInit();
-
-      var scales = new List<float>() {0.707F,  0.841F, 1.000F, 1.189F, 1.414F}.AsReadOnly();
-      hexgridPanel.Scales     = scales;
-      hexgridPanel.ScaleIndex = scales.Select((f,i) => new {value=f, index=i})
-                                      .Where(s => s.value==1.0F)
-                                      .Select(s => s.index).FirstOrDefault(); 
+      hexgridPanel.EndInit();
 
       return hexgridPanel;
     }
@@ -184,7 +207,7 @@ namespace HexgridExampleWpf {
       if (this.IsInitialized) {
         int value;
         if (Int32.TryParse(txtPathCutover.Text, out value)) {
-          txtPathCutover.Tag = value;
+          txtPathCutover.Tag  = value;
         } else {
           txtPathCutover.Text = txtPathCutover.Tag.ToString();
           value = (int)txtPathCutover.Tag;

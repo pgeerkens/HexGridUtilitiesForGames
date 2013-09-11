@@ -47,14 +47,16 @@ namespace PGNapoleonics.HexUtilities.Common {
     #endregion
 
     #region Properties
-    /// <summary>TODO</summary>
+    /// <summary>The Hex</summary>
     public IHex    Hex          { get; private set; }
-    /// <summary>TODO</summary>
+
+    /// <summary>The hexside through which the agent enters this hex from the neighbour.</summary>
     public Hexside HexsideEntry { get; private set; }
-    /// <summary>TODO</summary>
+
+    /// <summary>The hexside through which the agent exits this hex to return to the neighbour.</summary>
     public Hexside HexsideExit  { get {return HexsideEntry.Reversed();} }
-    /// <summary>TODO</summary>
-    /// <deprecated/>
+
+    /// <summary>TODO</summary> <deprecated/>
     [Obsolete("Use HexsideEntry instead.")]
     public Hexside HexsideIndex { get {return HexsideEntry;} }
     #endregion

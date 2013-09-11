@@ -32,7 +32,7 @@ using System.Drawing;
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
-namespace HexGridExampleCommon {
+namespace HexgridExampleCommon {
   /// <summary>Abstract class for <c>MapGridHex</c> as used in the TerrainGridHex example.</summary>
   internal abstract class TerrainGridHex : MapGridHex {
 

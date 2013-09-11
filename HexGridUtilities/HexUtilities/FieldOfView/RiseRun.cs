@@ -54,13 +54,19 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     #region Operators and  IComparable<RiseRun> implementations: 
     /// <summary>Less Than operator</summary>
     public static bool operator <  (RiseRun lhs, RiseRun rhs) {
-      return (lhs.Rise * rhs.Run) < (lhs.Run * rhs.Rise);
+      //if (lhs.Rise == 0  &&  rhs.Rise == 0)
+      //  return rhs.Run < lhs.Run;
+      //else
+        return (lhs.Rise * rhs.Run) < (lhs.Run * rhs.Rise);
     }
     /// <summary>Less Than or Equals operator</summary>
     public static bool operator <= (RiseRun lhs, RiseRun rhs) { return ! (lhs > rhs); }
     /// <summary>Greater Thanoperator</summary>
     public static bool operator >  (RiseRun lhs, RiseRun rhs) {
-      return (lhs.Rise * rhs.Run) > (lhs.Run * rhs.Rise);
+      //if (lhs.Rise == 0  &&  rhs.Rise == 0)
+      //  return rhs.Run > lhs.Run;
+      //else
+        return (lhs.Rise * rhs.Run) > (lhs.Run * rhs.Rise);
     }
     /// <summary>Greater Than or Equals operator</summary>
     public static bool operator >= (RiseRun lhs, RiseRun rhs) { return ! (lhs < rhs); }

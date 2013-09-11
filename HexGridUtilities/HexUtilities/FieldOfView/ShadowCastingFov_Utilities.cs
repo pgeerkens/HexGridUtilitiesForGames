@@ -38,9 +38,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     ) {
       if( top.GT(bottom)) {
         var cone = new FovCone(range+1, top, bottom, riseRun);
-        #if TraceFOV
-          TraceFlag.FieldOfView.Trace(false, "  EQ: ({0}) code: {1}",cone,code);
-        #endif
+        TraceFlags.FieldOfView.Trace(false, "  EQ: ({0}) code: {1}",cone,code);
         enqueue(cone);
         return bottom;
       } else {

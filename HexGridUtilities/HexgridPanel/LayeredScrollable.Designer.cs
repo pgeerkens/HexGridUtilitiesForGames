@@ -1,4 +1,4 @@
-﻿namespace PGNapoleonics.HexPanel {
+﻿namespace PGNapoleonics.HexgridPanel {
   partial class LayeredScrollable {
     /// <summary>
     /// Required designer variable.

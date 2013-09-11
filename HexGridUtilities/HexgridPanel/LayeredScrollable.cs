@@ -39,7 +39,7 @@ using System.Windows.Forms;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
-namespace PGNapoleonics.HexPanel {
+namespace PGNapoleonics.HexgridPanel {
   using PaintAction = Action<Graphics>;
 
     /// <summary>TODO</summary>
@@ -94,7 +94,7 @@ namespace PGNapoleonics.HexPanel {
 		/// <returns>Success (true) or failure (false) to OS.</returns>
 		[System.Security.Permissions.PermissionSetAttribute(
 			System.Security.Permissions.SecurityAction.Demand, Name="FullTrust")]
-		bool IMessageFilter.PreFilterMessage(ref Message m) {
+		public bool PreFilterMessage(ref Message m) {
 			var hWnd  = NativeMethods.WindowFromPoint( WindowsMouseInput.GetPointLParam(m.LParam) );
 			var ctl	  = ScrollableControl.FromHandle(hWnd);
       if (hWnd != IntPtr.Zero  &&  hWnd != m.HWnd  &&  ctl != null) {
@@ -176,7 +176,7 @@ namespace PGNapoleonics.HexPanel {
   }
 
 }
-namespace PGNapoleonics.HexPanel {
+namespace PGNapoleonics.HexgridPanel {
   using System.Reflection;
 
   using PaintAction = Action<Graphics>;

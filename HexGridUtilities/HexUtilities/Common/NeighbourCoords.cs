@@ -30,7 +30,6 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 
-
 namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>TODO</summary>
   [DebuggerDisplay("{Coords} at {Hexside}")]

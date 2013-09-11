@@ -34,7 +34,7 @@ using PGNapoleonics.HexUtilities;
 
 /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexUtilities.HexgridPanel"/> to implement
 /// a maze map.</summary>
-namespace HexGridExampleCommon {
+namespace HexgridExampleCommon {
   public sealed class MazeMap : MapDisplay<MapGridHex> {
     public MazeMap() : base(_sizeHexes, new Size(26,30), (map,coords) => InitializeHex(map,coords)) {}
 

@@ -55,21 +55,12 @@ namespace  PGNapoleonics.WinForms {
   /// <summary>TODO</summary>
 	public static class WindowsMouseInput {
     /// <summary>TODO</summary>
-		public static MouseKeys GetKeyStateWParam(IntPtr wParam) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
+      "CA1811:AvoidUncalledPrivateCode")]
+    public static MouseKeys GetKeyStateWParam(IntPtr wParam) {
 			return (MouseKeys)(wParam.ToInt64() & 0x0000ffff);
 		}
-    /// <summary>TODO</summary>
-		public static Int16 WheelDelta(IntPtr wParam) {
-			return (Int16)(wParam.ToInt64() >> 16);
-		}
-    /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-      "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "WParam")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-      "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Param")]
-    public static IntPtr WParam (Int16 wheelDelta, MouseKeys mouseKeys) {
-			return IntPtr.Zero + (wheelDelta << 16) + (Int16)mouseKeys;
-		}
+
 		/// <summary> Determine (sign-extended for multiple monitors) screen coordinates at m.LParam.</summary>
 		/// <param name="lParam"></param>
 		/// <returns></returns>
@@ -79,13 +70,34 @@ namespace  PGNapoleonics.WinForms {
 					 (int)(short)(lParam.ToInt64() >> 16)
 				);
 		}
+
     /// <summary>TODO</summary>
-		public static IntPtr LParam(Point point) {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
+      "CA1811:AvoidUncalledPrivateCode")]
+    public static Int16 WheelDelta(IntPtr wParam) {
+			return (Int16)(wParam.ToInt64() >> 16);
+		}
+
+    /// <summary>TODO</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
+      "CA1811:AvoidUncalledPrivateCode")]
+    public static IntPtr LParam(Point point) {
 			if (point.X<Int16.MinValue || point.X > Int16.MaxValue
       ||  point.Y<Int16.MinValue || point.Y > Int16.MaxValue)
 				throw new ArgumentOutOfRangeException("point",point,
 					"Must be a valid Point struct.");
 			return (IntPtr)((Int16)point.Y <<16 + (Int16)point.X);
+		}
+
+    /// <summary>TODO</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
+      "CA1811:AvoidUncalledPrivateCode"), 
+    System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
+      "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "WParam")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
+      "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Param")]
+    public static IntPtr WParam (Int16 wheelDelta, MouseKeys mouseKeys) {
+			return IntPtr.Zero + (wheelDelta << 16) + (Int16)mouseKeys;
 		}
 	}
 }

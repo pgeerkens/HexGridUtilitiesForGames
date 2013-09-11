@@ -8,7 +8,7 @@
     <ProjectGuid>{388AD675-D18E-4DFA-ABB9-55AB3EA993A2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PGNapoleonics.HexPanel</RootNamespace>
+    <RootNamespace>PGNapoleonics.HexgridPanel</RootNamespace>
     <AssemblyName>HexgridPanel</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -131,6 +131,7 @@
     <Compile Include="HexgridScrollable.Designer.cs">
       <DependentUpon>HexgridScrollable.cs</DependentUpon>
     </Compile>
+    <Compile Include="IMapDisplay.cs" />
     <Compile Include="LayeredScrollable.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -139,6 +140,7 @@
     </Compile>
     <Compile Include="MapDisplay.cs" />
     <Compile Include="MapGridHex.cs" />
+    <Compile Include="WinForms\GdiRasterOps.cs" />
     <Compile Include="WinForms\NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WinForms\ExceptionDialog.cs">
@@ -147,6 +149,7 @@
     <Compile Include="WinForms\ExceptionDialog.Designer.cs">
       <DependentUpon>ExceptionDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="WinForms\ScrollBarCommand.cs" />
     <Compile Include="WinForms\ThreadExceptionHandler.cs" />
     <Compile Include="WinForms\TransparentPanel.cs">
       <SubType>Component</SubType>

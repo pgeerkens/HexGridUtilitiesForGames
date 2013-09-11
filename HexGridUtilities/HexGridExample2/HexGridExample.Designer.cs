@@ -5,7 +5,7 @@
 // Use of this software is permitted only as described in the attached file: license.txt.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-namespace PGNapoleonics.HexGridExample2 {
+namespace HexgridExampleWinForms {
   partial class HexgridExampleForm {
     /// <summary>
     /// Required designer variable.
@@ -329,7 +329,7 @@ namespace PGNapoleonics.HexGridExample2 {
       this.ClientSize = new System.Drawing.Size(770, 420);
       this.Controls.Add(this.toolStripContainer1);
       this.Name = "HexgridExampleForm";
-      this.Text = "HexGridExample2";
+      this.Text = "HexgridExampleWinForms";
       this.Load += new System.EventHandler(this.HexGridExampleForm_Load);
       this.toolStripContainer1.BottomToolStripPanel.ResumeLayout(false);
       this.toolStripContainer1.BottomToolStripPanel.PerformLayout();

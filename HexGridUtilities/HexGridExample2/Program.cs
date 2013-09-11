@@ -34,7 +34,7 @@ using PGNapoleonics.WinForms;
 
 /// <summary>Example usage of <see cref="HexUtilities"/> with <see cref="HexUtilities.HexgridPanel"/> 
 /// in a simple <see cref="WinForms"/> application.</summary>
-namespace PGNapoleonics.HexGridExample2 {
+namespace HexgridExampleWinForms {
   static class Program {
     /// <summary>The main entry point for the application.</summary>
     [STAThread]

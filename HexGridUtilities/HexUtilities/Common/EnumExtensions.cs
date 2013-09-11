@@ -34,13 +34,14 @@ using System.Linq;
 using System.Reflection;
 
 namespace PGNapoleonics.HexUtilities.Common {
-    /// <summary>Type-safe extension methods for parsing Enums.</summary>
+  /// <summary>Type-safe extension methods for parsing Enums.</summary>
   public static partial class EnumExtensions{
     #region Enum Parsing utilities
     /// <summary>Typesafe wrapper for <c>Enum.GetValues(typeof(TEnum).</c></summary>
     public static ReadOnlyCollection<TEnum> EnumGetValues<TEnum>() {
       return new ReadOnlyCollection<TEnum>((TEnum[])(Enum.GetValues(typeof(TEnum))));
     }
+
     /// <summary>TODO</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
       "CA1004:GenericMethodsShouldProvideTypeParameter")]
@@ -50,33 +51,33 @@ namespace PGNapoleonics.HexUtilities.Common {
 
     /// <summary>Typesafe wrapper for <c>Enum.ParseEnum()</c> that automatically checks 
     /// constants for membership in the <c>enum</c>.</summary>
-    public static T ParseEnum<T>(string value) where T:struct {return ParseEnum<T>(value,true); }
+    public static TEnum ParseEnum<TEnum>(string value) where TEnum:struct {return ParseEnum<TEnum>(value,true); }
 
     /// <summary>Typesafe wrapper for <c>Enum.ParseEnum()</c> that automatically checks 
     /// constants for membership in the <c>enum</c>.</summary>
-    public static T ParseEnum<T>(string value, bool checkConstants) where T:struct {
-      T enumValue;
-      if (!TryParseEnum<T>(value, out enumValue) && checkConstants) 
-            throw new ArgumentOutOfRangeException("value",value,"Enum type: " + typeof(T).Name);
+    public static TEnum ParseEnum<TEnum>(string value, bool checkConstants) where TEnum:struct {
+      TEnum enumValue;
+      if (!TryParseEnum<TEnum>(value, out enumValue) && checkConstants) 
+            throw new ArgumentOutOfRangeException("value",value,"Enum type: " + typeof(TEnum).Name);
 
       return enumValue;
     }
 
     /// <summary>Typesafe wrapper for <c>Enum.TryParseEnum()</c> that automatically checks 
     /// constants for membership in the <c>enum</c>.</summary>
-    public static bool TryParseEnum<T>(string value, out T enumValue) where T:struct {
-      return Enum.TryParse<T>(value, out enumValue)  
-         &&  Enum.IsDefined(typeof(T),enumValue);
+    public static bool TryParseEnum<TEnum>(string value, out TEnum enumValue) where TEnum:struct {
+      return Enum.TryParse<TEnum>(value, out enumValue)  
+         &&  Enum.IsDefined(typeof(TEnum),enumValue);
     }
 
     /// <summary>Typesafe wrapper for <c>Enum.ToObject()</c>.</summary>
-    /// <typeparam name="T"></typeparam>
-    public static T EnumParse<T>(char c, string lookup) {
+    /// <typeparam name="TEnum"></typeparam>
+    public static TEnum EnumParse<TEnum>(char c, string lookup) {
       if (lookup==null) throw new ArgumentNullException("lookup");
       var index = lookup.IndexOf(c);
-      if (index == -1) throw new ArgumentOutOfRangeException("c",c,"Enum Type: " + typeof(T).Name);
+      if (index == -1) throw new ArgumentOutOfRangeException("c",c,"Enum Type: " + typeof(TEnum).Name);
 
-      return (T) Enum.ToObject(typeof(T), index);
+      return (TEnum) Enum.ToObject(typeof(TEnum), index);
     }
     #endregion
   }

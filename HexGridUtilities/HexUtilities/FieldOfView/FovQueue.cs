@@ -36,9 +36,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
   /// item being Dequeued'</remarks>
   internal class FovConeQueue : Queue<FovCone> {
     internal FovConeQueue() : this(0) {}
-    internal FovConeQueue(int capacity) : base(capacity) {
-      Pending = null;
-    }
+    internal FovConeQueue(int capacity) : base(capacity) { Pending = null; }
 
     FovCone?        Pending;
 
@@ -67,15 +65,19 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
 
     /// <inheritdoc/>
     public new FovCone Dequeue() {
-      if (base.Count>0)   { return base.Dequeue(); }
+      if ( base.Count > 0 ) { return base.Dequeue(); }
       if (Pending.HasValue) { var cache = Pending.Value; Pending = null; return cache; }
       throw new InvalidOperationException("Queue empty.");
     }
 
     /// <summary>Adds a new item to the queue.</summary>
+    /// <remarks>If cone has the same range and RiseRun as Pending, then Pending is extended by 
+    /// merging the two.
+    /// 
+    /// Otherwise Pending is added to the base queue and cone becomes the new pending item.</remarks>
     public new void Enqueue(FovCone cone) {
-      if (!Pending.HasValue) {
-        Pending            = cone;
+      if ( ! Pending.HasValue) {
+        Pending = cone;
       } else if (Pending.Value.Range == cone.Range && Pending.Value.RiseRun == cone.RiseRun) {
         Pending = new FovCone(cone.Range, Pending.Value.VectorTop, cone.VectorBottom, cone.RiseRun);
       } else {
@@ -95,7 +97,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
       "CA1811:AvoidUncalledPrivateCode")]
     public new FovCone Peek() {
-      if (base.Count>0)   { return base.Peek(); }
+      if ( base.Count > 0 ) { return base.Peek(); }
       if (Pending.HasValue) { return Pending.Value; }
       throw new InvalidOperationException("Queue empty.");
     }

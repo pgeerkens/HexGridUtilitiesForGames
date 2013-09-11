@@ -112,9 +112,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HexGridExampleCommon\HexGridExampleCommon.csproj">
+    <ProjectReference Include="..\HexGridExampleCommon\HexgridExampleCommon.csproj">
       <Project>{4e4ec92b-2bf5-4342-a069-3a6bb76b7fca}</Project>
-      <Name>HexGridExampleCommon</Name>
+      <Name>HexgridExampleCommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\HexgridPanel\HexgridPanel.csproj">
       <Project>{388ad675-d18e-4dfa-abb9-55ab3ea993a2}</Project>

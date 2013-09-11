@@ -27,41 +27,24 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Reflection;
-using System.Resources;
-using System.Runtime.InteropServices;
 
-[assembly:NeutralResourcesLanguage("en-US")]
-
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyTitle("HexgridExampleWinForms")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("PG Software Solutions Inc.")]
-[assembly: AssemblyProduct("HexgridExampleWinForms")]
-[assembly: AssemblyCopyright("Copyright © PG Software Solutions Inc. 2013")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
-
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("e0be8677-676e-4d95-bf9d-c39273565a46")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("6.4.*")]
-[assembly: AssemblyFileVersion("6.4")]
+namespace PGNapoleonics.WinForms {
+  internal static partial class GdiRasterOps {
+    public const int SrcCopy                 = 0x00CC0020; /* dest = source                   */ 
+    public const int SrcPaint                = 0x00EE0086; /* dest = source OR dest           */
+    public const int SrcAnd                  = 0x008800C6; /* dest = source AND dest          */
+    public const int SrcInvert               = 0x00660046; /* dest = source XOR dest          */
+    public const int SrcErase                = 0x00440328; /* dest = source AND (NOT dest )   */ 
+    public const int NotSrcCopy              = 0x00330008; /* dest = (NOT source)             */
+    public const int NotSrcErase             = 0x001100A6; /* dest = (NOT src) AND (NOT dest) */ 
+    public const int MergeCopy               = 0x00C000CA; /* dest = (source AND pattern)     */ 
+    public const int MergePaint              = 0x00BB0226; /* dest = (NOT source) OR dest     */
+    public const int PatCopy                 = 0x00F00021; /* dest = pattern                  */ 
+    public const int PatPaint                = 0x00FB0A09; /* dest = DPSnoo                   */
+    public const int PatInvert               = 0x005A0049; /* dest = pattern XOR dest         */
+    public const int DstInvert               = 0x00550009; /* dest = (NOT dest)               */
+    public const int Blackness               = 0x00000042; /* dest = BLACK                    */ 
+    public const int Whiteness               = 0x00FF0062; /* dest = WHITE                    */
+//    public const int CaptureBlt              = 0x40000000; /* Include layered windows */ 
+  }
+}

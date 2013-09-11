@@ -44,14 +44,14 @@ namespace PGNapoleonics.HexgridPanel {
 ///
 /// - <b>PGNapoleonics</b> is the top level namespace for software develoepd by <b>PGSoftware Solutions Inc.</b>,
 /// and comprises these subsidiary namespaces:
-///   + <b>HexGridExample2</b> is a sample <b>WinForms</b> application demonstrating some straight-forward usage of the library.
+///   + <b>HexgridExample2</b> is a sample <b>WinForms</b> application demonstrating some straight-forward usage of the library.
 ///   + <b>HexgridPanel</b> is the <b>System.Windows.Forms</b> specific extensions to support hex-grid panels in <b>Winforms</b> applications.
 ///   + <b>HexUtilities</b> is the display-technology independent utilities underpinnign the provision of hex-grid utilities.
 ///   + <b>WinForms</b> is a collection of extensions to the <b>System.Windows.Forms</b> technologies used by the remainder of the library.
 /// 
 /// @subsection Getting_Started Getting Started
 ///
-/// To get started, explore how the two sample maps in HexGridExample2 override
+/// To get started, explore how the two sample maps in HexgridExample2 override
 /// the base class MapDisplay<THex>, and how the sample form overrides the base control HexgridPanel. 
 /// 
 /// The Collaboration diagram for MapDisplay<THex> provides a good overview of the library structure.

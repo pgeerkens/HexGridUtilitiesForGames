@@ -5,11 +5,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexUtilities", "HexUtilitie
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridPanel", "HexgridPanel\HexgridPanel.csproj", "{388AD675-D18E-4DFA-ABB9-55AB3EA993A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexGridExample2", "HexGridExample2\HexGridExample2.csproj", "{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridExampleWinForms", "HexGridExample2\HexgridExampleWinForms.csproj", "{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridExampleWpf", "HexgridExampleWpf\HexgridExampleWpf.csproj", "{6CEB2C15-1E1A-446C-92C6-77BC49833742}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexGridExampleCommon", "HexGridExampleCommon\HexGridExampleCommon.csproj", "{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridExampleCommon", "HexGridExampleCommon\HexgridExampleCommon.csproj", "{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -23,15 +23,15 @@ Global
 		SccProjectUniqueName2 = HexgridPanel\\HexgridPanel.csproj
 		SccProjectName2 = HexgridPanel
 		SccLocalPath2 = HexgridPanel
-		SccProjectUniqueName3 = HexGridExample2\\HexGridExample2.csproj
-		SccProjectName3 = HexGridExample2
-		SccLocalPath3 = HexGridExample2
-		SccProjectUniqueName4 = HexgridExampleWpf\\HexgridExampleWpf.csproj
-		SccProjectName4 = HexgridExampleWpf
-		SccLocalPath4 = HexgridExampleWpf
-		SccProjectUniqueName5 = HexGridExampleCommon\\HexGridExampleCommon.csproj
-		SccProjectName5 = HexGridExampleCommon
-		SccLocalPath5 = HexGridExampleCommon
+		SccProjectUniqueName3 = HexgridExampleWpf\\HexgridExampleWpf.csproj
+		SccProjectName3 = HexgridExampleWpf
+		SccLocalPath3 = HexgridExampleWpf
+		SccProjectUniqueName4 = HexGridExampleCommon\\HexGridExampleCommon.csproj
+		SccProjectName4 = HexGridExampleCommon
+		SccLocalPath4 = HexGridExampleCommon
+		SccProjectUniqueName5 = HexGridExample2\\HexgridExampleWinForms.csproj
+		SccProjectName5 = HexGridExample2
+		SccLocalPath5 = HexGridExample2
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

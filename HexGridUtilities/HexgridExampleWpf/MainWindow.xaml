@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:PGNapoleonics.HexUtilities.Common;assembly=HexUtilities"
-        Title="MainWindow" Height="444" Width="700" Loaded="Window_Loaded" 
+        Title="MainWindow" Height="444" Width="781" Loaded="Window_Loaded" 
         SizeToContent="WidthAndHeight" ScrollViewer.VerticalScrollBarVisibility="Disabled">
     <Window.Resources>
         <ObjectDataProvider x:Key="TraceFlagsList"

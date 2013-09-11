@@ -34,7 +34,7 @@ using System.Windows.Forms;
 /// <summary>Extensions to the System.Windows.Forms technologies used by namespace PGNapoleonics.HexgridPanel.</summary>
 namespace PGNapoleonics.WinForms {
   /// <summary>Extern declarations from the Win32 API.</summary>
-  internal static partial class NativeMethods {
+  public static partial class NativeMethods {
     /// <summary>P/Invoke declaration for user32.dll.WindowFromPoint</summary>
 		/// <remarks><a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms633558(v=vs.85).aspx"></a></remarks>
 		/// <param name="pt">(Sign-extended) screen coordinates as a Point structure.</param>
@@ -44,7 +44,7 @@ namespace PGNapoleonics.WinForms {
       Justification="Research suggests the Code Analysis message is incorrect.")] 
      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
        "CA1811:AvoidUncalledPrivateCode"), DllImport("user32.dll")]
-    internal static extern IntPtr WindowFromPoint(System.Drawing.Point pt);
+    public static extern IntPtr WindowFromPoint(System.Drawing.Point pt);
 
     /// <summary>P/Invoke declaration for user32.dll.SendMessage</summary>
 		/// <param name="hWnd">Window handle</param>
@@ -54,8 +54,9 @@ namespace PGNapoleonics.WinForms {
 		/// <returns></returns>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
       "CA1811:AvoidUncalledPrivateCode"), DllImport("user32.dll", CharSet = CharSet.Auto)]
-		internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+		public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 
+    /// <summary>TODO</summary>
     [DllImport("Gdi32.dll", SetLastError=true, ExactSpelling=true, CharSet=CharSet.Auto)]
     [ResourceExposure(ResourceScope.None)] 
     public static extern bool BitBlt(HandleRef hDC, int x, int y, int nWidth, int nHeight, 

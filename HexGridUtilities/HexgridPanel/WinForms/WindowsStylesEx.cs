@@ -36,7 +36,7 @@ namespace  PGNapoleonics.WinForms {
     "CA1714:FlagsEnumsShouldHavePluralNames"), 
   System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
     "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
-  [Flags]public enum WindowStylesEx
+  [Flags]internal enum WindowStylesEx
   {
     /// <summary>TODO</summary>
     NONE = 0x00000000,

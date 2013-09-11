@@ -40,7 +40,7 @@ namespace PGNapoleonics.HexgridPanel {
   }
 
   /// <summary>TODO</summary>
-  public abstract class MapGridHex : Hex, IMapGridHex {
+  public abstract class MapGridHex : Hex<IMapGridHex>, IMapGridHex {
     /// <summary>TODO</summary>
     protected MapGridHex(HexBoard<MapGridHex> board, HexCoords coords) : base(board, coords) { 
       ((IMapGridHex)this).Board = board;
