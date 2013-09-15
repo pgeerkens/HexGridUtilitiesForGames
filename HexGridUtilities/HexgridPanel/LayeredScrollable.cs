@@ -96,7 +96,7 @@ namespace PGNapoleonics.HexgridPanel {
 			System.Security.Permissions.SecurityAction.Demand, Name="FullTrust")]
 		public bool PreFilterMessage(ref Message m) {
 			var hWnd  = NativeMethods.WindowFromPoint( WindowsMouseInput.GetPointLParam(m.LParam) );
-			var ctl	  = ScrollableControl.FromHandle(hWnd);
+			var ctl	  = Control.FromHandle(hWnd);
       if (hWnd != IntPtr.Zero  &&  hWnd != m.HWnd  &&  ctl != null) {
         switch((WM)m.Msg) {
           default:  break;

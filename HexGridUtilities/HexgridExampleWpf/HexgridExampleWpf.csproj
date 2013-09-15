@@ -7,7 +7,7 @@
     <ProjectGuid>{6CEB2C15-1E1A-446C-92C6-77BC49833742}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PGNapoleonics.HexGridExampleWpf</RootNamespace>
+    <RootNamespace>HexgridExampleWpf</RootNamespace>
     <AssemblyName>HexgridExampleWpf</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -27,6 +27,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -37,6 +38,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -76,6 +78,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CommandComboBox.cs" />
+    <Compile Include="CommandSlider.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -112,6 +116,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HexGridExample2\HexgridExampleWinForms.csproj">
+      <Project>{bea36fda-557c-4fda-94a2-48a21a0c31fc}</Project>
+      <Name>HexgridExampleWinForms</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HexGridExampleCommon\HexgridExampleCommon.csproj">
       <Project>{4e4ec92b-2bf5-4342-a069-3a6bb76b7fca}</Project>
       <Name>HexgridExampleCommon</Name>

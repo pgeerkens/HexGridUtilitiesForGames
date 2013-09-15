@@ -43,16 +43,11 @@ using PGNapoleonics.HexUtilities.FieldOfView;
 namespace PGNapoleonics.HexgridPanel {
   /// <summary>Abstract class representing the basic game board.</summary>
   /// <typeparam name="THex">Type of the hex for which a game board is desired.</typeparam>
-  public abstract class MapDisplay<THex> : HexBoard<THex>, IMapDisplay
+  public abstract class MapDisplay<THex> : HexBoard<THex>, IBoard<THex>, IMapDisplay
     where THex : MapGridHex {
 
     #region Constructors
-    /// <summary>Creates a new instance of th eMapDisplay class.</summary>
-    [Obsolete("Use MapDisplay(Size,Size,Func<HexBoard<THex>, HexCoords, THex>) instead; client should set hex size.")]
-    protected MapDisplay(Size sizeHexes, Func<HexBoard<THex>, HexCoords, THex> initializeHex) 
-      : this(sizeHexes, new Size(27,30), initializeHex) {}
-
-    /// <summary>Creates a new instance of th eMapDisplay class.</summary>
+    /// <summary>Creates a new instance of the MapDisplay class.</summary>
     protected MapDisplay(Size sizeHexes, Size gridSize, Func<HexBoard<THex>, HexCoords, THex> initializeHex) 
     : base(sizeHexes, gridSize, (map) => 
           new BoardStorage<THex>.FlatBoardStorage(sizeHexes, coords => initializeHex(map,coords))
@@ -60,13 +55,7 @@ namespace PGNapoleonics.HexgridPanel {
       InitializeProperties();
     }
 
-    /// <summary>Creates a new instance of th eMapDisplay class.</summary>
-    [Obsolete("Use MapDisplay(Size,Size,Func<HexBoard<THex>, HexCoords, THex>) instead; client should set hex size.")]
-    protected MapDisplay(Size sizeHexes, Func<HexBoard<THex>, HexCoords, THex> initializeHex, 
-                       ReadOnlyCollection<HexCoords> landmarkCoords) 
-    : this(sizeHexes, new Size(27,30), initializeHex, landmarkCoords) {}
-
-    /// <summary>Creates a new instance of th eMapDisplay class.</summary>
+    /// <summary>Creates a new instance of the MapDisplay class.</summary>
     protected MapDisplay(Size sizeHexes, Size gridSize, Func<HexBoard<THex>, HexCoords, THex> initializeHex, 
                        ReadOnlyCollection<HexCoords> landmarkCoords) 
     : base(sizeHexes, gridSize, (map) => 
@@ -82,6 +71,7 @@ namespace PGNapoleonics.HexgridPanel {
       StartHex        = HexCoords.EmptyUser;
       ShadeBrushAlpha = 78;
       ShadeBrushColor = Color.Black;
+      ShowFov         = true;
       ShowHexgrid     = true;
       ShowPath        = true;
       ShowPathArrow   = true;
@@ -96,24 +86,26 @@ namespace PGNapoleonics.HexgridPanel {
       get { return _fov ?? (_fov = this.GetFieldOfView(ShowRangeLine ? StartHex : HotspotHex)); }
       protected set { _fov = value; }
     } IFov _fov;
-    /// <summary>Gets or sets the <see cref="HexCoords"/> of the goal hex for path-fnding.</summary>
+    /// <inheritdoc/>
+    public override int           FovRadius { set { RangeCutoff = base.FovRadius = value; Fov = null; } }
+    /// <inheritdoc/>
     public virtual  HexCoords     GoalHex         { 
       get { return _goalHex; }
       set { _goalHex=value; _path = null; } 
     } HexCoords _goalHex = HexCoords.EmptyUser;
-    /// <summary>Gets or sets the <see cref="HexCoords"/> of the hex currently under the mouse.</summary>
+    /// <inheritdoc/>
     public virtual  HexCoords     HotspotHex      { 
       get { return _hotSpotHex; }
       set { _hotSpotHex = value; if (!ShowRangeLine) _fov = null; }
     } HexCoords _hotSpotHex = HexCoords.EmptyUser;
-
-    /// <summary>Gets or sets the index (-1 for none) of the path-finding <see cref="Landmark"/> to show.</summary>
-    public          int           LandmarkToShow  { get; set; }
-    /// <summary>Gets or sets the thickness in pixels (at 100% scale) of the margin to be painted around the map proper.</summary>
-    public          Size          MapMargin       { get; set; }
+    /// <inheritdoc/>
+    public          int           LandmarkToShow  { 
+      get { return _landmarkToShow; }
+      set { _landmarkToShow = value;  }
+    } int _landmarkToShow;
     /// <inheritdoc/>
     public          string        Name            { get {return "MapDisplay";} }
-    /// <summary>Gets the shortest path from <see cref="StartHex"/> to <see cref="GoalHex"/>.</summary>
+    /// <inheritdoc/>
     public          IDirectedPath Path            { 
       get { return _path ?? (_path = this.GetDirectedPath(this[StartHex], this[GoalHex])); } 
     } IDirectedPath _path;
@@ -131,7 +123,7 @@ namespace PGNapoleonics.HexgridPanel {
     public          bool          ShowPathArrow   { get; set; }
     /// <summary>Gets or sets whether to display the shortest path from <see cref="StartHex"/> to <see cref="GoalHex"/>.</summary>
     public          bool          ShowRangeLine   { get; set; }
-    /// <summary>Gets or sets the <see cref="HexCoords"/> of the start hex for path-finding.</summary>
+    /// <inheritdoc/>
     public virtual  HexCoords     StartHex        { 
       get { return _startHex; }
       set { if (IsOnboard(value)) _startHex = value; _path = null; if (ShowRangeLine) _fov = null; } 
@@ -139,16 +131,11 @@ namespace PGNapoleonics.HexgridPanel {
     #endregion
 
     /// <inheritdoc/>
-    [Obsolete("Use GetClipInHexes(PointF,SizeF) instead.")]
-    public CoordsRectangle GetClipCells(PointF point, SizeF size) {
-      return GetClipInHexes( new RectangleF(point,size), MapSizeHexes );
-    }
-    /// <inheritdoc/>
-    [Obsolete("Use GetClipInHexes(RectangleF) instead.")]
-    public CoordsRectangle GetClipCells(RectangleF visibleClipBounds) {
-      return GetClipInHexes(visibleClipBounds, MapSizeHexes);
-    }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
+      "CA2233:OperationsShouldNotOverflow", MessageId = "10*elevationLevel")]
+    public override int   ElevationASL(int elevationLevel) { return 10 * elevationLevel; }
 
+    #region Painting
     /// <inheritdoc/>
     public CoordsRectangle GetClipInHexes(PointF point, SizeF size) {
       return GetClipInHexes( new RectangleF(point,size), MapSizeHexes );
@@ -205,7 +192,7 @@ namespace PGNapoleonics.HexgridPanel {
       PaintForEachHex(g, clipHexes, coords => {
         this[coords].Paint(g);
         if (ShowHexgrid) g.DrawPath(Pens.Black, HexgridPath);
-        if (LandmarkToShow != -1 ) {
+        if (LandmarkToShow > 0) {
           g.DrawString(LandmarkDistance(coords,LandmarkToShow), font, brush, textOffset);
         }
       } );
@@ -272,7 +259,7 @@ namespace PGNapoleonics.HexgridPanel {
     }
 
     /// <inheritdoc/>
-    public    abstract void PaintUnits(Graphics g);
+    public    virtual  void PaintUnits(Graphics g) {}
 
     /// <summary>Paints all the hexes in <paramref name="clipHexes"/> by executing <paramref name="paintAction"/>
     /// for each hex on <paramref name="g"/>.</summary>
@@ -307,8 +294,8 @@ namespace PGNapoleonics.HexgridPanel {
     /// <returns>A Point structure containing pixel coordinates for the (upper-left corner of the) specified hex.</returns>
     protected Point UpperLeftOfHex(HexCoords coords) {
       return new Point(
-        MapMargin.Width  + coords.User.X * GridSize.Width,
-        MapMargin.Height + coords.User.Y * GridSize.Height + (coords.User.X+1)%2 * GridSize.Height/2
+        coords.User.X * GridSize.Width,
+        coords.User.Y * GridSize.Height + (coords.User.X+1)%2 * GridSize.Height/2
       );
     }
 
@@ -318,6 +305,7 @@ namespace PGNapoleonics.HexgridPanel {
     protected Point CentreOfHex(HexCoords coords) {
       return UpperLeftOfHex(coords) + CentreOfHexOffset;
     }
+    #endregion
 
     /// <summary>String representation of the distance from a given landmark to a specified hex</summary>
     /// <param name="coords">Type HexCoords - 
@@ -329,5 +317,51 @@ namespace PGNapoleonics.HexgridPanel {
 
       return string.Format("{0,3}", Landmarks[landmarkToShow].HexDistance(coords));
     }
+
+    /// <summary>TODO</summary>
+    private void Host_FovRadiusChanged(object sender, Int32ValueChangedEventArgs e) {
+      if (e==null) throw new ArgumentNullException("e");
+      FovRadius = RangeCutoff = e.Value;
+    }
+
+    #region deprecated
+    /// <summary>Creates a new instance of the MapDisplay class.</summary>
+    [Obsolete("Use MapDisplay(Size,Size,Func<HexBoard<THex>, HexCoords, THex>) instead; client should set hex size.")]
+    protected MapDisplay(Size sizeHexes, Func<HexBoard<THex>, HexCoords, THex> initializeHex) 
+      : this(sizeHexes, new Size(27,30), initializeHex) {}
+
+    /// <summary>Creates a new instance of the MapDisplay class.</summary>
+    [Obsolete("Use MapDisplay(Size,Size,Func<HexBoard<THex>, HexCoords, THex>) instead; client should set hex size.")]
+    protected MapDisplay(Size sizeHexes, Func<HexBoard<THex>, HexCoords, THex> initializeHex, 
+                       ReadOnlyCollection<HexCoords> landmarkCoords) 
+    : this(sizeHexes, new Size(27,30), initializeHex, landmarkCoords) {}
+
+    /// <inheritdoc/>
+    [Obsolete("Use GetClipInHexes(PointF,SizeF) instead.")]
+    public CoordsRectangle GetClipCells(PointF point, SizeF size) {
+      return GetClipInHexes( new RectangleF(point,size), MapSizeHexes );
+    }
+    /// <inheritdoc/>
+    [Obsolete("Use GetClipInHexes(RectangleF) instead.")]
+    public CoordsRectangle GetClipCells(RectangleF visibleClipBounds) {
+      return GetClipInHexes(visibleClipBounds, MapSizeHexes);
+    }
+    #endregion
+  }
+
+  /// <summary>TODO</summary>
+  public class Int32ValueChangedEventArgs : EventArgs {
+    /// <summary>TODO</summary>
+    public Int32ValueChangedEventArgs(Int32 value) : base() { Value = value; }
+    /// <summary>TODO</summary>
+    public Int32 Value { get; private set; }
+  }
+
+    /// <summary>TODO</summary>
+   public class BoolValueChangedEventArgs : EventArgs {
+    /// <summary>TODO</summary>
+    public BoolValueChangedEventArgs(bool value) : base() { Value = value; }
+    /// <summary>TODO</summary>
+    public bool Value { get; private set; }
   }
 }

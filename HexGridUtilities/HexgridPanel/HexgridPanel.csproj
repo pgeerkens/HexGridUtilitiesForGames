@@ -30,6 +30,7 @@
     </DocumentationFile>
     <NoWarn>1607</NoWarn>
     <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -105,6 +106,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -140,6 +142,7 @@
     </Compile>
     <Compile Include="MapDisplay.cs" />
     <Compile Include="MapGridHex.cs" />
+    <Compile Include="ViewModelBase.cs" />
     <Compile Include="WinForms\GdiRasterOps.cs" />
     <Compile Include="WinForms\NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

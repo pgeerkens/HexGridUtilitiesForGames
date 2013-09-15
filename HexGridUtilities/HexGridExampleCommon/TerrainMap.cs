@@ -26,22 +26,21 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
+using MyMapDisplay = PGNapoleonics.HexgridPanel.MapDisplay<PGNapoleonics.HexgridPanel.MapGridHex>;
+
 /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexUtilities.HexgridPanel"/> to implement
 /// a terrain map.</summary>
 namespace HexgridExampleCommon {
-  public sealed class TerrainMap : MapDisplay<MapGridHex> {
+  public sealed class TerrainMap : MyMapDisplay {
     public TerrainMap() : base(_sizeHexes, new Size(26,30), (map,coords) => InitializeHex(map,coords)) {}
-
-    /// <inheritdoc/>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
-      "CA2233:OperationsShouldNotOverflow", MessageId = "10*elevationLevel")]
-    public override int   ElevationASL(int elevationLevel) { return 10 * elevationLevel; }
 
     /// <inheritdoc/>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 

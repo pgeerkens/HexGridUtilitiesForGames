@@ -26,44 +26,41 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-namespace PGNapoleonics.HexgridPanel {
-  public partial class HexgridPanel {
-    /// <summary>
-    /// Required designer variable.
-    /// </summary>
-    private System.ComponentModel.IContainer components = null;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-    /// <summary> 
-    /// Clean up any resources being used.
-    /// </summary>
-    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-    protected override void Dispose(bool disposing) {
-      if (disposing && (components != null)) {
-        components.Dispose();
-        if (_mapBuffer!=null) _mapBuffer.Dispose();
-      }
-      base.Dispose(disposing);
+namespace PGNapoleonics.HexUtilities.Common {
+  /// <summary>TODO</summary>
+  public static class EventHandlerExtensions {
+    /// <summary>Raises an event in a standard (mostly thread-safe) manner.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+      "CA1030:UseEventsWhereAppropriate", Justification="Not an event, just an event raiser.")]
+    public static void Raise<T>(this EventHandler<T> @this, object sender, T e) 
+      where T : EventArgs {
+      var handler = @this;
+      if( handler != null ) handler(sender, e);
     }
-
-    #region Component Designer generated code
-
-    /// <summary>
-    /// Required method for Designer support - do not modify
-    /// the contents of this method with the code editor.
-    /// </summary>
-    private void InitializeComponent() {
-      this.SuspendLayout();
-      // 
-      // HexgridPanel
-      // 
-      this.AutoScroll = true;
-      this.AutoSize = true;
-      this.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.ResumeLayout(false);
-
+ 
+      /// <summary>Raises an event in a standard (mostly thread-safe) manner.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+      "CA1030:UseEventsWhereAppropriate", Justification="Not an event, just an event raiser.")]
+    public static void Raise<T>(this PropertyChangedEventHandler @this, object sender, T e)  
+      where T : PropertyChangedEventArgs {
+      var handler = @this;
+      if( handler != null ) handler(sender, e);
     }
-
-    #endregion
-
+ 
+      /// <summary>Raises an event in a standard (mostly thread-safe) manner.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+      "CA1030:UseEventsWhereAppropriate", Justification="Not an event, just an event raiser.")]
+    public static void Raise<T>(this EventHandler @this, object sender, T e)  
+      where T : EventArgs {
+      var handler = @this;
+      if( handler != null ) handler(sender, e);
+    }
   }
 }

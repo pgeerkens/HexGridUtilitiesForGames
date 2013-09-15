@@ -141,11 +141,11 @@ namespace PGNapoleonics.HexUtilities {
     public override int GetHashCode()       { return Coords.GetHashCode(); }
 
     /// <inheritdoc/>
-    public bool Equals(Hex<THex> other)    { return other!=null  &&  this.Coords.Equals(other.Coords); }
+    public bool Equals(Hex<THex> other)     { return other!=null  &&  this.Coords.Equals(other.Coords); }
     #endregion
   }
 
-  /// <summary>Extension methods for <see cref="Hex"/>.</summary>
+  /// <summary>Extension methods for <see Cref="Hex"/>.</summary>
   public static partial class HexExtensions {
     /// <summary>Returns the requested neighbours for this hex.</summary>
     /// <param name="this"></param>

@@ -42,8 +42,8 @@ using PGNapoleonics.WinForms;
 using HexgridExampleCommon;
 
 namespace HexgridExampleWinForms {
-  internal sealed partial class HexgridExampleForm : Form {
-    public HexgridExampleForm() {
+  internal sealed partial class HexgridExampleWinForms : Form {
+    public HexgridExampleWinForms() {
       InitializeComponent();
 
       this._hexgridPanel.ScaleChange += new EventHandler<EventArgs>((o,e) => OnResizeEnd(e));
@@ -92,7 +92,9 @@ namespace HexgridExampleWinForms {
                               .Select((f,i) => new {value=f, index=i})
                               .Where(s => s.value==1.0F)
                               .Select(s => s.index).FirstOrDefault(); 
-      Size = _hexgridPanel.MapSizePixels + new Size(21,93);
+      var padding = this.toolStripContainer1.ContentPanel.Padding;
+      Size = _hexgridPanel.MapSizePixels  + new Size(21,93)
+           + new Size(padding.Left+padding.Right, padding.Top+padding.Bottom);
     }
 
     bool isPanelResizeSuppressed = false;
@@ -102,18 +104,18 @@ namespace HexgridExampleWinForms {
     }
     protected override void OnResize(EventArgs e) {
       base.OnResize(e);
-      if (IsHandleCreated && ! isPanelResizeSuppressed) _hexgridPanel.SetScrollLimits();
+      if (IsHandleCreated && ! isPanelResizeSuppressed) _hexgridPanel.SetScrollLimits(_mapBoard);
     }
     protected override void OnResizeEnd(EventArgs e) {
       base.OnResizeEnd(e);
       isPanelResizeSuppressed = false;
-      _hexgridPanel.SetScrollLimits();
+      _hexgridPanel.SetScrollLimits(_mapBoard);
     }
 
     void hexgridPanel_MouseMove(object sender, MouseEventArgs e) {
       var hotHex       = _mapBoard.HotspotHex;
       statusLabel.Text = string.Format(CultureInfo.InvariantCulture,
-        // "Hotspot Hex: {0:gi3} / {1:uI4} / {2:c5}; {3:r6}; Path Length = {4}",
+        /// "Hotspot Hex: {0:gi3} / {1:uI4} / {2:c5}; {3:r6}; Path Length = {4}",
         PGNapoleonics.HexGridExample2.Properties.Resources.StatusLabelText,
         hotHex, hotHex, hotHex,
         _mapBoard.StartHex - hotHex, (_mapBoard.Path==null ? 0 : _mapBoard.Path.TotalCost));
@@ -133,7 +135,7 @@ namespace HexgridExampleWinForms {
     }
 
     void menuItemLandmarks_SelectedIndexChanged(object sender, EventArgs e) {
-      _mapBoard.LandmarkToShow = menuItemLandmarks.SelectedIndex - 1;
+      _mapBoard.LandmarkToShow = menuItemLandmarks.SelectedIndex;
       _hexgridPanel.SetMapDirty();
       Update();
     }
@@ -170,13 +172,12 @@ namespace HexgridExampleWinForms {
     }
 
     void SetMapBoard(MapDisplay<MapGridHex> mapBoard) {
-      _hexgridPanel.Host      = 
+      _hexgridPanel.Model      = 
       _mapBoard               = mapBoard;
       _mapBoard.ShowPathArrow = buttonPathArrow.Checked;
       _mapBoard.ShowFov       = buttonFieldOfView.Checked;
       _mapBoard.FovRadius     =
       _mapBoard.RangeCutoff   = Int32.Parse(txtPathCutover.Tag.ToString(),CultureInfo.InvariantCulture);
-      _mapBoard.MapMargin     = _hexgridPanel.MapMargin;
       LoadLandmarkMenu();
 
       CustomCoords.SetMatrices(new IntMatrix2D(2,0, 0,-2, 0,2*_mapBoard.MapSizeHexes.Height-1, 2));
@@ -213,26 +214,5 @@ namespace HexgridExampleWinForms {
       this._hexgridPanel.Refresh();
     }
     #endregion
-
-    public event EventHandler<MouseEventArgs> MouseHWheel;
-    void FireMouseHWheel(IntPtr wParam, IntPtr lParam) {
-      var wheelDelta = WindowsMouseInput.WheelDelta(wParam);
-      var buttons    = WindowsMouseInput.GetKeyStateWParam(wParam);
-      var point      = WindowsMouseInput.GetPointLParam(lParam);
-
-      MouseHWheel.Raise(this, 
-        new MouseEventArgs(MouseButtons.None,wheelDelta,point.X,point.Y,wheelDelta));
-    }
-
-    protected override void WndProc(ref Message m) {
-      base.WndProc(ref m);
-//      if (m.HWnd != this.Handle) return;
-      switch (m.Msg) {
-        case (int)WM.MOUSEHWHEEL: FireMouseHWheel(m.WParam, m.LParam);
-                                  m.Result = (IntPtr)1;
-                                  break;
-        default:                  break;
-      }
-    }
   }
 }

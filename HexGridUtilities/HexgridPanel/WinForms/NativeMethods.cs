@@ -34,17 +34,18 @@ using System.Windows.Forms;
 /// <summary>Extensions to the System.Windows.Forms technologies used by namespace PGNapoleonics.HexgridPanel.</summary>
 namespace PGNapoleonics.WinForms {
   /// <summary>Extern declarations from the Win32 API.</summary>
-  public static partial class NativeMethods {
+  internal static partial class NativeMethods {
     /// <summary>P/Invoke declaration for user32.dll.WindowFromPoint</summary>
 		/// <remarks><a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms633558(v=vs.85).aspx"></a></remarks>
-		/// <param name="pt">(Sign-extended) screen coordinates as a Point structure.</param>
+		/// <param name="point">(Sign-extended) screen coordinates as a Point structure.</param>
 		/// <returns>Window handle (hWnd).</returns>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", 
       "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "0",
-      Justification="Research suggests the Code Analysis message is incorrect.")] 
-     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
-       "CA1811:AvoidUncalledPrivateCode"), DllImport("user32.dll")]
-    public static extern IntPtr WindowFromPoint(System.Drawing.Point pt);
+      Justification="Research suggests the Code Analysis message is incorrect.")
+    ,System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
+       "CA1811:AvoidUncalledPrivateCode")]
+    [DllImport("user32.dll")]
+    public static extern IntPtr WindowFromPoint(System.Drawing.Point point);
 
     /// <summary>P/Invoke declaration for user32.dll.SendMessage</summary>
 		/// <param name="hWnd">Window handle</param>
@@ -52,9 +53,16 @@ namespace PGNapoleonics.WinForms {
 		/// <param name="wParam">WParam</param>
 		/// <param name="lParam">LParam</param>
 		/// <returns></returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
-      "CA1811:AvoidUncalledPrivateCode"), DllImport("user32.dll", CharSet = CharSet.Auto)]
-		public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
+      "CA1801:ReviewUnusedParameters", MessageId = "hWnd")
+    , System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
+      "CA1801:ReviewUnusedParameters", MessageId = "lParam")
+    ,System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
+      "CA1801:ReviewUnusedParameters", MessageId = "msg")
+    ,System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
+      "CA1801:ReviewUnusedParameters", MessageId = "wParam")]
+    [DllImport("user32.dll")]
+    public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 
     /// <summary>TODO</summary>
     [DllImport("Gdi32.dll", SetLastError=true, ExactSpelling=true, CharSet=CharSet.Auto)]
@@ -90,7 +98,7 @@ namespace PGNapoleonics.WinForms {
     }
   }
 
-    /// <summary>Extension methods for System.Windows.Forms.Form.</summary>
+  /// <summary>Extension methods for System.Windows.Forms.Form.</summary>
   public static partial class FormExtensions {
     /// <summary>Executes Action asynchronously on the UI thread, without blocking the calling thread.</summary>
     /// <param name="this"></param>

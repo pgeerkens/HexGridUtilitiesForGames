@@ -26,44 +26,25 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-namespace PGNapoleonics.HexgridPanel {
-  public partial class HexgridPanel {
-    /// <summary>
-    /// Required designer variable.
-    /// </summary>
-    private System.ComponentModel.IContainer components = null;
+using System;
+using System.Collections.ObjectModel;
+using System.Drawing;
 
-    /// <summary> 
-    /// Clean up any resources being used.
-    /// </summary>
-    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-    protected override void Dispose(bool disposing) {
-      if (disposing && (components != null)) {
-        components.Dispose();
-        if (_mapBuffer!=null) _mapBuffer.Dispose();
-      }
-      base.Dispose(disposing);
-    }
+using PGNapoleonics.HexgridPanel;
+using PGNapoleonics.HexUtilities;
 
-    #region Component Designer generated code
+namespace HexgridExampleCommon {
+  /// <summary>TODO</summary>
+  public class MyMapDisplay : MapDisplay<MapGridHex> {
+    #region Constructors
+    /// <summary>Creates a new instance of the MapDisplay class.</summary>
+    protected MyMapDisplay(Size sizeHexes, Size gridSize, Func<HexBoard<MapGridHex>, HexCoords, MapGridHex> initializeHex) 
+    : base(sizeHexes, gridSize, initializeHex) {}
 
-    /// <summary>
-    /// Required method for Designer support - do not modify
-    /// the contents of this method with the code editor.
-    /// </summary>
-    private void InitializeComponent() {
-      this.SuspendLayout();
-      // 
-      // HexgridPanel
-      // 
-      this.AutoScroll = true;
-      this.AutoSize = true;
-      this.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.ResumeLayout(false);
-
-    }
-
+    /// <summary>Creates a new instance of the MapDisplay class.</summary>
+    protected MyMapDisplay(Size sizeHexes, Size gridSize, Func<HexBoard<MapGridHex>, HexCoords, MapGridHex> initializeHex, 
+                       ReadOnlyCollection<HexCoords> landmarkCoords) 
+    : base(sizeHexes, gridSize, initializeHex, landmarkCoords) {}
     #endregion
-
   }
 }

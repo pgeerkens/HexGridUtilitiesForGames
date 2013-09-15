@@ -45,7 +45,7 @@ namespace HexgridExampleWinForms {
         new ThreadExceptionEventHandler(
           (new ThreadExceptionHandler()).ApplicationThreadException);
 
-      Application.Run(new HexgridExampleForm());
+      Application.Run(new HexgridExampleWinForms());
     }
   }
 }

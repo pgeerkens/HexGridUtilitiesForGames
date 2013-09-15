@@ -42,9 +42,6 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>Scaled <code>Size</code> of each hexagon in grid, being the 'full-width' and 'full-height'.</summary>
     SizeF           GridSizeF        { get; }
 
-    /// <summary>Margin of map in pixels.</summary>
-    Size            MapMargin        { get; }
-
     /// <summary>Current scaling factor for map display.</summary>
     float           MapScale         { get; }
 
@@ -103,9 +100,7 @@ namespace PGNapoleonics.HexUtilities {
 
       // Adjust for origin not as assumed by GetCoordinate().
       var grid    = new Size((int)(Host.GridSizeF.Width*2F/3F), (int)Host.GridSizeF.Height);
-      var margin  = new Size((int)(Host.MapMargin.Width  * Host.MapScale), 
-                             (int)(Host.MapMargin.Height * Host.MapScale));
-      point      -= autoScroll + margin + grid;
+      point      -= autoScroll + grid;
 
       return HexCoords.NewCanonCoords( GetCoordinate(matrixX, point), 
                                        GetCoordinate(matrixY, point) );
@@ -148,8 +143,7 @@ namespace PGNapoleonics.HexUtilities {
     public virtual Point   HexCenterPoint(HexCoords coordsNewULHex) {
       if (coordsNewULHex == null) return new Point();
       var offset = new Size((int)(Host.GridSizeF.Width*2F/3F), (int)Host.GridSizeF.Height);
-      var margin = Size.Round( Host.MapMargin.Scale(Host.MapScale) );
-      return HexOrigin(coordsNewULHex) + margin + offset;
+      return HexOrigin(coordsNewULHex) + offset;
     }
 
     /// <summary>Returns the pixel coordinates of the center of the specified hex.</summary>
@@ -185,7 +179,7 @@ namespace PGNapoleonics.HexUtilities {
       return TransposePoint(base.HexCenterPoint(coordsNewULHex));
     }
 
-    static Point TransposePoint(Point point) { return new Point(point.Y,point.X); }
+    static Point TransposePoint(Point point) { return new Point(point.Y, point.X); }
     static Size  TransposeSize(Size  size)   { return new Size (size.Height, size.Width); }
   }
 }

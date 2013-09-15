@@ -32,16 +32,13 @@ using System.Drawing;
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
+using MyMapDisplay = PGNapoleonics.HexgridPanel.MapDisplay<PGNapoleonics.HexgridPanel.MapGridHex>;
+
 /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexUtilities.HexgridPanel"/> to implement
 /// a maze map.</summary>
 namespace HexgridExampleCommon {
-  public sealed class MazeMap : MapDisplay<MapGridHex> {
+  public sealed class MazeMap : MyMapDisplay {
     public MazeMap() : base(_sizeHexes, new Size(26,30), (map,coords) => InitializeHex(map,coords)) {}
-
-    /// <inheritdoc/>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
-      "CA2233:OperationsShouldNotOverflow", MessageId = "10*elevationLevel")]
-    public override int   ElevationASL(int elevationLevel) { return 10 * elevationLevel; }
 
     /// <inheritdoc/>
     public override int   Heuristic(int range) { return range; }

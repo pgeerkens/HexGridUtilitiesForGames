@@ -36,22 +36,44 @@ using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 using PGNapoleonics.HexUtilities;
-
 using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
   /// <summary>Interface contract required of a map board to be displayed by the HexgridPanel.</summary>
   public interface IMapDisplay {
+    /// <summary>TODO</summary>
+     int      FovRadius       { get; set; }
+    /// <summary>Gets or sets the <see cref="HexCoords"/> of the goal hex for path-fnding.</summary>
+    HexCoords GoalHex         { get; set; }
     /// <summary>Gets the extens in pixels of the grid upon whch hexes are to be laid out.</summary>
     /// <remarks>>Width is 3/4 of the point-to-point width of each hex, and Height is the full height.
     /// Hexes should be defined assumed flat-topped and pointy-sided, and the entire board transposed 
     /// if necessary.</remarks>
-    Size   GridSize      { get; }
+    Size      GridSize        { get; }
+    /// <summary>Gets or sets the <see cref="HexCoords"/> of the hex currently under the mouse.</summary>
+    HexCoords HotspotHex      { get; set; }
+    /// <summary>Gets or sets the index (-1 for none) of the path-finding <see cref="Landmark"/> to show.</summary>
+     int      LandmarkToShow  { get; set; }
     /// <summary>Rectangular extent in pixels of the defined mapboard.</summary>
-    Size   MapSizePixels { get; }
+    Size      MapSizePixels   { get; }
     /// <summary>Gets the display name for this HexgridPanel host.</summary>
-    string Name          { get; }
+    string    Name            { get; }
+    /// <summary>Gets the shortest path from <see cref="StartHex"/> to <see cref="GoalHex"/>.</summary>
+    IDirectedPath Path        { get; }
+    /// <summary>Gets or sets the <see cref="HexCoords"/> of the start hex for path-finding.</summary>
+    HexCoords StartHex        { get; set; }
+    ///// <summary>Gets or sets whether to display the FIeld-of-View for <see Cref="HotspotHex"/>.</summary>
+    //bool   ShowFov       { get; set; }
+    ///// <summary>Gets or sets whether to display the hexgrid.</summary>
+    //bool   ShowHexgrid   { get; set; }
+    ///// <summary>Gets or sets whether to display the shortest path from <see Cref="StartHex"/> to <see Cref="GoalHex"/>.</summary>
+    //bool   ShowPath      { get; set; }
+    ///// <summary>Gets or sets whether to display direction indicators for the current path.</summary>
+    //bool   ShowPathArrow { get; set; }
+    ///// <summary>Gets or sets whether to display the shortest path from <see Cref="StartHex"/> to <see Cref="GoalHex"/>.</summary>
+    //bool   ShowRangeLine { get; set; }
 
     /// <summary>Gets the CoordsRectangle description of the clipping region.</summary>
     /// <param name="point">Upper-left corner in pixels of the clipping region.</param>
