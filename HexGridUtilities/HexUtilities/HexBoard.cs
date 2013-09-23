@@ -56,6 +56,7 @@ namespace PGNapoleonics.HexUtilities {
 
   /// <summary>Abstract implementation of a hexgrid map-board.</summary>
   public abstract class HexBoard<THex> : IBoard<THex>, IDisposable where THex : class, IHex {
+    #region Constructors
     /// <summary>Initializes the internal contents of <see cref="HexBoard{THex}"/> with default 
     /// landmarks for pathfinding.</summary>
     /// <param name="sizeHexes">Extent in hexes of the board being initialized, as a 
@@ -88,76 +89,76 @@ namespace PGNapoleonics.HexUtilities {
     ) {
       if (initializeBoard==null) throw new ArgumentNullException("initializeBoard");
 
-      SetGridSize(sizeHexes, gridSize);
+      _mapSizeHexes      = sizeHexes;
+      _gridSize          = gridSize;
+      ResetGrid();
+
       BoardHexes = initializeBoard(this); 
 
       Landmarks  = LandmarkCollection.CreateLandmarks(this, landmarkCoords);
     }
+    #endregion
 
-    /// <summary>By default, landmark all four corners and midpoints of all 4 sides.</summary>
+    #region Properties
+    ///  <inheritdoc/>
+    public BoardStorage<THex> BoardHexes        { get; protected set; }
+    /// <summary>Offset of hex centre from upper-left corner, as a <see cref="Size"/> struct.</summary>
+    public Size               CentreOfHexOffset { get; private set; }
+    /// <inheritdoc/>
+    public virtual  int       FovRadius         { get; set; }
+    ///  <inheritdoc/>
+    public Size               GridSize          { 
+      get { return _gridSize; } 
+      set { _gridSize=value; ResetGrid();} 
+    } Size _gridSize = new Size(27,30);
+    /// <inheritdoc/>
+    public Hexgrid            Hexgrid           { get; private set; }
+    ///  <inheritdoc/>
+    public GraphicsPath       HexgridPath       { get; private set; }
+     ///  <inheritdoc/>
+    public bool               IsTransposed      { 
+      get { return _isTransposed; } 
+      set { _isTransposed=value; ResetGrid();} 
+    } bool _isTransposed = false;
+   /// <inheritdoc/>
+    public LandmarkCollection Landmarks         { 
+      get { return _landmarks; }
+      protected set { if (_landmarks!=null) _landmarks.Dispose();  _landmarks = value; }
+    } LandmarkCollection _landmarks;
+   ///  <inheritdoc/>
+    public float              MapScale          { 
+      get { return _mapScale; } 
+      set { _mapScale=value; ResetGrid();} 
+    } float _mapScale = 1.00F;
+    ///  <inheritdoc/>
+    public Size               MapSizeHexes      { 
+      get { return _mapSizeHexes; } 
+      set { _mapSizeHexes=value; ResetGrid();} 
+    } Size _mapSizeHexes = new Size(1,1);
+    ///  <inheritdoc/>
+    public Size               MapSizePixels     { get; private set; }
+    /// <inheritdoc/>
+    public int                RangeCutoff       { get; set; }
+    /// <inheritdoc/>
+    public THex               this[HexCoords coords]  { get { return BoardHexes[coords];} }
+    #endregion
+
+    #region Methods
+     /// <summary>By default, landmark all four corners and midpoints of all 4 sides.</summary>
     /// <remarks>Pre-processing time on start-up can be reduced by decreasing the number of landmarks,
     /// though at the possible expense of longer path-findign times.</remarks>
     static readonly Func<Size, ReadOnlyCollection<HexCoords>> DefaultLandmarks = size =>new Point[] {
         new Point(0,            0), new Point(size.Width/2,            0), new Point(size.Width-1,            0),
-        new Point(0,size.Height/2),                                        new Point(size.Width/2,size.Height/2),
+        new Point(0,size.Height/2),                                        new Point(size.Width-1,size.Height/2),
         new Point(0,size.Height-1), new Point(size.Width/2,size.Height-1), new Point(size.Width-1,size.Height-1)
       }.Select(p => HexCoords.NewUserCoords(p)).ToList().AsReadOnly();
-
-    #region IBoard<THex> implementation
-    /// <inheritdoc/>
-    public virtual  int  FovRadius      { get; set; }
-
-    /// <inheritdoc/>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
-      "CA2227:CollectionPropertiesShouldBeReadOnly")]
-    public LandmarkCollection Landmarks { 
-      get { return _landmarks; }
-      protected set { if (_landmarks!=null) _landmarks.Dispose();  _landmarks = value; }
-    } LandmarkCollection _landmarks;
-
-    /// <inheritdoc/>
-    public          int  RangeCutoff    { get; set; }
-
-    /// <inheritdoc/>
-    public virtual  int  Heuristic(int range) { return range; }
-
-    /// <inheritdoc/>
-    public abstract int  ElevationASL(int elevationLevel);
-
-    /// <inheritdoc/>
-    public          bool IsOnboard(HexCoords coords)  { return BoardHexes.IsOnboard(coords); }
-
-    /// <inheritdoc/>
-    public virtual  bool IsPassable(HexCoords coords) { return IsOnboard(coords); }
-
-    /// <inheritdoc/>
-    public virtual  int  StepCost(HexCoords coords, Hexside hexsideExit) {
-      return IsOnboard(coords) ? this[coords].StepCost(hexsideExit) : -1;
-    }
 
     /// <inheritdoc/>
     public virtual  int  DirectedStepCost(IHex hex, Hexside hexsideExit) {
       return hex==null ? -1 : hex.DirectedStepCost(hexsideExit);
     }
-
     /// <inheritdoc/>
-    public          THex this[HexCoords coords]  { get { return BoardHexes[coords];} }
-    #endregion
-
-    #region Drawing support
-    ///  <inheritdoc/>
-    public BoardStorage<THex> BoardHexes        { get; protected set; }
-
-    /// <summary>Offset of hex centre from upper-left corner, as a <see cref="Size"/> struct.</summary>
-    public Size               CentreOfHexOffset { get; private set; }
-    ///  <inheritdoc/>
-    public Size               GridSize          { get; private set; }
-    ///  <inheritdoc/>
-    public GraphicsPath       HexgridPath       { get; private set; }
-    ///  <inheritdoc/>
-    public Size               MapSizeHexes      { get; private set; }
-    ///  <inheritdoc/>
-    public Size               MapSizePixels     { get; private set; }
+    public abstract int  ElevationASL(int elevationLevel);
 
     /// <summary>Returns the location and extent in hexes, as a <see cref="CoordsRectangle"/>, of the current clipping region.</summary>
     protected CoordsRectangle  GetClipInHexes(RectangleF visibleClipBounds, Size boardSizeHexes) {
@@ -168,22 +169,34 @@ namespace PGNapoleonics.HexUtilities {
       return new CoordsRectangle (left, top, right-left, bottom-top);
     }
     
+    /// <inheritdoc/>
+    public virtual  int  Heuristic(int range) { return range; }
+
+    /// <inheritdoc/>
+    public          bool IsOnboard(HexCoords coords)  { return BoardHexes.IsOnboard(coords); }
+
+    /// <inheritdoc/>
+    public virtual  bool IsPassable(HexCoords coords) { return IsOnboard(coords); }
+
     /// <summary>Sets the board layout parameters</summary>
-    /// <param name="mapSizeHexes"><c>Size</c> struct of the  board horizontal
-    /// and vertical extent in hexes.</param>
-    /// <param name="gridSize"><c>Size</c> struct of the horizontal and vertical
-    /// extent (in pixels) of the grid on which hexes are to be laid out on.</param>
-    public void  SetGridSize(Size mapSizeHexes, Size gridSize) {
-      MapSizeHexes      = mapSizeHexes;
-      GridSize          = gridSize;
-      CentreOfHexOffset = new Size(GridSize.Width * 2 / 3, GridSize.Height / 2);
+    private   void       ResetGrid() {
+      Hexgrid           = IsTransposed ? new TransposedHexgrid(GridSize.Scale(MapScale)) 
+                                       : new Hexgrid(GridSize.Scale(MapScale));  
+      CentreOfHexOffset = new Size(GridSize.Width * 2/3, GridSize.Height /2);
       HexgridPath       = SetGraphicsPath();
       MapSizePixels     = MapSizeHexes 
                         * new IntMatrix2D(GridSize.Width,                 0, 
                                                        0,    GridSize.Height, 
                                           GridSize.Width/3,  GridSize.Height/2);;
     }
-    GraphicsPath SetGraphicsPath() {
+
+    /// <inheritdoc/>
+    public virtual  int  StepCost(HexCoords coords, Hexside hexsideExit) {
+      return IsOnboard(coords) ? this[coords].StepCost(hexsideExit) : -1;
+    }
+
+    /// <summary>TODO</summary>
+    private   GraphicsPath SetGraphicsPath() {
       GraphicsPath path     = null;
       GraphicsPath tempPath = null;
       try {

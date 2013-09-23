@@ -309,7 +309,6 @@ namespace HexgridExampleWinForms {
       // 
       this._hexgridPanel.AutoScroll = true;
       this._hexgridPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-      this._hexgridPanel.Model = null;
       this._hexgridPanel.IsTransposed = false;
       this._hexgridPanel.Location = new System.Drawing.Point(5, 5);
       this._hexgridPanel.Margin = new System.Windows.Forms.Padding(0);

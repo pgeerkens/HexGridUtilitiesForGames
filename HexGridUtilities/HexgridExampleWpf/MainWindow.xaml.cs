@@ -51,20 +51,6 @@ namespace HexgridExampleWpf {
     public MainWindow() {
       InitializeComponent();
       this.DataContext = this;
-
-      CommandBindings.AddRange(new List<CommandBinding>{
-         new CommandBinding(NavigationCommands.Refresh, RefreshCmdExecuted, RefreshCmdCanExecute)
-      } );
-    }
-
-    static readonly List<ListBoxItem> _mapSelectionItems = new List<ListBoxItem>() {
-      new ListBoxItem(){Name="TerrainMap", Content="Terrain Map"},
-      new ListBoxItem(){Name="MazeMap",    Content="Maze Map"}
-    };
-
-    /// <summary>TODO</summary>
-    public static ReadOnlyCollection<ListBoxItem> MapSelectionItems { 
-      get { return _mapSelectionItems.AsReadOnly(); } 
     }
 
     void RefreshCmdExecuted(object target, ExecutedRoutedEventArgs e) { 
@@ -77,7 +63,7 @@ namespace HexgridExampleWpf {
       HexgridPanel = (HexgridScrollable) _host.Child;
       _host.Child.Focus();
 
-      HexgridPanel.Scales       = _scales.ToList().AsReadOnly();
+      HexgridPanel.DataContext.Scales       = _scales.ToList().AsReadOnly();
       HexgridPanel.ScaleIndex   = _scales.Select((f,i) => new {value=f, index=i})
                                          .Where(s => s.value==1.0F)
                                          .Select(s => s.index).FirstOrDefault(); 
@@ -100,10 +86,10 @@ namespace HexgridExampleWpf {
       get { return _selectedMapIndex; } 
       set {
         _selectedMapIndex = value;
-        var mapName = MapSelectionItems[_selectedMapIndex].Content.ToString();
+        var mapName = ((ListBoxItem)comboBoxMapSelection.Items[_selectedMapIndex]).Name;
         switch (mapName) {
-          case "Maze Map":    HexgridPanel.Model = SetMapBoard(new MazeMap(),    Model.FovRadius); break;
-          case "Terrain Map": HexgridPanel.Model = SetMapBoard(new TerrainMap(), Model.FovRadius); break;
+          case "MazeMap":    HexgridPanel.SetModel(SetMapBoard(new MazeMap(),    Model.FovRadius)); break;
+          case "TerrainMap": HexgridPanel.SetModel(SetMapBoard(new TerrainMap(), Model.FovRadius)); break;
           default:            break;
         }
         sliderFovRadius.Value = Model.FovRadius;
@@ -124,7 +110,6 @@ namespace HexgridExampleWpf {
     /// <summary>TODO</summary>
     public ObservableCollection<ListBoxItem> LandmarkItems {
       get { return _landmarkItems; }
-      set { ; }
     } ObservableCollection<ListBoxItem> _landmarkItems 
       = new ObservableCollection<ListBoxItem>() { new ListBoxItem(){Name="None", Content="None"} }; 
 
@@ -136,9 +121,9 @@ namespace HexgridExampleWpf {
         model.Landmarks.Select((l,i) => new ListBoxItem {
             Name=String.Format("No_{0}",i),
             Content=String.Format(CultureInfo.InvariantCulture, "{0}", l.Coords)
-        } ) )
+        } ) ) {
         LandmarkItems.Add(item);
-      menuItemLandmarks.ItemsSource = null; menuItemLandmarks.ItemsSource = LandmarkItems;
+      }
       HexgridPanel.SetMapDirty();
     }
 

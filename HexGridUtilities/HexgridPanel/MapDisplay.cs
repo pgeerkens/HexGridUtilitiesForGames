@@ -41,6 +41,9 @@ using PGNapoleonics.HexUtilities.FieldOfView;
 /// <summary>WinForms-specific utilities, including implementation of the subclasses HexgridPanel
 /// and MapDisplay<THex>, utilizing the System.Windows.Forms technology.</summary>
 namespace PGNapoleonics.HexgridPanel {
+  using Int32ValueEventArgs = ValueChangedEventArgs<Int32>;
+  using BoolValueEventArgs  = ValueChangedEventArgs<bool>;
+
   /// <summary>Abstract class representing the basic game board.</summary>
   /// <typeparam name="THex">Type of the hex for which a game board is desired.</typeparam>
   public abstract class MapDisplay<THex> : HexBoard<THex>, IBoard<THex>, IMapDisplay
@@ -57,9 +60,9 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
     protected MapDisplay(Size sizeHexes, Size gridSize, Func<HexBoard<THex>, HexCoords, THex> initializeHex, 
-                       ReadOnlyCollection<HexCoords> landmarkCoords) 
-    : base(sizeHexes, gridSize, (map) => 
-          new BoardStorage<THex>.FlatBoardStorage(sizeHexes, coords => initializeHex(map,coords)),
+                         ReadOnlyCollection<HexCoords> landmarkCoords) 
+    : base(sizeHexes, gridSize, 
+          (map) => new BoardStorage<THex>.FlatBoardStorage(sizeHexes, coords => initializeHex(map,coords)),
           landmarkCoords
     ) {
       InitializeProperties();
@@ -87,7 +90,7 @@ namespace PGNapoleonics.HexgridPanel {
       protected set { _fov = value; }
     } IFov _fov;
     /// <inheritdoc/>
-    public override int           FovRadius { set { RangeCutoff = base.FovRadius = value; Fov = null; } }
+    public override int           FovRadius       { set { RangeCutoff = base.FovRadius = value; Fov = null; } }
     /// <inheritdoc/>
     public virtual  HexCoords     GoalHex         { 
       get { return _goalHex; }
@@ -99,10 +102,7 @@ namespace PGNapoleonics.HexgridPanel {
       set { _hotSpotHex = value; if (!ShowRangeLine) _fov = null; }
     } HexCoords _hotSpotHex = HexCoords.EmptyUser;
     /// <inheritdoc/>
-    public          int           LandmarkToShow  { 
-      get { return _landmarkToShow; }
-      set { _landmarkToShow = value;  }
-    } int _landmarkToShow;
+    public          int           LandmarkToShow  { get; set; }
     /// <inheritdoc/>
     public          string        Name            { get {return "MapDisplay";} }
     /// <inheritdoc/>
@@ -193,7 +193,7 @@ namespace PGNapoleonics.HexgridPanel {
         this[coords].Paint(g);
         if (ShowHexgrid) g.DrawPath(Pens.Black, HexgridPath);
         if (LandmarkToShow > 0) {
-          g.DrawString(LandmarkDistance(coords,LandmarkToShow), font, brush, textOffset);
+          g.DrawString(LandmarkDistance(coords,LandmarkToShow-1), font, brush, textOffset);
         }
       } );
       g.EndContainer(container); 
@@ -319,7 +319,7 @@ namespace PGNapoleonics.HexgridPanel {
     }
 
     /// <summary>TODO</summary>
-    private void Host_FovRadiusChanged(object sender, Int32ValueChangedEventArgs e) {
+    private void Host_FovRadiusChanged(object sender, Int32ValueEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       FovRadius = RangeCutoff = e.Value;
     }
@@ -349,19 +349,10 @@ namespace PGNapoleonics.HexgridPanel {
     #endregion
   }
 
-  /// <summary>TODO</summary>
-  public class Int32ValueChangedEventArgs : EventArgs {
+  public class ValueChangedEventArgs<T> : EventArgs {
     /// <summary>TODO</summary>
-    public Int32ValueChangedEventArgs(Int32 value) : base() { Value = value; }
+    public ValueChangedEventArgs(T value) : base() { Value = value; }
     /// <summary>TODO</summary>
-    public Int32 Value { get; private set; }
-  }
-
-    /// <summary>TODO</summary>
-   public class BoolValueChangedEventArgs : EventArgs {
-    /// <summary>TODO</summary>
-    public BoolValueChangedEventArgs(bool value) : base() { Value = value; }
-    /// <summary>TODO</summary>
-    public bool Value { get; private set; }
+    public T Value { get; private set; }
   }
 }

@@ -97,7 +97,8 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <param name="dy">Y-translate component</param>
     /// <param name="norm">Normalization component</param>
     public IntMatrix2D(int m11, int m12, int m21, int m22, int dx, int dy, int norm) : this() {
-      if (norm <= 0) throw new ArgumentOutOfRangeException("norm", norm, "Parameter must be > 0.");
+//      if (norm <= 0) throw new ArgumentOutOfRangeException("norm", norm, "Parameter norm must be > 0.");
+      if (norm <= 0) norm = 1;
       M11 = m11;  M12 = m12;
       M21 = m21;  M22 = m22;
       M31 = dx;   M32 = dy;   M33 = norm;

@@ -66,10 +66,9 @@ namespace PGNapoleonics.HexgridPanel {
     public void VerifyPropertyName(string propertyName) {
       if (TypeDescriptor.GetProperties(this)[propertyName] == null) {
         string msg = "Invalid property name: " + propertyName;
-        if (this.ThrowOnInvalidPropertyName)
-          throw new Exception(msg);
-        else
-          Debug.Fail(msg);
+        if (this.ThrowOnInvalidPropertyName)       throw new Exception(msg);
+
+        Debug.Fail(msg);
       }
     }
 
@@ -130,6 +129,36 @@ namespace PGNapoleonics.HexgridPanel {
     readonly Action<object>    _execute; 
     readonly Predicate<object> _canExecute; 
   }
+
+  ///// <summary>TODO</summary>
+  //public class RelayCommand<T> : ICommand { 
+  //  /// <summary>TODO</summary>
+  //  public RelayCommand(Action<T> execute) : this(execute, (o) => true) { } 
+  //  /// <summary>TODO</summary>
+  //  public RelayCommand(Action<T> execute, Predicate<object> canExecute) { 
+  //    if (execute == null) throw new ArgumentNullException("execute");
+  //    if (canExecute == null) throw new ArgumentNullException("canExecute");
+
+  //    _execute    = execute; 
+  //    _canExecute = canExecute;
+  //  } 
+  
+  //  /// <summary>TODO</summary>
+  //  [DebuggerStepThrough] 
+  //  public bool CanExecute(object parameter) { return  _canExecute(parameter); } 
+
+  //  /// <summary>TODO</summary>
+  //  public event EventHandler CanExecuteChanged { 
+  //    add    { CommandManager.RequerySuggested += value; } 
+  //    remove { CommandManager.RequerySuggested -= value; } 
+  //  }
+  
+  //  /// <summary>TODO</summary>
+  //  public void Execute(T parameter) { _execute(parameter); }
+
+  //  readonly Action<T>    _execute; 
+  //  readonly Predicate<object> _canExecute; 
+  //}
 
   /// <summary>TODO</summary>
   public abstract class WorkspaceViewModel : ViewModelBase {

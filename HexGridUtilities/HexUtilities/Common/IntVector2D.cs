@@ -59,7 +59,8 @@ namespace PGNapoleonics.HexUtilities.Common {
     public IntVector2D(int x, int y)             : this(x, y, 1) {}
     /// <summary>Construct a new instance from x, y, and w.</summary>
     internal IntVector2D(int x, int y, int norm) : this() {
-      if (norm <= 0) throw new ArgumentOutOfRangeException("norm", norm, "Parameter 'norm' must be > 0.");
+//      if (norm <= 0) throw new ArgumentOutOfRangeException("norm", norm, "Parameter 'norm' must be > 0.");
+      if (norm == 0) norm = 1;
       X = x;
       Y = y;
       W = norm;

@@ -54,8 +54,12 @@ namespace PGNapoleonics.HexgridPanel {
     Size      GridSize        { get; }
     /// <summary>Gets or sets the <see cref="HexCoords"/> of the hex currently under the mouse.</summary>
     HexCoords HotspotHex      { get; set; }
+    /// <summary>Gets or sets whether the board is transposed from flat-topped hexes to pointy-topped hexes.</summary>
+    bool      IsTransposed    { get; set; }
     /// <summary>Gets or sets the index (-1 for none) of the path-finding <see cref="Landmark"/> to show.</summary>
      int      LandmarkToShow  { get; set; }
+    /// <summary>Current scaling factor for map display.</summary>
+    float     MapScale        { get; set; } 
     /// <summary>Rectangular extent in pixels of the defined mapboard.</summary>
     Size      MapSizePixels   { get; }
     /// <summary>Gets the display name for this HexgridPanel host.</summary>

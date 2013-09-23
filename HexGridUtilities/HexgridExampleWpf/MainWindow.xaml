@@ -34,7 +34,6 @@
       <ToggleButton x:Name="buttonTransposeMap" 
 				      Content="Transpose" 
 				      Width="75" 
-				      HorizontalAlignment="Left" 
 				      ClickMode="Press" 
               Focusable="False"
               IsChecked="{Binding HexgridPanel.IsTransposed, Mode=TwoWay, FallbackValue=False, UpdateSourceTrigger=PropertyChanged}"
@@ -42,26 +41,25 @@
       <ToggleButton x:Name="buttonRangeLine" 
 				      Content="Range Line" 
 				      Width="75" 
-				      HorizontalAlignment="Left" 
 				      ClickMode="Press" 
               Focusable="False"
               IsChecked="{Binding Model.ShowRangeLine, Mode=TwoWay, FallbackValue=False, UpdateSourceTrigger=PropertyChanged}"
               Command="Refresh"
-				      ToolTip="Toggles (a) display of Range Line; and (b) Field-of-View source between Start-Hex and Hotspot-Hex." BindingGroup="{Binding Host.ShowRangeLine}" Margin="3,0">
+				      ToolTip="Toggles (a) display of Range Line; and (b) Field-of-View source between Start-Hex and Hotspot-Hex." 
+              Margin="3,0">
       </ToggleButton>
       <ToggleButton x:Name="buttonPathArrow" 
 				      Content="Path Arrow" 
 				      Width="75" 
-				      HorizontalAlignment="Left" 
 				      ClickMode="Press" 
               Focusable="False"
               IsChecked="{Binding Model.ShowPathArrow, Mode=TwoWay, FallbackValue=True, UpdateSourceTrigger=PropertyChanged}"
               Command="Refresh"
-				      ToolTip="Toggle display of Path Arrow." Margin="3,0"/>
+				      ToolTip="Toggle display of Path Arrow." 
+              Margin="3,0"/>
       <ToggleButton x:Name="buttonFieldOfView" 
 				      Content="FOV" 
 				      Width="75" 
-				      HorizontalAlignment="Left" 
 				      ClickMode="Press" 
               Focusable="False"
               IsChecked="{Binding Model.ShowFov, Mode=TwoWay, FallbackValue=True, UpdateSourceTrigger=PropertyChanged}"
@@ -81,11 +79,13 @@
 				      Width="90" 
               Margin="3,0" 
               Focusable="False"
-              ItemsSource="{Binding MapSelectionItems}"
 				      ToolTip="Selects map to display."
-              SelectedIndex="{Binding SelectedMapIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-              />
-      <Label Content="Landmark:" HorizontalContentAlignment="Right" Width="76" Margin="3,0,0,0"/>
+              SelectedIndex="{Binding SelectedMapIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+              >
+          <ListBoxItem x:Name="TerrainMap" Content="Terrain Map"/>
+          <ListBoxItem x:Name="MazeMap"    Content="Maze Map"/>
+      </ComboBox>
+      <Label Content="Landmark to Show:" HorizontalContentAlignment="Right" Width="115" Margin="3,0,0,0"/>
       <local:CommandComboBox x:Name="menuItemLandmarks" Width="60" Margin="0,0,3,0"
               Focusable="False"
               ItemsSource="{Binding LandmarkItems}"
@@ -93,7 +93,7 @@
               Command="Refresh" CommandParameter="SetMapDirty"
               />
     </StackPanel>
-    <StackPanel DockPanel.Dock="Bottom" 
+    <StackPanel DockPanel.Dock="Bottom"  
 			Height="25" 
 			VerticalAlignment="Top">
       <StackPanel.Background>
@@ -113,8 +113,11 @@
       <WindowsFormsHost x:Name="_host" 
 				ScrollViewer.VerticalScrollBarVisibility="Disabled" 
 				ScrollViewer.CanContentScroll="True">
-        <HexgridPanel:HexgridScrollable AutoScrollMinSize="200,100" Size="1445,920" Margin="5, 5, 5, 5" >
-        </HexgridPanel:HexgridScrollable>
+        <HexgridPanel:BufferedHexgridScrollable 
+                  AutoScrollMinSize="200,100" 
+                  Margin="5, 5, 5, 5" 
+                  Size="1445,920" 
+                  />
       </WindowsFormsHost>
     </ScrollViewer>
   </DockPanel>

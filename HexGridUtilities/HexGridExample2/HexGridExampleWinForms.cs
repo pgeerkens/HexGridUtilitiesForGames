@@ -145,10 +145,8 @@ namespace HexgridExampleWinForms {
       item.CheckState = item.Checked ? CheckState.Checked : CheckState.Unchecked;
       var name = item.Name.Replace("menuItemDebugTracing","");
       var flag = (TraceFlags)Enum.Parse(typeof(TraceFlags),name);
-      if( item.Checked)
-        DebugTracing.EnabledFags |=  flag;
-      else
-        DebugTracing.EnabledFags &= ~flag;
+      if( item.Checked)   DebugTracing.EnabledFags |=  flag;
+      else                DebugTracing.EnabledFags &= ~flag;
     }
 
     void menuItemHelpContents_Click(object sender, EventArgs e) {
@@ -172,8 +170,7 @@ namespace HexgridExampleWinForms {
     }
 
     void SetMapBoard(MapDisplay<MapGridHex> mapBoard) {
-      _hexgridPanel.Model      = 
-      _mapBoard               = mapBoard;
+      _hexgridPanel.SetModel( _mapBoard = mapBoard);
       _mapBoard.ShowPathArrow = buttonPathArrow.Checked;
       _mapBoard.ShowFov       = buttonFieldOfView.Checked;
       _mapBoard.FovRadius     =

@@ -81,7 +81,7 @@ namespace PGNapoleonics.HexUtilities.Common {
   }
 
   internal static partial class NativeMethods {
-#if DEBUG
+#if TRACE
     [StructLayout(LayoutKind.Sequential)]
     internal sealed class SystemTime {
       [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
@@ -157,7 +157,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     static partial void TraceDetail(TraceFlags traceFlags, bool newLine, string description);
 
     static partial void LogTimeDetail(TraceFlags traceFlags, bool newLine, string description);
-#if DEBUG
+#if TRACE
       static partial void TraceDetail(TraceFlags traceFlags, bool newLine, string description) {
         if (EnabledFags.HasFlag(traceFlags)) {
           if(newLine) Debug.WriteLine("");
@@ -184,7 +184,7 @@ namespace PGNapoleonics.HexUtilities.Common {
 
     /// <summary>TODO</summary>
   public static partial class Extensions {
-    #if DEBUG
+    #if TRACE
       public static void Trace(this TraceFlags @this, string format, params object[] args) {
         DebugTracing.Trace(@this,format,args);
       }
