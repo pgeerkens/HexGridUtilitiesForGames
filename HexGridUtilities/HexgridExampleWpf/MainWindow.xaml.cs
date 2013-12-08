@@ -79,7 +79,7 @@ namespace HexgridExampleWpf {
     /// <summary>TODO</summary>
     public   HexgridScrollable HexgridPanel { get; private set; }
     /// <summary>TODO</summary>
-    public   IMapDisplay       Model        { get { return HexgridPanel.Model; } }
+    public   IMapDisplay       Model        { get { return HexgridPanel.DataContext.Model; } }
 
     /// <summary>TODO</summary>
     public   int               SelectedMapIndex  { 

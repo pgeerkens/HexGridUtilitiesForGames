@@ -218,9 +218,6 @@ namespace PGNapoleonics.HexgridPanel {
     public Size             Size            { get; private set; }
 
     /// <summary>TODO</summary>
-    public async Task RefreshAsync() { await Task.Run(() => Refresh()); }
-
-    /// <summary>TODO</summary>
     public void Refresh() {
       if (IsOn) {
         var g     = Buffer.Graphics;
@@ -234,10 +231,15 @@ namespace PGNapoleonics.HexgridPanel {
       }
     }
 
+#if NET45
+    /// <summary>TODO</summary>
+    public async Task RefreshAsync() { await Task.Run(() => Refresh()); }
+
     /// <summary>TODO</summary>
     public async Task RenderAsync(Graphics target, Point scrollPosition) {
       await Task.Run(() => Render(target,scrollPosition));
     }
+#endif
 
     /// <summary>TODO</summary>
     /// <param name="target"></param>

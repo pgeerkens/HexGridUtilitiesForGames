@@ -101,7 +101,6 @@ namespace PGNapoleonics.HexUtilities {
     public          HexCoords    Coords          { get; private set; }
 
     /// <inheritdoc/>
-//    public virtual  int          Elevation       { get; protected set; }
     public          int          Elevation       { get; protected set; }
 
     /// <inheritdoc/>
@@ -160,6 +159,11 @@ namespace PGNapoleonics.HexUtilities {
     public static IEnumerable<NeighbourHex> GetAllNeighbours(this IHex @this) {
       return HexsideExtensions.HexsideList.Select(i => 
             new NeighbourHex(@this.Board[@this.Coords.GetNeighbour(i)], i));
+    }
+   /// <summary>Perform <c>action</c> for all neighbours of this hex.</summary>
+    public static void ForAllNeighbours<THex>(this IHex @this, Func<HexCoords,THex> board, Action<THex,Hexside> action) where THex : IHex {
+      foreach (var hexside in HexsideExtensions.HexsideList)
+        action(board(@this.Coords.GetNeighbour(hexside)), hexside);
     }
 
     /// <summary>All <i>OnBoard</i> neighbours of this hex, as an <c>IEnumerable&lt;NeighbourHex></c></summary>

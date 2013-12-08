@@ -122,7 +122,10 @@ namespace PGNapoleonics.HexgridPanel {
     /// <summary>Gets or sets whether to display direction indicators for the current path.</summary>
     public          bool          ShowPathArrow   { get; set; }
     /// <summary>Gets or sets whether to display the shortest path from <see cref="StartHex"/> to <see cref="GoalHex"/>.</summary>
-    public          bool          ShowRangeLine   { get; set; }
+    public          bool          ShowRangeLine   { 
+      get { return _showRangeLine; } 
+      set { _showRangeLine = value; if (_showRangeLine) Fov = null; }
+    } bool _showRangeLine;
     /// <inheritdoc/>
     public virtual  HexCoords     StartHex        { 
       get { return _startHex; }
@@ -349,6 +352,8 @@ namespace PGNapoleonics.HexgridPanel {
     #endregion
   }
 
+  /// <summary>TODO</summary>
+  /// <typeparam name="T"></typeparam>
   public class ValueChangedEventArgs<T> : EventArgs {
     /// <summary>TODO</summary>
     public ValueChangedEventArgs(T value) : base() { Value = value; }

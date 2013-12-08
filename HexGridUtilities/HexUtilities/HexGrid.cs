@@ -61,8 +61,10 @@ namespace PGNapoleonics.HexUtilities {
     Point   HexCenterPoint(HexCoords coordsNewULHex);
 
     /// <summary>TODO</summary>
-    SizeF GridSizeF { get; }
-  }
+    SizeF GridSizeF  { get; }
+    /// <summary>Offset of grid origin, from control's client-area origin.</summary>
+    Size  Margin     { get; set; }
+}
 
   /// <summary>C# implementation of the hex-picking algorithm noted below.</summary>
   /// <remarks>Mathemagically (left as exercise for the reader) our 'picking' matrices are these, assuming: 
@@ -72,11 +74,19 @@ namespace PGNapoleonics.HexUtilities {
   /// <a href="file://Documentation/HexGridAlgorithm.mht">Hex-grid Algorithms</a>
   public class Hexgrid : IHexgrid {
     /// <summary>Return a new instance of <c>Hexgrid</c>.</summary>
-    public Hexgrid(SizeF gridSizeF) { GridSizeF = gridSizeF; }
+    public Hexgrid(SizeF gridSizeF) : this(gridSizeF, Size.Empty) {}
+    /// <summary>Return a new instance of <c>Hexgrid</c>.</summary>
+    public Hexgrid(SizeF gridSizeF, Size margin) { 
+      GridSizeF = gridSizeF;
+      Margin    = margin;
+    }
 
     #region Properties
-    /// <summary>TODO</summary>
-    public SizeF GridSizeF { get; private set; }
+    /// <inheritdoc/>
+    public SizeF  GridSizeF { get; private set; }
+
+    /// <inheritdoc/>
+    public Size   Margin    { get; set; }
 
     /// <summary>Matrix2D for 'picking' the <B>X</B> hex coordinate</summary>
     Matrix matrixX { 
@@ -106,7 +116,7 @@ namespace PGNapoleonics.HexUtilities {
 
       // Adjust for origin not as assumed by GetCoordinate().
       var grid    = new Size((int)(GridSizeF.Width*2F/3F), (int)GridSizeF.Height);
-      point      -= autoScroll + grid;
+      point      -= autoScroll + grid - Margin;
 
       return HexCoords.NewCanonCoords( GetCoordinate(matrixX, point), 
                                        GetCoordinate(matrixY, point) );
@@ -152,7 +162,9 @@ namespace PGNapoleonics.HexUtilities {
   /// (which remains coordinate (0,0) for both User (rectangular) and Canon (obtuse) coordinate frames.</summary>
   public class TransposedHexgrid : Hexgrid {
     /// <summary>Returns a <c>TransposedHexgrid</c> instance from the supplied <see cref="IHexgridHost"/>.</summary>
-    public TransposedHexgrid(SizeF gridSizeF) : base(gridSizeF) {}
+    public TransposedHexgrid(SizeF gridSizeF) : this(gridSizeF, Size.Empty) {}
+    /// <summary>Returns a <c>TransposedHexgrid</c> instance from the supplied <see cref="IHexgridHost"/>.</summary>
+    public TransposedHexgrid(SizeF gridSizeF, Size margin) : base(gridSizeF, margin) {}
 
     ///<inheritdoc/>
     public override Point GetScrollPosition(Point scrollPosition) { 

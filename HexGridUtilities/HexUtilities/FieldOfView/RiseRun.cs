@@ -51,33 +51,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     public int Run  { get; private set; }
     #endregion
 
-    #region Operators and  IComparable<RiseRun> implementations: 
-    /// <summary>Less Than operator</summary>
-    public static bool operator <  (RiseRun lhs, RiseRun rhs) {
-      //if (lhs.Rise == 0  &&  rhs.Rise == 0)
-      //  return rhs.Run < lhs.Run;
-      //else
-        return (lhs.Rise * rhs.Run) < (lhs.Run * rhs.Rise);
-    }
-    /// <summary>Less Than or Equals operator</summary>
-    public static bool operator <= (RiseRun lhs, RiseRun rhs) { return ! (lhs > rhs); }
-    /// <summary>Greater Thanoperator</summary>
-    public static bool operator >  (RiseRun lhs, RiseRun rhs) {
-      //if (lhs.Rise == 0  &&  rhs.Rise == 0)
-      //  return rhs.Run > lhs.Run;
-      //else
-        return (lhs.Rise * rhs.Run) > (lhs.Run * rhs.Rise);
-    }
-    /// <summary>Greater Than or Equals operator</summary>
-    public static bool operator >= (RiseRun lhs, RiseRun rhs) { return ! (lhs < rhs); }
-    /// <summary>Less-Than comparaator.</summary>
-    public int CompareTo(RiseRun other) { 
-      return (this == other) ?  0
-           : (this  < other) ? -1 
-                             : +1;
-    }
-    #endregion
-
     /// <inheritdoc/>
     public override string ToString() { return string.Format(CultureInfo.InvariantCulture,"Rise={0}; Run={1}", Rise, Run); }
 
@@ -89,18 +62,30 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     }
 
     /// <inheritdoc/>
-    public override int GetHashCode() { return (Rise << 16) ^ Run; }
+    public override int GetHashCode() { return Rise / Run; }
 
     /// <inheritdoc/>
     public bool Equals(RiseRun other) { return this == other; }
 
-    /// <summary>Inequality operator</summary>
-    public static bool operator != (RiseRun lhs, RiseRun rhs) { return ! (lhs == rhs); }
+    #region Operators and  IComparable<RiseRun> implementations: 
+    /// <summary>Test Value-Inequality.</summary>
+    public static bool operator != (RiseRun lhs, RiseRun rhs) { return lhs.CompareTo(rhs) != 0; }
+    /// <summary>Test Value-Equality.</summary>
+    public static bool operator == (RiseRun lhs, RiseRun rhs) { return lhs.CompareTo(rhs) == 0; }
 
-    /// <summary>Equality operator</summary>
-    public static bool operator == (RiseRun lhs, RiseRun rhs) { 
-      return (lhs.Rise * rhs.Run) == (lhs.Run * rhs.Rise);
+    /// <summary>Less Than operator</summary>
+    public static bool operator <  (RiseRun lhs, RiseRun rhs) { return lhs.CompareTo(rhs) <  0; }
+    /// <summary>Less Than or Equals operator</summary>
+    public static bool operator <= (RiseRun lhs, RiseRun rhs) { return lhs.CompareTo(rhs) <= 0; }
+    /// <summary>Greater Thanoperator</summary>
+    public static bool operator >  (RiseRun lhs, RiseRun rhs) { return lhs.CompareTo(rhs) >  0; }
+    /// <summary>Greater Than or Equals operator</summary>
+    public static bool operator >= (RiseRun lhs, RiseRun rhs) { return lhs.CompareTo(rhs) >= 0; }
+    /// <summary>Less-Than comparaator.</summary>
+    public int CompareTo(RiseRun other) { 
+      return (this.Rise * other.Run).CompareTo(other.Rise * this.Run);
     }
+    #endregion
     #endregion
   }
 }

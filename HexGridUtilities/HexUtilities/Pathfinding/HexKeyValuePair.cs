@@ -49,6 +49,29 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     public TValue Value   { get; private set; }
     #endregion
 
+    #region Value equality
+    /// <inheritdoc/>
+    public override bool Equals(object obj) {
+      var other = obj as HexKeyValuePair<TKey,TValue>?;
+      return other.HasValue  &&  this == other.Value;
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode() { return Key.GetHashCode(); }
+
+    /// <inheritdoc/>
+    public bool Equals(HexKeyValuePair<TKey,TValue> other) { return this == other; }
+
+    /// <summary>Tests value-inequality.</summary>
+    public static bool operator != (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
+      return lhs.CompareTo(rhs) != 0;
+    }
+
+    /// <summary>Tests value-equality.</summary>
+    public static bool operator == (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
+      return lhs.CompareTo(rhs) == 0;
+    }
+
     #region IComparable implementation
     /// <summary>Tests whether lhs &lt; rhs.</summary>
     public static bool operator <  (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
@@ -67,33 +90,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       return lhs.CompareTo(rhs) > 0;
     }
     /// <inheritdoc/>
-    public int CompareTo(HexKeyValuePair<TKey,TValue> other) { 
-      return Key.CompareTo(other.Key); 
-    }
+    public int CompareTo(HexKeyValuePair<TKey,TValue> other) { return this.Key.CompareTo(other.Key); }
     #endregion
-
-    #region Value equality
-    /// <inheritdoc/>
-    public override bool Equals(object obj) {
-      var other = obj as HexKeyValuePair<TKey,TValue>?;
-      return other.HasValue  &&  this == other.Value;
-    }
-
-    /// <inheritdoc/>
-    public override int GetHashCode() { return Key.GetHashCode(); }
-
-    /// <inheritdoc/>
-    public bool Equals(HexKeyValuePair<TKey,TValue> other) { return this == other; }
-
-    /// <summary>Tests value-inequality.</summary>
-    public static bool operator != (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
-      return ! (lhs == rhs);
-    }
-
-    /// <summary>Tests value-equality.</summary>
-    public static bool operator == (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
-      return lhs.Key.Equals(rhs.Key);
-    }
     #endregion
   }
 }

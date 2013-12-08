@@ -51,18 +51,18 @@ namespace PGNapoleonics.HexgridPanel {
     public HexgridViewModel(HexgridScrollable panel) {
       HotspotHex    = HexCoords.EmptyUser;
 
-      Panel                    = panel;
+      Panel         = panel;
 
       Panel.HotspotHexChange  += HotspotHexChange;
-      Panel.MouseAltClick     += MouseAltClick;
-      Panel.MouseCtlClick     += GoalHexChange;
-      Panel.MouseRightClick   += MouseRightClick;
-      Panel.ScaleChange       += ScaleChange;
+      Panel.MarginChanged     += MarginChanged;
+//      Panel.MouseAltClick     += MouseAltClick;
+//      Panel.MouseCtlClick     += GoalHexChange;
+//      Panel.MouseRightClick   += MouseRightClick;
+//      Panel.ScaleChange       += ScaleChange;
 
       Scales        = new List<float>() {1.000F}.AsReadOnly();
       SetModel(new EmptyBoard());
-      Hexgrid       = IsTransposed ? new TransposedHexgrid(Model.GridSize.Scale(MapScale)) 
-                                   : new Hexgrid(Model.GridSize.Scale(MapScale));  
+      Hexgrid       = GetHexgrid();
     }
 
     HexgridScrollable Panel { get; set; }
@@ -93,6 +93,12 @@ namespace PGNapoleonics.HexgridPanel {
       Model = model;   
     }
 
+    Hexgrid GetHexgrid() { 
+      var margin = new Size(Margin.Left,Margin.Top);
+      return IsTransposed ? new TransposedHexgrid(Model.GridSize.Scale(MapScale),margin) 
+                          : new Hexgrid(Model.GridSize.Scale(MapScale),margin);     
+    }
+
 #region Properties
     /// <summary>TODO</summary>
     public WpfInput.ICommand RefreshCmd { 
@@ -116,8 +122,7 @@ namespace PGNapoleonics.HexgridPanel {
     public bool        IsTransposed    { 
       get { return _isTransposed; }
       set { _isTransposed = value;  
-            Hexgrid       = IsTransposed ? new TransposedHexgrid(Model.GridSize.Scale(MapScale)) 
-                                         : new Hexgrid(Model.GridSize.Scale(MapScale));  
+            Hexgrid = GetHexgrid();
             if (Panel.IsHandleCreated) Panel.SetScrollLimits(Model);   
           }
     } bool _isTransposed;
@@ -130,6 +135,12 @@ namespace PGNapoleonics.HexgridPanel {
       get { return Model.MapScale; } 
       private set { Model.MapScale = value; } 
     }
+
+    /// <inheritdoc/>
+    public Padding  Margin     { 
+      get { return _margin; } 
+      set { _margin = value; Hexgrid.Margin = new Size(_margin.Left, _margin.Top); }
+    } Padding _margin;
 
     /// <summary>TODO</summary>
     public    bool   IsMapDirty   { 
@@ -158,27 +169,31 @@ namespace PGNapoleonics.HexgridPanel {
               _scaleIndex = newValue;
               MapScale    = Scales[ScaleIndex];
               Hexgrid     = IsTransposed ? new TransposedHexgrid(Model.GridSize.Scale(MapScale)) 
-                                         : new Hexgrid(Model.GridSize.Scale(MapScale));  
+                                         : new Hexgrid(Model.GridSize.Scale(MapScale)); 
+              ScaleChange.Raise(this, EventArgs.Empty);
             }
           } 
     } int _scaleIndex;
     #endregion
 
     #region Events
-    /// <summary>Announces that the Path-Goal hex has changed.</summary>
-    public event EventHandler<HexEventArgs> GoalHexChange;
+    /// <summary>TODO</summary>
+    void MarginChanged(object sender, EventArgs e) { Margin = Panel.Margin; }
+
     /// <summary>Announces that the mouse is now over a new hex.</summary>
-    public void HotspotHexChange(object sender, HexEventArgs e) {
+    void HotspotHexChange(object sender, HexEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       if ( e.Coords != HotspotHex)    HotspotHex = e.Coords;
     }
-    /// <summary>Announces that the Path-Start hex has changed.</summary>
-    public event EventHandler<HexEventArgs> StartHexChange;
 
+    /// <summary>Announces that the Path-Goal hex has changed.</summary>
+//    public event EventHandler<HexEventArgs> GoalHexChange;
+    /// <summary>Announces that the Path-Start hex has changed.</summary>
+//    public event EventHandler<HexEventArgs> StartHexChange;
     /// <summary>Announces occurrence of a mouse left-click with the <b>Alt</b> key depressed.</summary>
-    public event EventHandler<HexEventArgs> MouseAltClick;
+//    public event EventHandler<HexEventArgs> MouseAltClick;
     /// <summary>Announces a mouse right-click. </summary>
-    public event EventHandler<HexEventArgs> MouseRightClick;
+//    public event EventHandler<HexEventArgs> MouseRightClick;
     /// <summary>Announces a change of drawing scale on this HexgridPanel.</summary>
     public event EventHandler<EventArgs>    ScaleChange;
     #endregion
@@ -187,7 +202,7 @@ namespace PGNapoleonics.HexgridPanel {
     ///<inheritdoc/>
     public Hexgrid    Hexgrid        { get; set; }
     /// <summary>Gets a SizeF struct for the hex GridSize under the current scaling.</summary>
-    public    SizeF      GridSizeF      { get { return Model.GridSize.Scale(MapScale); } }
+    public SizeF      GridSizeF      { get { return Model.GridSize.Scale(MapScale); } }
 
     CoordsRectangle  GetClipCells(PointF point, SizeF size) {
       return Model.GetClipCells(point, size);

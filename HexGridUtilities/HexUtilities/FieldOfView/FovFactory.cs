@@ -63,6 +63,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       return @this.GetFieldOfView(origin);
     }
 
+#if NET45
     /// <summary>Gets a Field-of-View for this board asynchronously.</summary>
     public static Task<IFov> GetFieldOfViewAsync(this IFovBoard<IHex> @this, HexCoords origin) {
       return @this.GetFieldOfViewAsync(origin, FovTargetMode.EqualHeights);
@@ -74,7 +75,8 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
         () => @this.GetFieldOfView(origin, targetMode)
       );
     }
-    
+#endif
+
     /// <summary>Gets a Field-of-View for this board synchronously.</summary>
     public static IFov GetFieldOfView(this IFovBoard<IHex> @this, HexCoords origin) {
       if (@this==null) throw new ArgumentNullException("this");

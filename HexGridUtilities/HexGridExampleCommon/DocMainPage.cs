@@ -33,7 +33,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PGNapoleonics.HexgridPanel {
-/// @mainpage HexgridUtilities V 6.3
+/// @mainpage HexgridUtilities V 6.4
 /// 
 /// @section Introduction 
 /// 

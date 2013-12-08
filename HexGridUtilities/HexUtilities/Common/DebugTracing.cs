@@ -27,11 +27,9 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-#if DEBUG
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
-#endif
 
 namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>enumerationof known debugging trace flags.</summary>
@@ -115,7 +113,7 @@ namespace PGNapoleonics.HexUtilities.Common {
   [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage()]
   public static partial class DebugTracing {
     /// <summary>TODO</summary>
-    public static TraceFlags EnabledFags { get; set; }
+    public static TraceFlags EnabledFlags { get; set; }
 
     /// <summary>TODO</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object[])"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
@@ -159,9 +157,9 @@ namespace PGNapoleonics.HexUtilities.Common {
     static partial void LogTimeDetail(TraceFlags traceFlags, bool newLine, string description);
 #if TRACE
       static partial void TraceDetail(TraceFlags traceFlags, bool newLine, string description) {
-        if (EnabledFags.HasFlag(traceFlags)) {
-          if(newLine) Debug.WriteLine("");
-          Debug.WriteLine(description);
+        if (EnabledFlags.HasFlag(traceFlags)) {
+          if(newLine) System.Diagnostics.Trace.WriteLine("");
+          System.Diagnostics.Trace.WriteLine(description);
         }
       }
 
@@ -173,9 +171,9 @@ namespace PGNapoleonics.HexUtilities.Common {
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags")]
       static partial void LogTimeDetail(TraceFlags traceFlags, bool newLine, string description) {
-        if (EnabledFags.HasFlag(traceFlags)) {
-          if(newLine) Debug.WriteLine("");
-          Debug.Write("{0} - ", GetTimeString());
+        if (EnabledFlags.HasFlag(traceFlags)) {
+          if(newLine) System.Diagnostics.Trace.WriteLine("");
+          System.Diagnostics.Trace.Write("{0} - ", GetTimeString());
           Trace(traceFlags, false, description);
         }
       }

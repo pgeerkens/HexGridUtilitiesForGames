@@ -251,6 +251,7 @@ namespace PGNapoleonics.HexUtilities {
         return default(IDirectedPath);
     }
 
+#if NET45
     /// <summary>Asynchronously returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
     public static Task<IDirectedPath> GetDirectedPathAsync(
       this IBoard<IHex> @this, 
@@ -261,6 +262,6 @@ namespace PGNapoleonics.HexUtilities {
           () => @this.GetDirectedPath(start, goal)
       );
     }
-
+#endif
   }
 }

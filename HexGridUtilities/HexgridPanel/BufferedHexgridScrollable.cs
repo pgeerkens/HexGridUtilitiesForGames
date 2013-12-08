@@ -75,7 +75,7 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>Service routine to paint the backing store bitmap for the map underlay.</summary>
     protected virtual void PaintBuffer(Rectangle clipBounds) {
-      if (Model==null  ||  MapBuffer==null) return;
+      if (DataContext.Model==null  ||  MapBuffer==null) return;
 
       var g = MapBuffer.Graphics;
       if (g != null) {
@@ -89,7 +89,7 @@ namespace PGNapoleonics.HexgridPanel {
         TraceFlags.PaintDetail.Trace("{0}.PaintBuffer - VisibleClipBounds: ({1})", Name, g.VisibleClipBounds);
 
         using(var brush = new SolidBrush(this.BackColor)) g.FillRectangle(brush, g.VisibleClipBounds);
-        Model.PaintMap(g);
+        DataContext.Model.PaintMap(g);
 
         g.Restore(state);
       }

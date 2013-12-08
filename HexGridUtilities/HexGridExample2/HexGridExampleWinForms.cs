@@ -145,8 +145,8 @@ namespace HexgridExampleWinForms {
       item.CheckState = item.Checked ? CheckState.Checked : CheckState.Unchecked;
       var name = item.Name.Replace("menuItemDebugTracing","");
       var flag = (TraceFlags)Enum.Parse(typeof(TraceFlags),name);
-      if( item.Checked)   DebugTracing.EnabledFags |=  flag;
-      else                DebugTracing.EnabledFags &= ~flag;
+      if( item.Checked)   DebugTracing.EnabledFlags |=  flag;
+      else                DebugTracing.EnabledFlags &= ~flag;
     }
 
     void menuItemHelpContents_Click(object sender, EventArgs e) {

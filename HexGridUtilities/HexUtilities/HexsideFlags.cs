@@ -27,6 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Linq;
 
 namespace PGNapoleonics.HexUtilities {
   /// <summary>Flags for combinations of the six hexagonal directions.</summary>
@@ -84,5 +85,17 @@ namespace PGNapoleonics.HexUtilities {
         if (@this.IsAnySet(flag)) action(flag);
       }
     }
+
+    private static readonly int[] LookupTable = Enumerable.Range(0,256).Select(CountBits).ToArray();
+
+    private static int CountBits(int value) {
+      int count = 0;
+      for (int i=0; i < 8; i++) { count += (value >> i) & 1; }
+      return count;
+    }
+
+    /// <summary>Returns the count of of set bit-flags in the argument.</summary>
+    /// <param name="this"></param>
+    public static int BitCount(this Hexsides @this) { return LookupTable[(int)@this]; }
   }
 }

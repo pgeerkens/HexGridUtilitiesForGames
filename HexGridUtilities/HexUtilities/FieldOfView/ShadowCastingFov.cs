@@ -50,10 +50,13 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
   /// <a href="http://blogs.msdn.com/b/ericlippert/archive/2011/12/29/shadowcasting-in-c-part-six.aspx">Shadow Casting in C# Part Six</a>
   public static partial class ShadowCasting {
     /// <summary>Height used for observer and target when FovTargetMode = EqualHeights. </summary>
-    public static int DefaultHeight { 
+    public static int  DefaultHeight { 
       get {return _defaultHeight;}
       set {_defaultHeight = value;}
     } static int _defaultHeight = 1;
+    /// <summary>Get or set whether to force serial execution of FOV calculation.</summary>
+    /// <remarks>Defaults true when DEBUG defined; otherwise false.</remarks>
+    public static bool InSerial    { get; set; }
 
     /// <summary>Calculate Field-of-View from a specified TargetMode.</summary>
     /// <remarks>
@@ -130,28 +133,30 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       var matrixOrigin = new IntMatrix2D(observerCoords.Canon);
 
       setFieldOfView(observerCoords);    // Always visible to self!
+
+      Action<int> dodecantFov = dodecant => {
+        var matrix = _dodecantMatrices[dodecant] * matrixOrigin;
+        _mapCoordsDodecant = hex => TranslateDodecant<HexCoords>(matrix,v=>v)(hex);
+        ComputeFieldOfViewInDodecantZero(
+          radius,
+          observerHeight,
+          TranslateDodecant(matrix, isOnboard),
+          TranslateDodecant(matrix, targetHeight),
+          TranslateDodecant(matrix, terrainHeight),
+          TranslateDodecant(matrix, setFieldOfView)
+          );
+      };
       #if DEBUG
+        InSerial = true;
+      #endif
+      if (InSerial) {
         for(int dodecant = 0;  dodecant < _dodecantMatrices.Count;  dodecant++) {
-          //var matrix = _dodecantMatrices[dodecant] * matrixOrigin;
           TraceFlags.FieldOfView.Trace(true," - Dodecant: {0}", dodecant);
-      #else
-       Parallel.For(0, _dodecantMatrices.Count, dodecant => {
-      #endif
-         var matrix = _dodecantMatrices[dodecant] * matrixOrigin;
-          _mapCoordsDodecant = hex => TranslateDodecant<HexCoords>(matrix,v=>v)(hex);
-          ComputeFieldOfViewInDodecantZero(
-            radius,
-            observerHeight,
-            TranslateDodecant(matrix, isOnboard),
-            TranslateDodecant(matrix, targetHeight),
-            TranslateDodecant(matrix, terrainHeight),
-            TranslateDodecant(matrix, setFieldOfView)
-//            ,dodecant
-           );
+          dodecantFov(dodecant);
         }
-      #if ! DEBUG
-        );
-      #endif
+      } else {
+        Parallel.For(0, _dodecantMatrices.Count, dodecantFov);
+      }
     }
 
     /// <summary>For tracing: mapsHhexCoords back to original hex.</summary>
@@ -172,7 +177,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       Func<HexCoords, int> targetHeight,
       Func<HexCoords, int> terrainHeight,
       Action<HexCoords>    setFieldOfView
-//      ,int                 dodecant
     ) {
 
       var currentCoords = HexCoords.NewCanonCoords(0,1);
@@ -195,7 +199,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
           terrainHeight,
           setFieldOfView,
           queue
-//          ,dodecant
           );
       }
     }
@@ -208,7 +211,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     /// <param name="terrainHeight"></param>
     /// <param name="setFieldOfView"></param>
     /// <param name="queue"></param>
-//    /// <param name="dodecant"></param>
     /// <returns></returns>
     ///<remarks>
     /// This method: 
@@ -235,7 +237,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       Func<HexCoords, int> terrainHeight,
       Action<HexCoords>    setFieldOfView,
       FovConeQueue         queue
-//      ,int                 dodecant
     ) {
       Action<FovCone> enqueue = queue.Enqueue;
 
