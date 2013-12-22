@@ -50,7 +50,7 @@
     <OutputPath>..\bin\HexGridExample2\bin\Release\</OutputPath>
     <DefineConstants>CODE_ANALYSIS</DefineConstants>
     <Optimize>true</Optimize>
-    <NoWarn>1607,1587</NoWarn>
+    <NoWarn>1607</NoWarn>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>

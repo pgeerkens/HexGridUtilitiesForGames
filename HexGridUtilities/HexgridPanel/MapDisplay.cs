@@ -38,8 +38,10 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexUtilities.FieldOfView;
 
+#pragma warning disable 1587
 /// <summary>WinForms-specific utilities, including implementation of the subclasses HexgridPanel
 /// and MapDisplay<THex>, utilizing the System.Windows.Forms technology.</summary>
+#pragma warning restore 1587
 namespace PGNapoleonics.HexgridPanel {
   using Int32ValueEventArgs = ValueChangedEventArgs<Int32>;
   using BoolValueEventArgs  = ValueChangedEventArgs<bool>;
@@ -52,11 +54,12 @@ namespace PGNapoleonics.HexgridPanel {
     #region Constructors
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
     protected MapDisplay(Size sizeHexes, Size gridSize, Func<HexBoard<THex>, HexCoords, THex> initializeHex) 
-    : base(sizeHexes, gridSize, (map) => 
-          new BoardStorage<THex>.FlatBoardStorage(sizeHexes, coords => initializeHex(map,coords))
-    ) {
-      InitializeProperties();
-    }
+    //: base(sizeHexes, gridSize, (map) => 
+    //      new BoardStorage<THex>.FlatBoardStorage(sizeHexes, coords => initializeHex(map,coords))
+    //) {
+    //  InitializeProperties();
+    //}
+  : this(sizeHexes, gridSize, initializeHex, DefaultLandmarks(sizeHexes)) {}
 
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
     protected MapDisplay(Size sizeHexes, Size gridSize, Func<HexBoard<THex>, HexCoords, THex> initializeHex, 
@@ -99,7 +102,7 @@ namespace PGNapoleonics.HexgridPanel {
     /// <inheritdoc/>
     public virtual  HexCoords     HotspotHex      { 
       get { return _hotSpotHex; }
-      set { _hotSpotHex = value; if (!ShowRangeLine) _fov = null; }
+      set { if (IsOnboard(value)) _hotSpotHex = value; if (!ShowRangeLine) _fov = null; }
     } HexCoords _hotSpotHex = HexCoords.EmptyUser;
     /// <inheritdoc/>
     public          int           LandmarkToShow  { get; set; }
@@ -191,7 +194,7 @@ namespace PGNapoleonics.HexgridPanel {
       var font       = SystemFonts.MenuFont;
       var brush      = Brushes.Black;
       var textOffset = new Point((GridSize.Scale(0.50F)
-                                - new SizeF(font.Size,font.Size).Scale(0.8F)).ToSize());
+                     - new SizeF(font.Size,font.Size).Scale(0.8F)).ToSize());
       PaintForEachHex(g, clipHexes, coords => {
         this[coords].Paint(g);
         if (ShowHexgrid) g.DrawPath(Pens.Black, HexgridPath);

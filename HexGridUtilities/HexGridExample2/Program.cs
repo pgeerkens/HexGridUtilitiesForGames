@@ -32,8 +32,10 @@ using System.Windows.Forms;
 
 using PGNapoleonics.WinForms;
 
+#pragma warning disable 1587
 /// <summary>Example usage of <see cref="HexUtilities"/> with <see cref="HexUtilities.HexgridPanel"/> 
 /// in a simple <see cref="WinForms"/> application.</summary>
+#pragma warning restore 1587
 namespace HexgridExampleWinForms {
   static class Program {
     /// <summary>The main entry point for the application.</summary>

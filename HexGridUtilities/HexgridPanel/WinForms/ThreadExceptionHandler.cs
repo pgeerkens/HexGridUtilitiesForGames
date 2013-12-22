@@ -34,7 +34,7 @@ namespace  PGNapoleonics.WinForms {
   /// <summary>A Last-chance THread Exception handler.</summary>
   [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage()]
   public class ThreadExceptionHandler {
-    ///<summary>Handles the thread exception.</summary> 
+    /// <summary>Handles the thread exception.</summary> 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
       "CA1031:DoNotCatchGeneralExceptionTypes"), 
     System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", 

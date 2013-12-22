@@ -33,8 +33,10 @@ using System.Linq;
 
 using PGNapoleonics.HexUtilities.Common;
 
+#pragma warning disable 1587
 /// <summary>A fast efficient serial implementation of <b>Bidirectional ALT</b> (<b>A*</b> with <b>L</b>andmarks and <b>T</b>riangle-inequality heuristic) <b>path-finding</b>
 /// on a <see cref="Hexgrid"/> map.</summary>
+#pragma warning restore 1587
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>C# (serial) implementation of NPBA* path-finding algorithm by Pijls &amp; Post (Adapted).</summary>
   /// <remarks>Adapted to hex-grids, and to weight the most direct path favourably for better (visual) 

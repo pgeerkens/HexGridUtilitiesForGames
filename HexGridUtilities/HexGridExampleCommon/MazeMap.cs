@@ -34,10 +34,14 @@ using PGNapoleonics.HexUtilities;
 
 using MyMapDisplay = PGNapoleonics.HexgridPanel.MapDisplay<PGNapoleonics.HexgridPanel.MapGridHex>;
 
+#pragma warning disable 1587
 /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexUtilities.HexgridPanel"/> to implement
 /// a maze map.</summary>
 namespace HexgridExampleCommon {
+#pragma warning restore 1587
+  /// <summary>TODO</summary>
   public sealed class MazeMap : MyMapDisplay {
+    /// <summary>TODO</summary>
     public MazeMap() : base(_sizeHexes, new Size(26,30), (map,coords) => InitializeHex(map,coords)) {}
 
     /// <inheritdoc/>

@@ -110,14 +110,14 @@ namespace PGNapoleonics.HexUtilities {
       return NewCanonCoords(Canon + HexsideVectors[(int)hexside]); 
     }
 
-    ///<summary>Returns all neighbouring hexes as IEnumerable.</summary>
+    /// <summary>Returns all neighbouring hexes as IEnumerable.</summary>
     public IEnumerable<NeighbourCoords> GetNeighbours() { 
       for (var hexside=0; hexside<HexsideVectors.Length; hexside++)
         yield return new NeighbourCoords(NewCanonCoords(Canon + HexsideVectors[hexside]),
                                         (Hexside)hexside); 
     }
 
-    ///<summary>Returns set of hexes at direction(s) specified by <c>hexsides</c>, as IEnumerable.</summary>
+    /// <summary>Returns set of hexes at direction(s) specified by <c>hexsides</c>, as IEnumerable.</summary>
     public IEnumerable<NeighbourCoords> GetNeighbours(Hexsides hexsides) { 
       return GetNeighbours().Where(n=>hexsides.HasFlag(n.Hexside));
     }

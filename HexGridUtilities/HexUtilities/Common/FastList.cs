@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
+#pragma warning disable 1587
 /// <summary>Joe Duffy's Simple (Fast) List enumerator.</summary>
+#pragma warning restore 1587
 namespace PGNapoleonics.HexUtilities.Common.FastIterator {
   /// <summary>Adapted implementation of Joe Duffy's Simple (Fast) List enumerator.</summary>
   /// <a href="http://www.bluebytesoftware.com/blog/2008/09/21/TheCostOfEnumeratingInNET.aspx">

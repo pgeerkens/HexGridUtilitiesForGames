@@ -32,9 +32,13 @@ using System.Threading.Tasks;
 
 using PGNapoleonics.HexUtilities.Common;
 
+#pragma warning disable 1587
 /// <summary>Fast efficient <b>Shadow-Casting</b> 
 /// implementation of 3D Field-of-View on a <see cref="Hexgrid"/> map.</summary>
+#pragma warning restore 1587
 namespace PGNapoleonics.HexUtilities.FieldOfView {
+  using HexsideMap = Func<Hexside,Hexside>;
+
     /// <summary>Enumeration of line-of-sight modes</summary>
   public enum FovTargetMode {
     /// <summary>Target height and observer height both set to the same constant value 
@@ -49,14 +53,9 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
   /// <summary>Credit: Eric Lippert</summary>
   /// <a href="http://blogs.msdn.com/b/ericlippert/archive/2011/12/29/shadowcasting-in-c-part-six.aspx">Shadow Casting in C# Part Six</a>
   public static partial class ShadowCasting {
-    /// <summary>Height used for observer and target when FovTargetMode = EqualHeights. </summary>
-    public static int  DefaultHeight { 
-      get {return _defaultHeight;}
-      set {_defaultHeight = value;}
-    } static int _defaultHeight = 1;
     /// <summary>Get or set whether to force serial execution of FOV calculation.</summary>
     /// <remarks>Defaults true when DEBUG defined; otherwise false.</remarks>
-    public static bool InSerial    { get; set; }
+    public static bool InSerial      { get; set; }
 
     /// <summary>Calculate Field-of-View from a specified TargetMode.</summary>
     /// <remarks>
@@ -65,41 +64,65 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     /// ElevationASL of the hex, plus the height of any blocking in the hex, usually due to terrain 
     /// but sometimes occuppying units will block vision as well. Control this in the implementation 
     /// of IFovBoard&lt;IHex&gt;.</remarks>
-    /// <param name="observerCoords">Cordinates of observer;s hex.</param>
+    /// <param name="coordsObserver">Cordinates of observer;s hex.</param>
     /// <param name="board">A reference to an IFovBoard&lt;IHex&gt; instance.</param>
     /// <param name="targetMode">TargetMode value for determining target visibility.</param>
     /// <param name="setFieldOfView">Sets a hex as visible in the Field-of-View.</param>
     public static void ComputeFieldOfView(
-      HexCoords            observerCoords,
+      HexCoords            coordsObserver,
       IFovBoard<IHex>      board,
       FovTargetMode        targetMode, 
       Action<HexCoords>    setFieldOfView
     ) {
-      Func<HexCoords,int> targetHeight;
-      int                 observerHeight;
+      ComputeFieldOfView(coordsObserver, board, targetMode, setFieldOfView, 1);
+    }
+
+    /// <summary>Calculate Field-of-View from a specified TargetMode.</summary>
+    /// <remarks>
+    /// It is important for realiism that observerHeight > board[observerCoords].ElevationASL, 
+    /// or no parallax over the current ground elevation will be observed. TerrainHeight is the 
+    /// ElevationASL of the hex, plus the height of any blocking in the hex, usually due to terrain 
+    /// but sometimes occuppying units will block vision as well. Control this in the implementation 
+    /// of IFovBoard&lt;IHex&gt;.</remarks>
+    /// <param name="coordsObserver">Cordinates of observer;s hex.</param>
+    /// <param name="board">A reference to an IFovBoard&lt;IHex&gt; instance.</param>
+    /// <param name="targetMode">TargetMode value for determining target visibility.</param>
+    /// <param name="setFieldOfView">Sets a hex as visible in the Field-of-View.</param>
+    /// <param name="defaultHeight">Height used for observer and target when targetMode = EqualHeights/</param>
+    public static void ComputeFieldOfView(
+      HexCoords            coordsObserver,
+      IFovBoard<IHex>      board,
+      FovTargetMode        targetMode, 
+      Action<HexCoords>    setFieldOfView,
+      int                  defaultHeight
+    ) {
+      Func<HexCoords,int> heightTarget;
+      int                 heightObserver;
       switch (targetMode) {
-        case FovTargetMode.EqualHeights: 
-          targetHeight   = coords => board[coords].ElevationASL + DefaultHeight;
-          observerHeight = targetHeight(observerCoords);
-          break;
         case FovTargetMode.TargetHeightEqualZero:
-          targetHeight   = coords => board[coords].ElevationASL;
-          observerHeight = board[observerCoords].HeightObserver;
+          heightTarget   = coords => board[coords].ElevationASL;
+          heightObserver = board[coordsObserver].HeightObserver;
           break;
+
         default:
         case FovTargetMode.TargetHeightEqualActual:
-          targetHeight   = coords => board[coords].HeightTarget;
-          observerHeight = board[observerCoords].HeightObserver;
+          heightTarget   = coords => board[coords].HeightTarget;
+          heightObserver = board[coordsObserver].HeightObserver;
+          break;
+
+        case FovTargetMode.EqualHeights: 
+          heightTarget   = coords => board[coords].ElevationASL + defaultHeight;
+          heightObserver = heightTarget(coordsObserver);
           break;
       }
 
       ShadowCasting.ComputeFieldOfView(
-        observerCoords, 
+        coordsObserver, 
         board.FovRadius, 
-        observerHeight,
+        heightObserver,
         board.IsOnboard,
-        targetHeight,
-        coords => board[coords].HeightTerrain,
+        heightTarget,
+        (coords,hexside) => board[coords].HeightHexside(hexside),
         setFieldOfView
       );
     }
@@ -112,41 +135,42 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     /// but sometimes occuppying units will block vision as well. Control this with the definition 
     /// of the observerHeight, targetHeight, and terrainHeight delegates.
     /// </remarks>
-    /// <param name="observerCoords">Cordinates of observer;s hex.</param>
+    /// <param name="coordsObserver">Cordinates of observer;s hex.</param>
     /// <param name="radius">Maximum radius for Field-of-View.</param>
-    /// <param name="observerHeight">Height (ASL) of the observer's eyes.</param>
+    /// <param name="heightObserver">Height (ASL) of the observer's eyes.</param>
     /// <param name="isOnboard">Returns whether this hex on the baoard.</param>
-    /// <param name="targetHeight">Returns ground level (ASL) of supplied hex.</param>
-    /// <param name="terrainHeight">Returns height (ASL) of terrain in supplied hex.</param>
+    /// <param name="heightTarget">Returns ground level (ASL) of supplied hex.</param>
+    /// <param name="heightTerrain">Returns height (ASL) of terrain in supplied hex.</param>
     /// <param name="setFieldOfView">Sets a hex as visible in the Field-of-View.</param>
     public static void ComputeFieldOfView(
-      HexCoords            observerCoords, 
-      int                  radius, 
-      int                  observerHeight,
-      Func<HexCoords,bool> isOnboard,
-      Func<HexCoords,int>  targetHeight, 
-      Func<HexCoords,int>  terrainHeight,
-      Action<HexCoords>    setFieldOfView
+      HexCoords                   coordsObserver, 
+      int                         radius, 
+      int                         heightObserver,
+      Func<HexCoords,bool>        isOnboard,
+      Func<HexCoords,int>         heightTarget, 
+      Func<HexCoords,Hexside,int> heightTerrain,
+      Action<HexCoords>           setFieldOfView
     ) {
       if (setFieldOfView==null) throw new ArgumentNullException("setFieldOfView");
-      TraceFlags.FieldOfView.Trace(true, " - Coords = " + observerCoords.User.ToString());
-      var matrixOrigin = new IntMatrix2D(observerCoords.Canon);
+      TraceFlags.FieldOfView.Trace(true, " - Coords = " + coordsObserver.User.ToString());
+      var matrixOrigin = new IntMatrix2D(coordsObserver.Canon);
 
-      setFieldOfView(observerCoords);    // Always visible to self!
+      setFieldOfView(coordsObserver);    // Always visible to self!
 
       Action<int> dodecantFov = dodecant => {
-        var matrix = _dodecantMatrices[dodecant] * matrixOrigin;
+        var matrix  = _dodecantMatrices[dodecant] * matrixOrigin;
+        var map     = _dodecantHexsides[dodecant];
         _mapCoordsDodecant = hex => TranslateDodecant<HexCoords>(matrix,v=>v)(hex);
         ComputeFieldOfViewInDodecantZero(
           radius,
-          observerHeight,
+          heightObserver,
           TranslateDodecant(matrix, isOnboard),
-          TranslateDodecant(matrix, targetHeight),
-          TranslateDodecant(matrix, terrainHeight),
+          TranslateDodecant(matrix, heightTarget),
+          TranslateDodecant(matrix, map, heightTerrain),
           TranslateDodecant(matrix, setFieldOfView)
           );
       };
-      #if DEBUG
+      #if TRACE
         InSerial = true;
       #endif
       if (InSerial) {
@@ -159,24 +183,23 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       }
     }
 
-    /// <summary>For tracing: mapsHhexCoords back to original hex.</summary>
+    /// <summary>For tracing: maps HexCoords back to original hex.</summary>
     static Func<HexCoords,HexCoords> _mapCoordsDodecant;
 
     /// <summary>TODO</summary>
     /// <param name="radius"></param>
-    /// <param name="observerHeight"></param>
+    /// <param name="heightObserver"></param>
     /// <param name="isOnboard"></param>
-    /// <param name="targetHeight"></param>
-    /// <param name="terrainHeight"></param>
+    /// <param name="heightTarget"></param>
+    /// <param name="heightTerrain"></param>
     /// <param name="setFieldOfView"></param>
-//    /// <param name="dodecant"></param>
     private static void ComputeFieldOfViewInDodecantZero(
-      int                  radius,
-      int                  observerHeight,
-      Func<HexCoords,bool> isOnboard,
-      Func<HexCoords, int> targetHeight,
-      Func<HexCoords, int> terrainHeight,
-      Action<HexCoords>    setFieldOfView
+      int                         radius,
+      int                         heightObserver,
+      Func<HexCoords,bool>        isOnboard,
+      Func<HexCoords,int>         heightTarget,
+      Func<HexCoords,Hexside,int> heightTerrain,
+      Action<HexCoords>           setFieldOfView
     ) {
 
       var currentCoords = HexCoords.NewCanonCoords(0,1);
@@ -186,17 +209,17 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
 
       var queue   = new FovConeQueue();
       var current = new FovCone(
-                    2, 
+                    2,
                     new IntVector2D(1,2), 
                     new IntVector2D(0,1), 
-                    new RiseRun(terrainHeight(currentCoords) - observerHeight, 1) );
+                    new RiseRun(2 * (heightTerrain(currentCoords,Hexside.North) - heightObserver), 1) );
       while (current.Range <= radius) {
         current = ComputeFoVForRange(
-          observerHeight,
+          heightObserver,
           current,
           isOnboard,
-          targetHeight,
-          terrainHeight,
+          heightTarget,
+          heightTerrain,
           setFieldOfView,
           queue
           );
@@ -204,15 +227,15 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     }
 
     /// <summary>Processes the supplied FovCone and returns the next FovCone to process.</summary>
-    /// <param name="observerHeight"></param>
+    /// <param name="heightObserver"></param>
     /// <param name="cone"></param>
     /// <param name="isOnboard"></param>
-    /// <param name="targetHeight"></param>
-    /// <param name="terrainHeight"></param>
+    /// <param name="heightTarget"></param>
+    /// <param name="heightTerrain"></param>
     /// <param name="setFieldOfView"></param>
     /// <param name="queue"></param>
     /// <returns></returns>
-    ///<remarks>
+    /// <remarks>
     /// This method: 
     /// (1) marks points inside the cone-arc that are within the radius of the field 
     ///     of view; and 
@@ -228,15 +251,15 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     /// Search for transitions from opaque to transparent or transparent to opaque and 
     /// use those to determine what portions of the *next* column are visible from the 
     /// origin.
-    ///</remarks>
+    /// </remarks>
     private static FovCone ComputeFoVForRange(
-      int                  observerHeight,
-      FovCone              cone,
-      Func<HexCoords,bool> isOnboard,
-      Func<HexCoords, int> targetHeight,
-      Func<HexCoords, int> terrainHeight,
-      Action<HexCoords>    setFieldOfView,
-      FovConeQueue         queue
+      int                         heightObserver,
+      FovCone                     cone,
+      Func<HexCoords,bool>        isOnboard,
+      Func<HexCoords,int>         heightTarget,
+      Func<HexCoords,Hexside,int> heightTerrain,
+      Action<HexCoords>           setFieldOfView,
+      FovConeQueue                queue
     ) {
       Action<FovCone> enqueue = queue.Enqueue;
 
@@ -257,13 +280,13 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
           if (isOnboard(coordsCurrent)) { 
             #region Set current hex parameters
             var hexVectorTop  = VectorHexTop(coordsCurrent);
-            var hexElevation  = targetHeight(coordsCurrent);
-            var hexHeight     = terrainHeight(coordsCurrent);
-            var hexRiseRun    = new RiseRun(hexHeight-observerHeight, range);
+            var hexElevation  = heightTarget(coordsCurrent);
+            var hexHeight     = heightTerrain(coordsCurrent,Hexside.North);
+            var hexRiseRun    = new RiseRun(hexHeight-heightObserver, range);
             #endregion
 
             #region Check visibility of current hex
-            var riseRun = new RiseRun(hexElevation-observerHeight, GetRange(coordsCurrent));
+            var riseRun = new RiseRun(hexElevation-heightObserver, GetRange(coordsCurrent));
             if ( riseRun >= cone.RiseRun  
             && bottomVector.LE(coordsCurrent.Canon) && coordsCurrent.Canon.LE(topVector)  
             ) {

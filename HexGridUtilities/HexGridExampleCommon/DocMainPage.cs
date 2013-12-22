@@ -33,6 +33,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PGNapoleonics.HexgridPanel {
+#pragma warning disable 1587
 /// @mainpage HexgridUtilities V 6.4
 /// 
 /// @section Introduction 
@@ -85,4 +86,5 @@ namespace PGNapoleonics.HexgridPanel {
 /// >     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
 /// >     OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////
+#pragma warning restore 1587
 }

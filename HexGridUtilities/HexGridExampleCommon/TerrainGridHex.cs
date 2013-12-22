@@ -129,8 +129,6 @@ namespace HexgridExampleCommon {
     }
 
     /// <inheritdoc/>
-//    public    override int   Elevation { get { return  1; } }
-    /// <inheritdoc/>
     protected override Brush HexBrush  { get { return Brushes.Khaki; } }
     /// <inheritdoc/>
     public    override int   StepCost(Hexside direction) { return  5; }
@@ -143,8 +141,6 @@ namespace HexgridExampleCommon {
       Elevation = 2;
     }
 
-    /// <inheritdoc/>
-//    public    override int   Elevation { get { return  2; } }
     /// <inheritdoc/>
     protected override Brush HexBrush  { get { return Brushes.DarkKhaki; } }
     /// <inheritdoc/>

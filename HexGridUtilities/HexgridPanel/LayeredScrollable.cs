@@ -89,7 +89,7 @@ namespace PGNapoleonics.HexgridPanel {
     /// <a href="http://www.flounder.com/virtual_screen_coordinates.htm">Virtual Screen Coordinates</a>
     /// Dont forget to add this to constructor:
     /// 			Application.AddMessageFilter(this);
-    ///</remarks>
+    /// </remarks>
 		/// <param name="m">The Windows Message to filter and/or process.</param>
 		/// <returns>Success (true) or failure (false) to OS.</returns>
 		[System.Security.Permissions.PermissionSetAttribute(

@@ -147,7 +147,7 @@ namespace PGNapoleonics.HexUtilities {
      /// <summary>By default, landmark all four corners and midpoints of all 4 sides.</summary>
     /// <remarks>Pre-processing time on start-up can be reduced by decreasing the number of landmarks,
     /// though at the possible expense of longer path-findign times.</remarks>
-    static readonly Func<Size, ReadOnlyCollection<HexCoords>> DefaultLandmarks = size =>new Point[] {
+    protected static readonly Func<Size, ReadOnlyCollection<HexCoords>> DefaultLandmarks = size =>new Point[] {
         new Point(0,            0), new Point(size.Width/2,            0), new Point(size.Width-1,            0),
         new Point(0,size.Height/2),                                        new Point(size.Width-1,size.Height/2),
         new Point(0,size.Height-1), new Point(size.Width/2,size.Height-1), new Point(size.Width-1,size.Height-1)
@@ -241,7 +241,7 @@ namespace PGNapoleonics.HexUtilities {
     public static IDirectedPath GetDirectedPath(this IBoard<IHex> @this, IHex start, IHex goal) {
       if (@this == null) throw new ArgumentNullException("this");
       if (start == null) throw new ArgumentNullException("start");
-      if (goal == null) throw new ArgumentNullException("goal");
+      if (goal == null) throw new OperationCanceledException("goal");
 
       if (@this.IsPassable(start.Coords) && @this.IsPassable(goal.Coords)) {
         return goal.Coords.Range(start.Coords) > @this.RangeCutoff

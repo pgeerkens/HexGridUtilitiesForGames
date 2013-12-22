@@ -60,13 +60,13 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// behaviour on a hexgrid.
   /// </remarks>
   public static class UnidirectionalPathfinder {
+    #pragma warning disable 1658, 1584
     /// <summary>Returns an <c>IDirectedPath</c> for the optimal path from coordinates <c>start</c> to <c>goal</c>.</summary>
     /// <param name="start">Coordinates for the <c>last</c> step on the desired path.</param>
     /// <param name="goal">Coordinates for the <c>first</c> step on the desired path.</param>
     /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
     /// <returns></returns>
-    /// ///<remarks>Note that <c>heuristic</c> <b>must</b> be monotonic in order for the algorithm to perform properly.</remarks>
-    #pragma warning disable 1658, 1584
+    /// <remarks>Note that <c>heuristic</c> <b>must</b> be monotonic in order for the algorithm to perform properly.</remarks>
     /// <seealso cref="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html"/>
     #pragma warning restore 1633, 1658, 1584
     public static IDirectedPath FindDirectedPathFwd(
@@ -78,14 +78,14 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       return FindDirectedPathFwd(start, goal, board.DirectedStepCost, board.Heuristic);
     }
 
+    #pragma warning disable 1658, 1584
     /// <summary>Returns an <c>IPath</c> for the optimal path from coordinates <c>start</c> to <c>goal</c>.</summary>
     /// <param name="start">Coordinates for the <c>last</c> step on the desired path.</param>
     /// <param name="goal">Coordinates for the <c>first</c> step on the desired path.</param>
     /// <param name="stepCost">Cost to extend path by hex at <c>coords</c> from hex at direction <c>hexside</c>.</param>
     /// <param name="heuristic">Returns a monotonic (ie locally admissible) cost estimate from a range value.</param>
     /// <returns></returns>
-    /// ///<remarks>Note that <c>heuristic</c> <b>must</b> be monotonic in order for the algorithm to perform properly.</remarks>
-    #pragma warning disable 1658, 1584
+    /// <remarks>Note that <c>heuristic</c> <b>must</b> be monotonic in order for the algorithm to perform properly.</remarks>
     /// <seealso cref="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html"/>
     #pragma warning restore 1658, 1584
     public static IDirectedPath FindDirectedPathFwd (

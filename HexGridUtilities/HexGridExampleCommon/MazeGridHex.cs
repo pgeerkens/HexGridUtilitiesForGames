@@ -56,8 +56,6 @@ namespace HexgridExampleCommon {
     }
 
     /// <inheritdoc/>
-//    public override int  Elevation      { get { return 0; } }
-    /// <inheritdoc/>
     public override int  HeightTerrain  { get { return ElevationASL + 0; } }
     /// <inheritdoc/>
     public override int  StepCost(Hexside direction) { return  1; }
@@ -73,8 +71,6 @@ namespace HexgridExampleCommon {
       Elevation = 1;
     }
 
-    /// <inheritdoc/>
-//    public override int  Elevation      { get { return 1; } }
     /// <inheritdoc/>
     public override int  HeightTerrain  { get { return ElevationASL + 10; } }
     /// <inheritdoc/>

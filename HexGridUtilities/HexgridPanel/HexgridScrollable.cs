@@ -120,7 +120,7 @@ namespace PGNapoleonics.HexgridPanel {
     public         Size            MapSizePixels     { get { return DataContext.Model.MapSizePixels; } } // + MapMargin.Scale(2);} }
     /// <summary>Current scaling factor for map display.</summary>
     public         float           MapScale          { get { return DataContext.MapScale; } }
-    /// <summary>MapBoard hosting this panel.</summary>
+//    /// <summary>MapBoard hosting this panel.</summary>
 //    public         IMapDisplay     Model             { get { return DataContext.Model; } }
     /// <summary>Returns <code>HexCoords</code> of the hex closest to the center of the current viewport.</summary>
     public         HexCoords       PanelCenterHex    { 
@@ -265,6 +265,7 @@ namespace PGNapoleonics.HexgridPanel {
 
         var scroll = DataContext.Hexgrid.GetScrollPosition(AutoScrollPosition);
         g.TranslateTransform(scroll.X, scroll.Y);
+        g.TranslateTransform(Margin.Left,Margin.Top);
         g.ScaleTransform(MapScale,MapScale);
         TraceFlags.PaintDetail.Trace("{0}.PaintPanel: ({1})", Name, g.VisibleClipBounds);
 
@@ -298,6 +299,7 @@ namespace PGNapoleonics.HexgridPanel {
     static protected readonly Matrix TransposeMatrix = new Matrix(0F,1F, 1F,0F, 0F,0F);
     #endregion
 
+    /// <summary>TODO</summary>
     protected override void OnMarginChanged(EventArgs e) {
       base.OnMarginChanged(e);
       DataContext.Margin = Margin;
@@ -310,7 +312,8 @@ namespace PGNapoleonics.HexgridPanel {
       TraceFlags.Mouse.Trace(" - {0}.OnMouseClick - Shift: {1}; Ctl: {2}; Alt: {3}", 
                                       Name, IsShiftKeyDown, IsCtlKeyDown, IsAltKeyDown);
 
-      var eventArgs = new HexEventArgs( GetHexCoords(e.Location), e, ModifierKeys);
+      var coords    = GetHexCoords(e.Location);
+      var eventArgs = new HexEventArgs(coords, e, ModifierKeys);
 
            if (e.Button == MouseButtons.Middle)   base.OnMouseClick(eventArgs);
       else if (e.Button == MouseButtons.Right)    OnMouseRightClick(eventArgs);
@@ -415,6 +418,7 @@ namespace PGNapoleonics.HexgridPanel {
       SetMapDirty();
       OnResize(e);
       Invalidate();
+      ScaleChange.Raise(this, e);
     }
 
     /// <inheritdoc/>
@@ -430,7 +434,7 @@ namespace PGNapoleonics.HexgridPanel {
     /// <a href="http://www.flounder.com/virtual_screen_coordinates.htm">Virtual Screen Coordinates</a>
     /// Dont forget to add this to constructor:
     /// 			Application.AddMessageFilter(this);
-    ///</remarks>
+    /// </remarks>
 		/// <param name="m">The Windows Message to filter and/or process.</param>
 		/// <returns>Success (true) or failure (false) to OS.</returns>
 		[System.Security.Permissions.PermissionSetAttribute(

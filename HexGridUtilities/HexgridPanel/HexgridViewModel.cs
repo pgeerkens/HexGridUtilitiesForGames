@@ -99,7 +99,7 @@ namespace PGNapoleonics.HexgridPanel {
                           : new Hexgrid(Model.GridSize.Scale(MapScale),margin);     
     }
 
-#region Properties
+    #region Properties
     /// <summary>TODO</summary>
     public WpfInput.ICommand RefreshCmd { 
       get { return _refreshCmd; } private set {_refreshCmd = value; } 
@@ -186,20 +186,20 @@ namespace PGNapoleonics.HexgridPanel {
       if ( e.Coords != HotspotHex)    HotspotHex = e.Coords;
     }
 
-    /// <summary>Announces that the Path-Goal hex has changed.</summary>
+//    /// <summary>Announces that the Path-Goal hex has changed.</summary>
 //    public event EventHandler<HexEventArgs> GoalHexChange;
-    /// <summary>Announces that the Path-Start hex has changed.</summary>
+//    /// <summary>Announces that the Path-Start hex has changed.</summary>
 //    public event EventHandler<HexEventArgs> StartHexChange;
-    /// <summary>Announces occurrence of a mouse left-click with the <b>Alt</b> key depressed.</summary>
+//    /// <summary>Announces occurrence of a mouse left-click with the <b>Alt</b> key depressed.</summary>
 //    public event EventHandler<HexEventArgs> MouseAltClick;
-    /// <summary>Announces a mouse right-click. </summary>
+//    /// <summary>Announces a mouse right-click. </summary>
 //    public event EventHandler<HexEventArgs> MouseRightClick;
     /// <summary>Announces a change of drawing scale on this HexgridPanel.</summary>
     public event EventHandler<EventArgs>    ScaleChange;
     #endregion
 
     #region Grid Coordinates
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public Hexgrid    Hexgrid        { get; set; }
     /// <summary>Gets a SizeF struct for the hex GridSize under the current scaling.</summary>
     public SizeF      GridSizeF      { get { return Model.GridSize.Scale(MapScale); } }

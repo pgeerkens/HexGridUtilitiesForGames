@@ -58,16 +58,23 @@ namespace PGNapoleonics.HexgridPanel {
     }
     /// <summary>Force repaint of backing buffer for Map underlay.</summary>
     public override void SetMapDirty() { 
-      if (MapBuffer!=null) PaintBuffer(ClientRectangle); 
+      if (MapBuffer!=null) PaintBuffer(ScaleRectangle(base.ClientRectangle, MapScale)); 
       base.SetMapDirty();; 
     }
 
     /// <summary>TODO</summary>
     protected override void RenderMap(Graphics g) {
+      using(var brush = new SolidBrush(this.BackColor)) g.FillRectangle(brush,ClientRectangle);
+      g.ScaleTransform(1.0f/MapScale, 1.0f/MapScale);
       MapBuffer.Render(g, Point.Empty, ClientSize);
     }
 
-    #region BufferedGraphics
+     /// <summary>TODO</summary>
+    Rectangle ScaleRectangle(Rectangle rectangle, float scale) {
+      return new Rectangle(new Point(new SizeF(rectangle.Location.Scale(scale)).ToSize()), 
+                                               rectangle.Size.Scale(scale).ToSize());
+    }
+   #region BufferedGraphics
     /// <summary>Gets or sets backing buffer for the map underlay.</summary>
     protected BufferedGraphics MapBuffer { get; private set; }
     /// <summary>Gets or sets spare buffer for the map underlay.</summary>
@@ -85,6 +92,7 @@ namespace PGNapoleonics.HexgridPanel {
         if (IsTransposed) { g.Transform = TransposeMatrix; }
         var scroll = DataContext.Hexgrid.GetScrollPosition(AutoScrollPosition);
         g.TranslateTransform(scroll.X, scroll.Y);
+        g.TranslateTransform(Margin.Left,Margin.Top);
         g.ScaleTransform(MapScale,MapScale);
         TraceFlags.PaintDetail.Trace("{0}.PaintBuffer - VisibleClipBounds: ({1})", Name, g.VisibleClipBounds);
 
@@ -99,6 +107,12 @@ namespace PGNapoleonics.HexgridPanel {
     protected override void OnResize(EventArgs e) {
       ResizeBuffer();
       base.OnResize(e);
+    }
+
+    /// <inheritdoc/>
+    protected override void OnScaleChange(EventArgs e) {
+      ResizeBuffer();
+      base.OnScaleChange(e);
     }
 
     BufferedGraphicsContext _bufferedGraphicsContext = new BufferedGraphicsContext();

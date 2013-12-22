@@ -180,9 +180,9 @@ namespace PGNapoleonics.HexgridPanel {
     }
 
     #region Grid Coordinates
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     protected Hexgrid    Hexgrid        { get {return Model.Hexgrid;} }
-    /// <summary>Gets a SizeF struct for the hex GridSize under the current scaling.</summary>
+//    /// <summary>Gets a SizeF struct for the hex GridSize under the current scaling.</summary>
 //    public SizeF   GridSizeF      { get; private set; } // { return Model.GridSize.Scale(MapScale); } }
     /// <summary>Gets the current Panel AutoScrollPosition.</summary>
     public Point   ScrollPosition { get { return AutoScrollPosition; } }
@@ -392,7 +392,7 @@ namespace PGNapoleonics.HexgridPanel {
     /// <a href="http://www.flounder.com/virtual_screen_coordinates.htm">Virtual Screen Coordinates</a>
     /// Dont forget to add this to constructor:
     /// 			Application.AddMessageFilter(this);
-    ///</remarks>
+    /// </remarks>
 		/// <param name="m">The Windows Message to filter and/or process.</param>
 		/// <returns>Success (true) or failure (false) to OS.</returns>
 		[System.Security.Permissions.PermissionSetAttribute(

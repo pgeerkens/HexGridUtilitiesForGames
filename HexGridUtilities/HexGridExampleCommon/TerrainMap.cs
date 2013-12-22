@@ -36,10 +36,14 @@ using PGNapoleonics.HexUtilities;
 
 using MyMapDisplay = PGNapoleonics.HexgridPanel.MapDisplay<PGNapoleonics.HexgridPanel.MapGridHex>;
 
+#pragma warning disable 1587
 /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexUtilities.HexgridPanel"/> to implement
 /// a terrain map.</summary>
+#pragma warning restore 1587
 namespace HexgridExampleCommon {
+    /// <summary>TODO</summary>
   public sealed class TerrainMap : MyMapDisplay {
+    /// <summary>TODO</summary>
     public TerrainMap() : base(_sizeHexes, new Size(26,30), (map,coords) => InitializeHex(map,coords)) {}
 
     /// <inheritdoc/>

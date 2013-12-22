@@ -44,6 +44,7 @@ namespace PGNapoleonics.HexUtilities.Common {
       return matrix * TransposeMatrix;
     }
 
+    #region Properties
     /// <summary>Get the x-scale component.</summary>
     public int M11 { get; private set; }
     /// <summary>Get the X-shear component</summary>
@@ -60,6 +61,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     public int M33 { get; private set; }
     /// <summary>Get the identity matrix.</summary>
     public static readonly IntMatrix2D Identity = new IntMatrix2D(1,0,0,1,0,0, 1);
+    #endregion
 
     #region Constructors
     /// <summary> Initializes a new <code>IntMatrix2D</code> as the translation defined by the vector v.</summary>

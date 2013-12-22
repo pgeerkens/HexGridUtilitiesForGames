@@ -32,21 +32,21 @@ namespace PGNapoleonics.WinForms {
   #pragma warning disable 1570,1591
   /// <summary>TODO</summary>
   internal enum ScrollBarCommand {
-      SB_LINEUP           = 0,  ///< TODO
-      SB_LINELEFT         = 0,  ///< TODO
-      SB_LINEDOWN         = 1,  ///< TODO
-      SB_LINERIGHT        = 1,  ///< TODO
-      SB_PAGEUP           = 2,  ///< TODO
-      SB_PAGELEFT         = 2,  ///< TODO
-      SB_PAGEDOWN         = 3,  ///< TODO
-      SB_PAGERIGHT        = 3,  ///< TODO
-      SB_THUMBPOSITION    = 4,  ///< TODO
-      SB_THUMBTRACK       = 5,  ///< TODO
-      SB_TOP              = 6,  ///< TODO
-      SB_LEFT             = 6,  ///< TODO
-      SB_BOTTOM           = 7,  ///< TODO
-      SB_RIGHT            = 7,  ///< TODO
-      SB_ENDSCROLL        = 8   ///< TODO
+      SB_LINEUP           = 0,  //!< TODO
+      SB_LINELEFT         = 0,  //!< TODO
+      SB_LINEDOWN         = 1,  //!< TODO
+      SB_LINERIGHT        = 1,  //!< TODO
+      SB_PAGEUP           = 2,  //!< TODO
+      SB_PAGELEFT         = 2,  //!< TODO
+      SB_PAGEDOWN         = 3,  //!< TODO
+      SB_PAGERIGHT        = 3,  //!< TODO
+      SB_THUMBPOSITION    = 4,  //!< TODO
+      SB_THUMBTRACK       = 5,  //!< TODO
+      SB_TOP              = 6,  //!< TODO
+      SB_LEFT             = 6,  //!< TODO
+      SB_BOTTOM           = 7,  //!< TODO
+      SB_RIGHT            = 7,  //!< TODO
+      SB_ENDSCROLL        = 8   //!< TODO
   }
   #pragma warning restore 1570,1591
 }

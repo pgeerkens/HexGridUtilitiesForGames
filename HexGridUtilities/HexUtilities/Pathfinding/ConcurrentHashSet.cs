@@ -54,57 +54,57 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       foreach (var item in collection) _hashSet.Add(item);
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public int                     Count      { get { lock (_syncLock) return _hashSet.Count; } }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public IEqualityComparer<TKey> Comparer   { get { lock (_syncLock) return _hashSet.Comparer; } }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public bool                    IsReadOnly { get { lock (_syncLock) return false; } }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     bool ISet<TKey>.Add(TKey item) { lock (_syncLock) return _hashSet.Add(item); }
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public void Add(TKey item) { lock (_syncLock) _hashSet.Add(item); }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public void Clear() { lock(_syncLock) _hashSet.Clear(); }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public bool Contains(TKey item) { lock (_syncLock) return _hashSet.Contains(item); }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public void CopyTo(TKey[] array)
     {
       lock (_syncLock) _hashSet.CopyTo(array);
     }
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public void CopyTo(TKey[] array, int index, int count)
     {
       lock (_syncLock) _hashSet.CopyTo(array, index, count);
     }
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public void CopyTo(TKey[] array, int arrayIndex)
     {
       lock (_syncLock) _hashSet.CopyTo(array, arrayIndex);
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
     public IEqualityComparer<HashSet<TKey>> CreateSetComparer() { 
       return HashSet<TKey>.CreateSetComparer(); 
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public void ExceptWith(IEnumerable<TKey> other) {
       lock (_syncLock) _hashSet.ExceptWith(other);
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public IEnumerator<TKey> GetEnumerator()
     {
         var arr = new TKey[_hashSet.Count];
@@ -112,34 +112,34 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         return ((IEnumerable<TKey>)arr).GetEnumerator();
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public void GetObjectData(
       System.Runtime.Serialization.SerializationInfo info,
       System.Runtime.Serialization.StreamingContext  context) {
         lock (_syncLock) _hashSet.GetObjectData(info, context);
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public void IntersectWith (IEnumerable<TKey> other) {
       lock (_syncLock) _hashSet.IntersectWith(other);
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public bool IsProperSubsetOf (IEnumerable<TKey> other) {
       lock (_syncLock) return _hashSet.IsProperSubsetOf(other);
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public bool IsProperSupersetOf (IEnumerable<TKey> other) {
       lock (_syncLock) return _hashSet.IsProperSupersetOf(other);
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public bool IsSubsetOf (IEnumerable<TKey> other) {
       lock (_syncLock) return _hashSet.IsSubsetOf(other);
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public bool IsSupersetOf (IEnumerable<TKey> other) {
       lock (_syncLock) return _hashSet.IsSupersetOf(other);
     }
@@ -149,37 +149,37 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       lock (_syncLock) _hashSet.OnDeserialization(sender);
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public bool Overlaps (IEnumerable<TKey> other) {
       lock (_syncLock) return _hashSet.Overlaps(other);
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public bool Remove (TKey item) {
       lock (_syncLock) return _hashSet.Remove(item);
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public int RemoveWhere (Predicate<TKey> match) {
       lock (_syncLock) return _hashSet.RemoveWhere(match);
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public bool SetEquals (IEnumerable<TKey> other) {
       lock (_syncLock) return _hashSet.SetEquals(other);
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public void SymmetricExceptWith (IEnumerable<TKey> other) {
       lock (_syncLock) _hashSet.SymmetricExceptWith(other);
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public void TrimExcess() {
       lock (_syncLock) _hashSet.TrimExcess();
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public void UnionWith (IEnumerable<TKey> other) {
       lock (_syncLock) _hashSet.UnionWith(other);
     }

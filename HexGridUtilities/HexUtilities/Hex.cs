@@ -35,7 +35,8 @@ using System.Linq;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
 
-/// \namespace PGNapoleonics
+#pragma warning disable 1587
+// \namespace PGNapoleonics
 /// <summary>A library of utilities and controls for buillding strategy simulation games on hexagonal-grid 
 /// mapboards.</summary>
 /// <remarks>
@@ -47,6 +48,7 @@ using PGNapoleonics.HexUtilities.Pathfinding;
 /// Brought to you by <b>PG Software Solutions Inc.</b>, a quality software provider.
 /// 
 /// Our products are more than <b>Pretty Good Software</b>; ... they're <b>Pretty Great Solutions!</b></remarks>
+#pragma warning restore 1587
 namespace PGNapoleonics.HexUtilities {
   /// <summary>External interface exposed by individual hexes.</summary>
   public interface IHex {
@@ -80,6 +82,9 @@ namespace PGNapoleonics.HexUtilities {
 
     /// <summary>Cost to exit this hex through the <c>Hexside</c> <c>hexsideExit</c>.</summary>
     int  DirectedStepCost(Hexside hexsideExit);
+
+    /// <summary>Height ASL in <i>game units</i> of any blocking terrain in this hex and the specified Hexside.</summary>
+    int  HeightHexside(Hexside hexside);
   }
 
   /// <summary>Abstract implementation of the interface <see Cref="IHex"/>.</summary>
@@ -122,6 +127,9 @@ namespace PGNapoleonics.HexUtilities {
     public virtual  int  DirectedStepCost(Hexside hexsideExit) {
       return Board[Coords.GetNeighbour(hexsideExit)].StepCost(hexsideExit);
     }
+
+    /// <summary>Default implementation, assuming no blocking hexside terrain.</summary>
+    public virtual  int  HeightHexside(Hexside hexside) { return HeightTerrain; }
 
     /// <inheritdoc/>
     public          IHex Neighbour(Hexside hexside) { return Board[Coords.GetNeighbour(hexside)]; }

@@ -31,7 +31,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 
-///<summary>Shared technoloiges across the library, and useful gadgets.</summary>
+#pragma warning disable 1587
+/// <summary>Shared technoloiges across the library, and useful gadgets.</summary>
+#pragma warning restore 1587
 namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>Representation of an immutable integer 2D vector.</summary>
   [DebuggerDisplay("({X},{Y},{W})")]

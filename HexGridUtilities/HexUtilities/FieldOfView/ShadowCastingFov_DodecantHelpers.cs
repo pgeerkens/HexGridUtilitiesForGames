@@ -28,11 +28,28 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.FieldOfView {
+  using HexsideMap = Func<Hexside,Hexside>;
+
   public static partial class ShadowCasting {
+    private static Action<HexCoords> TranslateDodecant(IntMatrix2D matrix, Action<HexCoords> action) {
+      return (coords) => action(HexCoords.NewCanonCoords(coords.Canon * matrix));
+    }
+    private static Func<HexCoords,T> TranslateDodecant<T>(IntMatrix2D matrix, Func<HexCoords,T> func) {
+      return (coords) => func(HexCoords.NewCanonCoords(coords.Canon * matrix));
+    }
+
+    private static Action<HexCoords,Hexside> TranslateDodecant(IntMatrix2D matrix, HexsideMap map, Action<HexCoords,Hexside> action) {
+      return (coords,hexside) => action(HexCoords.NewCanonCoords(coords.Canon * matrix), map(hexside));
+    }
+    private static Func<HexCoords,Hexside,T> TranslateDodecant<T>(IntMatrix2D matrix, HexsideMap map,Func<HexCoords,Hexside,T> func) {
+      return (coords,hexside) => func(HexCoords.NewCanonCoords(coords.Canon * matrix), map(hexside));
+    }
+
     //         Sextant map
     //                    X-axis
     //         \     |     /
@@ -43,36 +60,47 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     //           / 5 | 0 \  
     //         /     |     \
     //             Y-axis
-    private static List<IntMatrix2D> _dodecantMatrices = BuildDodecantMatrices();
-    private static Action<HexCoords> TranslateDodecant(IntMatrix2D matrix, Action<HexCoords> action) {
-      return (v) => action(HexCoords.NewCanonCoords(v.Canon*matrix));
-    }
-    private static Func<HexCoords,T> TranslateDodecant<T>(IntMatrix2D matrix, Func<HexCoords,T> func) {
-      return (v) => func(HexCoords.NewCanonCoords(v.Canon*matrix));
-    }
+    private static readonly ReadOnlyCollection<IntMatrix2D> _dodecantMatrices =
+      new ReadOnlyCollection<IntMatrix2D>(
+        new IntMatrix2D[] {
+          new IntMatrix2D( 1, 0,  0, 1),  new IntMatrix2D(-1, 0,  1, 1),
+          new IntMatrix2D( 0,-1,  1, 1),  new IntMatrix2D( 0, 1,  1, 0),
+          new IntMatrix2D(-1,-1,  1, 0),  new IntMatrix2D( 1, 1,  0,-1),
+          new IntMatrix2D(-1, 0,  0,-1),  new IntMatrix2D( 1, 0, -1,-1),
+          new IntMatrix2D( 0, 1, -1,-1),  new IntMatrix2D( 0,-1, -1, 0),
+          new IntMatrix2D( 1, 1, -1, 0),  new IntMatrix2D(-1,-1,  0, 1) 
+        }
+    );
 
-    /// <summary>Build dodecant matrices from sextant matrices and reflection about theta=30.</summary>
-    static List<IntMatrix2D> BuildDodecantMatrices() {
-      //var matrixRotate  = new IntMatrix2D( 0,-1, 1,1);
-      //var matrixReflect = new IntMatrix2D(-1, 0, 1,1);
-      //var matrices = new List<IntMatrix2D>(12);
-      //matrices.Add(IntMatrix2D.Identity);
-      //matrices.Add(matrixReflect);
-      //for (int i=2; i<12; i+=2) {
-      //  matrices.Add(matrixRotate  * matrices[i-2]);
-      //  matrices.Add(matrixReflect * matrices[i]);
-      //}
+    private static readonly Func<int,Hexside> Mod6 = 
+      intHexside => (
+          new Hexside[] {
+              Hexside.North, Hexside.Northeast, Hexside.Southeast, Hexside.South, Hexside.Southwest, Hexside.Northwest,
+              Hexside.North, Hexside.Northeast, Hexside.Southeast, Hexside.South, Hexside.Southwest, Hexside.Northwest 
+          }
+        ) [intHexside];
 
-      var matrices = new List<IntMatrix2D>(12) {
-        new IntMatrix2D( 1, 0,  0, 1),  new IntMatrix2D(-1, 0,  1, 1),
-        new IntMatrix2D( 0,-1,  1, 1),  new IntMatrix2D( 0, 1,  1, 0),
-        new IntMatrix2D(-1,-1,  1, 0),  new IntMatrix2D( 1, 1,  0,-1),
-        new IntMatrix2D(-1, 0,  0,-1),  new IntMatrix2D( 1, 0, -1,-1),
-        new IntMatrix2D( 0, 1, -1,-1),  new IntMatrix2D( 0,-1, -1, 0),
-        new IntMatrix2D( 1, 1, -1, 0),  new IntMatrix2D(-1,-1,  0, 1)
-      };
+    private static readonly ReadOnlyCollection<Func<Hexside,Hexside>> _dodecantHexsides =
+      new ReadOnlyCollection<Func<Hexside,Hexside>>(
+        new List<Func<Hexside,Hexside>>() {
+          hexside => Mod6( 0 + (int)hexside), //  CW  from Hexside.North
+          hexside => Mod6(11 - (int)hexside), // CCW  from Hexside.Northwest
 
-      return matrices;
-    }
+          hexside => Mod6( 1 + (int)hexside), //  CW  from Hexside.Northwest
+          hexside => Mod6(10 - (int)hexside), // CCW  from Hexside.Southwest
+
+          hexside => Mod6( 2 + (int)hexside), //  CW  from Hexside.Southwest
+          hexside => Mod6( 9 - (int)hexside), // CCW  from Hexside.South
+
+          hexside => Mod6( 3 + (int)hexside), //  CW  from Hexside.South
+          hexside => Mod6( 8 - (int)hexside), // CCW  from Hexside.Southeast
+
+          hexside => Mod6( 4 + (int)hexside), //  CW  from Hexside.Southeast
+          hexside => Mod6( 7 - (int)hexside), // CCW  from Hexside.Northeast
+
+          hexside => Mod6( 5 + (int)hexside), //  CW  from Hexside.Northeast
+          hexside => Mod6( 6 - (int)hexside), // CCW  from Hexside.North
+        }
+    );
   }
 }

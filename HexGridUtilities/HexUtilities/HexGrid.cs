@@ -32,7 +32,9 @@ using System.Drawing.Drawing2D;
 
 using PGNapoleonics.HexUtilities.Common;
 
+#pragma warning disable 1587
 /// <summary>Display-technology-independent utilities for implementation of hex-grids..</summary>
+#pragma warning restore 1587
 namespace PGNapoleonics.HexUtilities {
   /// <summary>Interface defining the functionality required of a form or control hosting an instannce of <see cref="Hexgrid"/>.</summary>
   public interface IHexgridHost {  }
@@ -166,21 +168,21 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>Returns a <c>TransposedHexgrid</c> instance from the supplied <see cref="IHexgridHost"/>.</summary>
     public TransposedHexgrid(SizeF gridSizeF, Size margin) : base(gridSizeF, margin) {}
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public override Point GetScrollPosition(Point scrollPosition) { 
       return TransposePoint(scrollPosition); 
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public override Size  GetSize(Size mapSizePixels, float mapScale) { 
       return TransposeSize(base.GetSize(mapSizePixels, mapScale)); 
     }
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public override HexCoords GetHexCoords(Point point, Size autoScroll) {
       return base.GetHexCoords(TransposePoint(point), TransposeSize(autoScroll));
     }
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public override Point HexCenterPoint(HexCoords coordsNewULHex) {
       return TransposePoint(base.HexCenterPoint(coordsNewULHex));
     }

@@ -115,7 +115,7 @@ namespace HexgridExampleWinForms {
     void hexgridPanel_MouseMove(object sender, MouseEventArgs e) {
       var hotHex       = _mapBoard.HotspotHex;
       statusLabel.Text = string.Format(CultureInfo.InvariantCulture,
-        /// "Hotspot Hex: {0:gi3} / {1:uI4} / {2:c5}; {3:r6}; Path Length = {4}",
+        // "Hotspot Hex: {0:gi3} / {1:uI4} / {2:c5}; {3:r6}; Path Length = {4}",
         PGNapoleonics.HexGridExample2.Properties.Resources.StatusLabelText,
         hotHex, hotHex, hotHex,
         _mapBoard.StartHex - hotHex, (_mapBoard.Path==null ? 0 : _mapBoard.Path.TotalCost));
