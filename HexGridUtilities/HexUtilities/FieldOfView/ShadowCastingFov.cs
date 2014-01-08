@@ -52,18 +52,21 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
 
   /// <summary>Credit: Eric Lippert</summary>
   /// <a href="http://blogs.msdn.com/b/ericlippert/archive/2011/12/29/shadowcasting-in-c-part-six.aspx">Shadow Casting in C# Part Six</a>
-  public static partial class ShadowCasting {
-    /// <summary>Get or set whether to force serial execution of FOV calculation.</summary>
-    /// <remarks>Defaults true when DEBUG defined; otherwise false.</remarks>
-    public static bool InSerial      { get; set; }
-
-    /// <summary>Calculate Field-of-View from a specified TargetMode.</summary>
     /// <remarks>
     /// It is important for realiism that observerHeight > board[observerCoords].ElevationASL, 
     /// or no parallax over the current ground elevation will be observed. TerrainHeight is the 
     /// ElevationASL of the hex, plus the height of any blocking in the hex, usually due to terrain 
     /// but sometimes occuppying units will block vision as well. Control this in the implementation 
-    /// of IFovBoard&lt;IHex&gt;.</remarks>
+    /// of IFovBoard&lt;IHex&gt; with the definition of the observerHeight, targetHeight, and 
+    /// terrainHeight delegates.
+    /// </remarks>
+  public static partial class ShadowCasting {
+
+    /// <summary>Get or set whether to force serial execution of FOV calculation.</summary>
+    /// <remarks>Defaults true when DEBUG defined; otherwise false.</remarks>
+    public static bool InSerial      { get; set; }
+
+    /// <summary>Calculate Field-of-View from a specified TargetMode, assuming a flat earth.</summary>
     /// <param name="coordsObserver">Cordinates of observer;s hex.</param>
     /// <param name="board">A reference to an IFovBoard&lt;IHex&gt; instance.</param>
     /// <param name="targetMode">TargetMode value for determining target visibility.</param>
@@ -74,16 +77,9 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       FovTargetMode        targetMode, 
       Action<HexCoords>    setFieldOfView
     ) {
-      ComputeFieldOfView(coordsObserver, board, targetMode, setFieldOfView, 1);
+      ComputeFieldOfView(coordsObserver, board, targetMode, setFieldOfView, 1, 0);
     }
-
-    /// <summary>Calculate Field-of-View from a specified TargetMode.</summary>
-    /// <remarks>
-    /// It is important for realiism that observerHeight > board[observerCoords].ElevationASL, 
-    /// or no parallax over the current ground elevation will be observed. TerrainHeight is the 
-    /// ElevationASL of the hex, plus the height of any blocking in the hex, usually due to terrain 
-    /// but sometimes occuppying units will block vision as well. Control this in the implementation 
-    /// of IFovBoard&lt;IHex&gt;.</remarks>
+    /// <summary>Calculate Field-of-View from a specified TargetMode, assuming a flat earth.</summary>
     /// <param name="coordsObserver">Cordinates of observer;s hex.</param>
     /// <param name="board">A reference to an IFovBoard&lt;IHex&gt; instance.</param>
     /// <param name="targetMode">TargetMode value for determining target visibility.</param>
@@ -96,6 +92,32 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       Action<HexCoords>    setFieldOfView,
       int                  defaultHeight
     ) {
+      ComputeFieldOfView(coordsObserver, board, targetMode, setFieldOfView, defaultHeight, 0);
+    }
+
+    /// <summary>Calculate Field-of-View from a specified TargetMode, assuming a spherical earth
+    /// and height measured in feet if <code>hexesPerMile</code> is not equal 0.</summary>
+    /// <param name="coordsObserver">Cordinates of observer;s hex.</param>
+    /// <param name="board">A reference to an IFovBoard&lt;IHex&gt; instance.</param>
+    /// <param name="targetMode">TargetMode value for determining target visibility.</param>
+    /// <param name="setFieldOfView">Sets a hex as visible in the Field-of-View.</param>
+    /// <param name="defaultHeight">Height used for observer and target when targetMode = EqualHeights/</param>
+    /// <param name="hexesPerMile">Number of hexes per mile (ie 1/4000 of planet radius).</param>
+    /// <remarks>Adjusts visibility for curvature of the Earth. This is the only version of 
+    /// ComputeFieldOfView that is <b>not</b> scale invariant for height, and assumes that height
+    /// is measured in feet.
+    /// </remarks>
+    /// <a href="http://mathcentral.uregina.ca/qq/database/QQ.09.02/shirley3.html">Hidden by the Curvature of the Earth</a>
+    public static void ComputeFieldOfView(
+      HexCoords            coordsObserver,
+      IFovBoard<IHex>      board,
+      FovTargetMode        targetMode, 
+      Action<HexCoords>    setFieldOfView,
+      int                  defaultHeight,
+      int                  hexesPerMile
+    ) {
+      int CalculationHeightUnits = 12;
+
       Func<HexCoords,int> heightTarget;
       int                 heightObserver;
       switch (targetMode) {
@@ -116,25 +138,24 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
           break;
       }
 
+      Func<HexCoords,int> deltaHeight = coords => 0;
+      if (hexesPerMile != 0)
+        deltaHeight = coords 
+              => (coordsObserver.Range(coords) * coordsObserver.Range(coords))
+               * CalculationHeightUnits * 2 / (3 * hexesPerMile * hexesPerMile);
+
       ShadowCasting.ComputeFieldOfView(
         coordsObserver, 
         board.FovRadius, 
-        heightObserver,
+        heightObserver * CalculationHeightUnits,
         board.IsOnboard,
-        heightTarget,
-        (coords,hexside) => board[coords].HeightHexside(hexside),
+        coords => heightTarget(coords) * CalculationHeightUnits - deltaHeight(coords),
+        (coords,hexside) => board[coords].HeightHexside(hexside) * CalculationHeightUnits - deltaHeight(coords),
         setFieldOfView
       );
     }
 
     /// <summary>Calculate Field-of-View from a detailed prescription.</summary>
-    /// <remarks>
-    /// It is important for realiism that observerHeight > board[observerCoords].ElevationASL, 
-    /// or no parallax over the current ground elevation will be observed. TerrainHeight is the 
-    /// ElevationASL of the hex, plus the height of any blocking in the hex, usually due to terrain 
-    /// but sometimes occuppying units will block vision as well. Control this with the definition 
-    /// of the observerHeight, targetHeight, and terrainHeight delegates.
-    /// </remarks>
     /// <param name="coordsObserver">Cordinates of observer;s hex.</param>
     /// <param name="radius">Maximum radius for Field-of-View.</param>
     /// <param name="heightObserver">Height (ASL) of the observer's eyes.</param>
@@ -142,7 +163,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     /// <param name="heightTarget">Returns ground level (ASL) of supplied hex.</param>
     /// <param name="heightTerrain">Returns height (ASL) of terrain in supplied hex.</param>
     /// <param name="setFieldOfView">Sets a hex as visible in the Field-of-View.</param>
-    public static void ComputeFieldOfView(
+    private static void ComputeFieldOfView(
       HexCoords                   coordsObserver, 
       int                         radius, 
       int                         heightObserver,

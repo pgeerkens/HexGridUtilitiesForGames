@@ -132,20 +132,18 @@ namespace PGNapoleonics.HexgridPanel {
     public virtual int             ScaleIndex        { 
       get { return DataContext.ScaleIndex; }
       set { var newValue = Math.Max(0, Math.Min(DataContext.Scales.Count-1, value));
-            var CenterHex   = PanelCenterHex;
-            if( DataContext.ScaleIndex != newValue) {
-              DataContext.ScaleIndex = newValue; 
+            var CenterHex           = PanelCenterHex;
+            DataContext.ScaleIndex  = newValue; 
 
-              SetScrollLimits(DataContext.Model);
-              SetScroll(CenterHex);
-              OnScaleChange(EventArgs.Empty); 
-            }
+            SetScrollLimits(DataContext.Model);
+            SetScroll(CenterHex);
+            OnScaleChange(EventArgs.Empty); 
           } 
     }
     /// <summary>Returns, as a Rectangle, the IUserCoords for the currently visible extent.</summary>
     public virtual CoordsRectangle VisibleRectangle  {
       get { return GetClipCells( AutoScrollPosition.Scale(-1.0F/MapScale), 
-                                      ClientSize.Scale(1.0F/MapScale) );
+                                         ClientSize.Scale( 1.0F/MapScale) );
       }
     }
     #endregion
@@ -221,7 +219,7 @@ namespace PGNapoleonics.HexgridPanel {
       VerticalScroll.LargeChange   = Math.Max(largeChange.Height, smallChange.Height);
 
       var size                     = DataContext.Hexgrid.GetSize(MapSizePixels,MapScale)
-                                   + new Size(Margin.Horizontal,Margin.Vertical);
+                                   + Margin.Size;
       if (AutoScrollMinSize != size) {
         AutoScrollMinSize          = size;
         HorizontalScroll.Maximum   = Math.Min(1, Math.Max(1, Margin.Horizontal 
@@ -316,19 +314,16 @@ namespace PGNapoleonics.HexgridPanel {
       var eventArgs = new HexEventArgs(coords, e, ModifierKeys);
 
            if (e.Button == MouseButtons.Middle)   base.OnMouseClick(eventArgs);
-      else if (e.Button == MouseButtons.Right)    OnMouseRightClick(eventArgs);
-      else if (IsAltKeyDown  && !IsCtlKeyDown)    OnMouseAltClick(eventArgs);
-      else if (IsCtlKeyDown)                      OnMouseCtlClick(eventArgs);
-      else                                        OnMouseLeftClick(eventArgs);
+      else if (e.Button == MouseButtons.Right)    this.OnMouseRightClick(eventArgs);
+      else if (IsAltKeyDown  && !IsCtlKeyDown)    this.OnMouseAltClick(eventArgs);
+      else if (IsCtlKeyDown)                      this.OnMouseCtlClick(eventArgs);
+      else                                        this.OnMouseLeftClick(eventArgs);
     }
     /// <inheritdoc/>
     protected override void OnMouseMove(MouseEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
-//      var newHex = GetHexCoords(e.Location);
-//      if ( newHex != HotspotHex)
-//        OnHotspotHexChange(new HexEventArgs(newHex));
-//      HotspotHex = newHex;
-        OnHotspotHexChange(new HexEventArgs(GetHexCoords(e.Location)));
+      OnHotspotHexChange(new HexEventArgs(
+                          GetHexCoords(e.Location - new Size(Margin.Left,Margin.Top))));
 
       base.OnMouseMove(e);
     }

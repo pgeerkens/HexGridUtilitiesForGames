@@ -72,7 +72,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     public static Task<IFov> GetFieldOfViewAsync(this IFovBoard<IHex> @this, HexCoords origin, int height) {
       return @this.GetFieldOfViewAsync(origin, FovTargetMode.EqualHeights, height);
     }
-
     /// <summary>Gets a Field-of-View for this board asynchronously.</summary>
     public static Task<IFov> GetFieldOfViewAsync(this IFovBoard<IHex> @this, HexCoords origin, FovTargetMode targetMode) {
       return @this.GetFieldOfViewAsync(origin, targetMode, 1);
@@ -80,7 +79,13 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     /// <summary>Gets a Field-of-View for this board asynchronously.</summary>
     public static Task<IFov> GetFieldOfViewAsync(this IFovBoard<IHex> @this, HexCoords origin, FovTargetMode targetMode, int height) {
       return Task.Run<IFov>(
-        () => @this.GetFieldOfView(origin, targetMode, height)
+        () => @this.GetFieldOfView(origin, targetMode, height, 0)
+      );
+    }
+    /// <summary>Gets a Field-of-View for this board asynchronously.</summary>
+    public static Task<IFov> GetFieldOfViewAsync(this IFovBoard<IHex> @this, HexCoords origin, FovTargetMode targetMode, int height, int hexesPerMile) {
+      return Task.Run<IFov>(
+        () => @this.GetFieldOfView(origin, targetMode, height, hexesPerMile)
       );
     }
 #endif
@@ -92,19 +97,22 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     /// <summary>Gets a Field-of-View for this board synchronously.</summary>
     public static IFov GetFieldOfView(this IFovBoard<IHex> @this, HexCoords origin, int height) {
       if (@this==null) throw new ArgumentNullException("this");
-      return @this.GetFieldOfView(origin, FovTargetMode.EqualHeights, height);
+      return @this.GetFieldOfView(origin, FovTargetMode.EqualHeights, height, 0);
     }
-
     /// <summary>Gets a Field-of-View for this board synchronously.</summary>
     public static IFov GetFieldOfView(this IFovBoard<IHex> @this, HexCoords origin, FovTargetMode targetMode) {
-      return @this.GetFieldOfView(origin, targetMode, 1);
+      return @this.GetFieldOfView(origin, targetMode, 1, 0);
     } 
     /// <summary>Gets a Field-of-View for this board synchronously.</summary>
     public static IFov GetFieldOfView(this IFovBoard<IHex> @this, HexCoords origin, FovTargetMode targetMode, int height) {
+      return @this.GetFieldOfView(origin, targetMode, height, 0);
+    } 
+    /// <summary>Gets a Field-of-View for this board synchronously.</summary>
+    public static IFov GetFieldOfView(this IFovBoard<IHex> @this, HexCoords origin, FovTargetMode targetMode, int height, int hexesPerMile) {
       TraceFlags.FieldOfView.Trace("GetFieldOfView");
       var fov = new ArrayFieldOfView(@this);
       if (@this.IsPassable(origin))
-        ShadowCasting.ComputeFieldOfView(origin, @this, targetMode, coords => fov[coords] = true, height);
+        ShadowCasting.ComputeFieldOfView(origin, @this, targetMode, coords => fov[coords] = true, height, hexesPerMile);
 
       return fov;
     }
