@@ -61,10 +61,12 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     /// terrainHeight delegates.
     /// </remarks>
   public static partial class ShadowCasting {
-
     /// <summary>Get or set whether to force serial execution of FOV calculation.</summary>
     /// <remarks>Defaults true when DEBUG defined; otherwise false.</remarks>
-    public static bool InSerial      { get; set; }
+    public static bool InSerial   { get; set; }
+
+    /// <summary>Set to use decimeters as height unit instead of feet.</summary>
+    public static bool UseMetric  { get; set; }
 
     /// <summary>Calculate Field-of-View from a specified TargetMode, assuming a flat earth.</summary>
     /// <param name="coordsObserver">Cordinates of observer;s hex.</param>
@@ -116,7 +118,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       int                  defaultHeight,
       int                  hexesPerMile
     ) {
-      int CalculationHeightUnits = 12;
+      int CalculationHeightUnits = UseMetric ? 5 : 12;
 
       Func<HexCoords,int> heightTarget;
       int                 heightObserver;
@@ -138,11 +140,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
           break;
       }
 
-      Func<HexCoords,int> deltaHeight = coords => 0;
-      if (hexesPerMile != 0)
-        deltaHeight = coords 
-              => (coordsObserver.Range(coords) * coordsObserver.Range(coords))
-               * CalculationHeightUnits * 2 / (3 * hexesPerMile * hexesPerMile);
+      Func<HexCoords,int> deltaHeight = GetDeltaHeight(coordsObserver,hexesPerMile,CalculationHeightUnits);
 
       ShadowCasting.ComputeFieldOfView(
         coordsObserver, 
@@ -153,6 +151,22 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
         (coords,hexside) => board[coords].HeightHexside(hexside) * CalculationHeightUnits - deltaHeight(coords),
         setFieldOfView
       );
+    }
+
+    private static Func<HexCoords,int> GetDeltaHeight(
+      HexCoords coordsObserver,
+      int       hexesPerMile,
+      int       calculationHeightUnits
+    ) {
+      if (hexesPerMile == 0) 
+        return coords => 0;
+      else if (UseMetric)
+        return ( coords => (coordsObserver.Range(coords) * coordsObserver.Range(coords))
+                         * calculationHeightUnits * 2 / (9 * hexesPerMile * hexesPerMile) );
+      else
+        return ( coords => (coordsObserver.Range(coords) * coordsObserver.Range(coords))
+                         * calculationHeightUnits * 2 / (3 * hexesPerMile * hexesPerMile) );
+      ;
     }
 
     /// <summary>Calculate Field-of-View from a detailed prescription.</summary>

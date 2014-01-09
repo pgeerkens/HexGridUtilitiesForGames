@@ -67,26 +67,26 @@ namespace PGNapoleonics.HexgridPanel {
 
     HexgridScrollable Panel { get; set; }
 
-    /// <summary>Return new AutoScrollPosition for applied muse-wheel scroll.</summary>
-    static Point WheelPanel(ScrollProperties scroll, int delta, ref int remainder,
-      Func<int,Point> newAutoScroll)
-    {
-      if (Math.Sign(delta) != Math.Sign(remainder)) remainder = 0;
-      var steps = (delta+remainder) 
-                / (SystemInformation.MouseWheelScrollDelta / SystemInformation.MouseWheelScrollLines);
-      remainder = (delta+remainder) 
-                % (SystemInformation.MouseWheelScrollDelta / SystemInformation.MouseWheelScrollLines);
-      return newAutoScroll(scroll.SmallChange * steps);
-    }
-    /// <summary>TODO</summary>
-    static ScrollEventArgs GetScrollEventArgs(bool isHorizontal, Point oldScroll, Point newScroll) {
-      return new ScrollEventArgs(
-        ScrollEventType.ThumbTrack,
-        isHorizontal ? -oldScroll.X : -oldScroll.Y,
-        isHorizontal ? -newScroll.X : -newScroll.Y,
-        isHorizontal ? ScrollOrientation.HorizontalScroll : ScrollOrientation.VerticalScroll
-      );
-    }
+    ///// <summary>Return new AutoScrollPosition for applied muse-wheel scroll.</summary>
+    //static Point WheelPanel(ScrollProperties scroll, int delta, ref int remainder,
+    //  Func<int,Point> newAutoScroll)
+    //{
+    //  if (Math.Sign(delta) != Math.Sign(remainder)) remainder = 0;
+    //  var steps = (delta+remainder) 
+    //            / (SystemInformation.MouseWheelScrollDelta / SystemInformation.MouseWheelScrollLines);
+    //  remainder = (delta+remainder) 
+    //            % (SystemInformation.MouseWheelScrollDelta / SystemInformation.MouseWheelScrollLines);
+    //  return newAutoScroll(scroll.SmallChange * steps);
+    //}
+    ///// <summary>TODO</summary>
+    //static ScrollEventArgs GetScrollEventArgs(bool isHorizontal, Point oldScroll, Point newScroll) {
+    //  return new ScrollEventArgs(
+    //    ScrollEventType.ThumbTrack,
+    //    isHorizontal ? -oldScroll.X : -oldScroll.Y,
+    //    isHorizontal ? -newScroll.X : -newScroll.Y,
+    //    isHorizontal ? ScrollOrientation.HorizontalScroll : ScrollOrientation.VerticalScroll
+    //  );
+    //}
 
     /// <summary>TODO</summary>
     public void SetModel(IMapDisplay model) {
@@ -94,16 +94,16 @@ namespace PGNapoleonics.HexgridPanel {
     }
 
     Hexgrid GetHexgrid() { 
-      var margin = new Size(Margin.Left,Margin.Top);
+      var margin          = Margin.OffsetSize();
       return IsTransposed ? new TransposedHexgrid(Model.GridSize.Scale(MapScale),margin) 
                           : new Hexgrid(Model.GridSize.Scale(MapScale),margin);     
     }
 
     #region Properties
-    /// <summary>TODO</summary>
-    public WpfInput.ICommand RefreshCmd { 
-      get { return _refreshCmd; } private set {_refreshCmd = value; } 
-    } WpfInput.ICommand _refreshCmd;
+    ///// <summary>TODO</summary>
+    //public WpfInput.ICommand RefreshCmd { 
+    //  get { return _refreshCmd; } private set {_refreshCmd = value; } 
+    //} WpfInput.ICommand _refreshCmd;
 
     /// <summary>MapBoard hosting this panel.</summary>
     public IMapDisplay Model           { get; private set; }
@@ -160,7 +160,7 @@ namespace PGNapoleonics.HexgridPanel {
     } bool _isUnitsDirty;
 
     /// <summary>Array of supported map scales  as IList&lt;float&gt;.</summary>
-    public ReadOnlyCollection<float> Scales        { get; set; }
+    public ReadOnlyCollection<float> Scales        { get; private set; }
     /// <summary>Index into <code>Scales</code> of current map scale.</summary>
     public virtual int ScaleIndex    { 
       get { return _scaleIndex; }
@@ -176,6 +176,11 @@ namespace PGNapoleonics.HexgridPanel {
     } int _scaleIndex;
     #endregion
 
+    /// <summary>TODO</summary>
+    public void SetScales (IList<float> scales) {
+//      if (scales == null) throw new ArgumentNullException("scales");
+      Scales = new ReadOnlyCollection<float>(scales);
+    }
     #region Events
     /// <summary>TODO</summary>
     void MarginChanged(object sender, EventArgs e) { Margin = Panel.Margin; }
@@ -204,9 +209,9 @@ namespace PGNapoleonics.HexgridPanel {
     /// <summary>Gets a SizeF struct for the hex GridSize under the current scaling.</summary>
     public SizeF      GridSizeF      { get { return Model.GridSize.Scale(MapScale); } }
 
-    CoordsRectangle  GetClipCells(PointF point, SizeF size) {
-      return Model.GetClipCells(point, size);
-    }
+    //CoordsRectangle  GetClipCells(PointF point, SizeF size) {
+    //  return Model.GetClipCells(point, size);
+    //}
 
     /// <summary>Returns ScrollPosition that places given hex in the upper-Left of viewport.</summary>
     /// <param name="coordsNewULHex"><c>HexCoords</c> for new upper-left hex</param>

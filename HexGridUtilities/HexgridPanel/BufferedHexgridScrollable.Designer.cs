@@ -9,6 +9,9 @@
     /// Clean up any resources being used.
     /// </summary>
     /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
+      "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_bufferedGraphicsContext",
+      Justification="Not owned by this objcet.")]
     protected override void Dispose(bool disposing) {
       if (disposing && (components != null)) {
         components.Dispose();

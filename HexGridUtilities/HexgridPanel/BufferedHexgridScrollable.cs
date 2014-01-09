@@ -64,13 +64,14 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>TODO</summary>
     protected override void RenderMap(Graphics g) {
+      if (g == null) throw new ArgumentNullException("g");
       using(var brush = new SolidBrush(this.BackColor)) g.FillRectangle(brush,ClientRectangle);
       g.ScaleTransform(1.0f/MapScale, 1.0f/MapScale);
       MapBuffer.Render(g, Point.Empty, ClientSize);
     }
 
      /// <summary>TODO</summary>
-    Rectangle ScaleRectangle(Rectangle rectangle, float scale) {
+    static Rectangle ScaleRectangle(Rectangle rectangle, float scale) {
       return new Rectangle(new Point(new SizeF(rectangle.Location.Scale(scale)).ToSize()), 
                                                rectangle.Size.Scale(scale).ToSize());
     }
@@ -105,7 +106,8 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <inheritdoc/>
     protected override void OnResize(EventArgs e) {
-      ResizeBuffer();
+      if(Application.OpenForms.Count > 0 
+      && Application.OpenForms[0].WindowState != FormWindowState.Minimized) ResizeBuffer();
       base.OnResize(e);
     }
 

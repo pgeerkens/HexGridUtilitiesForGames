@@ -63,7 +63,7 @@ namespace HexgridExampleWpf {
       HexgridPanel = (HexgridScrollable) _host.Child;
       _host.Child.Focus();
 
-      HexgridPanel.DataContext.Scales       = _scales.ToList().AsReadOnly();
+      HexgridPanel.DataContext.SetScales(_scales);
       HexgridPanel.ScaleIndex   = _scales.Select((f,i) => new {value=f, index=i})
                                          .Where(s => s.value==1.0F)
                                          .Select(s => s.index).FirstOrDefault(); 

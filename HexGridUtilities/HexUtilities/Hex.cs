@@ -170,6 +170,9 @@ namespace PGNapoleonics.HexUtilities {
     }
    /// <summary>Perform <c>action</c> for all neighbours of this hex.</summary>
     public static void ForAllNeighbours<THex>(this IHex @this, Func<HexCoords,THex> board, Action<THex,Hexside> action) where THex : IHex {
+      if (@this == null) throw new ArgumentNullException("this");
+      if (board == null) throw new ArgumentNullException("board");
+      if (action == null) throw new ArgumentNullException("action");
       foreach (var hexside in HexsideExtensions.HexsideList)
         action(board(@this.Coords.GetNeighbour(hexside)), hexside);
     }

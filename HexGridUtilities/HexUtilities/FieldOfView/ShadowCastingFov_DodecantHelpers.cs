@@ -43,9 +43,9 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       return (coords) => func(HexCoords.NewCanonCoords(coords.Canon * matrix));
     }
 
-    private static Action<HexCoords,Hexside> TranslateDodecant(IntMatrix2D matrix, HexsideMap map, Action<HexCoords,Hexside> action) {
-      return (coords,hexside) => action(HexCoords.NewCanonCoords(coords.Canon * matrix), map(hexside));
-    }
+    //private static Action<HexCoords,Hexside> TranslateDodecant(IntMatrix2D matrix, HexsideMap map, Action<HexCoords,Hexside> action) {
+    //  return (coords,hexside) => action(HexCoords.NewCanonCoords(coords.Canon * matrix), map(hexside));
+    //}
     private static Func<HexCoords,Hexside,T> TranslateDodecant<T>(IntMatrix2D matrix, HexsideMap map,Func<HexCoords,Hexside,T> func) {
       return (coords,hexside) => func(HexCoords.NewCanonCoords(coords.Canon * matrix), map(hexside));
     }

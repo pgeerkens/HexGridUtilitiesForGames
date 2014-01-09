@@ -281,15 +281,18 @@ namespace PGNapoleonics.HexgridPanel {
     }
     /// <summary>TODO</summary>
     protected virtual void RenderMap(Graphics g) {
+      if (g == null) throw new ArgumentNullException("g");
       using(var brush = new SolidBrush(this.BackColor)) g.FillRectangle(brush, g.VisibleClipBounds);
       DataContext.Model.PaintMap(g);
     }
     /// <summary>TODO</summary>
     protected virtual void RenderUnits(Graphics g) {
+      if (g == null) throw new ArgumentNullException("g");
       DataContext.Model.PaintUnits(g);
     }
     /// <summary>TODO</summary>
     protected virtual void RenderHighlight(Graphics g) {
+      if (g == null) throw new ArgumentNullException("g");
       DataContext.Model.PaintHighlight(g);
     }
 
@@ -299,6 +302,7 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>TODO</summary>
     protected override void OnMarginChanged(EventArgs e) {
+      if (e == null) throw new ArgumentNullException("e");
       base.OnMarginChanged(e);
       DataContext.Margin = Margin;
     }
@@ -322,8 +326,7 @@ namespace PGNapoleonics.HexgridPanel {
     /// <inheritdoc/>
     protected override void OnMouseMove(MouseEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
-      OnHotspotHexChange(new HexEventArgs(
-                          GetHexCoords(e.Location - new Size(Margin.Left,Margin.Top))));
+      OnHotspotHexChange(new HexEventArgs(GetHexCoords(e.Location - Margin.OffsetSize())));
 
       base.OnMouseMove(e);
     }

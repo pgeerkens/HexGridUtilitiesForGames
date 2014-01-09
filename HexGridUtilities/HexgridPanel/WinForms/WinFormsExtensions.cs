@@ -27,6 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -52,5 +53,13 @@ namespace PGNapoleonics.WinForms {
       parameters.ExStyle |= (int)WindowStylesEx.COMPOSITED;
       return parameters;
     }
+  }
+
+  /// <summary>TODO</summary>/>
+  public static partial class PaddingExtensions {
+    /// <summary>Point for the Upper-Left corner of the Padding rectangle.</summary>/>
+    public static Point Offset(this Padding @this) { return new Point(@this.Left, @this.Top); }
+    /// <summary>Point for the Upper-Left corner of the Padding rectangle.</summary>/>
+    public static Size OffsetSize(this Padding @this) { return new Size(@this.Left, @this.Top); }
   }
 }

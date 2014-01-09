@@ -58,19 +58,19 @@ namespace HexgridExampleWinForms {
 			get { return this.SetCompositedStyle(base.CreateParams); }
 		}
 
+    partial void LoadTraceMenu();
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    void LoadTraceMenu() {
-      #if TRACE
-        foreach(var item in Enum.GetValues(typeof(TraceFlags))) {
-          var menuItem = new System.Windows.Forms.ToolStripMenuItem();
-          menuItemDebug.DropDownItems.Add(menuItem);
-          menuItem.Name         = "menuItemDebugTracing" + item.ToString();
-          menuItem.Size         = new System.Drawing.Size(143, 22);
-          menuItem.Text         = item.ToString();
-          menuItem.CheckOnClick = true;
-          menuItem.Click       += new System.EventHandler(this.menuItemDebugTracing_Click);
-        }
-      #endif
+    [System.Diagnostics.Conditional("TRACE")]
+    partial void LoadTraceMenu() {
+      foreach(var item in Enum.GetValues(typeof(TraceFlags))) {
+        var menuItem = new System.Windows.Forms.ToolStripMenuItem();
+        menuItemDebug.DropDownItems.Add(menuItem);
+        menuItem.Name         = "menuItemDebugTracing" + item.ToString();
+        menuItem.Size         = new System.Drawing.Size(143, 22);
+        menuItem.Text         = item.ToString();
+        menuItem.CheckOnClick = true;
+        menuItem.Click       += new System.EventHandler(this.menuItemDebugTracing_Click);
+      }
     }
 
     void LoadLandmarkMenu() {

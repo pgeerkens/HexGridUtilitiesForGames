@@ -66,7 +66,7 @@ namespace PGNapoleonics.HexgridPanel {
     public void VerifyPropertyName(string propertyName) {
       if (TypeDescriptor.GetProperties(this)[propertyName] == null) {
         string msg = "Invalid property name: " + propertyName;
-        if (this.ThrowOnInvalidPropertyName)       throw new Exception(msg);
+        if (this.ThrowOnInvalidPropertyName)       throw new ArgumentOutOfRangeException("propertyName",msg);
 
         Debug.Fail(msg);
       }

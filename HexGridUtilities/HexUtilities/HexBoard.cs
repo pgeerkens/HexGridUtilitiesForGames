@@ -27,6 +27,8 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -121,10 +123,7 @@ namespace PGNapoleonics.HexUtilities {
       set { _isTransposed=value; ResetGrid();} 
     } bool _isTransposed = false;
    /// <inheritdoc/>
-    public LandmarkCollection Landmarks         { 
-      get { return _landmarks; }
-      protected set { if (_landmarks!=null) _landmarks.Dispose();  _landmarks = value; }
-    } LandmarkCollection _landmarks;
+    public LandmarkCollection Landmarks         { get; private set; }
    ///  <inheritdoc/>
     public float              MapScale          { 
       get { return _mapScale; } 
@@ -143,15 +142,22 @@ namespace PGNapoleonics.HexUtilities {
     public THex               this[HexCoords coords]  { get { return BoardHexes[coords];} }
     #endregion
 
+    /// <summary>TODO</summary>
+    protected void SetLandmarks(IList<HexCoords> landmarkCoords) {
+      if (Landmarks != null) Landmarks.Dispose();
+      Landmarks = LandmarkCollection.CreateLandmarks(this, landmarkCoords);
+    }
+
     #region Methods
      /// <summary>By default, landmark all four corners and midpoints of all 4 sides.</summary>
     /// <remarks>Pre-processing time on start-up can be reduced by decreasing the number of landmarks,
     /// though at the possible expense of longer path-findign times.</remarks>
-    protected static readonly Func<Size, ReadOnlyCollection<HexCoords>> DefaultLandmarks = size =>new Point[] {
+    protected static readonly Func<Size, HexCoordsCollection> DefaultLandmarks = size => new HexCoordsCollection(
+      new Point[] {
         new Point(0,            0), new Point(size.Width/2,            0), new Point(size.Width-1,            0),
         new Point(0,size.Height/2),                                        new Point(size.Width-1,size.Height/2),
         new Point(0,size.Height-1), new Point(size.Width/2,size.Height-1), new Point(size.Width-1,size.Height-1)
-      }.Select(p => HexCoords.NewUserCoords(p)).ToList().AsReadOnly();
+      }.Select(p => HexCoords.NewUserCoords(p)).ToList());
 
     /// <inheritdoc/>
     public virtual  int  DirectedStepCost(IHex hex, Hexside hexsideExit) {
@@ -233,6 +239,12 @@ namespace PGNapoleonics.HexUtilities {
     /// <inheritdoc/>
     ~HexBoard() { Dispose(false); }
     #endregion
+  }
+
+  /// <summary>TODO</summary>
+  public class HexCoordsCollection : ReadOnlyCollection<HexCoords> {
+    /// <summary>TODO</summary>
+    public HexCoordsCollection(IList<HexCoords> list) : base(list) {}
   }
 
     /// <summary>Extensions for the HexBoard class.</summary>

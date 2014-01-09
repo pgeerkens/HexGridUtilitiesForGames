@@ -54,12 +54,7 @@ namespace PGNapoleonics.HexgridPanel {
     #region Constructors
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
     protected MapDisplay(Size sizeHexes, Size gridSize, Func<HexBoard<THex>, HexCoords, THex> initializeHex) 
-    //: base(sizeHexes, gridSize, (map) => 
-    //      new BoardStorage<THex>.FlatBoardStorage(sizeHexes, coords => initializeHex(map,coords))
-    //) {
-    //  InitializeProperties();
-    //}
-  : this(sizeHexes, gridSize, initializeHex, DefaultLandmarks(sizeHexes)) {}
+    : this(sizeHexes, gridSize, initializeHex, DefaultLandmarks(sizeHexes)) {}
 
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
     protected MapDisplay(Size sizeHexes, Size gridSize, Func<HexBoard<THex>, HexCoords, THex> initializeHex, 
@@ -81,7 +76,6 @@ namespace PGNapoleonics.HexgridPanel {
       ShowHexgrid     = true;
       ShowPath        = true;
       ShowPathArrow   = true;
-      ShowRangeLine   = false;
     }
     #endregion
 
@@ -128,7 +122,7 @@ namespace PGNapoleonics.HexgridPanel {
     public          bool          ShowRangeLine   { 
       get { return _showRangeLine; } 
       set { _showRangeLine = value; if (_showRangeLine) Fov = null; }
-    } bool _showRangeLine;
+    } bool _showRangeLine = false;
     /// <inheritdoc/>
     public virtual  HexCoords     StartHex        { 
       get { return _startHex; }
