@@ -37,6 +37,7 @@ using PGNapoleonics.HexUtilities.Common;
 #pragma warning restore 1587
 namespace PGNapoleonics.HexUtilities {
   /// <summary>Interface defining the functionality required of a form or control hosting an instannce of <see cref="Hexgrid"/>.</summary>
+  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1040:AvoidEmptyInterfaces")]
   public interface IHexgridHost {  }
 
   /// <summary>TODO</summary>
