@@ -123,9 +123,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     int  Estimate(IHex there, int totalCost) {
       var estimate   = _heuristic(there.Coords) + totalCost;
-      var preference = Preference(_start.Coords.Canon - there.Coords.Canon,
-                                  _start.Coords.Canon - _goal.Coords.Canon );
-      return (estimate << 16) + preference;
+      //var preference = Preference(_start.Coords.Canon - there.Coords.Canon,
+      //                            _start.Coords.Canon - _goal.Coords.Canon );
+      return (estimate << 16);// + preference;
     }
     int  FrontierMinimum() { 
       HexKeyValuePair<int,DirectedPath> item;
@@ -195,13 +195,13 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     #region Fields
     HashSet<HexCoords>                 _closed;
     Func<int>                          _getBestSoFar;
-    IHex                               _goal;
+//    IHex                               _goal;
     Func<HexCoords,int>                _heuristic;
     Landmark                           _landmark;
     Dictionary<HexCoords,DirectedPath> _open;
     HotPriorityQueue<DirectedPath>     _queue;
     string                             _search;
-    IHex                               _start;
+//    IHex                               _start;
     IntVector2D                        _vectorGoal;
 
     internal  Func<DirectedPath,IHex,Hexside,int,DirectedPath> _addStep;
@@ -249,8 +249,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     BidirectionalPathfinder(IHex start, IHex goal,
       LandmarkCollection landmarks, HashSet<HexCoords> closed, Func<int> getBestSoFar
     ) {
-      _start        = start;
-      _goal         = goal;
+//      _start        = start;
+//      _goal         = goal;
       _getBestSoFar = getBestSoFar;
       _vectorGoal   = goal.Coords.Canon - start.Coords.Canon;
       _open         = new Dictionary<HexCoords, DirectedPath>();
@@ -259,7 +259,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       _landmark     = landmarks
               .OrderByDescending(l => l.HexDistance(goal.Coords) - l.HexDistance(start.Coords))
               .FirstOrDefault();
-      _heuristic    = c => _landmark.HexDistance(c) - _landmark.HexDistance(start.Coords);
+//      _heuristic    = c => _landmark.HexDistance(c) - _landmark.HexDistance(start.Coords);
+      _heuristic    = c => landmarks.Heuristic(goal.Coords, c);
 
       var path = new DirectedPath(goal);
       _open.Add(goal.Coords, path);

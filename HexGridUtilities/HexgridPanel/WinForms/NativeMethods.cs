@@ -49,28 +49,27 @@ namespace PGNapoleonics.WinForms {
     [DllImport("user32.dll")]
     public static extern IntPtr WindowFromPoint(System.Drawing.Point point);
 
-    /// <summary>P/Invoke declaration for user32.dll.SendMessage</summary>
-		/// <param name="hWnd">Window handle</param>
-		/// <param name="msg">Windows message</param>
-		/// <param name="wParam">WParam</param>
-		/// <param name="lParam">LParam</param>
-		/// <returns></returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
-      "CA1801:ReviewUnusedParameters", MessageId = "hWnd")
-    , System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
-      "CA1801:ReviewUnusedParameters", MessageId = "lParam")
-    ,System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
-      "CA1801:ReviewUnusedParameters", MessageId = "msg")
-    ,System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
-      "CA1801:ReviewUnusedParameters", MessageId = "wParam")]
-    [DllImport("user32.dll")]
-    public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
-
     /// <summary>TODO</summary>
     [DllImport("Gdi32.dll", SetLastError=true, ExactSpelling=true, CharSet=CharSet.Auto)]
     [ResourceExposure(ResourceScope.None)] 
     public static extern bool BitBlt(HandleRef hDC, int x, int y, int nWidth, int nHeight, 
                                      HandleRef hSrcDC, int xSrc, int ySrc, int dwRop);
+
+    /// <summary>Message Cracker for HiWord</summary>
+    /// <param name="ptr">A Windows message IntPtr</param>
+    /// <returns>Most significant 16 bits of <c>ptr</c> as Int32.</returns>
+    public static Int32 HIWORD(IntPtr ptr) {
+      Int32 val32 = ptr.ToInt32();
+      return ((val32 >> 16) & 0xFFFF);
+    }
+
+    /// <summary>Message Cracker for LoWord</summary>
+    /// <param name="ptr">A Windows message IntPtr</param>
+    /// <returns>Least significant 16 bits of <c>ptr</c> as Int32.</returns>
+    public static Int32 LOWORD(IntPtr ptr) {
+      Int32 val32 = ptr.ToInt32();
+      return (val32 & 0xFFFF);
+    }
   }
 
     /// <summary>Extension methods for System.Windows.Forms.Control.</summary>

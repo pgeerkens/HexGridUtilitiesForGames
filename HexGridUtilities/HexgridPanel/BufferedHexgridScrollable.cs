@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -27,20 +27,14 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Windows.Forms;
 
-using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
-
-using WpfInput = System.Windows.Input;
 
 namespace PGNapoleonics.HexgridPanel {
   /// <summary>TODO</summary>

@@ -55,14 +55,7 @@ namespace PGNapoleonics.WinForms {
     /// <param name="wParam">WParam</param>
     /// <param name="lParam">LParam</param>
     /// <returns></returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
-      "CA1811:AvoidUncalledPrivateCode")]
     [DllImport("user32.dll", CharSet = CharSet.Auto)]
     internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
-
-    //[DllImport("Gdi32.dll", SetLastError=true, ExactSpelling=true, CharSet=CharSet.Auto)]
-    //[ResourceExposure(ResourceScope.None)] 
-    //public static extern bool BitBlt(HandleRef hDC, int x, int y, int nWidth, int nHeight, 
-    //                                 HandleRef hSrcDC, int xSrc, int ySrc, int dwRop);
   }
 }

@@ -82,8 +82,6 @@
 				      ToolTip="Selects map to display."
               SelectedIndex="{Binding SelectedMapIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
               >
-          <ListBoxItem x:Name="TerrainMap" Content="Terrain Map"/>
-          <ListBoxItem x:Name="MazeMap"    Content="Maze Map"/>
       </ComboBox>
       <Label Content="Landmark to Show:" HorizontalContentAlignment="Right" Width="115" Margin="3,0,0,0"/>
       <local:CommandComboBox x:Name="menuItemLandmarks" Width="60" Margin="0,0,3,0"
@@ -109,15 +107,14 @@
 			ClipToBounds="True" 
 			HorizontalContentAlignment="Stretch" 
 			VerticalContentAlignment="Stretch" 
-			VerticalScrollBarVisibility="Disabled">
+			VerticalScrollBarVisibility="Disabled" PanningMode="Both">
       <WindowsFormsHost x:Name="_host" 
-				ScrollViewer.VerticalScrollBarVisibility="Disabled" 
-				ScrollViewer.CanContentScroll="True">
+				ScrollViewer.CanContentScroll="True" IsManipulationEnabled="True">
         <HexgridPanel:BufferedHexgridScrollable 
                   AutoScrollMinSize="200,100" 
                   Margin="5, 5, 5, 5" 
-                  Size="1445,920" 
-                  />
+                  Size="1445,920" AutoScroll="True" 
+         />
       </WindowsFormsHost>
     </ScrollViewer>
   </DockPanel>

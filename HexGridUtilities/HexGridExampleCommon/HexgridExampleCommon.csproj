@@ -63,10 +63,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DocMainPage.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="MapList.cs" />
     <Compile Include="MazeGridHex.cs" />
     <Compile Include="MazeMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TerrainGridHex.cs" />
+    <Compile Include="AStarBug.cs" />
     <Compile Include="TerrainMap.cs" />
   </ItemGroup>
   <ItemGroup>

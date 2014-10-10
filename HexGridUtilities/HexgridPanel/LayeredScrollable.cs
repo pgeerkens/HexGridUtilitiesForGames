@@ -43,7 +43,7 @@ namespace PGNapoleonics.HexgridPanel {
   using PaintAction = Action<Graphics>;
 
     /// <summary>TODO</summary>
-  public partial class LayeredScrollable : ScrollableControl, ISupportInitialize, IMessageFilter {
+  public partial class LayeredScrollable : ScrollableControl, ISupportInitialize { //, IMessageFilter {
     /// <summary>TODO</summary>
     public LayeredScrollable() {
       InitializeComponent();
@@ -63,7 +63,7 @@ namespace PGNapoleonics.HexgridPanel {
     }
     /// <summary>Signals the object that initialization is complete.</summary>
     public virtual void EndInit() { 
-			Application.AddMessageFilter(this);
+//			Application.AddMessageFilter(this);
 
       SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
       SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
@@ -82,32 +82,34 @@ namespace PGNapoleonics.HexgridPanel {
       base.OnResize(e);
     }
 
-    #region IMessageFilter implementation
-    /// <summary>Redirect WM_MouseWheel messages to window under mouse.</summary>
-		/// <remarks>Redirect WM_MouseWheel messages to window under mouse (rather than 
-    /// that with focus) with adjusted delta.
-    /// <a href="http://www.flounder.com/virtual_screen_coordinates.htm">Virtual Screen Coordinates</a>
-    /// Dont forget to add this to constructor:
-    /// 			Application.AddMessageFilter(this);
-    /// </remarks>
-		/// <param name="m">The Windows Message to filter and/or process.</param>
-		/// <returns>Success (true) or failure (false) to OS.</returns>
-		[System.Security.Permissions.PermissionSetAttribute(
-			System.Security.Permissions.SecurityAction.Demand, Name="FullTrust")]
-		public bool PreFilterMessage(ref Message m) {
-			var hWnd  = NativeMethods.WindowFromPoint( WindowsMouseInput.GetPointLParam(m.LParam) );
-			var ctl	  = Control.FromHandle(hWnd);
-      if (hWnd != IntPtr.Zero  &&  hWnd != m.HWnd  &&  ctl != null) {
-        switch((WM)m.Msg) {
-          default:  break;
-          case WM.MOUSEWHEEL:
-            DebugTracing.Trace(TraceFlags.ScrollEvents, true," - {0}.WM.{1}: ", Name, ((WM)m.Msg)); 
-            return (NativeMethods.SendMessage(hWnd, m.Msg, m.WParam, m.LParam) == IntPtr.Zero);
-        }
-      }
-      return false;
-		}
-    #endregion
+    //#region IMessageFilter implementation
+    ///// <summary>Redirect WM_MouseWheel messages to window under mouse.</summary>
+    ///// <remarks>Redirect WM_MouseWheel messages to window under mouse (rather than 
+    ///// that with focus) with adjusted delta.
+    ///// <a href="http://www.flounder.com/virtual_screen_coordinates.htm">Virtual Screen Coordinates</a>
+    ///// Dont forget to add this to constructor:
+    ///// 			Application.AddMessageFilter(this);
+    ///// </remarks>
+    ///// <param name="m">The Windows Message to filter and/or process.</param>
+    ///// <returns>Success (true) or failure (false) to OS.</returns>
+    //[System.Security.Permissions.PermissionSetAttribute(
+    //  System.Security.Permissions.SecurityAction.Demand, Name="FullTrust")]
+    //public bool PreFilterMessage(ref Message m) {
+    //  if ((WM)m.Msg != WM.MOUSEHWHEEL && (WM)m.Msg != WM.MOUSEWHEEL) return false;
+    //  var hWnd = NativeMethods.WindowFromPoint(WindowsMouseInput.GetPointLParam(m.LParam));
+    //  var ctl	  = Control.FromHandle(hWnd);
+    //  if (hWnd != IntPtr.Zero  &&  hWnd != m.HWnd  &&  ctl != null) {
+    //    switch((WM)m.Msg) {
+    //      case WM.MOUSEHWHEEL:
+    //      case WM.MOUSEWHEEL:
+    //        DebugTracing.Trace(TraceFlags.ScrollEvents, true," - {0}.WM.{1}: ", Name, ((WM)m.Msg)); 
+    //        return (NativeMethods.SendMessage(hWnd, m.Msg, m.WParam, m.LParam) == IntPtr.Zero);
+    //      default: break;
+    //    }
+    //  }
+    //  return false;
+    //}
+    //#endregion
   }
 
     /// <summary>TODO</summary>

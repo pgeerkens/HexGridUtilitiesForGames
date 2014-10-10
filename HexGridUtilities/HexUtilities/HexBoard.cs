@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -27,7 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -35,7 +34,6 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Threading.Tasks;
 
-using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexUtilities.FieldOfView;
@@ -55,6 +53,7 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>Returns the Elevation Above-Sea-Level for a hex with the specified ElevationLevel.</summary>
     int      ElevationASL(int elevationLevel);
   }
+
 
   /// <summary>Abstract implementation of a hexgrid map-board.</summary>
   public abstract class HexBoard<THex> : IBoard<THex>, IDisposable where THex : class, IHex {
@@ -142,14 +141,14 @@ namespace PGNapoleonics.HexUtilities {
     public THex               this[HexCoords coords]  { get { return BoardHexes[coords];} }
     #endregion
 
+    #region Methods
     /// <summary>TODO</summary>
     protected void SetLandmarks(IList<HexCoords> landmarkCoords) {
       if (Landmarks != null) Landmarks.Dispose();
       Landmarks = LandmarkCollection.CreateLandmarks(this, landmarkCoords);
     }
 
-    #region Methods
-     /// <summary>By default, landmark all four corners and midpoints of all 4 sides.</summary>
+    /// <summary>By default, landmark all four corners and midpoints of all 4 sides.</summary>
     /// <remarks>Pre-processing time on start-up can be reduced by decreasing the number of landmarks,
     /// though at the possible expense of longer path-findign times.</remarks>
     protected static readonly Func<Size, HexCoordsCollection> DefaultLandmarks = size => new HexCoordsCollection(
@@ -185,7 +184,7 @@ namespace PGNapoleonics.HexUtilities {
     public virtual  bool IsPassable(HexCoords coords) { return IsOnboard(coords); }
 
     /// <summary>Sets the board layout parameters</summary>
-    private   void       ResetGrid() {
+    private         void ResetGrid() {
       Hexgrid           = IsTransposed ? new TransposedHexgrid(GridSize.Scale(MapScale)) 
                                        : new Hexgrid(GridSize.Scale(MapScale));  
       CentreOfHexOffset = new Size(GridSize.Width * 2/3, GridSize.Height /2);

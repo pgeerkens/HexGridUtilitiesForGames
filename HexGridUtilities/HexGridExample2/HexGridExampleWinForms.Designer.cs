@@ -55,13 +55,14 @@ namespace HexgridExampleWinForms {
       this.menuItemHelpContents = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
       this.menuItemHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
-      this._hexgridPanel = new PGNapoleonics.HexgridPanel.HexgridPanel(this.components);
+      this._hexgridPanel = new PGNapoleonics.HexgridPanel.HexgridScrollable(this.components);
       this.toolStripContainer1.BottomToolStripPanel.SuspendLayout();
       this.toolStripContainer1.ContentPanel.SuspendLayout();
       this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
       this.toolStripContainer1.SuspendLayout();
       this.toolStrip1.SuspendLayout();
       this.toolStrip2.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this._hexgridPanel)).BeginInit();
       this.SuspendLayout();
       // 
       // toolStripContainer1
@@ -205,12 +206,8 @@ namespace HexgridExampleWinForms {
       // 
       this.comboBoxMapSelection.AutoSize = false;
       this.comboBoxMapSelection.CausesValidation = false;
-      this.comboBoxMapSelection.Items.AddRange(new object[] {
-            "Maze Map",
-            "Terrain Map"});
       this.comboBoxMapSelection.Name = "comboBoxMapSelection";
       this.comboBoxMapSelection.Size = new System.Drawing.Size(90, 23);
-      this.comboBoxMapSelection.Sorted = true;
       this.comboBoxMapSelection.Text = "Map:";
       this.comboBoxMapSelection.ToolTipText = "Selects map to display.";
       this.comboBoxMapSelection.SelectedIndexChanged += new System.EventHandler(this.comboBoxMapSelection_SelectionChanged);
@@ -309,13 +306,15 @@ namespace HexgridExampleWinForms {
       // _hexgridPanel
       // 
       this._hexgridPanel.AutoScroll = true;
+      this._hexgridPanel.AutoScrollMinSize = new System.Drawing.Size(34, 45);
       this._hexgridPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+      this._hexgridPanel.IsMapDirty = false;
       this._hexgridPanel.IsTransposed = false;
+      this._hexgridPanel.IsUnitsDirty = false;
       this._hexgridPanel.Location = new System.Drawing.Point(5, 5);
       this._hexgridPanel.Margin = new System.Windows.Forms.Padding(0);
       this._hexgridPanel.Name = "_hexgridPanel";
       this._hexgridPanel.ScaleIndex = 0;
-      this._hexgridPanel.Scales = ((System.Collections.ObjectModel.ReadOnlyCollection<float>)(resources.GetObject("_hexgridPanel.Scales")));
       this._hexgridPanel.Size = new System.Drawing.Size(756, 356);
       this._hexgridPanel.TabIndex = 0;
       this._hexgridPanel.HotspotHexChange += new System.EventHandler<PGNapoleonics.HexgridPanel.HexEventArgs>(this.PanelBoard_HotSpotHexChange);
@@ -343,6 +342,7 @@ namespace HexgridExampleWinForms {
       this.toolStrip1.PerformLayout();
       this.toolStrip2.ResumeLayout(false);
       this.toolStrip2.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)(this._hexgridPanel)).EndInit();
       this.ResumeLayout(false);
 
     }
@@ -352,7 +352,7 @@ namespace HexgridExampleWinForms {
     private System.Windows.Forms.ToolStripContainer toolStripContainer1;
     private System.Windows.Forms.ToolStrip toolStrip1;
     private System.Windows.Forms.ToolStripLabel toolStripLabel1;
-    private PGNapoleonics.HexgridPanel.HexgridPanel _hexgridPanel;
+    private PGNapoleonics.HexgridPanel.HexgridScrollable _hexgridPanel;
     private System.Windows.Forms.ToolStrip toolStrip2;
     private System.Windows.Forms.ToolStripButton buttonTransposeMap;
     private System.Windows.Forms.ToolStripLabel statusLabel;

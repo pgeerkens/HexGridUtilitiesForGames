@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -59,6 +59,29 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
       return landmarks;
     }
+
+    /// <summary>TODO</summary>
+    /// <param name="goal"></param>
+    /// <param name="coords"></param>
+    /// <returns></returns>
+    public int Heuristic(HexCoords goal, HexCoords coords) {
+      //return this.Heuristic(goal, coords, 4);
+
+      var heuristic = this.Select(l => (l.HexDistance(coords) - l.HexDistance(goal)))
+                          .OrderByDescending(h => h)
+                          .FirstOrDefault();
+      return heuristic; //>0 ? heuristic : defaultValue;
+    }
+    /// <summary>TODO</summary>
+    /// <param name="list"></param>
+    /// <returns></returns>
+    //public int Heuristic(HexCoords goal, HexCoords coords, int defaultValue) {
+
+    //  var heuristic = this.Select(l => (l.HexDistance(coords) - l.HexDistance(goal)))
+    //                      .OrderByDescending(h => h)
+    //                      .FirstOrDefault();
+    //  return heuristic; //>0 ? heuristic : defaultValue;
+    //}
 
     LandmarkCollection(List<Landmark> list) : base(list) {}
 

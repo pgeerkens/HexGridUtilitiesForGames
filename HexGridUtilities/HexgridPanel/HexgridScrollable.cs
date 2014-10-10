@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -32,8 +32,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 using System.Windows.Forms;
 
 using PGNapoleonics.HexUtilities;
@@ -43,11 +41,152 @@ using PGNapoleonics.WinForms;
 using WpfInput = System.Windows.Input;
 
 namespace PGNapoleonics.HexgridPanel {
+  /// <summary>TODO</summary>
+  public class SelectableHScrollableControl : ScrollableControl {
+    /// <summary>TODO</summary>
+    public SelectableHScrollableControl() {
+      this.SetStyle(ControlStyles.Selectable, true);
+      this.TabStop = true;
+    }
+
+    #region SelectablePanel implementation
+    /// <inheritdoc/>
+    protected override void OnMouseDown(MouseEventArgs e) {
+      this.Focus();
+      base.OnMouseDown(e);
+    }
+    /// <inheritdoc/>
+    protected override bool IsInputKey(Keys keyData) {
+      if (keyData == Keys.Up || keyData == Keys.Down) return true;
+      if (keyData == Keys.Left || keyData == Keys.Right) return true;
+      return base.IsInputKey(keyData);
+    }
+    /// <inheritdoc/>
+    protected override void OnEnter(EventArgs e) {
+      this.Invalidate();
+      base.OnEnter(e);
+    }
+    /// <inheritdoc/>
+    protected override void OnLeave(EventArgs e) {
+      this.Invalidate();
+      base.OnLeave(e);
+    }
+    /// <inheritdoc/>
+    protected override void OnPaint(PaintEventArgs e) {
+      if (e == null) throw new ArgumentNullException("e");
+      base.OnPaint(e);
+      if (this.Focused) {
+        var rc = this.ClientRectangle;
+        rc.Inflate(-2, -2);
+        ControlPaint.DrawFocusRectangle(e.Graphics, rc);
+      }
+    }
+    #endregion
+
+    #region Mouse Tilt Wheel (MouseHWheel) event implementation
+    /// <summary>Occurs when the mouse tilt-wheel moves while the control has focus.</summary>
+    public event EventHandler<MouseEventArgs> MouseHWheel;
+
+    private int _wheelHPos = 0;   //!< <summary>Unapplied horizontal scroll.</summary>
+
+    /// <summary>TODO</summary>
+    protected override void WndProc(ref Message m) {
+      if (!IsDisposed && m.HWnd == this.Handle) {
+        switch ((WM)m.Msg) {
+          case WM.MOUSEHWHEEL: OnMouseHWheel(CreateMouseEventArgs(m));
+            m.Result = (IntPtr)0;
+            break;
+          default: break;
+        }
+      }
+      base.WndProc(ref m);
+    }
+
+    /// <summary>TODO</summary>
+    /// <param name="e"></param>
+    protected virtual void OnMouseHWheel(MouseEventArgs e) {
+      if (e == null) throw new ArgumentNullException("e");
+
+      _wheelHPos += e.Delta;
+      while (_wheelHPos > MouseWheelStep) {
+        ScrollHorizontal(MouseWheelStep);
+        _wheelHPos -= MouseWheelStep;
+      }
+      while (_wheelHPos < -MouseWheelStep) {
+        ScrollHorizontal(-MouseWheelStep);
+        _wheelHPos += MouseWheelStep;
+      }
+
+      if (MouseHWheel != null) MouseHWheel.Raise(this, e);
+    }
+
+    /// <summary>TODO</summary>
+    private void ScrollHorizontal(int delta) {
+      AutoScrollPosition = new Point(
+        -AutoScrollPosition.X + delta,
+        -AutoScrollPosition.Y);
+    }
+
+    /// <summary>TODO</summary>
+    private static int MouseWheelStep {
+      get {
+        return SystemInformation.MouseWheelScrollDelta
+             / SystemInformation.MouseWheelScrollLines;
+      }
+    }
+
+    /// <summary>TODO</summary>
+    private static MouseEventArgs CreateMouseEventArgs(Message m) {
+      return new MouseEventArgs(
+          (MouseButtons)NativeMethods.LOWORD(m.WParam),
+          0,
+          NativeMethods.LOWORD(m.LParam),
+          NativeMethods.HIWORD(m.LParam),
+          (Int16)NativeMethods.HIWORD(m.WParam)
+        );
+    }
+    #endregion
+
+    #region Panel Scroll extensions
+    /// <summary>TODO</summary>
+    public void ScrollVertical(ScrollEventType type, int sign) {
+      ScrollPanelCommon(type, sign, VerticalScroll);
+    }
+    /// <summary>TODO</summary>
+    public void ScrollHorizontal(ScrollEventType type, int sign) {
+      ScrollPanelCommon(type, sign, HorizontalScroll);
+    }
+    /// <summary>TODO</summary>
+    private void ScrollPanelCommon(ScrollEventType type, int sign, ScrollProperties scroll) {
+      if (sign == 0) return;
+      Func<Point, int, Point> func = (p, step) => new Point(-p.X, -p.Y + step * sign);
+      AutoScrollPosition = func(AutoScrollPosition,
+        type.HasFlag(ScrollEventType.LargeDecrement) ? scroll.LargeChange : scroll.SmallChange);
+    }
+
+    /// <summary>Service routine to execute a Panel scroll.</summary>
+    [Obsolete("Use ScrollPanelVertical or ScrollPanelHorizontal instead.")]
+    public void ScrollPanel(ScrollEventType type, ScrollOrientation orientation, int sign) {
+      if (orientation == ScrollOrientation.VerticalScroll)
+        ScrollVertical(type, sign);
+      else
+        ScrollHorizontal(type, sign);
+    }
+    #endregion
+  }
+
   /// <summary>Sub-class implementation of a <b>WinForms</b> Panel with integrated <see cref="Hexgrid"/> support.</summary>
   [DockingAttribute(DockingBehavior.AutoDock)]
-  public abstract partial class HexgridScrollable : ScrollableControl, IHexgridHost, IMessageFilter, ISupportInitialize {
-    /// <summary>Creates a new instance of HexgridPanel.</summary>
+  public partial class HexgridScrollable : SelectableHScrollableControl, IHexgridHost, ISupportInitialize {
+    /// <summary>Creates a new instance of HexgridScrollable.</summary>
     protected HexgridScrollable() {
+      InitializeComponent();
+    }
+    /// <summary>Creates a new instance of HexgridScrollable.</summary>
+    public HexgridScrollable(IContainer container) {
+      if (container==null) throw new ArgumentNullException("container");
+      container.Add(this);
+
       InitializeComponent();
     }
 
@@ -56,11 +195,10 @@ namespace PGNapoleonics.HexgridPanel {
     public virtual void BeginInit() { 
       RefreshCmd  = new RelayCommand(o => { if (o != null) { SetMapDirty(); }  Refresh(); } );
       DataContext = new HexgridViewModel(this);
+      SetScales (new float[] {1.00F});
     }
     /// <summary>Signals the object that initialization is complete.</summary>
     public virtual void EndInit() { 
-			Application.AddMessageFilter(this);
-
       SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
       SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
       SetStyle(ControlStyles.Opaque, true);
@@ -164,20 +302,6 @@ namespace PGNapoleonics.HexgridPanel {
     /// <remarks>See "file://Documentation/HexGridAlgorithm.mht"</remarks>
     public    HexCoords GetHexCoords(Point point) {
       return DataContext.Hexgrid.GetHexCoords(point, new Size(AutoScrollPosition));
-    }
-
-    /// <summary>TODO</summary>
-    static         bool IsLargeStep(ScrollEventType type) { 
-      return type == ScrollEventType.LargeIncrement || type == ScrollEventType.LargeDecrement; 
-    }
-
-    /// <summary>Service routine to execute a Panel scroll.</summary>
-    public         void ScrollPanel(ScrollEventType type, ScrollOrientation orientation, int sign) {
-      var scroll = orientation==ScrollOrientation.HorizontalScroll 
-                 ? (ScrollProperties)HorizontalScroll : VerticalScroll;
-      var delta  = sign * (IsLargeStep(type) ? scroll.LargeChange
-                                             : scroll.SmallChange);
-      MouseScroll(orientation == ScrollOrientation.HorizontalScroll, -delta);
     }
 
     /// <summary>Force repaint of backing buffer for Map underlay.</summary>
@@ -330,59 +454,6 @@ namespace PGNapoleonics.HexgridPanel {
 
       base.OnMouseMove(e);
     }
-    /// <summary>TODO</summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    protected virtual  void OnMouseHWheel(object sender, MouseEventArgs e) {
-      if (e==null) throw new ArgumentNullException("e");
-      TraceFlags.ScrollEvents.Trace(" - {0}.OnMouseHWheel: {1}", DataContext.Model.Name, e.ToString());
-        AutoScrollPosition = WheelPanel(HorizontalScroll,-e.Delta, ref scrollRemainderHorizontal,
-              (delta) => new Point(-AutoScrollPosition.X + delta, -AutoScrollPosition.Y));
-        OnScroll(new ScrollEventArgs(ScrollEventType.ThumbTrack,
-              IsShiftKeyDown ? AutoScrollPosition.X : AutoScrollPosition.Y));
-
-    }
-    /// <inheritdoc/>
-    protected override void OnMouseWheel(MouseEventArgs e) {
-      if (e==null) throw new ArgumentNullException("e");
-      TraceFlags.ScrollEvents.Trace(" - {0}.OnMouseWheel: {1}", DataContext.Model.Name, e.ToString()); 
-      if( Control.ModifierKeys.HasFlag(Keys.Control)) 
-        ScaleIndex += Math.Sign(e.Delta);  
-      else
-        MouseScroll(IsShiftKeyDown, e.Delta);
-    }
-    void MouseScroll(bool isHorizontal, int delta) {
-      var oldScrollPosition = AutoScrollPosition;
-
-      AutoScrollPosition = isHorizontal
-        ? WheelPanel(HorizontalScroll, -delta, ref scrollRemainderHorizontal,
-            (amount) => new Point(-AutoScrollPosition.X + amount, -AutoScrollPosition.Y))
-        : WheelPanel(VerticalScroll,   -delta, ref scrollRemainderVertical,
-            (amount) => new Point(-AutoScrollPosition.X, -AutoScrollPosition.Y + amount));
-
-      OnScroll(GetScrollEventArgs(isHorizontal,oldScrollPosition,AutoScrollPosition));
-    }
-    int scrollRemainderHorizontal = 0;  //!< <summary>Unapplied horizontal scroll.</summary>
-    int scrollRemainderVertical   = 0;  //!< <summary>Unapplied vertical scroll.</summary>
-    /// <summary>Return new AutoScrollPosition for applied muse-wheel scroll.</summary>
-    static Point WheelPanel(ScrollProperties scroll, int delta, ref int remainder,
-      Func<int,Point> newAutoScroll)
-    {
-      if (Math.Sign(delta) != Math.Sign(remainder)) remainder = 0;
-      var steps = (delta+remainder) 
-                / (SystemInformation.MouseWheelScrollDelta / SystemInformation.MouseWheelScrollLines);
-      remainder = (delta+remainder) 
-                % (SystemInformation.MouseWheelScrollDelta / SystemInformation.MouseWheelScrollLines);
-      return newAutoScroll(scroll.SmallChange * steps);
-    }
-    static ScrollEventArgs GetScrollEventArgs(bool isHorizontal, Point oldScroll, Point newScroll) {
-      return new ScrollEventArgs(
-        ScrollEventType.ThumbTrack,
-        isHorizontal ? -oldScroll.X : -oldScroll.Y,
-        isHorizontal ? -newScroll.X : -newScroll.Y,
-        isHorizontal ? ScrollOrientation.HorizontalScroll : ScrollOrientation.VerticalScroll
-      );
-    }
 
     /// <summary>Raise the MouseAltClick event.</summary>
     protected virtual void OnMouseAltClick(HexEventArgs e) { MouseAltClick.Raise(this,e); }
@@ -393,7 +464,7 @@ namespace PGNapoleonics.HexgridPanel {
       MouseCtlClick.Raise(this,e);
       Refresh();
     }
-    /// <summary>Raise the MouseLeftClic event.</summary>
+    /// <summary>Raise the MouseLeftClick event.</summary>
     protected virtual void OnMouseLeftClick(HexEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       DataContext.Model.StartHex = e.Coords;
@@ -409,10 +480,9 @@ namespace PGNapoleonics.HexgridPanel {
       HotspotHexChange.Raise(this,e);
       Refresh();
     }
-    #endregion
 
     /// <summary>Raise the ScaleChange event.</summary>
-    protected virtual  void OnScaleChange(EventArgs e) {
+    protected virtual void OnScaleChange(EventArgs e) {
       SetMapDirty();
       OnResize(e);
       Invalidate();
@@ -424,33 +494,38 @@ namespace PGNapoleonics.HexgridPanel {
       SetScrollLimits(DataContext.Model);
       base.OnResize(e);
     }
- 
-    #region IMessageFilter implementation
-    /// <summary>Redirect WM_MouseWheel messages to window under mouse.</summary>
-		/// <remarks>Redirect WM_MouseWheel messages to window under mouse (rather than 
-    /// that with focus) with adjusted delta.
-    /// <a href="http://www.flounder.com/virtual_screen_coordinates.htm">Virtual Screen Coordinates</a>
-    /// Dont forget to add this to constructor:
-    /// 			Application.AddMessageFilter(this);
-    /// </remarks>
-		/// <param name="m">The Windows Message to filter and/or process.</param>
-		/// <returns>Success (true) or failure (false) to OS.</returns>
-		[System.Security.Permissions.PermissionSetAttribute(
-			System.Security.Permissions.SecurityAction.Demand, Name="FullTrust")]
-		public bool PreFilterMessage(ref Message m) {
-			var hWnd  = NativeMethods.WindowFromPoint( WindowsMouseInput.GetPointLParam(m.LParam) );
-			var ctl	  = Control.FromHandle(hWnd);
-      if (hWnd != IntPtr.Zero  &&  ctl != null) {
-        switch((WM)m.Msg) {
-          default:  break;
-          case WM.MOUSEHWHEEL:
-          case WM.MOUSEWHEEL:
-            DebugTracing.Trace(TraceFlags.ScrollEvents, true," - {0}.WM.{1}: ", Name, ((WM)m.Msg)); 
-            return (NativeMethods.SendMessage(hWnd, m.Msg, m.WParam, m.LParam) == IntPtr.Zero);
-        }
-      }
-      return false;
-		}
     #endregion
+
+    #region MouseWheel & Scroll event handlers
+    /// <inheritdoc/>
+    protected override void OnMouseWheel(MouseEventArgs e) {
+      if (e == null) throw new ArgumentNullException("e");
+      TraceFlags.ScrollEvents.Trace(" - {0}.OnMouseWheel: {1}", Name, e.ToString());
+
+      if (Control.ModifierKeys.HasFlag(Keys.Control)) ScaleIndex += Math.Sign(e.Delta);
+      else if (IsShiftKeyDown)                        base.OnMouseHWheel(e);
+      else                                            base.OnMouseWheel(e);
+    }
+
+    /// <summary>TODO</summary>
+    public void ScrollPanelVertical(ScrollEventType type, int sign) {
+      ScrollPanelCommon(type, sign, VerticalScroll);
+    }
+    /// <summary>TODO</summary>
+    public void ScrollPanelHorizontal(ScrollEventType type, int sign) {
+      ScrollPanelCommon(type, sign, HorizontalScroll);
+    }
+    /// <summary>TODO</summary>
+    private void ScrollPanelCommon(ScrollEventType type, int sign, ScrollProperties scroll) {
+      if (sign == 0) return;
+      Func<Point, int, Point> func = (p, step) => new Point(-p.X, -p.Y + step * sign);
+      AutoScrollPosition = func(AutoScrollPosition,
+        type.HasFlag(ScrollEventType.LargeDecrement) ? scroll.LargeChange : scroll.SmallChange);
+    }
+    #endregion
+
+    /// <summary>Array of supported map scales  as IList&lt;float&gt;.</summary>
+    public ReadOnlyCollection<float>     Scales        { get; private set; }
+    public void SetScales (IList<float> scales) { Scales = new ReadOnlyCollection<float>(scales); }
   }
 }

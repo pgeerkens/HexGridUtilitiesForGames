@@ -29,28 +29,36 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.WinForms;
 
 using HexgridExampleCommon;
 
 using MyMapDisplay = PGNapoleonics.HexgridPanel.MapDisplay<PGNapoleonics.HexgridPanel.MapGridHex>;
 
 namespace HexgridExampleWpf {
+
   /// <summary>TODO</summary>
-  public partial class MainWindow : Window {
+  public partial class MainWindow : Window, IMessageFilter {
+
     /// <summary>TODO</summary>
     public MainWindow() {
       InitializeComponent();
+      System.Windows.Forms.Application.AddMessageFilter(this);
       this.DataContext = this;
+
+//      comboBoxMapSelection.ItemsSource = _mapList.Select(item => item.MapName);
+      comboBoxMapSelection.ItemsSource = Map.MapList.Select(item => item.MapName);
+      comboBoxMapSelection.SelectedIndex = 0;
     }
 
     void RefreshCmdExecuted(object target, ExecutedRoutedEventArgs e) { 
@@ -86,12 +94,8 @@ namespace HexgridExampleWpf {
       get { return _selectedMapIndex; } 
       set {
         _selectedMapIndex = value;
-        var mapName = ((ListBoxItem)comboBoxMapSelection.Items[_selectedMapIndex]).Name;
-        switch (mapName) {
-          case "MazeMap":    HexgridPanel.SetModel(SetMapBoard(new MazeMap(),    Model.FovRadius)); break;
-          case "TerrainMap": HexgridPanel.SetModel(SetMapBoard(new TerrainMap(), Model.FovRadius)); break;
-          default:            break;
-        }
+        HexgridPanel.SetModel(SetMapBoard(Map.MapList[_selectedMapIndex].MapBoard, Model.FovRadius));
+
         sliderFovRadius.Value = Model.FovRadius;
         HexgridPanel.Refresh();
       }
@@ -133,5 +137,66 @@ namespace HexgridExampleWpf {
         "Hotspot Hex: {0:gi3} / {0:uI4} / {0:c5}; {1:r6}; Path Length = {2}",
         hotHex, Model.StartHex - hotHex, (Model.Path==null ? 0 : Model.Path.TotalCost));
     }
+
+    #region IMessageFilter implementation
+    /// <summary>Redirect WM_MouseWheel messages to window under mouse.</summary>
+    /// <remarks>Redirect WM_MouseWheel messages to window under mouse (rather than 
+    /// that with focus) with adjusted delta.
+    /// <a href="http://www.flounder.com/virtual_screen_coordinates.htm">Virtual Screen Coordinates</a>
+    /// Dont forget to add this to constructor:
+    /// 			Application.AddMessageFilter(this);
+    ///</remarks>
+    /// <param name="m">The Windows Message to filter and/or process.</param>
+    /// <returns>Success (true) or failure (false) to OS.</returns>
+    [System.Security.Permissions.PermissionSetAttribute(
+      System.Security.Permissions.SecurityAction.Demand, Name = "FullTrust")]
+    public bool PreFilterMessage(ref Message m) {
+      if ((WM)m.Msg != WM.MOUSEHWHEEL && (WM)m.Msg != WM.MOUSEWHEEL) return false;
+
+      var hWnd = PGNapoleonics.WinForms.NativeMethods.WindowFromPoint(WindowsMouseInput.GetPointLParam(m.LParam));
+      var ctl = System.Windows.Forms.Control.FromChildHandle(hWnd);
+      if (hWnd != IntPtr.Zero  &&  hWnd != m.HWnd  &&  ctl != null) {
+        switch ((WM)m.Msg) {
+          case WM.MOUSEHWHEEL:
+          case WM.MOUSEWHEEL:
+            DebugTracing.Trace(TraceFlags.ScrollEvents, true, " - {0}.WM.{1}: ", Name, ((WM)m.Msg));
+            return (NativeMethods.SendMessage(hWnd, m.Msg, m.WParam, m.LParam) == IntPtr.Zero);
+          default: break;
+        }
+      }
+      return false;
+    }
+    #endregion
+  }
+}
+#pragma warning disable 1587
+/// <summary>Extensions to the System.Windows.Forms technologies used by namespace PGNapoleonics.HexgridPanel.</summary>
+#pragma warning restore 1587
+namespace PGNapoleonics.WinForms {
+  using System;
+  using System.Runtime.InteropServices;
+
+  /// <summary>Extern declarations from the Win32 API.</summary>
+  internal static partial class NativeMethods {
+    /// <summary>P/Invoke declaration for user32.dll.WindowFromPoint</summary>
+    /// <remarks><a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms633558(v=vs.85).aspx"></a></remarks>
+    /// <param name="pt">(Sign-extended) screen coordinates as a Point structure.</param>
+    /// <returns>Window handle (hWnd).</returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability",
+      "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "0",
+      Justification = "Research suggests the Code Analysis message is incorrect.")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance",
+      "CA1811:AvoidUncalledPrivateCode")]
+    [DllImport("user32.dll")]
+    internal static extern IntPtr WindowFromPoint(System.Drawing.Point pt);
+
+    /// <summary>P/Invoke declaration for user32.dll.SendMessage</summary>
+    /// <param name="hWnd">Window handle</param>
+    /// <param name="msg">Windows message</param>
+    /// <param name="wParam">WParam</param>
+    /// <param name="lParam">LParam</param>
+    /// <returns></returns>
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
   }
 }

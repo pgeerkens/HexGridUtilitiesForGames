@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -40,25 +40,162 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
+  /// <summary>A Focusable Panel</summary>
+  /// ///<remarks>Courtesy of Hans Passant: 
+  /// <a>http://stackoverflow.com/questions/3562235/panel-not-getting-focus</a>
+  /// </remarks>
+  public class TiltAwarePanel : Panel {
+    /// <summary>TODO</summary>
+    public TiltAwarePanel() {
+      this.SetStyle(ControlStyles.Selectable, true);
+      this.TabStop = true;
+    }
+
+    #region SelectablePanel implementation
+    /// <inheritdoc/>
+    protected override void OnMouseDown(MouseEventArgs e) {
+      this.Focus();
+      base.OnMouseDown(e);
+    }
+    /// <inheritdoc/>
+    protected override bool IsInputKey(Keys keyData) {
+      if (keyData == Keys.Up || keyData == Keys.Down) return true;
+      if (keyData == Keys.Left || keyData == Keys.Right) return true;
+      return base.IsInputKey(keyData);
+    }
+    /// <inheritdoc/>
+    protected override void OnEnter(EventArgs e) {
+      this.Invalidate();
+      base.OnEnter(e);
+    }
+    /// <inheritdoc/>
+    protected override void OnLeave(EventArgs e) {
+      this.Invalidate();
+      base.OnLeave(e);
+    }
+    /// <inheritdoc/>
+    protected override void OnPaint(PaintEventArgs e) {
+      if (e == null) throw new ArgumentNullException("e");
+      base.OnPaint(e);
+      if (this.Focused) {
+        var rc = this.ClientRectangle;
+        rc.Inflate(-2, -2);
+        ControlPaint.DrawFocusRectangle(e.Graphics, rc);
+      }
+    }
+    #endregion
+
+    #region Mouse Tilt Wheel (MouseHWheel) event implementation
+    /// <summary>Occurs when the mouse tilt-wheel moves while the control has focus.</summary>
+    public event EventHandler<MouseEventArgs> MouseHWheel;
+
+    private int _wheelHPos = 0;   //!< <summary>Unapplied horizontal scroll.</summary>
+
+    /// <summary>Processes Windows messages.</summary>
+    protected override void WndProc(ref Message m) {
+      if (!IsDisposed && m.HWnd == this.Handle) {
+        switch ((WM)m.Msg) {
+          case WM.MOUSEHWHEEL:  OnMouseHWheel(CreateMouseEventArgs(m));
+                                m.Result = (IntPtr)0;
+                                break;
+
+          default:              break;
+        }
+      }
+      base.WndProc(ref m);
+    }
+
+    /// <summary>Raises the MouseHWheel event.</summary>
+    /// <param name="e">A <c>MouseEventArgs</c> that contains the event data. </param>
+    protected virtual void OnMouseHWheel(MouseEventArgs e) {
+      if (e == null) throw new ArgumentNullException("e");
+
+      _wheelHPos += e.Delta;
+      while (_wheelHPos > MouseWheelStep) {
+        ScrollHorizontal(MouseWheelStep);
+        _wheelHPos -= MouseWheelStep;
+      }
+      while (_wheelHPos < -MouseWheelStep) {
+        ScrollHorizontal(-MouseWheelStep);
+        _wheelHPos += MouseWheelStep;
+      }
+
+      if (MouseHWheel != null) MouseHWheel.Raise(this, e);
+    }
+
+    /// <summary>TODO</summary>
+    private void ScrollHorizontal(int delta) {
+      AutoScrollPosition = new Point(
+        -AutoScrollPosition.X + delta,
+        -AutoScrollPosition.Y);
+    }
+
+    /// <summary>TODO</summary>
+    private static int MouseWheelStep {
+      get {
+        return SystemInformation.MouseWheelScrollDelta
+             / SystemInformation.MouseWheelScrollLines;
+      }
+    }
+
+    private static MouseEventArgs CreateMouseEventArgs(Message m) {
+      return new MouseEventArgs (
+          (MouseButtons)NativeMethods.LOWORD(m.WParam),
+          0,
+          NativeMethods.LOWORD(m.LParam),
+          NativeMethods.HIWORD(m.LParam),
+          (Int16)NativeMethods.HIWORD(m.WParam)
+        );
+    }
+    #endregion
+
+    #region Panel Scroll extensions
+    /// <summary>TODO</summary>
+    public void ScrollVertical(ScrollEventType type, int sign) {
+      ScrollPanelCommon(type, sign, VerticalScroll);
+    }
+    /// <summary>TODO</summary>
+    public void ScrollHorizontal(ScrollEventType type, int sign) {
+      ScrollPanelCommon(type, sign, HorizontalScroll);
+    }
+    /// <summary>TODO</summary>
+    private void ScrollPanelCommon(ScrollEventType type, int sign, ScrollProperties scroll) {
+      if (sign == 0) return;
+      Func<Point, int, Point> func = (p, step) => new Point(-p.X, -p.Y + step * sign);
+      AutoScrollPosition = func(AutoScrollPosition,
+        type.HasFlag(ScrollEventType.LargeDecrement) ? scroll.LargeChange : scroll.SmallChange);
+    }
+
+    /// <summary>Service routine to execute a Panel scroll.</summary>
+    [Obsolete("Use ScrollPanelVertical or ScrollPanelHorizontal instead.")]
+    public void ScrollPanel(ScrollEventType type, ScrollOrientation orientation, int sign) {
+      if (orientation == ScrollOrientation.VerticalScroll)
+        ScrollVertical(type, sign);
+      else
+        ScrollHorizontal(type, sign);
+    }
+    #endregion
+  }
+  
   /// <summary>Sub-class implementation of a <b>WinForms</b> Panel with integrated <see cref="Hexgrid"/> support.</summary>
   [DockingAttribute(DockingBehavior.AutoDock)]
   [Obsolete("Use PGNapoleonics.HexgridPanel.HexgridScrollable instead.")]
-  public partial class HexgridPanel : Panel, IHexgridHost, IMessageFilter {
+  public partial class HexgridPanel : TiltAwarePanel, IHexgridHost, ISupportInitialize {
     #region Constructors
     /// <summary>Creates a new instance of HexgridPanel.</summary>
     public HexgridPanel() {
-      BeginInit();
+//      BeginInit();
       InitializeComponent();
-      EndInit();
+//      EndInit();
     }
     /// <summary>Creates a new instance of HexgridPanel.</summary>
     public HexgridPanel(IContainer container) {
       if (container==null) throw new ArgumentNullException("container");
       container.Add(this);
 
-      BeginInit();
+//      BeginInit();
       InitializeComponent();
-      EndInit();
+//      EndInit();
     }
     #endregion
 
@@ -71,7 +208,6 @@ namespace PGNapoleonics.HexgridPanel {
     }
     /// <summary>Signals the object that initialization is complete.</summary>
     public virtual void EndInit() { 
-			Application.AddMessageFilter(this);
       this.MakeDoubleBuffered(true);
     }
     #endregion
@@ -110,7 +246,7 @@ namespace PGNapoleonics.HexgridPanel {
     /// <summary>Gets whether the <b>Ctl</b> <i>shift</i> key is depressed.</summary>
     protected static  bool  IsCtlKeyDown   { get {return ModifierKeys.HasFlag(Keys.Control);} }
     /// <summary>Gets whether the <b>Shift</b> <i>shift</i> key is depressed.</summary>
-    protected static  bool  IsShiftKeyDown { get {return ModifierKeys.HasFlag(Keys.Shift);} }
+    protected static  bool  IsShiftKeyDown { get { return ModifierKeys.HasFlag(Keys.Shift); } }
 
     /// <summary>Gets or sets whether the board is transposed from flat-topped hexes to pointy-topped hexes.</summary>
     [Browsable(true)]
@@ -226,6 +362,8 @@ namespace PGNapoleonics.HexgridPanel {
     protected override void OnPaint(PaintEventArgs e) {
       if (e==null) throw new ArgumentNullException("e");
       if(IsHandleCreated) {
+//        base.OnPaint(e);
+
         var g = e.Graphics;
         var scroll = Hexgrid.GetScrollPosition(AutoScrollPosition);
         if (DesignMode) { g.FillRectangle(Brushes.Gray, ClientRectangle);  return; }
@@ -276,144 +414,56 @@ namespace PGNapoleonics.HexgridPanel {
     }
     #endregion
 
-    #region Mouse & Scroll event handlers
+    #region Mouse event handlers
     /// <inheritdoc/>
     protected override void OnMouseClick(MouseEventArgs e) {
-      if (e==null) throw new ArgumentNullException("e");
-      TraceFlags.Mouse.Trace(" - {0}.OnMouseClick - Shift: {1}; Ctl: {2}; Alt: {3}", 
+      if (e == null) throw new ArgumentNullException("e");
+      TraceFlags.Mouse.Trace(" - {0}.OnMouseClick - Shift: {1}; Ctl: {2}; Alt: {3}",
                                       Name, IsShiftKeyDown, IsCtlKeyDown, IsAltKeyDown);
-      var eventArgs = new HexEventArgs( GetHexCoords(e.Location), e, ModifierKeys);
+      var eventArgs = new HexEventArgs(GetHexCoords(e.Location), e, ModifierKeys);
 
-           if (e.Button == MouseButtons.Middle)   base.OnMouseClick(eventArgs);
-      else if (e.Button == MouseButtons.Right)    OnMouseRightClick(eventArgs);
-      else if (IsAltKeyDown  && !IsCtlKeyDown)    OnMouseAltClick(eventArgs);
-      else if (IsCtlKeyDown)                      OnMouseCtlClick(eventArgs);
-      else                                        OnMouseLeftClick(eventArgs);
+      if (e.Button == MouseButtons.Middle) base.OnMouseClick(eventArgs);
+      else if (e.Button == MouseButtons.Right) OnMouseRightClick(eventArgs);
+      else if (IsAltKeyDown && !IsCtlKeyDown) OnMouseAltClick(eventArgs);
+      else if (IsCtlKeyDown) OnMouseCtlClick(eventArgs);
+      else OnMouseLeftClick(eventArgs);
     }
     /// <inheritdoc/>
     protected override void OnMouseMove(MouseEventArgs e) {
-      if (e==null) throw new ArgumentNullException("e");
+      if (e == null) throw new ArgumentNullException("e");
       var newHex = GetHexCoords(e.Location);
-      if ( newHex != HotspotHex)
+      if (newHex != HotspotHex)
         OnHotspotHexChange(new HexEventArgs(newHex));
       HotspotHex = newHex;
 
       base.OnMouseMove(e);
     }
-    /// <summary>TODO</summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    protected virtual  void OnMouseHWheel(object sender, MouseEventArgs e) {
-      if (e==null) throw new ArgumentNullException("e");
-      TraceFlags.ScrollEvents.Trace(" - {0}.OnMouseHWheel: {1}", Model.Name, e.ToString());
-        AutoScrollPosition = WheelPanel(HorizontalScroll,-e.Delta, ref scrollRemainderHorizontal,
-              (delta) => new Point(-AutoScrollPosition.X + delta, -AutoScrollPosition.Y));
-        OnScroll(new ScrollEventArgs(ScrollEventType.ThumbTrack,
-              IsShiftKeyDown ? AutoScrollPosition.X : AutoScrollPosition.Y));
-
-    }
-    /// <inheritdoc/>
-    protected override void OnMouseWheel(MouseEventArgs e) {
-      if (e==null) throw new ArgumentNullException("e");
-      TraceFlags.ScrollEvents.Trace(" - {0}.OnMouseWheel: {1}", Model.Name, e.ToString());
-
-      if( Control.ModifierKeys.HasFlag(Keys.Control)) {
-        ScaleIndex += Math.Sign(e.Delta);  
-      } else {
-        var oldScrollPosition = AutoScrollPosition;
-        AutoScrollPosition = IsShiftKeyDown
-          ? WheelPanel(HorizontalScroll,-e.Delta, ref scrollRemainderHorizontal,
-              (delta) => new Point(-AutoScrollPosition.X + delta, -AutoScrollPosition.Y))
-          : WheelPanel(VerticalScroll,  -e.Delta, ref scrollRemainderVertical,
-              (delta) => new Point(-AutoScrollPosition.X, -AutoScrollPosition.Y + delta));
-        OnScroll(new ScrollEventArgs(ScrollEventType.ThumbTrack,
-              IsShiftKeyDown ? -oldScrollPosition.X  : -oldScrollPosition.Y,
-              IsShiftKeyDown ? -AutoScrollPosition.X : -AutoScrollPosition.Y,
-              IsShiftKeyDown ? ScrollOrientation.HorizontalScroll : ScrollOrientation.VerticalScroll));
-      }
-    }
-    int scrollRemainderHorizontal = 0;  //!< <summary>Unapplied horizontal scroll.</summary>
-    int scrollRemainderVertical   = 0;  //!< <summary>Unapplied vertical scroll.</summary>
-    /// <summary>Return new AutoScrollPosition for applied muse-wheel scroll.</summary>
-    static Point WheelPanel(ScrollProperties scroll, int delta, ref int remainder,
-      Func<int,Point> newAutoScroll)
-    {
-      if (Math.Sign(delta) != Math.Sign(remainder)) remainder = 0;
-//      var  x = SystemInformation
-      var steps = (delta+remainder) 
-                / (SystemInformation.MouseWheelScrollDelta / SystemInformation.MouseWheelScrollLines);
-      remainder = (delta+remainder) 
-                % (SystemInformation.MouseWheelScrollDelta / SystemInformation.MouseWheelScrollLines);
-      return newAutoScroll(scroll.SmallChange * steps);
-    }
 
     /// <summary>Raise the MouseAltClick event.</summary>
-    protected virtual void OnMouseAltClick(HexEventArgs e) { MouseAltClick.Raise(this,e);}
+    protected virtual void OnMouseAltClick(HexEventArgs e) { MouseAltClick.Raise(this, e); }
     /// <summary>Raise the MouseCtlClick event.</summary>
-    protected virtual void OnMouseCtlClick(HexEventArgs e) { MouseCtlClick.Raise(this,e); }
+    protected virtual void OnMouseCtlClick(HexEventArgs e) { MouseCtlClick.Raise(this, e); }
     /// <summary>Raise the MouseLeftClic event.</summary>
-    protected virtual void OnMouseLeftClick(HexEventArgs e) { MouseLeftClick.Raise(this,e); }
+    protected virtual void OnMouseLeftClick(HexEventArgs e) { MouseLeftClick.Raise(this, e); }
     /// <summary>Raise the MouseRightClick event.</summary>
-    protected virtual void OnMouseRightClick(HexEventArgs e) { MouseRightClick.Raise(this,e); }
-   /// <summary>Raise the HotspotHexChange event.</summary>
-    protected virtual void OnHotspotHexChange(HexEventArgs e) { HotspotHexChange.Raise(this,e); }
+    protected virtual void OnMouseRightClick(HexEventArgs e) { MouseRightClick.Raise(this, e); }
+    /// <summary>Raise the HotspotHexChange event.</summary>
+    protected virtual void OnHotspotHexChange(HexEventArgs e) { HotspotHexChange.Raise(this, e); }
     /// <summary>Raise the ScaleChange event.</summary>
-    protected virtual void OnScaleChange(EventArgs e) { 
-      ScaleChange.Raise(this,e); 
+    protected virtual void OnScaleChange(EventArgs e) {
+      ScaleChange.Raise(this, e);
       Invalidate();
     }
-    #endregion
 
-    /// <summary>Service routine to execute a Panel scroll.</summary>
-    public void ScrollPanel(ScrollEventType type, ScrollOrientation orientation, int sign) {
-      if( sign != 0 ) {
-        ScrollProperties  scroll  = VerticalScroll;
-        Func<Point,Point> func;
-        int               step    = 0;
-        if( orientation == ScrollOrientation.VerticalScroll ) {
-          scroll = VerticalScroll;
-          func   = p => new Point(-p.X, -p.Y + step * sign);
-        } else {
-          scroll = HorizontalScroll;
-          func   = p => new Point(-p.X + step * sign, -p.Y);
-        }
+    /// <inheritdoc/>
+    protected override void OnMouseWheel(MouseEventArgs e) {
+      if (e == null) throw new ArgumentNullException("e");
+      TraceFlags.ScrollEvents.Trace(" - {0}.OnMouseWheel: {1}", Model.Name, e.ToString());
 
-        step = type.HasFlag(ScrollEventType.LargeIncrement) || type.HasFlag(ScrollEventType.LargeDecrement)
-             ? scroll.LargeChange
-             : scroll.SmallChange;
-        AutoScrollPosition = func(AutoScrollPosition);
-      }
+      if (Control.ModifierKeys.HasFlag(Keys.Control))   ScaleIndex += Math.Sign(e.Delta);
+      else if (IsShiftKeyDown)                          base.OnMouseHWheel(e);
+      else                                              base.OnMouseWheel(e);
     }
- 
-    #region IMessageFilter implementation
-    /// <summary>Redirect WM_MouseWheel messages to window under mouse.</summary>
-		/// <remarks>Redirect WM_MouseWheel messages to window under mouse (rather than 
-    /// that with focus) with adjusted delta.
-    /// <a href="http://www.flounder.com/virtual_screen_coordinates.htm">Virtual Screen Coordinates</a>
-    /// Dont forget to add this to constructor:
-    /// 			Application.AddMessageFilter(this);
-    /// </remarks>
-		/// <param name="m">The Windows Message to filter and/or process.</param>
-		/// <returns>Success (true) or failure (false) to OS.</returns>
-		[System.Security.Permissions.PermissionSetAttribute(
-			System.Security.Permissions.SecurityAction.Demand, Name="FullTrust")]
-		public bool PreFilterMessage(ref Message m) {
-			var hWnd  = NativeMethods.WindowFromPoint( WindowsMouseInput.GetPointLParam(m.LParam) );
-			var ctl	  = Control.FromHandle(hWnd);
-      if (hWnd != IntPtr.Zero  &&  hWnd != m.HWnd  &&  ctl != null) {
-//      if (hWnd != IntPtr.Zero   &&  ctl != null) {
-        switch((WM)m.Msg) {
-          default:  break;
-          case WM.MOUSEHWHEEL:
-            DebugTracing.Trace(TraceFlags.ScrollEvents, true," - {0}.WM.{1}: ", Name, ((WM)m.Msg)); 
-            return (NativeMethods.SendMessage(hWnd, m.Msg, m.WParam, m.LParam) == IntPtr.Zero);
-          case WM.MOUSEWHEEL:
-            DebugTracing.Trace(TraceFlags.ScrollEvents, true," - {0}.WM.{1}: ", Name, ((WM)m.Msg)); 
-            return (NativeMethods.SendMessage(hWnd, m.Msg, m.WParam, m.LParam) == IntPtr.Zero);
-        }
-      }
-      return false;
-		}
     #endregion
   }
 
