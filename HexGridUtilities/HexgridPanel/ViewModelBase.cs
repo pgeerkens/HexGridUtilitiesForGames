@@ -27,17 +27,10 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Windows;
 using System.Windows.Input;
 
-using PGNapoleonics.HexgridPanel;
-using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexgridPanel {

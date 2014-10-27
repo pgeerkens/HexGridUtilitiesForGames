@@ -42,9 +42,9 @@ using WpfInput = System.Windows.Input;
 
 namespace PGNapoleonics.HexgridPanel {
   /// <summary>TODO</summary>
-  public class SelectableHScrollableControl : ScrollableControl {
+  public class TiltAwareScrollableControl : ScrollableControl {
     /// <summary>TODO</summary>
-    public SelectableHScrollableControl() {
+    public TiltAwareScrollableControl() {
       this.SetStyle(ControlStyles.Selectable, true);
       this.TabStop = true;
     }
@@ -91,7 +91,7 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>TODO</summary>
     protected override void WndProc(ref Message m) {
-      if (!IsDisposed && m.HWnd == this.Handle) {
+      if (!IsDisposed  &&  m.HWnd == this.Handle) {
         switch ((WM)m.Msg) {
           case WM.MOUSEHWHEEL: OnMouseHWheel(CreateMouseEventArgs(m));
             m.Result = (IntPtr)0;
@@ -106,6 +106,7 @@ namespace PGNapoleonics.HexgridPanel {
     /// <param name="e"></param>
     protected virtual void OnMouseHWheel(MouseEventArgs e) {
       if (e == null) throw new ArgumentNullException("e");
+      if (!AutoScroll) return;
 
       _wheelHPos += e.Delta;
       while (_wheelHPos > MouseWheelStep) {
@@ -177,7 +178,7 @@ namespace PGNapoleonics.HexgridPanel {
 
   /// <summary>Sub-class implementation of a <b>WinForms</b> Panel with integrated <see cref="Hexgrid"/> support.</summary>
   [DockingAttribute(DockingBehavior.AutoDock)]
-  public partial class HexgridScrollable : SelectableHScrollableControl, IHexgridHost, ISupportInitialize {
+  public partial class HexgridScrollable : TiltAwareScrollableControl, IHexgridHost, ISupportInitialize {
     /// <summary>Creates a new instance of HexgridScrollable.</summary>
     protected HexgridScrollable() {
       InitializeComponent();
@@ -273,7 +274,7 @@ namespace PGNapoleonics.HexgridPanel {
             var CenterHex           = PanelCenterHex;
             DataContext.ScaleIndex  = newValue; 
 
-            SetScrollLimits(DataContext.Model);
+//            SetScrollLimits(DataContext.Model);
             SetScroll(CenterHex);
             OnScaleChange(EventArgs.Empty); 
           } 
@@ -333,7 +334,7 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>Set ScrollBar increments and bounds from map dimensions.</summary>
     public virtual void SetScrollLimits(IMapDisplay model) {
-      if (model == null) return;
+      if (model == null  ||  !AutoScroll) return;
       var smallChange              = Size.Ceiling(model.GridSize.Scale(MapScale));
       HorizontalScroll.SmallChange = smallChange.Width;
       VerticalScroll.SmallChange   = smallChange.Height;

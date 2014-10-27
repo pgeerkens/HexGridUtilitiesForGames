@@ -52,7 +52,7 @@ using PGNapoleonics.HexUtilities.Pathfinding;
 namespace PGNapoleonics.HexUtilities {
   /// <summary>External interface exposed by individual hexes.</summary>
   public interface IHex {
-    /// <summary>The <c>IBoard&lt;IHex></c> on which this hex is located.</summary>
+//    /// <summary>The <c>IBoard&lt;IHex></c> on which this hex is located.</summary>
     IBoard<IHex> Board          { get; }
 
     /// <summary>The <c>HexCoords</c> coordinates for this hex on <c>Board</c>.</summary>
@@ -90,9 +90,8 @@ namespace PGNapoleonics.HexUtilities {
   /// <summary>Abstract implementation of the interface <see Cref="IHex"/>.</summary>
   [DebuggerDisplay("Coords: {Coords} / ElevASL: {ElevationASL}m")]
   public abstract class Hex<THex> : IHex, IEquatable<Hex<THex>> where THex : IHex {
-    /// <summary>Construct a new Hex instance on <paramref name="board"/> at location <paramref name="coords"/>.</summary>
-    protected Hex(IBoard<IHex> board, HexCoords coords) { 
-      Board     = board;
+    /// <summary>Construct a new Hex instance at location <paramref name="coords"/>.</summary>
+    protected Hex(HexCoords coords) { 
       Coords    = coords; 
 #if FALSE
       Shortcuts = new List<PathShortcut>(0);
@@ -100,7 +99,7 @@ namespace PGNapoleonics.HexUtilities {
     }
 
     /// <inheritdoc/>
-    public          IBoard<IHex> Board           { get; private set; }
+    public abstract IBoard<IHex> Board           { get; }
 
     /// <inheritdoc/>
     public          HexCoords    Coords          { get; private set; }
@@ -124,15 +123,14 @@ namespace PGNapoleonics.HexUtilities {
     public abstract int  StepCost(Hexside direction);
 
     /// <inheritdoc/>
-    public virtual  int  DirectedStepCost(Hexside hexsideExit) {
-      return Board[Coords.GetNeighbour(hexsideExit)].StepCost(hexsideExit);
-    }
+    public abstract int  DirectedStepCost(Hexside hexsideExit);
+
 
     /// <summary>Default implementation, assuming no blocking hexside terrain.</summary>
     public virtual  int  HeightHexside(Hexside hexside) { return HeightTerrain; }
 
     /// <inheritdoc/>
-    public          IHex Neighbour(Hexside hexside) { return Board[Coords.GetNeighbour(hexside)]; }
+    public abstract IHex Neighbour(Hexside hexside);
 
     /// <inheritdoc/>
     public IEnumerator<NeighbourHex> GetEnumerator() { return this.GetNeighbourHexes().GetEnumerator(); }

@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -26,34 +26,32 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Drawing;
 
 using PGNapoleonics.HexUtilities;
 
+
 namespace PGNapoleonics.HexgridPanel {
-  /// <summary>Deprecated; use interface IHex or abstract class MapGridHex instead.</summary>
-//  [Obsolete("Use interface IHex or abstract class MapGridHex instead.")]
-  public interface IMapGridHex : IHex {
-    /// <summary></summary>
-    new HexBoard<MapGridHex> Board      { get; set; }
+
+  /// <summary>TODO</summary>
+  public sealed class EmptyBoard : MapDisplay<MapGridHex> {
+    /// <summary>TODO</summary>
+    public EmptyBoard() : base(new Size(1,1), new Size(26,30), (mb,c) => new EmptyGridHex(mb,c)) {
+      FovRadius = 20;
+    }
   }
 
   /// <summary>TODO</summary>
-  public abstract class MapGridHex : Hex<IMapGridHex>, IMapGridHex {
+  public sealed class EmptyGridHex : MapGridHex, IMapGridHex, IHex {
     /// <summary>TODO</summary>
-    protected MapGridHex(HexBoard<MapGridHex> board, HexCoords coords) : base(board, coords) { 
-      ((IMapGridHex)this).Board = board;
+    public EmptyGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) : base(board,coords) {
     }
 
-    /// <inheritdoc/>
-    new public HexBoard<MapGridHex> Board      { get; set; }
-//    HexBoard<MapGridHex> IMapGridHex.Board      { get; set; }
-
     /// <summary>TODO</summary>
-    protected  Size                 GridSize   { get { return Board.GridSize; } }
-
-    /// <inheritdoc/>
-    public virtual  void Paint(Graphics g) {;}
+    public override int ElevationASL  { get { return 10 * Elevation; } }
+    /// <summary>TODO</summary>
+    public override int HeightTerrain { get { return ElevationASL;   } }
+    /// <summary>TODO</summary>
+    public override int StepCost(Hexside direction) { return -1; }
   }
 }

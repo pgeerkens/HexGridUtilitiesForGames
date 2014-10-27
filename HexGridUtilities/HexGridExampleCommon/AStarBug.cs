@@ -26,7 +26,6 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -36,11 +35,7 @@ using PGNapoleonics.HexUtilities;
 
 using MyMapDisplay = PGNapoleonics.HexgridPanel.MapDisplay<PGNapoleonics.HexgridPanel.MapGridHex>;
 
-#pragma warning disable 1587
-/// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexUtilities.HexgridPanel"/> to implement
-/// a terrain map.</summary>
-#pragma warning restore 1587
-namespace HexgridExampleCommon {
+namespace PGNapoleonics.HexgridExamples {
     /// <summary>TODO</summary>
   public sealed class AStarBugMap : MyMapDisplay {
     /// <summary>TODO</summary>
@@ -55,20 +50,11 @@ namespace HexgridExampleCommon {
     public override void PaintUnits(Graphics g) { ; }
 
     #region static Board definition
-    static List<string> _board = new List<string>() {
-      ".2333333333R..........2",
-      ".2........R33333333.22.",
-      ".2.......R........22...",
-      ".2......RR......22...RR",
-      "R2RRRRRR.......2.......",
-      ".2.....R.......2....RR.",
-      ".2.....R.......2.....RR.",
-      ".2.....R.......2......R."
-    };
+    static ReadOnlyCollection<string> _board = MapDefinitions.AStarBugMapDefinition;
     static Size _sizeHexes = new Size(_board[0].Length, _board.Count);
     #endregion
 
-    private static MapGridHex InitializeHex(HexBoard<MapGridHex> board, HexCoords coords) {
+    private static MapGridHex InitializeHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) {
       char value = _board[coords.User.Y][coords.User.X];
       switch(value) {
         default:   

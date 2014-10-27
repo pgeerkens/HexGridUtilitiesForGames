@@ -30,9 +30,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Windows.Forms;
 
-using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
@@ -44,7 +42,6 @@ using PGNapoleonics.HexUtilities.FieldOfView;
 #pragma warning restore 1587
 namespace PGNapoleonics.HexgridPanel {
   using Int32ValueEventArgs = ValueChangedEventArgs<Int32>;
-  using BoolValueEventArgs  = ValueChangedEventArgs<bool>;
 
   /// <summary>Abstract class representing the basic game board.</summary>
   /// <typeparam name="THex">Type of the hex for which a game board is desired.</typeparam>

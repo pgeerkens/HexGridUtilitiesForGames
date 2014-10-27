@@ -27,57 +27,33 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Diagnostics;
-using System.Globalization;
+using System.Drawing;
 
-namespace PGNapoleonics.HexUtilities.Common {
+using PGNapoleonics.HexUtilities;
+
+namespace PGNapoleonics.HexgridScrollable {
+  /// <summary>Deprecated; use interface IHex or abstract class MapGridHex instead.</summary>
+//  [Obsolete("Use interface IHex or abstract class MapGridHex instead.")]
+  public interface IMapGridHex : IHex {
+    /// <summary></summary>
+    new HexBoard<MapGridHex> Board      { get; set; }
+  }
+
   /// <summary>TODO</summary>
-  [DebuggerDisplay("{Coords} at {Hexside}")]
-  public struct NeighbourCoords : IEquatable<NeighbourCoords> {
-    #region Constructors
+  public abstract class MapGridHex : Hex<IMapGridHex>, IMapGridHex {
     /// <summary>TODO</summary>
-    public NeighbourCoords(HexCoords coords, Hexside hexside) : this() {
-      Coords = coords; Hexside = hexside;
-    }
-    #endregion
-
-    #region Properties
-    /// <summary>TODO</summary>
-    public Hexside   Hexside   { get; private set; }
-    /// <summary>TODO</summary>
-    public HexCoords Coords    { get; private set; }
-    #endregion
-
-    /// <inheritdoc/>
-    public override string ToString() { 
-      return string.Format(CultureInfo.InvariantCulture,"Neighbour: {0} at {1}", Coords.User,Hexside);
-    }
-
-    /// <summary>TODO</summary>
-    public static Func<NeighbourCoords,T> Bind<T>(Func<HexCoords,T> f) {
-      return n => f(n.Coords);
-    }
-
-    #region Value Equality - on Coords field only
-    /// <inheritdoc/>
-    public override bool Equals(object obj) { 
-      var other = obj as NeighbourCoords?;
-      return other.HasValue  &&  this == other.Value;
+    protected MapGridHex(HexBoard<MapGridHex> board, HexCoords coords) : base(board, coords) { 
+      ((IMapGridHex)this).Board = board;
     }
 
     /// <inheritdoc/>
-    public override int  GetHashCode() { return Coords.GetHashCode(); }
+    new public HexBoard<MapGridHex> Board      { get; set; }
+//    HexBoard<MapGridHex> IMapGridHex.Board      { get; set; }
+
+    /// <summary>TODO</summary>
+    protected  Size                 GridSize   { get { return Board.GridSize; } }
 
     /// <inheritdoc/>
-    public bool Equals(NeighbourCoords other) { return this == other; }
-
-    /// <summary>Tests value-inequality.</summary>
-    public static bool operator != (NeighbourCoords lhs, NeighbourCoords rhs) { return ! (lhs == rhs); }
-
-    /// <summary>Tests value-equality.</summary>
-    public static bool operator == (NeighbourCoords lhs, NeighbourCoords rhs) { 
-      return lhs.Coords == rhs.Coords; 
-    }
-    #endregion
+    public virtual  void Paint(Graphics g) {;}
   }
 }

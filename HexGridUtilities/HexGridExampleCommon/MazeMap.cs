@@ -27,6 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 
 using PGNapoleonics.HexgridPanel;
@@ -34,12 +35,9 @@ using PGNapoleonics.HexUtilities;
 
 using MyMapDisplay = PGNapoleonics.HexgridPanel.MapDisplay<PGNapoleonics.HexgridPanel.MapGridHex>;
 
-#pragma warning disable 1587
-/// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexUtilities.HexgridPanel"/> to implement
-/// a maze map.</summary>
-namespace HexgridExampleCommon {
-#pragma warning restore 1587
-  /// <summary>TODO</summary>
+namespace PGNapoleonics.HexgridExamples {
+  /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexUtilities.HexgridPanel"/> to implement
+  /// a maze map.</summary>
   public sealed class MazeMap : MyMapDisplay {
     /// <summary>TODO</summary>
     public MazeMap() : base(_sizeHexes, new Size(26,30), (map,coords) => InitializeHex(map,coords)) {}
@@ -56,42 +54,11 @@ namespace HexgridExampleCommon {
     public override void PaintUnits(Graphics g) { ; }
 
     #region static Board definition
-    static List<string> _board = new List<string>() {
-      ".............|.........|.......|.........|.............",
-      ".............|.........|.......|.........|.............",
-      "....xxxxxxxxx|....|....|...|...|...|.....|.............",
-      ".............|....|....|...|...|...|.....|.............",
-      "xxxxxxxxx....|....|....|...|...|...|.....|.............",
-      ".............|....|....|...|...|...|.....|.............",
-      ".............|....|....|...|...|...|...................",
-      ".....xxxxxxxx|....|........|.......|.......xxxxxxxx....",
-      "..................|........|.......|.......|......|....",
-      "xxxxxxxxx....xxxxxxxxxxxxxxxxxxxxxxxx......|......|....",
-      "................|........|...|.............|...|..|....",
-      "xxxxxxxxxxxx....|...|....|...|.............|...|...|...",
-      "................|...|....|...|.............|...|...|...",
-      "..xxxxxxxxxxxxxxx...|....|...|.............|...|...|...",
-      "....................|....|.................|...|...|...",
-      "xxxxxxxxxxxxxxxxx..xx....|.................|...|.......",
-      ".........................|...xxxxxxxxxxxxxxx...|xxxxxxx",
-      "xxxxxx...................|...|.................|.......",
-      ".........xxxxxxxxxxxxxxxxx...|.................|.......",
-      ".............................|...xxxxxxxxxxxxxx|.......",
-      "xxxxxxxxxx......xxxxxxxxxxxxx|...|.....................",
-      ".............................|...|.....................",
-      ".............................|...|...xxxxxxxxxxxxx.....",
-      "....xxxxxxxxxxxxxxxxxxxxxxxxx|...|...|.................",
-      ".............................|...|...|..........xxxxxxx",
-      "xxxxxxxxxxxxxxxxxxxxxxxxx....|...|...|.....|....|......",
-      ".............................|...|...|.....|....|......",
-      "...xxxxxxxxxxxxxxxxxxxxxxxxxx|...|...|.....|....|......",
-      ".............................|.......|.....|...........",
-      ".............................|.......|.....|..........."
-    };
-    static Size _sizeHexes = new Size(_board[0].Length, _board.Count);
+    static ReadOnlyCollection<string> _board     = MapDefinitions.MazeMapDefinition;
+    static Size                       _sizeHexes = new Size(_board[0].Length, _board.Count);
     #endregion
 
-    private static MapGridHex InitializeHex(HexBoard<MapGridHex> board, HexCoords coords) {
+    private static MapGridHex InitializeHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) {
       switch (_board[coords.User.Y][coords.User.X]) {
         case '.': return new PathMazeGridHex(board, coords);
         default:  return new WallMazeGridHex(board, coords);

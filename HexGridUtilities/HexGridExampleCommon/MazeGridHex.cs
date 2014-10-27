@@ -32,13 +32,13 @@ using System.Drawing;
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
-namespace HexgridExampleCommon {
+namespace PGNapoleonics.HexgridExamples {
   /// <summary>Abstract class for <c>MapGridHex</c> as used in the MazeGrid example.</summary>
   internal abstract class MazeGridHex : MapGridHex {
     /// <summary>Initializes a new instance of a <see cref="MazeGridHex"/>.</summary>
     /// <param name="board"></param>
     /// <param name="coords">Board location of this hex.</param>
-    protected MazeGridHex(HexBoard<MapGridHex> board, HexCoords coords)
+    protected MazeGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords)
       : base(board, coords) {}
 
     /// <inheritdoc/>
@@ -50,7 +50,7 @@ namespace HexgridExampleCommon {
     /// <summary>Create a new instance of a passable <c>MazeGridHex</c>.</summary>
     /// <param name="board">Reference to the mapboard on which this hex sits.</param>
     /// <param name="coords">Location of the new hex.</param>
-    public PathMazeGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
+    public PathMazeGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) 
       : base(board, coords) {
       Elevation = 0;
     }
@@ -66,7 +66,7 @@ namespace HexgridExampleCommon {
     /// <summary>Create a new instance of an impassable <c>MazeGridHex</c>.</summary>
     /// <param name="board">Reference to the mapboard on which this hex sits.</param>
     /// <param name="coords">Location of the new hex.</param>
-    public WallMazeGridHex(HexBoard<MapGridHex> board, HexCoords coords) 
+    public WallMazeGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) 
       : base(board, coords) {
       Elevation = 1;
     }
@@ -79,7 +79,7 @@ namespace HexgridExampleCommon {
     public override void Paint(Graphics g) {
       if (g==null) throw new ArgumentNullException("g");
       using(var brush = new SolidBrush(Color.FromArgb(78,Color.DarkGray)))
-        g.FillPath(brush, Board.HexgridPath);
+        g.FillPath(brush, BoardX.HexgridPath);
     }
   }
 }

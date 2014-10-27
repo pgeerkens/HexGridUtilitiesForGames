@@ -32,7 +32,9 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PGNapoleonics.HexUtilities.Common {
+using PGNapoleonics.HexUtilities.Common;
+
+namespace PGNapoleonics.HexUtilities {
   /// <summary>Abstract specification and partial implementation of the <c>BoardStorage</c> required by <c>HexBoard</c>.</summary>
   /// <typeparam name="T">The type of the information being stored.</typeparam>
   public abstract class BoardStorage<T> : IDisposable {

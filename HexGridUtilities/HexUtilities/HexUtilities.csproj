@@ -74,12 +74,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\BoardStorage.cs" />
+    <Compile Include="BoardStorage.cs" />
     <Compile Include="Common\Extensions.cs" />
     <Compile Include="CustomCoordsFactory.cs" />
     <Compile Include="Common\DebugTracing.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HexsideFlags.cs" />
+    <Compile Include="IMapDisplay.cs" />
     <Compile Include="Pathfinding\BidirectionalPathfinder.cs" />
     <Compile Include="Pathfinding\ConcurrentHashSet.cs" />
     <Compile Include="Pathfinding\DictPriorityQueue.cs" />
@@ -92,8 +93,8 @@
     <Compile Include="Common\ImmutableStack.cs" />
     <Compile Include="Common\IntMatrix2D.cs" />
     <Compile Include="Common\IntVector2D.cs" />
-    <Compile Include="Common\NeighbourCoords.cs" />
-    <Compile Include="Common\NeighbourHex.cs" />
+    <Compile Include="NeighbourCoords.cs" />
+    <Compile Include="NeighbourHex.cs" />
     <Compile Include="Pathfinding\HexKeyValuePair.cs" />
     <Compile Include="Pathfinding\HotPriorityQueue.cs" />
     <Compile Include="Pathfinding\HotPriorityQueueueList.cs" />

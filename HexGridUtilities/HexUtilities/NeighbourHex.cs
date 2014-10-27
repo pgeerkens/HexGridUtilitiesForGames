@@ -30,7 +30,9 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace PGNapoleonics.HexUtilities.Common {
+using PGNapoleonics.HexUtilities.Common;
+
+namespace PGNapoleonics.HexUtilities {
   /// <summary>TODO</summary>
   [DebuggerDisplay("NeighbourHex: {Hex.Coords} exits to {HexsideEntry}")]
   public struct NeighbourHex : IEquatable<NeighbourHex> {

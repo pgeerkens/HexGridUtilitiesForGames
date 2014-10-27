@@ -36,24 +36,27 @@ namespace PGNapoleonics.HexUtilities.Common {
       return @this.Scale(value,value);
     }
     /// <summary>TODO</summary>
-    public static Point Scale(this Point @this, int scaleX, int scaleY) {
-      return new Point(@this.X * scaleX, @this.Y * scaleY);
+    public static Point Scale(this Point @this, int valueX, int valueY) {
+      return new Point(@this.X * valueX, @this.Y * valueY);
     }
+
+
     /// <summary>TODO</summary>
     public static PointF Scale(this Point @this, float value) {
       return @this.Scale(value,value);
     }
     /// <summary>TODO</summary>
-    public static PointF Scale(this Point @this, float scaleX, float scaleY) {
-      return new PointF(@this.X,@this.Y).Scale(scaleX,scaleY);
+    public static PointF Scale(this Point @this, float valueX, float valueY) {
+      return new PointF(@this.X,@this.Y).Scale(valueX,valueY);
     }
     /// <summary>TODO</summary>
     public static PointF Scale(this PointF @this, float value) { 
       return @this.Scale(value,value);
     }
     /// <summary>TODO</summary>
-    public static PointF Scale(this PointF @this, float scaleX, float scaleY) {
-      return new PointF(@this.X * scaleX, @this.Y * scaleY);
+    public static PointF Scale(this PointF @this, float valueX, float valueY) {
+      return new PointF(@this.X * valueX, @this.Y * valueY);
     }
   }
 }
+

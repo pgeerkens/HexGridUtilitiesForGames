@@ -27,56 +27,59 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Globalization;
 
-using PGNapoleonics.HexgridPanel;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace HexgridExampleCommon {
-  using MapGridDisplay = PGNapoleonics.HexgridPanel.MapDisplay<MapGridHex>;
-
+namespace PGNapoleonics.HexUtilities {
   /// <summary>TODO</summary>
-  public struct Map {
+  [DebuggerDisplay("{Coords} at {Hexside}")]
+  public struct NeighbourCoords : IEquatable<NeighbourCoords> {
+    #region Constructors
     /// <summary>TODO</summary>
-    public string MapName { get; private set; }
-    /// <summary>TODO</summary>
-    public MapGridDisplay MapBoard { get { return _mapExtractor(); } } Func<MapGridDisplay> _mapExtractor;
+    public NeighbourCoords(HexCoords coords, Hexside hexside) : this() {
+      Coords = coords; Hexside = hexside;
+    }
+    #endregion
 
+    #region Properties
     /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-    public Map(string mapName, Func<MapGridDisplay> mapExtractor)
-      : this() {
-      MapName = mapName;
-      _mapExtractor = mapExtractor;
+    public Hexside   Hexside   { get; private set; }
+    /// <summary>TODO</summary>
+    public HexCoords Coords    { get; private set; }
+    #endregion
+
+    /// <inheritdoc/>
+    public override string ToString() { 
+      return string.Format(CultureInfo.InvariantCulture,"Neighbour: {0} at {1}", Coords.User,Hexside);
     }
 
-    private static ReadOnlyCollection<Map> _mapList = 
-        new ReadOnlyCollection<Map>(new Map[] {
-            new Map("Terrain Map",   () => new TerrainMap()),
-            new Map("Maze Map",      () => new MazeMap()),
-            new Map("AStar Bug Map", () => new AStarBugMap())
-          } );
-
     /// <summary>TODO</summary>
-    public static ReadOnlyCollection<Map> MapList { get { return _mapList; } }
+    public static Func<NeighbourCoords,T> Bind<T>(Func<HexCoords,T> f) {
+      return n => f(n.Coords);
+    }
 
-    #region Value Equality
+    #region Value Equality - on Coords field only
     /// <inheritdoc/>
-    public override bool Equals(object obj) {
-      var other = obj as Map?;
-      return other.HasValue && this == other.Value;
+    public override bool Equals(object obj) { 
+      var other = obj as NeighbourCoords?;
+      return other.HasValue  &&  this == other.Value;
     }
 
     /// <inheritdoc/>
-    public override int GetHashCode() { return MapName.GetHashCode(); }
+    public override int  GetHashCode() { return Coords.GetHashCode(); }
 
     /// <inheritdoc/>
-    public bool Equals(Map other) { return this == other; }
+    public bool Equals(NeighbourCoords other) { return this == other; }
 
     /// <summary>Tests value-inequality.</summary>
-    public static bool operator !=(Map lhs, Map rhs) { return !(lhs == rhs); }
+    public static bool operator != (NeighbourCoords lhs, NeighbourCoords rhs) { return ! (lhs == rhs); }
 
     /// <summary>Tests value-equality.</summary>
-    public static bool operator ==(Map lhs, Map rhs) { return (lhs.MapName == rhs.MapName); }
+    public static bool operator == (NeighbourCoords lhs, NeighbourCoords rhs) { 
+      return lhs.Coords == rhs.Coords; 
+    }
     #endregion
   }
 }

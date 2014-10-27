@@ -7,7 +7,7 @@
     <ProjectGuid>{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HexgridExampleCommon</RootNamespace>
+    <RootNamespace>PGNapoleonics.HexgridExamples</RootNamespace>
     <AssemblyName>HexGridExampleCommon</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="DocMainPage.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="MapDefs.cs" />
     <Compile Include="MapList.cs" />
     <Compile Include="MazeGridHex.cs" />
     <Compile Include="MazeMap.cs" />

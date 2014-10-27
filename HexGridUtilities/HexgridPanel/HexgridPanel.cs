@@ -40,143 +40,6 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
-  /// <summary>A Focusable Panel</summary>
-  /// ///<remarks>Courtesy of Hans Passant: 
-  /// <a>http://stackoverflow.com/questions/3562235/panel-not-getting-focus</a>
-  /// </remarks>
-  public class TiltAwarePanel : Panel {
-    /// <summary>TODO</summary>
-    public TiltAwarePanel() {
-      this.SetStyle(ControlStyles.Selectable, true);
-      this.TabStop = true;
-    }
-
-    #region SelectablePanel implementation
-    /// <inheritdoc/>
-    protected override void OnMouseDown(MouseEventArgs e) {
-      this.Focus();
-      base.OnMouseDown(e);
-    }
-    /// <inheritdoc/>
-    protected override bool IsInputKey(Keys keyData) {
-      if (keyData == Keys.Up || keyData == Keys.Down) return true;
-      if (keyData == Keys.Left || keyData == Keys.Right) return true;
-      return base.IsInputKey(keyData);
-    }
-    /// <inheritdoc/>
-    protected override void OnEnter(EventArgs e) {
-      this.Invalidate();
-      base.OnEnter(e);
-    }
-    /// <inheritdoc/>
-    protected override void OnLeave(EventArgs e) {
-      this.Invalidate();
-      base.OnLeave(e);
-    }
-    /// <inheritdoc/>
-    protected override void OnPaint(PaintEventArgs e) {
-      if (e == null) throw new ArgumentNullException("e");
-      base.OnPaint(e);
-      if (this.Focused) {
-        var rc = this.ClientRectangle;
-        rc.Inflate(-2, -2);
-        ControlPaint.DrawFocusRectangle(e.Graphics, rc);
-      }
-    }
-    #endregion
-
-    #region Mouse Tilt Wheel (MouseHWheel) event implementation
-    /// <summary>Occurs when the mouse tilt-wheel moves while the control has focus.</summary>
-    public event EventHandler<MouseEventArgs> MouseHWheel;
-
-    private int _wheelHPos = 0;   //!< <summary>Unapplied horizontal scroll.</summary>
-
-    /// <summary>Processes Windows messages.</summary>
-    protected override void WndProc(ref Message m) {
-      if (!IsDisposed && m.HWnd == this.Handle) {
-        switch ((WM)m.Msg) {
-          case WM.MOUSEHWHEEL:  OnMouseHWheel(CreateMouseEventArgs(m));
-                                m.Result = (IntPtr)0;
-                                break;
-
-          default:              break;
-        }
-      }
-      base.WndProc(ref m);
-    }
-
-    /// <summary>Raises the MouseHWheel event.</summary>
-    /// <param name="e">A <c>MouseEventArgs</c> that contains the event data. </param>
-    protected virtual void OnMouseHWheel(MouseEventArgs e) {
-      if (e == null) throw new ArgumentNullException("e");
-
-      _wheelHPos += e.Delta;
-      while (_wheelHPos > MouseWheelStep) {
-        ScrollHorizontal(MouseWheelStep);
-        _wheelHPos -= MouseWheelStep;
-      }
-      while (_wheelHPos < -MouseWheelStep) {
-        ScrollHorizontal(-MouseWheelStep);
-        _wheelHPos += MouseWheelStep;
-      }
-
-      if (MouseHWheel != null) MouseHWheel.Raise(this, e);
-    }
-
-    /// <summary>TODO</summary>
-    private void ScrollHorizontal(int delta) {
-      AutoScrollPosition = new Point(
-        -AutoScrollPosition.X + delta,
-        -AutoScrollPosition.Y);
-    }
-
-    /// <summary>TODO</summary>
-    private static int MouseWheelStep {
-      get {
-        return SystemInformation.MouseWheelScrollDelta
-             / SystemInformation.MouseWheelScrollLines;
-      }
-    }
-
-    private static MouseEventArgs CreateMouseEventArgs(Message m) {
-      return new MouseEventArgs (
-          (MouseButtons)NativeMethods.LOWORD(m.WParam),
-          0,
-          NativeMethods.LOWORD(m.LParam),
-          NativeMethods.HIWORD(m.LParam),
-          (Int16)NativeMethods.HIWORD(m.WParam)
-        );
-    }
-    #endregion
-
-    #region Panel Scroll extensions
-    /// <summary>TODO</summary>
-    public void ScrollVertical(ScrollEventType type, int sign) {
-      ScrollPanelCommon(type, sign, VerticalScroll);
-    }
-    /// <summary>TODO</summary>
-    public void ScrollHorizontal(ScrollEventType type, int sign) {
-      ScrollPanelCommon(type, sign, HorizontalScroll);
-    }
-    /// <summary>TODO</summary>
-    private void ScrollPanelCommon(ScrollEventType type, int sign, ScrollProperties scroll) {
-      if (sign == 0) return;
-      Func<Point, int, Point> func = (p, step) => new Point(-p.X, -p.Y + step * sign);
-      AutoScrollPosition = func(AutoScrollPosition,
-        type.HasFlag(ScrollEventType.LargeDecrement) ? scroll.LargeChange : scroll.SmallChange);
-    }
-
-    /// <summary>Service routine to execute a Panel scroll.</summary>
-    [Obsolete("Use ScrollPanelVertical or ScrollPanelHorizontal instead.")]
-    public void ScrollPanel(ScrollEventType type, ScrollOrientation orientation, int sign) {
-      if (orientation == ScrollOrientation.VerticalScroll)
-        ScrollVertical(type, sign);
-      else
-        ScrollHorizontal(type, sign);
-    }
-    #endregion
-  }
-  
   /// <summary>Sub-class implementation of a <b>WinForms</b> Panel with integrated <see cref="Hexgrid"/> support.</summary>
   [DockingAttribute(DockingBehavior.AutoDock)]
   [Obsolete("Use PGNapoleonics.HexgridPanel.HexgridScrollable instead.")]
@@ -184,25 +47,21 @@ namespace PGNapoleonics.HexgridPanel {
     #region Constructors
     /// <summary>Creates a new instance of HexgridPanel.</summary>
     public HexgridPanel() {
-//      BeginInit();
       InitializeComponent();
-//      EndInit();
     }
     /// <summary>Creates a new instance of HexgridPanel.</summary>
     public HexgridPanel(IContainer container) {
       if (container==null) throw new ArgumentNullException("container");
       container.Add(this);
 
-//      BeginInit();
       InitializeComponent();
-//      EndInit();
     }
     #endregion
 
     #region ISupportInitialize implementation
     /// <summary>Signals the object that initialization is starting.</summary>
     public virtual void BeginInit() { 
-      Scales        = new List<float>() {1.000F}.AsReadOnly();
+      ScaleList        = new List<float>() {1.000F}.AsReadOnly();
       SetModel(new EmptyBoard());
       HotspotHex    = HexCoords.EmptyUser;
     }
@@ -250,32 +109,33 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>Gets or sets whether the board is transposed from flat-topped hexes to pointy-topped hexes.</summary>
     [Browsable(true)]
-    public bool        IsTransposed  { 
+    public     bool         IsTransposed  { 
       get { return Model.IsTransposed; }
       set { Model.IsTransposed = value;  SetScrollLimits(Model); }
     }
 
     /// <inheritdoc/>
-    public Size        MapSizePixels { get {return Model.MapSizePixels;} } // + MapMargin.Scale(2);} }
+    public     Size         MapSizePixels { get {return Model.MapSizePixels;} } // + MapMargin.Scale(2);} }
 
     /// <summary>Current scaling factor for map display.</summary>
-    public float       MapScale      { 
+    public     float        MapScale      { 
       get { return Model.MapScale; } 
       private set { Model.MapScale = value;  SetScrollLimits(Model); } 
     }
 
     /// <summary>Returns <code>HexCoords</code> of the hex closest to the center of the current viewport.</summary>
-    public HexCoords PanelCenterHex  { 
-      get { return GetHexCoords( Location + Size.Round(ClientSize.Scale(0.50F)) ); }
+    public     HexCoords   PanelCenterHex  { 
+//      get { return GetHexCoords( Location + Size.Round(ClientSize.Scale(0.50F)) ); }
+      get { return GetHexCoords( PointToClient(new Point(Size.Round(ClientSize.Scale(0.50F))) ) ); }
     }
 
     /// <summary>Index into <code>Scales</code> of current map scale.</summary>
-    public virtual int ScaleIndex    { 
+    public virtual int     ScaleIndex    { 
       get { return _scaleIndex; }
-      set { var newValue = Math.Max(0, Math.Min(Scales.Count-1, value));
+      set { var newValue = Math.Max(0, Math.Min(ScaleList.Count-1, value));
             if( _scaleIndex != newValue) {
               _scaleIndex = newValue;
-              MapScale    = Scales[ScaleIndex];
+              MapScale    = ScaleList[ScaleIndex];
 
               OnScaleChange(EventArgs.Empty); 
             }
@@ -283,18 +143,17 @@ namespace PGNapoleonics.HexgridPanel {
     } int _scaleIndex;
 
     /// <summary>Array of supported map scales  as IList&lt;float&gt;.</summary>
-    public ReadOnlyCollection<float>     Scales        { get; set; }
+    public ReadOnlyCollection<float>     ScaleList        { get; private set; }
     #endregion
 
     /// <summary>Force repaint of backing buffer for Map underlay.</summary>
-    public void SetMapDirty() {  MapBuffer = null; }
+    public    void      SetMapDirty()     { MapBuffer = null; }
 
     /// <summary>Set property Scales (array of supported map scales as IList&lt;float&gt;.</summary>
-    [Obsolete("Use Property Setter 'Scales' instead.")]
-    public void SetScaleList(ReadOnlyCollection<float> scales) { Scales = scales; }
+    public void SetScaleList(IList<float> scales) { ScaleList = new ReadOnlyCollection<float>(scales); }
 
     /// <summary>Set ScrollBar increments and bounds from map dimensions.</summary>
-    public virtual void SetScrollLimits(IMapDisplay model) {
+    public virtual void SetScrollLimits(IMapDisplayWinForms model) {
       if (model == null) return;
       var smallChange              = Size.Ceiling(model.GridSize.Scale(MapScale));
       HorizontalScroll.SmallChange = smallChange.Width;
@@ -317,20 +176,18 @@ namespace PGNapoleonics.HexgridPanel {
 
     #region Grid Coordinates
     /// <inheritdoc/>
-    protected Hexgrid    Hexgrid        { get {return Model.Hexgrid;} }
-//    /// <summary>Gets a SizeF struct for the hex GridSize under the current scaling.</summary>
-//    public SizeF   GridSizeF      { get; private set; } // { return Model.GridSize.Scale(MapScale); } }
+    protected Hexgrid     Hexgrid         { get {return Model.Hexgrid;} }
     /// <summary>Gets the current Panel AutoScrollPosition.</summary>
-    public Point   ScrollPosition { get { return AutoScrollPosition; } }
+    public    Point       ScrollPosition  { get { return AutoScrollPosition; } }
 
-    CoordsRectangle GetClipCells(PointF point, SizeF size) {
+    CoordsRectangle       GetClipCells(PointF point, SizeF size) {
       return Model.GetClipCells(point, size);
     }
 
     /// <summary>Returns, as a Rectangle, the IUserCoords for the currently visible extent.</summary>
-    public virtual CoordsRectangle     VisibleRectangle {
+    public virtual CoordsRectangle VisibleRectangle {
       get { return GetClipCells( AutoScrollPosition.Scale(-1.0F/MapScale), 
-                                      ClientSize.Scale(1.0F/MapScale) );
+                                         ClientSize.Scale( 1.0F/MapScale) );
       }
     }
 
@@ -465,26 +322,5 @@ namespace PGNapoleonics.HexgridPanel {
       else                                              base.OnMouseWheel(e);
     }
     #endregion
-  }
-
-  /// <summary>TODO</summary>
-  public sealed class EmptyBoard : MapDisplay<MapGridHex> {
-    /// <summary>TODO</summary>
-    public EmptyBoard() : base(new Size(1,1), new Size(26,30), (mb,c) => new EmptyGridHex(mb,c)) {
-      FovRadius = 20;
-    }
-  }
-
-  /// <summary>TODO</summary>
-  public sealed class EmptyGridHex : MapGridHex {
-    /// <summary>TODO</summary>
-    public EmptyGridHex(HexBoard<MapGridHex> board, HexCoords coords) : base(board, coords) {}
-
-    /// <summary>TODO</summary>
-    public override int ElevationASL  { get { return 10 * Elevation; } }
-    /// <summary>TODO</summary>
-    public override int HeightTerrain { get { return ElevationASL;   } }
-    /// <summary>TODO</summary>
-    public override int StepCost(Hexside direction) { return -1; }
   }
 }

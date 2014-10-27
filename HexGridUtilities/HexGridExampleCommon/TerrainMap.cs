@@ -26,7 +26,6 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -37,11 +36,11 @@ using PGNapoleonics.HexUtilities;
 using MyMapDisplay = PGNapoleonics.HexgridPanel.MapDisplay<PGNapoleonics.HexgridPanel.MapGridHex>;
 
 #pragma warning disable 1587
-/// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexUtilities.HexgridPanel"/> to implement
-/// a terrain map.</summary>
+/// <summary>TODO</summary>
 #pragma warning restore 1587
-namespace HexgridExampleCommon {
-    /// <summary>TODO</summary>
+namespace PGNapoleonics.HexgridExamples {
+  /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexUtilities.HexgridPanel"/> to implement
+  /// a terrain map.</summary>
   public sealed class TerrainMap : MyMapDisplay {
     /// <summary>TODO</summary>
     public TerrainMap() : base(_sizeHexes, new Size(26,30), (map,coords) => InitializeHex(map,coords)) {}
@@ -55,42 +54,11 @@ namespace HexgridExampleCommon {
     public override void PaintUnits(Graphics g) { ; }
 
     #region static Board definition
-    static List<string> _board = new List<string>() {
-      "...................3.......22...........R..............",
-      "...................3.........222222.....R..............",
-      "...................3..............2.....R..............",
-      "...................33..............22222F.2.2..........",
-      "..........WWRR......3...................R2.2.2222......",
-      ".........WWRRRR.....3.....HHHH..........R........22....",
-      ".........WRRRRRRR...3....HHMMHH.........R..........22..",
-      "..........RRRRRRR....3....HHHH..........R............22",
-      "...........RRRR......3..................R..............",
-      "............RR.......3..........RRRRRRRR...............",
-      ".....................3.........R............WW.........",
-      ".....................3.........R...........WWWWW.......",
-      ".....................3.........R............WWW........",
-      ".....................3.........R.......................",
-      ".....................3.........RRRRRRRR................",
-      "..........WWWWWWW....3.................R...............",
-      "........WWWWWWWWW....33................R...............",
-      ".......WWWWWWWWW.....3.33..............R...............",
-      "..........WWWWWWW....3...32222222222222F22222..........",
-      "...........WWWWWWW...3...2.............R.....222222....",
-      "............WWWWW....32222.............R...........22..",
-      "....................22....HHHH........RR.............22",
-      "................2222.....HHMMHH.....RR.......WW........",
-      "............2222..........HHMHH...RR.......WWWWW.......",
-      "........2222...............HHH..RR.........WWWW........",
-      "......22......................RR............WW.........",
-      "..2222......................RR.........................",
-      "22..................RRRRRRRR...........................",
-      "..................RR...................................",
-      ".................RRR..................................."
-    };
-    static Size _sizeHexes = new Size(_board[0].Length, _board.Count);
+    static ReadOnlyCollection<string> _board     = MapDefinitions.TerrainMapDefinition;
+    static Size                       _sizeHexes = new Size(_board[0].Length, _board.Count);
     #endregion
 
-    private static MapGridHex InitializeHex(HexBoard<MapGridHex> board, HexCoords coords) {
+    private static MapGridHex InitializeHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) {
       char value = _board[coords.User.Y][coords.User.X];
       switch(value) {
         default:   

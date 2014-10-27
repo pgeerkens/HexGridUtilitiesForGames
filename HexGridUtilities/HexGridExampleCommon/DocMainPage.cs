@@ -32,7 +32,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PGNapoleonics.HexgridPanel {
+namespace PGNapoleonics.HexgridExamples {
 #pragma warning disable 1587
 /// @mainpage HexgridUtilities V 6.4
 /// 
