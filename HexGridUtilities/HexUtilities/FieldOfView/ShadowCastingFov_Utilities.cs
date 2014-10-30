@@ -32,13 +32,12 @@ using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.FieldOfView {
   public static partial class ShadowCasting {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "code")]
     static IntVector2D LogAndEnqueue(Action<FovCone> enqueue, int range, IntVector2D top, 
             IntVector2D bottom, RiseRun riseRun, int code
     ) {
       if( top.GT(bottom)) {
         var cone = new FovCone(range+1, top, bottom, riseRun);
-        TraceFlags.FieldOfView.Trace(false, "  EQ: ({0}) code: {1}",cone,code);
+        Traces.FieldOfView.Trace(false, "  EQ: ({0}) code: {1}",cone,code);
         enqueue(cone);
         return bottom;
       } else {

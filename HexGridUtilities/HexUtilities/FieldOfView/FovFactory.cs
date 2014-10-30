@@ -30,6 +30,8 @@ using System;
 using System.Drawing;
 using System.Threading.Tasks;
 
+using System.Diagnostics.CodeAnalysis;
+
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
@@ -44,7 +46,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     Size     MapSizeHexes             { get; }
 
     /// <summary>Returns the <c>IHex</c> at location <c>coords</c>.</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
+   [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
     THex     this[HexCoords  coords] { get; }
 
     /// <summary>Returns whether the hex at location <c>coords</c>is "on board".</summary>
@@ -55,7 +57,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     bool     IsPassable(HexCoords coords);
   }
 
-  /// <summary>Extension methods for interface IFovBoard&lt;IHex&gt;.</summary>
+  /// <summary>Extension methods for interface IFovBoard {IHex}.</summary>
   public static class FovBoardExtensions {
     /// <summary>Returns the field-of-view on <c>board</c> from the hex specified by coordinates <c>coords</c>.</summary>
     [Obsolete("Use GetFieldOfView(HexCoords) instead.")]
@@ -109,7 +111,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     } 
     /// <summary>Gets a Field-of-View for this board synchronously.</summary>
     public static IFov GetFieldOfView(this IFovBoard<IHex> @this, HexCoords origin, FovTargetMode targetMode, int height, int hexesPerMile) {
-      TraceFlags.FieldOfView.Trace("GetFieldOfView");
+      Traces.FieldOfView.Trace("GetFieldOfView");
       var fov = new ArrayFieldOfView(@this);
       if (@this.IsPassable(origin))
         ShadowCasting.ComputeFieldOfView(origin, @this, targetMode, coords => fov[coords] = true, height, hexesPerMile);

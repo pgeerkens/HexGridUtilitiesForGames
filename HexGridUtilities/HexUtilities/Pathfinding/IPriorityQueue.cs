@@ -28,10 +28,12 @@
 #endregion
 using System;
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>TODO</summary>
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-    "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+  [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
+    Justification="The suffix has an unambiguous meaning in the application domain.")]
   public interface IPriorityQueue<TPriority,TValue> 
     where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority>
   {
@@ -46,8 +48,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <param name="value">The <c>TValue</c> value for the new entry.</param>
     void Enqueue(TPriority priority, TValue value);
 
-    /// <summary>Adds the specified <c>&lt;HexKeyValuePair></c> to the queue.</summary>
-    /// <param name="item">The <c>HexKeyValuePair&lt;Tpriority,TValue></c> entry to be added to the queue. </param>
+    /// <summary>Adds the specified <c>HexKeyValuePair</c> to the queue.</summary>
+    /// <param name="item">The <c>HexKeyValuePair {Tpriority,TValue}</c> entry to be added to the queue. </param>
     void Enqueue(HexKeyValuePair<TPriority,TValue> item);
 
     /// <summary>Returns whether the top queue entry has been successfully stored in <c>result</c> 

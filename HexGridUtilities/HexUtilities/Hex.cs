@@ -52,7 +52,7 @@ using PGNapoleonics.HexUtilities.Pathfinding;
 namespace PGNapoleonics.HexUtilities {
   /// <summary>External interface exposed by individual hexes.</summary>
   public interface IHex {
-//    /// <summary>The <c>IBoard&lt;IHex></c> on which this hex is located.</summary>
+    /// <summary>The <c>IBoard {IHex}</c> on which this hex is located.</summary>
     IBoard<IHex> Board          { get; }
 
     /// <summary>The <c>HexCoords</c> coordinates for this hex on <c>Board</c>.</summary>
@@ -161,7 +161,7 @@ namespace PGNapoleonics.HexUtilities {
              where directions.HasFlag(n.HexsideEntry.Direction()) && n.Hex.IsOnboard()
              select n;
     }
-   /// <summary>All neighbours of this hex, as an <c>IEnumerable&lt;NeighbourHex></c></summary>
+   /// <summary>All neighbours of this hex, as an <c>IEnumerable {NeighbourHex}</c></summary>
     public static IEnumerable<NeighbourHex> GetAllNeighbours(this IHex @this) {
       return HexsideExtensions.HexsideList.Select(i => 
             new NeighbourHex(@this.Board[@this.Coords.GetNeighbour(i)], i));
@@ -175,7 +175,7 @@ namespace PGNapoleonics.HexUtilities {
         action(board(@this.Coords.GetNeighbour(hexside)), hexside);
     }
 
-    /// <summary>All <i>OnBoard</i> neighbours of this hex, as an <c>IEnumerable&lt;NeighbourHex></c></summary>
+    /// <summary>All <i>OnBoard</i> neighbours of this hex, as an <c>IEnumerable {NeighbourHex}</c></summary>
     public static IEnumerable<NeighbourHex> GetNeighbourHexes(this IHex @this) { 
       return @this.GetAllNeighbours().Where(n => n.Hex!=null);
     }
@@ -194,7 +194,7 @@ namespace PGNapoleonics.HexUtilities {
     }
 
     /// <summary>Returns a least-cost path from this hex to the hex <c>goal.</c></summary>
-    public static IDirectedPath GetDirectedPath(this IHex @this, IHex goal) {
+    public static IDirectedPathCollection GetDirectedPath(this IHex @this, IHex goal) {
       if (@this==null) throw new ArgumentNullException("this");
       return @this.Board.GetDirectedPath(@this,goal);
     }

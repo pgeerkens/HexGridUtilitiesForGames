@@ -33,12 +33,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>TODO</summary>
   public static class EventHandlerExtensions {
     /// <summary>Raises an event in a standard (mostly thread-safe) manner.</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-      "CA1030:UseEventsWhereAppropriate", Justification="Not an event, just an event raiser.")]
+   [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", 
+      Justification="Not an event, just an event raiser.")]
     public static void Raise<T>(this EventHandler<T> @this, object sender, T e) 
       where T : EventArgs {
       var handler = @this;
@@ -46,8 +48,8 @@ namespace PGNapoleonics.HexUtilities.Common {
     }
  
       /// <summary>Raises an event in a standard (mostly thread-safe) manner.</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-      "CA1030:UseEventsWhereAppropriate", Justification="Not an event, just an event raiser.")]
+   [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", 
+      Justification="Not an event, just an event raiser.")]
     public static void Raise<T>(this PropertyChangedEventHandler @this, object sender, T e)  
       where T : PropertyChangedEventArgs {
       var handler = @this;
@@ -55,8 +57,8 @@ namespace PGNapoleonics.HexUtilities.Common {
     }
  
       /// <summary>Raises an event in a standard (mostly thread-safe) manner.</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-      "CA1030:UseEventsWhereAppropriate", Justification="Not an event, just an event raiser.")]
+   [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", 
+      Justification="Not an event, just an event raiser.")]
     public static void Raise<T>(this EventHandler @this, object sender, T e)  
       where T : EventArgs {
       var handler = @this;

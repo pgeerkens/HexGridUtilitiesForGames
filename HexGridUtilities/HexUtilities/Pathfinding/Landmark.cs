@@ -41,8 +41,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// instances.</summary>
     /// <param name="board">The board on which the collection of landmarks is to be instantiated.</param>
     /// <param name="landmarkCoords">Board coordinates of the desired landmarks</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", 
-      "CA2000:Dispose objects before losing scope")]
     public static LandmarkCollection CreateLandmarks(
       IBoard<IHex> board, 
       IList<HexCoords> landmarkCoords
@@ -103,7 +101,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
   }
   /// <summary>Extension methods for LandmarkCollection.</summary>
   public static class LandmarkCollectionExtensions {
-    /// <summary>(Re)calculates distances for all landmarks using the provided IBoard&lt;IHex&gt; definition.</summary>
+    /// <summary>(Re)calculates distances for all landmarks using the provided IBoard {IHex}; definition.</summary>
     /// <param name="this">The </param>
     /// <param name="board">The </param>
     public static void ResetLandmarks(this LandmarkCollection @this, IBoard<IHex> board) {
@@ -137,11 +135,11 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     internal void FillLandmark(IBoard<IHex> board) {
       if (board != null) {
-        backingStore = new BoardStorage<short>.BlockedBoardStorage32x32(board.MapSizeHexes, c => -1);
+        backingStore = new BlockedBoardStorage32x32<short>(board.MapSizeHexes, c => -1);
 
         var start  = board[Coords];
-        var queue  = DictionaryPriorityQueue<int, IHex>.NewQueue();
-        TraceFlags.FindPathDetail.Trace(true, "Find distances from {0}", start.Coords);
+        var queue  = PriorityQueueFactory.NewDictionaryQueue<int, IHex>();
+        Traces.FindPathDetail.Trace(true, "Find distances from {0}", start.Coords);
 
         queue.Enqueue (0, start);
 
@@ -151,13 +149,13 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
           var key  = item.Key;
           if( backingStore[here.Coords] > 0 ) continue;
 
-          TraceFlags.FindPathDetail.Trace("Dequeue Path at {0} w/ cost={1,4}.", here, key);
+          Traces.FindPathDetail.Trace("Dequeue Path at {0} w/ cost={1,4}.", here, key);
           backingStore[here.Coords] = (short)key;
 
           foreach (var there in here.GetAllNeighbours().Where(n => n!=null && n.Hex.IsOnboard())) {
             var cost = board.DirectedStepCost(here, there.HexsideEntry);
             if (cost > 0  &&  backingStore[there.Hex.Coords] == -1) {
-              TraceFlags.FindPathDetail.Trace("   Enqueue {0}: {1,4}", there.Hex.Coords, cost);
+              Traces.FindPathDetail.Trace("   Enqueue {0}: {1,4}", there.Hex.Coords, cost);
               queue.Enqueue(key + cost, there.Hex);
             }
           }

@@ -30,6 +30,8 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>Row-major order representation of an immutable integer matrix.</summary>
   /// <remarks> Represents Points as row vectors and planes as column vectors.
@@ -70,14 +72,13 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <summary> Initializes a new <code>IntMatrix2D</code> as the translation (dx,dy).</summary>
     /// <param name="dx">X-translate component</param>
     /// <param name="dy">Y-translate component</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "dy")]
     public IntMatrix2D(int dx, int dy)  : this(1,0, 0,1, dx,dy,1) {}
     /// <summary> Initialies a new <code>IntMatrix2D</code> with a rotation.</summary>
     /// <param name="m11">X-scale component.</param>
     /// <param name="m12">Y-shear component</param>
     /// <param name="m21">X-shear component</param>
     /// <param name="m22">Y-scale component</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1025:ReplaceRepetitiveArgumentsWithParamsArray"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "m")]
+    [SuppressMessage("Microsoft.Design", "CA1025:ReplaceRepetitiveArgumentsWithParamsArray")]
     public IntMatrix2D(int m11, int m12, int m21, int m22) : this(m11,m12, m21,m22, 0,0, 1) {}
     /// <summary>Copy Constructor for a new <code>IntMatrix2D</code>.</summary>
     /// <param name="m">Source IntegerMatrix</param>

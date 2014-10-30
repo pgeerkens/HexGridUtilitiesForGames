@@ -43,9 +43,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       return (coords) => func(HexCoords.NewCanonCoords(coords.Canon * matrix));
     }
 
-    //private static Action<HexCoords,Hexside> TranslateDodecant(IntMatrix2D matrix, HexsideMap map, Action<HexCoords,Hexside> action) {
-    //  return (coords,hexside) => action(HexCoords.NewCanonCoords(coords.Canon * matrix), map(hexside));
-    //}
     private static Func<HexCoords,Hexside,T> TranslateDodecant<T>(IntMatrix2D matrix, HexsideMap map,Func<HexCoords,Hexside,T> func) {
       return (coords,hexside) => func(HexCoords.NewCanonCoords(coords.Canon * matrix), map(hexside));
     }
@@ -60,7 +57,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     //           / 5 | 0 \  
     //         /     |     \
     //             Y-axis
-    private static readonly ReadOnlyCollection<IntMatrix2D> _dodecantMatrices =
+    private static readonly ReadOnlyCollection<IntMatrix2D> _dodecantMatrices = (
       new ReadOnlyCollection<IntMatrix2D>(
         new IntMatrix2D[] {
           new IntMatrix2D( 1, 0,  0, 1),  new IntMatrix2D(-1, 0,  1, 1),
@@ -70,7 +67,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
           new IntMatrix2D( 0, 1, -1,-1),  new IntMatrix2D( 0,-1, -1, 0),
           new IntMatrix2D( 1, 1, -1, 0),  new IntMatrix2D(-1,-1,  0, 1) 
         }
-    );
+    ) );
 
     private static readonly Func<int,Hexside> Mod6 = 
       intHexside => (
@@ -80,7 +77,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
           }
         ) [intHexside];
 
-    private static readonly ReadOnlyCollection<Func<Hexside,Hexside>> _dodecantHexsides =
+    private static readonly ReadOnlyCollection<Func<Hexside,Hexside>> _dodecantHexsides = (
       new ReadOnlyCollection<Func<Hexside,Hexside>>(
         new List<Func<Hexside,Hexside>>() {
           hexside => Mod6( 0 + (int)hexside), //  CW  from Hexside.North
@@ -101,6 +98,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
           hexside => Mod6( 5 + (int)hexside), //  CW  from Hexside.Northeast
           hexside => Mod6( 6 - (int)hexside), // CCW  from Hexside.North
         }
-    );
+    ) );
   }
 }

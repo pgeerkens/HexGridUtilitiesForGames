@@ -29,6 +29,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>Heap-On-Top (HOT) Priority Queue implementation with a key of type <c>int</c>.</summary>
   /// <typeparam name="TValue">Type of the queue-item value.</typeparam>
@@ -36,9 +39,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// 
   /// </remarks>
   /// <a href="http://en.wikipedia.org/wiki/Heapsort">Wikepedia - Heapsort</a>/>
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-    "CA1711:IdentifiersShouldNotHaveIncorrectSuffix", 
-    Justification="PriorityQueue has different interface from Queue")]
+  [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
+    Justification="The suffix has an unambiguous meaning in the application domain.")]
+  [DebuggerDisplay("Count={Count}")]
   public sealed class HotPriorityQueue<TValue> : IPriorityQueue<int,TValue> {
 
     int _baseIndex;

@@ -29,13 +29,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>Provides a thread-safe hash set data structure.</summary>
   /// <typeparam name="TKey">Specifies the type of elements in the hash set.</typeparam>
   /// <typeparam name="TValue">Type of the element value in the hash set.</typeparam>
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix"), DebuggerDisplay("Count={Count}")]
+  [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+  [DebuggerDisplay("Count={Count}")]
   public class ConcurrentHashSet<TKey, TValue> : ISet<TKey> where TKey : IEquatable<TKey>
   {
     private readonly HashSet<TKey> _hashSet  = new  HashSet<TKey>();
@@ -91,7 +94,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     }
 
     /// <inheritdoc/>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+    [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
     public IEqualityComparer<HashSet<TKey>> CreateSetComparer() { 
       return HashSet<TKey>.CreateSetComparer(); 
     }

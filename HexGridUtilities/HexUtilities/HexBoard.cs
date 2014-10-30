@@ -56,6 +56,7 @@ namespace PGNapoleonics.HexUtilities {
     int      ElevationASL(int elevationLevel);
   }
 
+  /// <summary>TODO</summary>
   public interface IHexBoard<THex> : IBoard<THex> where THex : class, IHex {
   }
 
@@ -68,10 +69,6 @@ namespace PGNapoleonics.HexUtilities {
     /// <see cref="System.Drawing.Size"/>.</param>
     /// <param name="gridSize">Extent in pixels of the layout grid for the hexagons, as a 
     /// <see cref="System.Drawing.Size"/>.</param>
-    /// <param name="initializeBoard">Delegate that creates the <see cref="BoardStorage{T}"/> backing
-    /// store for this instance.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-      "CA1006:DoNotNestGenericTypesInMemberSignatures")]
     protected HexBoard(HexSize sizeHexes, HexSize gridSize) {
       _mapSizeHexes      = sizeHexes;
       _gridSize          = gridSize;
@@ -81,7 +78,7 @@ namespace PGNapoleonics.HexUtilities {
     #region Properties
     /// <inheritdoc/>
     public          BoardStorage<THex> BoardHexes        { get; protected set; }
-    /// <summary>Offset of hex centre from upper-left corner, as a <see cref="Size"/> struct.</summary>
+    /// <summary>Offset of hex centre from upper-left corner, as a <see cref="System.Drawing.Size"/> struct.</summary>
     public          HexSize            CentreOfHexOffset { get; private set; }
     /// <inheritdoc/>
     public virtual  int                FovRadius         { get; set; }
@@ -203,7 +200,7 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>Extensions for the HexBoard class.</summary>
   public static partial class HexBoardExtensions {
     /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
-    public static IDirectedPath GetDirectedPath(this IBoard<IHex> @this, IHex start, IHex goal) {
+    public static IDirectedPathCollection GetDirectedPath(this IBoard<IHex> @this, IHex start, IHex goal) {
       if (@this == null) throw new ArgumentNullException("this");
       if (start == null) throw new ArgumentNullException("start");
       if (goal == null) throw new OperationCanceledException("goal");
@@ -213,17 +210,17 @@ namespace PGNapoleonics.HexUtilities {
               ? BidirectionalPathfinder .FindDirectedPathFwd(start, goal, @this)
               : UnidirectionalPathfinder.FindDirectedPathFwd(start, goal, @this);
       } else
-        return default(IDirectedPath);
+        return default(IDirectedPathCollection);
     }
 
 #if NET45
     /// <summary>Asynchronously returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
-    public static Task<IDirectedPath> GetDirectedPathAsync(
+    public static Task<IDirectedPathCollection> GetDirectedPathAsync(
       this IBoard<IHex> @this, 
       IHex start,  IHex goal
     ) {
       if (@this == null) throw new ArgumentNullException("this");
-      return Task.Run<IDirectedPath>(
+      return Task.Run<IDirectedPathCollection>(
           () => @this.GetDirectedPath(start, goal)
       );
     }

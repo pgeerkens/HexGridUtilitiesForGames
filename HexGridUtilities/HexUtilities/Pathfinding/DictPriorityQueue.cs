@@ -30,25 +30,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+
 namespace PGNapoleonics.HexUtilities.Pathfinding {
+
+  /// <summary>TODO</summary>
+  public static class PriorityQueueFactory {
+    /// <summary>TODO</summary>
+    public static IPriorityQueue<TPriority,TValue> NewDictionaryQueue<TPriority,TValue>()
+    where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority> {
+      return new DictionaryPriorityQueue<TPriority,TValue>();
+    }
+  }
+
+
   /// <summary>Stable (insertion-order preserving for equal-priority elements) PriorityQueue implementation.</summary>
   /// <remarks>Eric Lippert's C# implementation of PriorityQueue for use by the A* algorithm.</remarks>
   /// <a href="http://blogs.msdn.com/b/ericlippert/archive/2007/10/08/path-finding-using-a-in-c-3-0-part-three.aspx">Path Finding Using A* Part Three</a>
   /// <typeparam name="TPriority">Type of the queue-item prioirty.</typeparam>
   /// <typeparam name="TValue">Type of the queue-item value.</typeparam>
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-    "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+  [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
+    Justification="The suffix has an unambiguous meaning in the application domain.")]
+  [DebuggerDisplay("Count={Count}")]
   public sealed class DictionaryPriorityQueue<TPriority,TValue> 
     : IPriorityQueue<TPriority,TValue>
     where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority>
   {
-    /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-      "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
-    public static IPriorityQueue<TPriority,TValue> NewQueue() {
-      return new DictionaryPriorityQueue<TPriority,TValue>();
-    }
-
     IDictionary<TPriority,Queue<TValue>> _list = new SortedDictionary<TPriority,Queue<TValue>>();
 
     /// <inheritdoc/>
@@ -97,21 +105,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     }
 
     /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
-      "CA1822:MarkMembersAsStatic")]
-    public bool IsSynchronized { get { return false; } }
-
-    /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
-      "CA1822:MarkMembersAsStatic")]
-    public object SyncRoot     { get { return null; } }
-
-    /// <summary>TODO</summary>
     public void Clear() { _list.Clear(); }
-    /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
-      "CA1822:MarkMembersAsStatic")]
-    public object Clone() { throw new NotSupportedException(); }
 
     /// <summary>TODO</summary>
     public bool Contains(TValue value) { 
@@ -132,8 +126,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     }
 
     /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-      "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+    [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
     public IEnumerator<HexKeyValuePair<TPriority,TValue>> GetEnumerator() {
       foreach(var item in Enumerable()) 
         yield return item;
@@ -149,13 +142,28 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <summary>TODO</summary>
     public HexKeyValuePair<TPriority,TValue>[] ToArray() { return Enumerable().ToArray(); }
 
-    /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
-      "CA1822:MarkMembersAsStatic")]
-    public void TrimExcess() { throw new NotSupportedException(); }
-
     IEnumerable<HexKeyValuePair<TPriority,TValue>> Enumerable() {
       return _list.SelectMany(l => l.Value.Select(i => new HexKeyValuePair<TPriority,TValue>(l.Key, i)));
     }
+
+    #region Not implemented yet - Synchronization and Clone
+#if false
+    /// <summary>TODO</summary>
+    [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+    public bool IsSynchronized { get { return false; } }
+
+    /// <summary>TODO</summary>
+    [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+    public object SyncRoot     { get { return null; } }
+
+    /// <summary>TODO</summary>
+    [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+    public object Clone() { throw new NotSupportedException(); }
+
+    /// <summary>TODO</summary>
+    [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+    public void TrimExcess() { throw new NotSupportedException(); }
+#endif
+    #endregion
   }
 }

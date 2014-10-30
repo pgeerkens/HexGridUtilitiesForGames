@@ -52,7 +52,7 @@ namespace PGNapoleonics.HexUtilities {
 
   /// <summary>Common <i>extension methods</i> for <c>Hexside</c> and <c>HexSideFlags</c>.</summary>
   public static partial class HexsideExtensions {
-    /// <summary><c>Static List&lt;Hexside></c> for enumerations.</summary>
+    /// <summary><c>Static List {Hexside}</c> for enumerations.</summary>
     public static readonly ReadOnlyCollection<Hexside> HexsideList 
       = EnumExtensions.EnumGetValues<Hexside>().ToList().AsReadOnly();
       
@@ -60,10 +60,8 @@ namespace PGNapoleonics.HexUtilities {
       = HexsideList.Select(h=>EnumExtensions.ParseEnum<Hexsides>(h.ToString()))
                    .ToList().AsReadOnly();
 
-    /// <summary>Static List&lt;HexSideFlags> for enumerations.</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-      "CA1726:UsePreferredTerms", MessageId = "Flags")]
-    public static readonly IEnumerable<Hexsides> HexsideFlagsCollection = HexsideFlags;
+    /// <summary>Static List {HexSideFlags} for enumerations.</summary>
+    public static readonly IEnumerable<Hexsides> HexsideCollection = HexsideFlags;
 
     /// <summary>The <c>Hexside</c> corresponding to this <c>HexsideFlag</c>, or -1 if it doesn't exist.</summary>
     public static Hexside IndexOf(this Hexsides @this) {

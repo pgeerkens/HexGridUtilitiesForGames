@@ -58,7 +58,7 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>Gets the display name for this HexgridPanel host.</summary>
     string    Name            { get; }
     /// <summary>Gets the shortest path from <see cref="StartHex"/> to <see cref="GoalHex"/>.</summary>
-    IDirectedPath Path        { get; }
+    IDirectedPathCollection Path        { get; }
     /// <summary>Gets or sets the <see cref="HexCoords"/> of the start hex for path-finding.</summary>
     HexCoords StartHex        { get; set; }
     ///// <summary>Gets or sets whether to display the FIeld-of-View for <see Cref="HotspotHex"/>.</summary>

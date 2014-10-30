@@ -69,7 +69,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <remarks>Note that <c>heuristic</c> <b>must</b> be monotonic in order for the algorithm to perform properly.</remarks>
     /// <seealso cref="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html"/>
     #pragma warning restore 1633, 1658, 1584
-    public static IDirectedPath FindDirectedPathFwd(
+    public static IDirectedPathCollection FindDirectedPathFwd(
       IHex start,
       IHex goal,
       IDirectedNavigableBoard board
@@ -88,7 +88,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <remarks>Note that <c>heuristic</c> <b>must</b> be monotonic in order for the algorithm to perform properly.</remarks>
     /// <seealso cref="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html"/>
     #pragma warning restore 1658, 1584
-    public static IDirectedPath FindDirectedPathFwd (
+    public static IDirectedPathCollection FindDirectedPathFwd (
       IHex start,
       IHex goal,
       Func<IHex, Hexside, int> stepCost,
@@ -101,25 +101,25 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       var vectorGoal = goal.Coords.Canon - start.Coords.Canon;
       var closed     = new HashSet<HexCoords>();
       var open       = new HashSet<HexCoords>();
-      var queue      = new DictionaryPriorityQueue<int, DirectedPath>();
-      TraceFlags.FindPathDetail.Trace(true, "Find path from {0} to {1}; vectorGoal = {2}", 
+      var queue      = new DictionaryPriorityQueue<int, DirectedPathCollection>();
+      Traces.FindPathDetail.Trace(true, "Find path from {0} to {1}; vectorGoal = {2}", 
                                       start.Coords, goal.Coords, vectorGoal);
 
-      queue.Enqueue (0, new DirectedPath(goal));
+      queue.Enqueue (0, new DirectedPathCollection(goal));
 
-      HexKeyValuePair<int,DirectedPath> item;
+      HexKeyValuePair<int,DirectedPathCollection> item;
       while (queue.TryDequeue(out item)) {
         var path = item.Value;
         open.Add(path.PathStep.Hex.Coords);
         if( closed.Contains(path.PathStep.Hex.Coords) ) continue;
 
-        TraceFlags.FindPathDequeue.Trace(
+        Traces.FindPathDequeue.Trace(
           "Dequeue Path at {0} w/ cost={1,4} at {2}; estimate={3,4}:{4,4}.", 
           path.PathStep.Hex.Coords, path.TotalCost, path.HexsideExit, item.Key>>16, 
                 (int) ((int)(item.Key & 0xFFFFu) - 0x7FFF));
 
         if(path.PathStep.Hex.Equals(start)) {
-          TraceFlags.FindPathDequeue.Trace("Closed: {0,7}", closed.Count);
+          Traces.FindPathDequeue.Trace("Closed: {0,7}", closed.Count);
           return path;
         }
 
@@ -133,7 +133,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
               var newPath = path.AddStep(neighbour, cost);
               var key     = Estimate(heuristic, vectorGoal, start.Coords, neighbour.Hex.Coords, 
                               newPath.TotalCost);
-              TraceFlags.FindPathEnqueue.Trace("   Enqueue {0}: estimate={1,4}:{2,3}",
+              Traces.FindPathEnqueue.Trace("   Enqueue {0}: estimate={1,4}:{2,3}",
                         neighbour.Hex.Coords, key>>16, key & 0xFFFFu);
               queue.Enqueue(key, newPath);
             }

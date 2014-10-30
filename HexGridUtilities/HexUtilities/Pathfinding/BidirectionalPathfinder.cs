@@ -33,6 +33,8 @@ using System.Linq;
 
 using PGNapoleonics.HexUtilities.Common;
 
+using System.Diagnostics.CodeAnalysis;
+
 #pragma warning disable 1587
 /// <summary>A fast efficient serial implementation of <b>Bidirectional ALT</b> (<b>A*</b> with <b>L</b>andmarks and <b>T</b>riangle-inequality heuristic) <b>path-finding</b>
 /// on a <see cref="Hexgrid"/> map.</summary>
@@ -49,9 +51,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <remarks>Note that <c>heuristic</c> <b>must</b> be monotonic in order for the algorithm to perform 
     /// properly.</remarks>
     /// See also: <a href="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html">A* Algorithm Notes</a>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design",   
-      "CA1011:ConsiderPassingBaseTypesAsParameters")]
-    public static IDirectedPath FindDirectedPathFwd(
+    public static IDirectedPathCollection FindDirectedPathFwd(
       IHex start,  IHex goal,  IDirectedNavigableBoard board
     ) {
       if (board==null) throw new ArgumentNullException("board"); 
@@ -64,7 +64,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// onto the reverse half-path during post-processing, instead of the reverse.
     /// </remarks>
     /// <see cref="FindDirectedPathFwd"/>
-    public static IDirectedPath FindDirectedPathRev(
+    public static IDirectedPathCollection FindDirectedPathRev(
       IHex start,  IHex goal,  IDirectedNavigableBoard board
     ) {
       if (board==null) throw new ArgumentNullException("board"); 
@@ -86,7 +86,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       if (stepCost==null)   throw new ArgumentNullException("stepCost"); 
       if (landmarks==null)  throw new ArgumentNullException("landmarks");
 
-      TraceFlags.FindPathDetail.Trace(true, 
+      Traces.FindPathDetail.Trace(true, 
         "Fwd: Find path from {0} to {1}:", start.Coords, goal.Coords);
 
       var closed        = new HashSet<HexCoords>();
@@ -115,8 +115,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     BidirectionalPathfinder   Partner  { get; set; }
 
-    DirectedPath GetPartnerPath(HexCoords coords) {
-      DirectedPath path;
+    DirectedPathCollection GetPartnerPath(HexCoords coords) {
+      DirectedPathCollection path;
       _open.TryGetValue(coords,out path);
       return path;
     }
@@ -128,13 +128,13 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       return (estimate << 16);// + preference;
     }
     int  FrontierMinimum() { 
-      HexKeyValuePair<int,DirectedPath> item;
+      HexKeyValuePair<int,DirectedPathCollection> item;
       return (_queue.TryPeek(out item) ? item.Key >> 16 : (Int32)Int16.MaxValue); 
     }
     int  Heuristic(HexCoords coords) { return _heuristic(coords);  }
 
     bool IsFinished() {
-      HexKeyValuePair<int,DirectedPath> item;
+      HexKeyValuePair<int,DirectedPathCollection> item;
       if ( ! _queue.TryDequeue(out item)) return true;
 
       var path   = item.Value;
@@ -143,7 +143,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       _open.Remove(coords);
       if( ! _closed.Contains(coords) ) {
 
-        TraceFlags.FindPathDequeue.Trace(
+        Traces.FindPathDequeue.Trace(
           "{0} Dequeue Path at {1} w/ cost={2,4} at {3,-9}; estimate={4,4}:{5,4}.", 
           _search, coords, path.TotalCost, path.HexsideExit, item.Key >> 16, item.Key & 0xFFFF);
 
@@ -160,7 +160,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       }
       return ! _queue.Any();
     }
-    void ExpandHex(DirectedPath path, Hexside hexside) {
+    void ExpandHex(DirectedPathCollection path, Hexside hexside) {
       var here  = path.PathStep.Hex;
       var there = here.Neighbour(hexside);
       if (there != null  &&  ! _closed.Contains(there.Coords) ) {
@@ -173,10 +173,10 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
             var key       = Estimate(there, totalCost);
             var newPath   = _addStep(path, there, hexside, cost);
 
-            TraceFlags.FindPathEnqueue.Trace("   Enqueue {0}: estimate={1,4}:{2,4}",
+            Traces.FindPathEnqueue.Trace("   Enqueue {0}: estimate={1,4}:{2,4}",
                                           there.Coords, key>>16, key & 0xFFFF);
 
-            DirectedPath oldPath;
+            DirectedPathCollection oldPath;
             if ( ! _open.TryGetValue(there.Coords, out oldPath))  {
               _open.Add(there.Coords, newPath);
               _queue.Enqueue(key, newPath);
@@ -198,14 +198,14 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 //    IHex                               _goal;
     Func<HexCoords,int>                _heuristic;
     Landmark                           _landmark;
-    Dictionary<HexCoords,DirectedPath> _open;
-    HotPriorityQueue<DirectedPath>     _queue;
+    Dictionary<HexCoords,DirectedPathCollection> _open;
+    HotPriorityQueue<DirectedPathCollection>     _queue;
     string                             _search;
 //    IHex                               _start;
     IntVector2D                        _vectorGoal;
 
-    internal  Func<DirectedPath,IHex,Hexside,int,DirectedPath> _addStep;
-    internal  Action<DirectedPath,DirectedPath>                _setBestSoFar;
+    internal  Func<DirectedPathCollection,IHex,Hexside,int,DirectedPathCollection> _addStep;
+    internal  Action<DirectedPathCollection,DirectedPathCollection>                _setBestSoFar;
     internal  Func<IHex, Hexside, IHex, int>                   _stepCost;
     #endregion
 
@@ -213,25 +213,24 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       public PathHalves() { BestSoFar   = (Int32)Int16.MaxValue; }
 
       public int          BestSoFar { get; private set; }
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
-        "CA1811:AvoidUncalledPrivateCode")]
+      [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
       public int          KeySoFar  { get; private set; }
-      public DirectedPath PathFwd   { get { return MergePaths(_pathFwd, _pathRev); } }
-      public DirectedPath PathRev   { get { return MergePaths(_pathRev, _pathFwd); } }
+      public DirectedPathCollection PathFwd   { get { return MergePaths(_pathFwd, _pathRev); } }
+      public DirectedPathCollection PathRev   { get { return MergePaths(_pathRev, _pathFwd); } }
 
-      public void SetBestSoFar(DirectedPath pathFwd, DirectedPath pathRev) {
+      public void SetBestSoFar(DirectedPathCollection pathFwd, DirectedPathCollection pathRev) {
         if (pathFwd==null  ||  pathRev==null) return;
         if( pathFwd.TotalCost + pathRev.TotalCost < BestSoFar) {
           _pathFwd  = pathFwd; 
           _pathRev  = pathRev; 
           BestSoFar = _pathFwd.TotalCost + pathRev.TotalCost;
           KeySoFar  = _pathFwd.Key + _pathRev.Key;
-          TraceFlags.FindPathDetail.Trace("   SetBestSoFar: pathFwd at {0}; pathRev at {1}; Cost = {2}",
+          Traces.FindPathDetail.Trace("   SetBestSoFar: pathFwd at {0}; pathRev at {1}; Cost = {2}",
               pathFwd.PathStep.Hex.Coords, _pathRev.PathStep.Hex.Coords, BestSoFar);
         }
       }
 
-      public static DirectedPath MergePaths(DirectedPath fwd, DirectedPath rev) {
+      public static DirectedPathCollection MergePaths(DirectedPathCollection fwd, DirectedPathCollection rev) {
         if (rev!=null) {
           while (rev.PathSoFar!=null) {
             var hexside = rev.PathStep.HexsideEntry;
@@ -242,8 +241,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         return fwd;
       }
 
-      DirectedPath _pathFwd;
-      DirectedPath _pathRev;
+      DirectedPathCollection _pathFwd;
+      DirectedPathCollection _pathRev;
     }
 
     BidirectionalPathfinder(IHex start, IHex goal,
@@ -253,21 +252,21 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 //      _goal         = goal;
       _getBestSoFar = getBestSoFar;
       _vectorGoal   = goal.Coords.Canon - start.Coords.Canon;
-      _open         = new Dictionary<HexCoords, DirectedPath>();
+      _open         = new Dictionary<HexCoords, DirectedPathCollection>();
       _closed       = closed;
-      _queue        = new HotPriorityQueue<DirectedPath>(16);
+      _queue        = new HotPriorityQueue<DirectedPathCollection>(16);
       _landmark     = landmarks
               .OrderByDescending(l => l.HexDistance(goal.Coords) - l.HexDistance(start.Coords))
               .FirstOrDefault();
 //      _heuristic    = c => _landmark.HexDistance(c) - _landmark.HexDistance(start.Coords);
       _heuristic    = c => landmarks.Heuristic(goal.Coords, c);
 
-      var path = new DirectedPath(goal);
+      var path = new DirectedPathCollection(goal);
       _open.Add(goal.Coords, path);
       _queue.Enqueue (0, path);
     }
 
-    /// <summary>A <see cref="DirectedPath"/> from mid-point to goal obtained by searching backwards from goal.</summary>
+    /// <summary>A <see cref="DirectedPathCollection"/> from mid-point to goal obtained by searching backwards from goal.</summary>
     private sealed class PathfinderFwd : BidirectionalPathfinder {
       /// <summary>Create a new instance of <see cref="PathfinderFwd"/></summary>
       /// <param name="start"></param>
@@ -279,19 +278,19 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       /// <param name="getBestSoFar"></param>
       public PathfinderFwd(IHex start, IHex goal, Func<IHex, Hexside, int> stepCost, 
         LandmarkCollection landmarks, HashSet<HexCoords> closed,
-        Action<DirectedPath,DirectedPath> setBestSoFar,   Func<int> getBestSoFar
+        Action<DirectedPathCollection,DirectedPathCollection> setBestSoFar,   Func<int> getBestSoFar
       ) : base (start, goal, landmarks, closed, getBestSoFar) {
         _addStep      = (path,there,hexside,cost) => path.AddStep(there,hexside,cost);
         _setBestSoFar = (self,partner) => setBestSoFar(self,partner);
         _stepCost     = (here,hexside,there) => stepCost(there, hexside.Reversed());
 
         _search       = "Fwd";
-        TraceFlags.FindPathDetail.Trace( "   {0} Search uses: vectorGoal = {1}; and landmark at {2}", 
+        Traces.FindPathDetail.Trace( "   {0} Search uses: vectorGoal = {1}; and landmark at {2}", 
           _search, _vectorGoal, _landmark.Coords);
       }
     }
 
-    /// <summary>A <see cref="DirectedPath"/> from start to mid-point obtained by searching forwards from start.</summary>
+    /// <summary>A <see cref="DirectedPathCollection"/> from start to mid-point obtained by searching forwards from start.</summary>
     private sealed class PathfinderRev : BidirectionalPathfinder {
       /// <summary>Create a new instance of <see cref="PathfinderRev"/>.</summary>
       /// <param name="start"></param>
@@ -303,14 +302,14 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       /// <param name="getBestSoFar"></param>
       public PathfinderRev(IHex start, IHex goal, Func<IHex, Hexside, int> stepCost, 
         LandmarkCollection landmarks,  HashSet<HexCoords> closed,
-        Action<DirectedPath,DirectedPath> setBestSoFar,   Func<int> getBestSoFar
+        Action<DirectedPathCollection,DirectedPathCollection> setBestSoFar,   Func<int> getBestSoFar
       ) : base (goal, start, landmarks, closed, getBestSoFar) {
         _addStep      = (path,there,hexside,cost) => path.AddStep(there,hexside.Reversed(),cost);
         _setBestSoFar = (self,partner) => setBestSoFar(partner,self);
         _stepCost     = (here,hexside,there) => stepCost(here, hexside);
 
         _search       = "Rev";
-        TraceFlags.FindPathDetail.Trace( "   {0} Search uses: vectorGoal = {1}; and landmark at {2}", 
+        Traces.FindPathDetail.Trace( "   {0} Search uses: vectorGoal = {1}; and landmark at {2}", 
           _search, _vectorGoal, _landmark.Coords);
       }
     }

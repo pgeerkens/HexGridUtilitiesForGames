@@ -117,8 +117,6 @@ namespace PGNapoleonics.HexUtilities.Common {
     }
     /// <summary>Z component of the 'Vector'- or Cross-Product of two <code>IntVector2D</code>s</summary>
     /// <returns>A pseudo-scalar (it reverses sign on exchange of its arguments).</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
-      "CA2225:OperatorOverloadsHaveNamedAlternates")]
     public static int operator ^ (IntVector2D v1, IntVector2D v2) {
       return v1.X*v2.Y - v1.Y*v2.X;
     }
@@ -135,10 +133,13 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>Vector Subtraction of two <code>IntVector2D</code> as a new <code>IntVector2D</code></summary>
     public static IntVector2D Subtract (IntVector2D v1, IntVector2D v2) { return v1 - v2; }
 
-    /// <summary>Returns the inner- / scalar / dot-product of v1 and v2.</summary>
-    public static int InnerProduct (IntVector2D v1, IntVector2D v2) { return v1 * v2; }
     /// <summary>Returns the vector corss-product of v1 and v2.</summary>
     public static int CrossProduct (IntVector2D v1, IntVector2D v2) { return v1 ^ v2; }
+    /// <summary>Returns the inner- / scalar / dot-product of v1 and v2.</summary>
+    public static int InnerProduct (IntVector2D v1, IntVector2D v2) { return v1 * v2; }
+    /// <summary>Obsolete - use InnerProduct operaotr instead.</summary>
+    [Obsolete("Deprecated (as really confusing) - use InnerProduct instead.")]
+    public static int Xor (IntVector2D v1, IntVector2D v2) { return InnerProduct(v1, v2); }
 
     #endregion
 

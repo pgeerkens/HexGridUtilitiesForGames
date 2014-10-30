@@ -29,10 +29,10 @@
 using System;
 using System.Linq;
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace PGNapoleonics.HexUtilities {
   /// <summary>Flags for combinations of the six hexagonal directions.</summary>
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-    "CA1726:UsePreferredTerms", MessageId = "Flags")]
   [Flags]public enum Hexsides {
     /// <summary>The selection of no hexsides.</summary>
     None      = 0x00,
@@ -51,8 +51,6 @@ namespace PGNapoleonics.HexUtilities {
   }
 
   /// <summary>TODO</summary>
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-    "CA1726:UsePreferredTerms", MessageId = "Flags", Justification="These are Flags.")]
   public static partial class HexsidesExtensions {
     /// <summary>Tests (without boxing) if all flags are clear.</summary>
     public static bool AreAllClear(this Hexsides @this, Hexsides testBits) {

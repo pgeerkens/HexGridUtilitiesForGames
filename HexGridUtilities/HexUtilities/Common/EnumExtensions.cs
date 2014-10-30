@@ -33,54 +33,57 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace PGNapoleonics.HexUtilities.Common {
-  /// <summary>Type-safe extension methods for parsing Enums.</summary>
-  public static partial class EnumExtensions{
-    #region Enum Parsing utilities
-    /// <summary>Typesafe wrapper for <c>Enum.GetValues(typeof(TEnum).</c></summary>
-    public static ReadOnlyCollection<TEnum> EnumGetValues<TEnum>() {
-      return new ReadOnlyCollection<TEnum>((TEnum[])(Enum.GetValues(typeof(TEnum))));
+    /// <summary>Type-safe extension methods for parsing Enums.</summary>
+    public static partial class EnumExtensions{
+      #region Enum Parsing utilities
+      /// <summary>Typesafe wrapper for <c>Enum.GetValues(typeof(TEnum).</c></summary>
+      public static ReadOnlyCollection<TEnum> EnumGetValues<TEnum>() {
+        return new ReadOnlyCollection<TEnum>((TEnum[])(Enum.GetValues(typeof(TEnum))));
+      }
+
+      /// <summary>TODO</summary>
+     [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+      public static ReadOnlyCollection<string> EnumGetNames<TEnum>() where TEnum : struct {
+        return new ReadOnlyCollection<string>((string[])(Enum.GetNames(typeof(TEnum))));
+      }
+
+      /// <summary>Typesafe wrapper for <c>Enum.ParseEnum()</c> that automatically checks 
+      /// constants for membership in the <c>enum</c>.</summary>
+      public static TEnum ParseEnum<TEnum>(string value) where TEnum : struct {
+        return ParseEnum<TEnum>(value,true);
+      }
+
+      /// <summary>Typesafe wrapper for <c>Enum.ParseEnum()</c> that automatically checks 
+      /// constants for membership in the <c>enum</c>.</summary>
+      public static TEnum ParseEnum<TEnum>(string value, bool checkConstants) where TEnum : struct {
+        TEnum enumValue;
+        if (!TryParseEnum<TEnum>(value, out enumValue) && checkConstants) 
+              throw new ArgumentOutOfRangeException("value",value,"Enum type: " + typeof(TEnum).Name);
+
+        return enumValue;
+      }
+
+      /// <summary>Typesafe wrapper for <c>Enum.TryParseEnum()</c> that automatically checks 
+      /// constants for membership in the <c>enum</c>.</summary>
+      public static bool TryParseEnum<TEnum>(string value, out TEnum enumValue) where TEnum : struct {
+        return Enum.TryParse<TEnum>(value, out enumValue)  
+           &&  Enum.IsDefined(typeof(TEnum),enumValue);
+      }
+
+      /// <summary>Typesafe wrapper for <c>Enum.ToObject()</c>.</summary>
+      /// <typeparam name="TEnum"></typeparam>
+      public static TEnum EnumParse<TEnum>(char c, string lookup) {
+        if (lookup==null) throw new ArgumentNullException("lookup");
+        var index = lookup.IndexOf(c);
+        if (index == -1) throw new ArgumentOutOfRangeException("c",c,"Enum Type: " + typeof(TEnum).Name);
+
+        return (TEnum) Enum.ToObject(typeof(TEnum), index);
+      }
+      #endregion
     }
-
-    /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-      "CA1004:GenericMethodsShouldProvideTypeParameter")]
-    public static ReadOnlyCollection<string> EnumGetNames<TEnum>() {
-      return new ReadOnlyCollection<string>((string[])(Enum.GetNames(typeof(TEnum))));
-    }
-
-    /// <summary>Typesafe wrapper for <c>Enum.ParseEnum()</c> that automatically checks 
-    /// constants for membership in the <c>enum</c>.</summary>
-    public static TEnum ParseEnum<TEnum>(string value) where TEnum:struct {return ParseEnum<TEnum>(value,true); }
-
-    /// <summary>Typesafe wrapper for <c>Enum.ParseEnum()</c> that automatically checks 
-    /// constants for membership in the <c>enum</c>.</summary>
-    public static TEnum ParseEnum<TEnum>(string value, bool checkConstants) where TEnum:struct {
-      TEnum enumValue;
-      if (!TryParseEnum<TEnum>(value, out enumValue) && checkConstants) 
-            throw new ArgumentOutOfRangeException("value",value,"Enum type: " + typeof(TEnum).Name);
-
-      return enumValue;
-    }
-
-    /// <summary>Typesafe wrapper for <c>Enum.TryParseEnum()</c> that automatically checks 
-    /// constants for membership in the <c>enum</c>.</summary>
-    public static bool TryParseEnum<TEnum>(string value, out TEnum enumValue) where TEnum:struct {
-      return Enum.TryParse<TEnum>(value, out enumValue)  
-         &&  Enum.IsDefined(typeof(TEnum),enumValue);
-    }
-
-    /// <summary>Typesafe wrapper for <c>Enum.ToObject()</c>.</summary>
-    /// <typeparam name="TEnum"></typeparam>
-    public static TEnum EnumParse<TEnum>(char c, string lookup) {
-      if (lookup==null) throw new ArgumentNullException("lookup");
-      var index = lookup.IndexOf(c);
-      if (index == -1) throw new ArgumentOutOfRangeException("c",c,"Enum Type: " + typeof(TEnum).Name);
-
-      return (TEnum) Enum.ToObject(typeof(TEnum), index);
-    }
-    #endregion
-  }
 }
 #region Deprecated code
 namespace PGNapoleonics.HexUtilities.Common {
@@ -89,12 +92,14 @@ using System.IO;
     #region InvalidDataException Throwers
     /// <summary>Deprecated</summary>
     /// <deprecated/>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-      "CA1062:Validate arguments of public methods", MessageId = "0")]
     [Obsolete("InvalidDataException is an IOException; subclass and throw a more appropriate error instead.")]
     public static void ThrowInvalidDataException(MemberInfo type, object data) {
-      throw new InvalidDataException(string.Format(CultureInfo.InvariantCulture,
-          "{0}: Invalid: '{1}'", type.Name, data));
+      if (type == null) 
+        throw new InvalidDataException(string.Format(CultureInfo.InvariantCulture,
+            "Unknown: Invalid: '{0}'", data));
+      else
+        throw new InvalidDataException(string.Format(CultureInfo.InvariantCulture,
+            "{1}: Invalid: '{0}'", data, type.Name));
     }
     ///  <summary>Deprecated:</summary>
     /// <deprecated/>
