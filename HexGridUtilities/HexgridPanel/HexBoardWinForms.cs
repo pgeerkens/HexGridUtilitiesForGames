@@ -38,6 +38,10 @@ namespace PGNapoleonics.HexgridPanel {
   using HexPoint    = System.Drawing.Point;
   using HexSize     = System.Drawing.Size;
 
+  /// <summary>TODO</summary>
+  public delegate BoardStorage<THex> InitializeBoard<THex>(HexBoardWinForms<THex> board) where THex : class, IHex;
+
+  /// <summary>TODO</summary>
   public abstract class HexBoardWinForms<THex> : HexBoard<THex> where THex : class, IHex {
     #region Constructors
     /// <summary>Initializes the internal contents of <see cref="HexBoard{THex}"/> with default 
@@ -48,10 +52,8 @@ namespace PGNapoleonics.HexgridPanel {
     /// <see cref="System.Drawing.Size"/>.</param>
     /// <param name="initializeBoard">Delegate that creates the <see cref="BoardStorage{T}"/> backing
     /// store for this instance.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-      "CA1006:DoNotNestGenericTypesInMemberSignatures")]
     protected HexBoardWinForms(HexSize sizeHexes, HexSize gridSize, 
-                               Func<HexBoardWinForms<THex>,BoardStorage<THex>> initializeBoard) 
+                               InitializeBoard<THex> initializeBoard) 
     : this(sizeHexes, gridSize, initializeBoard, DefaultLandmarks(sizeHexes)) {}
 
     /// <summary>Initializes the internal contents of <see cref="HexBoard{THex}"/> with the specified set of 
@@ -64,10 +66,8 @@ namespace PGNapoleonics.HexgridPanel {
     /// store for this instance.</param>
     /// <param name="landmarkCoords">Collection of <see cref="HexCoords"/> specifying the landmark 
     /// locations to be used for pathfinding.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-      "CA1006:DoNotNestGenericTypesInMemberSignatures")]
     protected HexBoardWinForms(HexSize sizeHexes, HexSize gridSize, 
-                               Func<HexBoardWinForms<THex>,BoardStorage<THex>> initializeBoard, 
+                               InitializeBoard<THex> initializeBoard, 
                                ReadOnlyCollection<HexCoords> landmarkCoords)
     : base(sizeHexes, gridSize) {
       if (initializeBoard==null) throw new ArgumentNullException("initializeBoard");

@@ -42,7 +42,7 @@ namespace PGNapoleonics.HexgridPanel {
   }
 
   /// <summary>TODO</summary>
-  public sealed class EmptyGridHex : MapGridHex, IMapGridHex, IHex {
+  public sealed class EmptyGridHex : MapGridHex, IHex {
     /// <summary>TODO</summary>
     public EmptyGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) : base(board,coords) {
     }

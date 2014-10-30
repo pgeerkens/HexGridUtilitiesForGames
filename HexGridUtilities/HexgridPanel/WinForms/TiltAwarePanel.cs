@@ -81,7 +81,7 @@ namespace PGNapoleonics.HexgridPanel {
 
     #region Mouse Tilt Wheel (MouseHWheel) event implementation
     /// <summary>Occurs when the mouse tilt-wheel moves while the control has focus.</summary>
-    public event EventHandler<MouseEventArgs> MouseHWheel;
+    public event EventHandler<MouseEventArgs> MouseHwheel;
 
     private int _wheelHPos = 0;   //!< <summary>Unapplied horizontal scroll.</summary>
 
@@ -89,7 +89,7 @@ namespace PGNapoleonics.HexgridPanel {
     protected override void WndProc(ref Message m) {
       if (!IsDisposed && m.HWnd == this.Handle) {
         switch ((WM)m.Msg) {
-          case WM.MOUSEHWHEEL:  OnMouseHWheel(CreateMouseEventArgs(m));
+          case WM.MouseHwheel:  OnMouseHwheel(CreateMouseEventArgs(m));
                                 m.Result = (IntPtr)0;
                                 break;
 
@@ -101,7 +101,7 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>Raises the MouseHWheel event.</summary>
     /// <param name="e">A <c>MouseEventArgs</c> that contains the event data. </param>
-    protected virtual void OnMouseHWheel(MouseEventArgs e) {
+    protected virtual void OnMouseHwheel(MouseEventArgs e) {
       if (e == null) throw new ArgumentNullException("e");
 
       _wheelHPos += e.Delta;
@@ -114,7 +114,7 @@ namespace PGNapoleonics.HexgridPanel {
         _wheelHPos += MouseWheelStep;
       }
 
-      if (MouseHWheel != null) MouseHWheel.Raise(this, e);
+      if (MouseHwheel != null) MouseHwheel.Raise(this, e);
     }
 
     /// <summary>TODO</summary>
@@ -134,11 +134,11 @@ namespace PGNapoleonics.HexgridPanel {
 
     private static MouseEventArgs CreateMouseEventArgs(Message m) {
       return new MouseEventArgs (
-          (MouseButtons)NativeMethods.LOWORD(m.WParam),
+          (MouseButtons)NativeMethods.LoWord(m.WParam),
           0,
-          NativeMethods.LOWORD(m.LParam),
-          NativeMethods.HIWORD(m.LParam),
-          (Int16)NativeMethods.HIWORD(m.WParam)
+          NativeMethods.LoWord(m.LParam),
+          NativeMethods.HiWord(m.LParam),
+          (Int16)NativeMethods.HiWord(m.WParam)
         );
     }
     #endregion

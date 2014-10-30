@@ -64,8 +64,6 @@ namespace  PGNapoleonics.WinForms {
 		} 
     /// <summary>Invalidates the entire surface of the control and causes the control to be redrawn.</summary>
     /// <param name="rectangle">Clipping <c>Rectangle</c> to be invalidated.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", 
-      "CA1300:SpecifyMessageBoxOptions")]
     public virtual void Invalidate2(Rectangle rectangle) { 
 			if(Parent!=null  &&  Parent.IsHandleCreated) {
 				try {
@@ -77,7 +75,7 @@ namespace  PGNapoleonics.WinForms {
 			}
 		} 
 		/// <summary> Prevent background painting from overwriting transparent background</summary>
-		/// <param name="pevent"></param>
-		protected override void OnPaintBackground(PaintEventArgs pevent) { /* NO-OP */ } 
+		/// <param name="e"></param>
+		protected override void OnPaintBackground(PaintEventArgs e) { /* NO-OP */ } 
 	}
 }

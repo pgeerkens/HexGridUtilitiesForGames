@@ -142,14 +142,14 @@ namespace PGNapoleonics.HexgridPanel {
           } 
     } int _scaleIndex;
 
-    /// <summary>Array of supported map scales  as IList&lt;float&gt;.</summary>
+    /// <summary>Array of supported map scales  as IList {float}.</summary>
     public ReadOnlyCollection<float>     ScaleList        { get; private set; }
     #endregion
 
     /// <summary>Force repaint of backing buffer for Map underlay.</summary>
     public    void      SetMapDirty()     { MapBuffer = null; }
 
-    /// <summary>Set property Scales (array of supported map scales as IList&lt;float&gt;.</summary>
+    /// <summary>Set property Scales (array of supported map scales as IList {float}.</summary>
     public void SetScaleList(IList<float> scales) { ScaleList = new ReadOnlyCollection<float>(scales); }
 
     /// <summary>Set ScrollBar increments and bounds from map dimensions.</summary>
@@ -275,9 +275,9 @@ namespace PGNapoleonics.HexgridPanel {
     /// <inheritdoc/>
     protected override void OnMouseClick(MouseEventArgs e) {
       if (e == null) throw new ArgumentNullException("e");
-      TraceFlags.Mouse.Trace(" - {0}.OnMouseClick - Shift: {1}; Ctl: {2}; Alt: {3}",
+      Traces.Mouse.Trace(" - {0}.OnMouseClick - Shift: {1}; Ctl: {2}; Alt: {3}",
                                       Name, IsShiftKeyDown, IsCtlKeyDown, IsAltKeyDown);
-      var eventArgs = new HexEventArgs(GetHexCoords(e.Location), e, ModifierKeys);
+      var eventArgs = new HexEventArgs(GetHexCoords(e.Location), ModifierKeys,e.Button,e.Clicks,e.X,e.Y,e.Delta);
 
       if (e.Button == MouseButtons.Middle) base.OnMouseClick(eventArgs);
       else if (e.Button == MouseButtons.Right) OnMouseRightClick(eventArgs);
@@ -315,10 +315,10 @@ namespace PGNapoleonics.HexgridPanel {
     /// <inheritdoc/>
     protected override void OnMouseWheel(MouseEventArgs e) {
       if (e == null) throw new ArgumentNullException("e");
-      TraceFlags.ScrollEvents.Trace(" - {0}.OnMouseWheel: {1}", Model.Name, e.ToString());
+      Traces.ScrollEvents.Trace(" - {0}.OnMouseWheel: {1}", Model.Name, e.ToString());
 
       if (Control.ModifierKeys.HasFlag(Keys.Control))   ScaleIndex += Math.Sign(e.Delta);
-      else if (IsShiftKeyDown)                          base.OnMouseHWheel(e);
+      else if (IsShiftKeyDown)                          base.OnMouseHwheel(e);
       else                                              base.OnMouseWheel(e);
     }
     #endregion

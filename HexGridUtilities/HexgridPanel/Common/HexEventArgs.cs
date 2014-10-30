@@ -28,6 +28,8 @@
 #endregion
 using System.Windows.Forms;
 
+using System.Diagnostics.CodeAnalysis;
+
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridPanel {
@@ -48,17 +50,14 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>TODO</summary>
     public HexEventArgs(HexCoords coords) 
-      : this(coords, new MouseEventArgs(MouseButtons.None,0,0,0,0)) {}
+      : this(coords, Keys.None, MouseButtons.None,0,0,0,0) {}
     /// <summary>TODO</summary>
     public HexEventArgs(HexCoords coords, Keys modifierKeys) 
-      : this(coords, new MouseEventArgs(MouseButtons.None,0,0,0,0), modifierKeys) {}
+      : this(coords, modifierKeys, MouseButtons.None,0,0,0,0) {}
     /// <summary>TODO</summary>
-    public HexEventArgs(HexCoords coords, MouseEventArgs e) 
-      : this(coords, e, Keys.None) {}
-    /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1")]
-    public HexEventArgs(HexCoords coords, MouseEventArgs e, Keys modifierKeys)
-      : base(e.Button,e.Clicks,e.X,e.Y,e.Delta) {
+    public HexEventArgs(HexCoords coords, Keys modifierKeys, 
+      MouseButtons buttons, int clicks, int x, int y, int delta)
+      : base(buttons,clicks,x,y,delta) {
       Coords       = coords;
       ModifierKeys = modifierKeys;
     }

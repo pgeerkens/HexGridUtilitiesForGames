@@ -36,12 +36,17 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexUtilities.FieldOfView;
 
+using System.Diagnostics.CodeAnalysis;
+
 #pragma warning disable 1587
 /// <summary>WinForms-specific utilities, including implementation of the subclasses HexgridPanel
 /// and MapDisplay<THex>, utilizing the System.Windows.Forms technology.</summary>
 #pragma warning restore 1587
 namespace PGNapoleonics.HexgridPanel {
   using Int32ValueEventArgs = ValueChangedEventArgs<Int32>;
+
+  /// <summary>TODO</summary>
+  public delegate THex InitializeHex<THex>(HexBoardWinForms<THex> board, HexCoords coords) where THex : class, IHex;
 
   /// <summary>Abstract class representing the basic game board.</summary>
   /// <typeparam name="THex">Type of the hex for which a game board is desired.</typeparam>
@@ -50,16 +55,14 @@ namespace PGNapoleonics.HexgridPanel {
 
     #region Constructors
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-    protected MapDisplay(Size sizeHexes, Size gridSize, Func<HexBoardWinForms<THex>, HexCoords, THex> initializeHex) 
+    protected MapDisplay(Size sizeHexes, Size gridSize, InitializeHex<THex> initializeHex) 
     : this(sizeHexes, gridSize, initializeHex, DefaultLandmarks(sizeHexes)) {}
 
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-    protected MapDisplay(Size sizeHexes, Size gridSize, Func<HexBoardWinForms<THex>, HexCoords, THex> initializeHex, 
+    protected MapDisplay(Size sizeHexes, Size gridSize, InitializeHex<THex> initializeHex, 
                          ReadOnlyCollection<HexCoords> landmarkCoords) 
     : base(sizeHexes, gridSize, 
-          (map) => new BoardStorage<THex>.FlatBoardStorage(sizeHexes, coords => initializeHex(map,coords)),
+          (map) => new FlatBoardStorage<THex>(sizeHexes, coords => initializeHex(map,coords)),
           landmarkCoords
     ) {
       InitializeProperties();
@@ -102,9 +105,9 @@ namespace PGNapoleonics.HexgridPanel {
     /// <inheritdoc/>
     public          string        Name            { get {return "MapDisplay";} }
     /// <inheritdoc/>
-    public          IDirectedPath Path            { 
+    public          IDirectedPathCollection Path            { 
       get { return _path ?? (_path = this.GetDirectedPath(this[StartHex], this[GoalHex])); } 
-    } IDirectedPath _path;
+    } IDirectedPathCollection _path;
     /// <summary>Gets or sets the alpha component for the shading brush used by Field-of-View display to indicate non-visible hexes.</summary>
     public          byte          ShadeBrushAlpha { get; set; }
     /// <summary>Gets or sets the base color for the shading brush used by Field-of-View display to indicate non-visible hexes.</summary>
@@ -130,8 +133,8 @@ namespace PGNapoleonics.HexgridPanel {
     #endregion
 
     /// <inheritdoc/>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
-      "CA2233:OperationsShouldNotOverflow", MessageId = "10*elevationLevel")]
+    [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", 
+      MessageId = "10*elevationLevel", Justification="No map has such a high elevation.")]
     public override int   ElevationASL(int elevationLevel) { return 10 * elevationLevel; }
 
     #region Painting
@@ -200,9 +203,9 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>Paint the current shortese path.</summary>
     /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
-    /// <param name="path">Type: <see cref="IDirectedPath"/> - 
+    /// <param name="path">Type: <see cref="IDirectedPathCollection"/> - 
     /// A directed path (ie linked-list> of hexes to be painted.</param>
-    protected virtual  void PaintPath(Graphics g, IDirectedPath path) {
+    protected virtual  void PaintPath(Graphics g, IDirectedPathCollection path) {
       if (g==null) throw new ArgumentNullException("g");
 
       using(var brush = new SolidBrush(Color.FromArgb(78, Color.PaleGoldenrod))) {
@@ -220,9 +223,9 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>Paint the direction and destination indicators for each hex of the current shortest path.</summary>
     /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
-    /// <param name="path">Type: <see cref="IDirectedPath"/> - 
+    /// <param name="path">Type: <see cref="IDirectedPathCollection"/> - 
     /// A directed path (ie linked-list> of hexes to be highlighted with a direction arrow.</param>
-    protected virtual  void PaintPathArrow(Graphics g, IDirectedPath path) {
+    protected virtual  void PaintPathArrow(Graphics g, IDirectedPathCollection path) {
       if (g==null) throw new ArgumentNullException("g");
       if (path==null) throw new ArgumentNullException("path");
 
@@ -265,7 +268,7 @@ namespace PGNapoleonics.HexgridPanel {
     /// <param name="g">Graphics object for the canvas being painted.</param>
     /// <param name="clipHexes">Type: CoordRectangle - 
     /// The rectangular extent of hexes to be painted.</param>
-    /// <param name="paintAction">Type: Action&lt;HexCoords&gt; - 
+    /// <param name="paintAction">Type: Action {HexCoords} - 
     /// The paint action to be performed for each hex.</param>
     void PaintForEachHex(Graphics g, CoordsRectangle clipHexes, Action<HexCoords> paintAction) {
       BoardHexes.ForEach(hex => {
@@ -324,12 +327,12 @@ namespace PGNapoleonics.HexgridPanel {
     #region deprecated
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
     [Obsolete("Use MapDisplay(Size,Size,Func<HexBoardWinForms<THex>, HexCoords, THex>) instead; client should set hex size.")]
-    protected MapDisplay(Size sizeHexes, Func<IHexBoard<THex>, HexCoords, THex> initializeHex) 
+    protected MapDisplay(Size sizeHexes, InitializeHex<THex> initializeHex) 
       : this(sizeHexes, new Size(27,30), initializeHex) {}
 
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
     [Obsolete("Use MapDisplay(Size,Size,Func<HexBoardWinForms<THex>, HexCoords, THex>) instead; client should set hex size.")]
-    protected MapDisplay(Size sizeHexes, Func<IHexBoard<THex>, HexCoords, THex> initializeHex, 
+    protected MapDisplay(Size sizeHexes, InitializeHex<THex> initializeHex, 
                        ReadOnlyCollection<HexCoords> landmarkCoords) 
     : this(sizeHexes, new Size(27,30), initializeHex, landmarkCoords) {}
 

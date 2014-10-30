@@ -151,7 +151,7 @@ namespace PGNapoleonics.HexgridPanel {
       }
     } bool _isUnitsDirty;
 
-    /// <summary>Array of supported map scales  as IList&lt;float&gt;.</summary>
+    /// <summary>Array of supported map scales  as IList {float}.</summary>
     public ReadOnlyCollection<float> Scales        { get; private set; }
     /// <summary>Index into <code>Scales</code> of current map scale.</summary>
     public virtual int ScaleIndex    { 

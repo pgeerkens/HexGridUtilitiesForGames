@@ -30,12 +30,6 @@ using System;
 
 namespace  PGNapoleonics.WinForms {
   /// <summary>TODO</summary>
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-    "CA1008:EnumsShouldHaveZeroValue"), 
-  System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-    "CA1714:FlagsEnumsShouldHavePluralNames"), 
-  System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-    "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
   [Flags]internal enum WindowStylesEx
   {
     /// <summary>TODO</summary>

@@ -30,63 +30,78 @@ using System;
 using System.Threading;
 using System.Windows.Forms;
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace  PGNapoleonics.WinForms {
-  /// <summary>A Last-chance THread Exception handler.</summary>
+  /// <summary>A Last-chance Thread Exception handler.</summary>
   [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage()]
   public class ThreadExceptionHandler {
+    static readonly string NewLine     = Environment.NewLine;
+    static readonly string NewLineX2   = Environment.NewLine + Environment.NewLine;
+    static readonly string ErrorTitle  = Application.ProductName + " - " + "Application Error";
+    static readonly string FatalTitle  = Application.ProductName + " - " + "Fatal Application Error";
+    static readonly string NullEventArgs = "Null ThreadExceptionEventArgs" + NewLine + "From: ";
+    static readonly string FatalMessage = "Fatal Error in Last-Chance Exception Handler.";
+
     /// <summary>Handles the thread exception.</summary> 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-      "CA1031:DoNotCatchGeneralExceptionTypes"), 
-    System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", 
-      "CA1303:Do not pass literals as localized parameters", 
-      MessageId = "System.Windows.Forms.MessageBox.Show(System.String,System.String,"
-                + "System.Windows.Forms.MessageBoxButtons,System.Windows.Forms.MessageBoxIcon)"), 
-    System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
-      "CA1804:RemoveUnusedLocals", MessageId = "result"), 
-    System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", 
-      "CA1300:SpecifyMessageBoxOptions")]
+    [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
     public void ApplicationThreadException(object sender, ThreadExceptionEventArgs e) {
-      if (sender==null) throw new ArgumentNullException("sender");
-      if (e==null) throw new ArgumentNullException("e");
-      if(e.Exception is NotImplementedException 
-      || e.Exception is NotSupportedException
-      || e.Exception is InvalidOperationException
-      ) {
-          MessageBox.Show(e.Exception.Message, 
-            "Application Error", 
-            MessageBoxButtons.OK, 
-            MessageBoxIcon.Information);
-      } else {
-        try {
-          var result = ShowThreadExceptionDialog(e.Exception);
+      try {
+        var senderType = sender==null ? "Null sender" : sender.ToString();
+        if (e == null) {  // This should never happen
+            MessageBox.Show(
+              NullEventArgs + senderType, 
+              ErrorTitle, 
+              MessageBoxButtons.OK, 
+              MessageBoxIcon.Information);
+            Application.Exit();
+        } else {
+
+          if( e.Exception is NotImplementedException
+          ||  e.Exception is NotSupportedException
+          ||  e.Exception is InvalidOperationException
+          ) {
+             MessageBox.Show(
+                e.Exception.Message + NewLine + "From: " + senderType, 
+                ErrorTitle, 
+                MessageBoxButtons.OK, 
+                MessageBoxIcon.Information);
+          } else {
+             if (ShowThreadExceptionDialog(e.Exception) == DialogResult.Abort) Application.Exit();
+          }
           Application.ExitThread();
         }
-        catch {  // Fatal error, terminate program
-          try {
-            MessageBox.Show("Fatal Error in Unhandled Exception Handler.", 
-              "Fatal Application Error", 
-              MessageBoxButtons.OK, 
-              MessageBoxIcon.Stop);
-          }
-          finally { Application.Exit(); }
+      } catch(Exception) {
+
+        try {
+          MessageBox.Show(FatalMessage, 
+            FatalTitle, 
+            MessageBoxButtons.OK, 
+            MessageBoxIcon.Stop);
+        } finally {
+          Application.Exit();
         }
+
       }
     }
 
     /// <summary>Creates and displays the error message.</summary>
     private static DialogResult ShowThreadExceptionDialog(Exception ex) {
-      var errorMessage= 
-        "Unhandled Exception:" + Environment.NewLine + Environment.NewLine +
-        ex.Message + Environment.NewLine + Environment.NewLine +
-        ex.GetType() + Environment.NewLine + Environment.NewLine +
-        "Stack Trace:" + Environment.NewLine +
+      var result = DialogResult.Abort;
+
+      var errorMessage = 
+        "Unhandled Exception:" + NewLineX2 +
+        ex.Message             + NewLineX2 +
+        ex.GetType()           + NewLineX2 +
+        "Stack Trace:"         + NewLine +
         ex.StackTrace;
 
-      var dialog = new ExceptionDialog(errorMessage);
-      try {
+      using (var dialog = new ExceptionDialog(errorMessage)) {
         dialog.Show();
-      } finally { if (dialog!=null) dialog.Dispose(); }
-      return DialogResult.Abort;
+        result = dialog.DialogResult;
+      }
+
+      return result;
     }
   }
 }
