@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -30,6 +30,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
+using System.Diagnostics.CodeAnalysis;
 
 namespace  PGNapoleonics.WinForms {
 	/// <summary> Transparent Panel control.</summary>
@@ -64,8 +65,6 @@ namespace  PGNapoleonics.WinForms {
 		} 
     /// <summary>Invalidates the entire surface of the control and causes the control to be redrawn.</summary>
     /// <param name="rectangle">Clipping <c>Rectangle</c> to be invalidated.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", 
-      "CA1300:SpecifyMessageBoxOptions")]
     public virtual void Invalidate2(Rectangle rectangle) { 
 			if(Parent!=null  &&  Parent.IsHandleCreated) {
 				try {
@@ -78,6 +77,6 @@ namespace  PGNapoleonics.WinForms {
 		} 
 		/// <summary> Prevent background painting from overwriting transparent background</summary>
 		/// <param name="pevent"></param>
-		protected override void OnPaintBackground(PaintEventArgs pevent) { /* NO-OP */ } 
+		protected override void OnPaintBackground(PaintEventArgs e) { /* NO-OP */ } 
 	}
 }

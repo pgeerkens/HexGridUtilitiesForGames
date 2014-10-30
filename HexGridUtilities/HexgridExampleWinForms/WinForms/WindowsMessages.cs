@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -28,13 +28,14 @@
 #endregion
 using System;
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace PGNapoleonics.WinForms {
   /// <summary>
-    /// Windows Messages
-    /// Defined in winuser.h from Windows SDK v6.1
-    /// Documentation pulled from MSDN.
-    /// </summary>
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+  /// Windows Messages
+  /// Defined in winuser.h from Windows SDK v6.1
+  /// Documentation pulled from MSDN.
+  /// </summary>
   public enum WM : int //: uint
   {
     /// <summary>
@@ -947,14 +948,10 @@ namespace PGNapoleonics.WinForms {
     /// <summary>
     /// An application sends the WM_CPL_LAUNCH message to Windows Control Panel to request that a Control Panel application be started. 
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-      "CA1707:IdentifiersShouldNotContainUnderscores")]
     CPL_LAUNCH = USER+0x1000,
     /// <summary>
     /// The WM_CPL_LAUNCHED message is sent when a Control Panel application, started by the WM_CPL_LAUNCH message, has closed. The WM_CPL_LAUNCHED message is sent to the window identified by the wParam parameter of the WM_CPL_LAUNCH message that started the application. 
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-      "CA1707:IdentifiersShouldNotContainUnderscores")]
     CPL_LAUNCHED = USER+0x1001,
     /// <summary>
     /// WM_SYSTIMER is a well-known yet still undocumented message. Windows uses WM_SYSTIMER for internal actions like scrolling.

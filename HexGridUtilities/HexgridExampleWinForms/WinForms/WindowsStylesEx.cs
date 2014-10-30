@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -28,14 +28,10 @@
 #endregion
 using System;
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace  PGNapoleonics.WinForms {
-  /// <summary>TODO</summary>
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-    "CA1008:EnumsShouldHaveZeroValue"), 
-  System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-    "CA1714:FlagsEnumsShouldHavePluralNames"), 
-  System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-    "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+  /// <summary>PInvoke WindowStyles (Extended) Enum.</summary>
   [Flags]internal enum WindowStylesEx
   {
     /// <summary>TODO</summary>

@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -29,10 +29,11 @@
 using System;
 using System.Drawing;
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace  PGNapoleonics.WinForms {
 	/// <summary>Enumeration for buttons and modifiers in Windows Mouse messages.</summary>
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
-    "CA1028:EnumStorageShouldBeInt32")]
+  [SuppressMessage("Microsoft.Design", "CA1028:EnumStorageShouldBeInt32")]
 	[Flags]public enum MouseKeys : short {
 		/// <summary>None.</summary>
 		None		= 0x00,
@@ -55,8 +56,7 @@ namespace  PGNapoleonics.WinForms {
   /// <summary>TODO</summary>
 	public static class WindowsMouseInput {
     /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
-      "CA1811:AvoidUncalledPrivateCode")]
+    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     public static MouseKeys GetKeyStateWParam(IntPtr wParam) {
 			return (MouseKeys)(wParam.ToInt64() & 0x0000ffff);
 		}
@@ -72,15 +72,13 @@ namespace  PGNapoleonics.WinForms {
 		}
 
     /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
-      "CA1811:AvoidUncalledPrivateCode")]
+    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     public static Int16 WheelDelta(IntPtr wParam) {
 			return (Int16)(wParam.ToInt64() >> 16);
 		}
 
     /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
-      "CA1811:AvoidUncalledPrivateCode")]
+    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     public static IntPtr LParam(Point point) {
 			if (point.X<Int16.MinValue || point.X > Int16.MaxValue
       ||  point.Y<Int16.MinValue || point.Y > Int16.MaxValue)
@@ -90,12 +88,7 @@ namespace  PGNapoleonics.WinForms {
 		}
 
     /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
-      "CA1811:AvoidUncalledPrivateCode"), 
-    System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-      "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "WParam")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-      "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Param")]
+    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     public static IntPtr WParam (Int16 wheelDelta, MouseKeys mouseKeys) {
 			return IntPtr.Zero + (wheelDelta << 16) + (Int16)mouseKeys;
 		}
