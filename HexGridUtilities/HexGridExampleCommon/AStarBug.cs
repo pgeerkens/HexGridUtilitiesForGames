@@ -30,20 +30,21 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 
+using System.Diagnostics.CodeAnalysis;
+
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
-using MyMapDisplay = PGNapoleonics.HexgridPanel.MapDisplay<PGNapoleonics.HexgridPanel.MapGridHex>;
-
 namespace PGNapoleonics.HexgridExamples {
+  using MapGridDisplay = MapDisplay<MapGridHex>;
+
     /// <summary>TODO</summary>
-  public sealed class AStarBugMap : MyMapDisplay {
+  public sealed class AStarBugMap : MapGridDisplay {
     /// <summary>TODO</summary>
      public AStarBugMap() : base(_sizeHexes, new Size(26,30), (map, coords) => InitializeHex(map, coords)) { }
 
     /// <inheritdoc/>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
-      "CA2233:OperationsShouldNotOverflow", MessageId = "2*range")]
+   [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "2*range")]
     public override int   Heuristic(int range) { return 2 * range; }
 
     /// <inheritdoc/>

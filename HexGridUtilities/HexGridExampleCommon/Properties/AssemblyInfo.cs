@@ -6,11 +6,11 @@ using System.Resources;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("HexGridExampleCommon")]
+[assembly: AssemblyTitle("HexgridExampleCommon")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("PG Software Solutions Inc.")]
-[assembly: AssemblyProduct("HexGridExampleCommon")]
+[assembly: AssemblyProduct("HexgridExampleCommon")]
 [assembly: AssemblyCopyright("Copyright © PG Software Solutions Inc. 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

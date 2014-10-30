@@ -30,9 +30,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace PGNapoleonics.HexgridExamples {
+  /// <summary>TODO</summary>
   public static class MapDefinitions {
 
     #region Map Definitions
+    /// <summary>TODO</summary>
     public static readonly ReadOnlyCollection<string> TerrainMapDefinition = new List<string>() {
       "...................3.......22...........R..............",
       "...................3.........222222.....R..............",
@@ -66,6 +68,7 @@ namespace PGNapoleonics.HexgridExamples {
       ".................RRR..................................."
     }.AsReadOnly();
 
+    /// <summary>TODO</summary>
     public static readonly ReadOnlyCollection<string> MazeMapDefinition = new List<string>() {
       ".............|.........|.......|.........|.............",
       ".............|.........|.......|.........|.............",
@@ -99,6 +102,7 @@ namespace PGNapoleonics.HexgridExamples {
       ".............................|.......|.....|..........."
     }.AsReadOnly();
 
+    /// <summary>TODO</summary>
     public static readonly ReadOnlyCollection<string> AStarBugMapDefinition = new List<string>() {
       ".2333333333R..........2",
       ".2........R33333333.22.",

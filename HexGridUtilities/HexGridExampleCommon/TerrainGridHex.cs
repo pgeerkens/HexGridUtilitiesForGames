@@ -33,6 +33,9 @@ using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridExamples {
+  using HexSize  = System.Drawing.Size;
+  using Graphics = System.Drawing.Graphics;
+
   /// <summary>Abstract class for <c>MapGridHex</c> as used in the TerrainGridHex example.</summary>
   internal abstract class TerrainGridHex : MapGridHex {
 

@@ -26,9 +26,10 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System.Collections.Generic;
+using System;
 using System.Collections.ObjectModel;
-using System.Drawing;
+
+using System.Diagnostics.CodeAnalysis;
 
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
@@ -38,16 +39,20 @@ using MyMapDisplay = PGNapoleonics.HexgridPanel.MapDisplay<PGNapoleonics.Hexgrid
 #pragma warning disable 1587
 /// <summary>TODO</summary>
 #pragma warning restore 1587
+[assembly:CLSCompliant(true)]
 namespace PGNapoleonics.HexgridExamples {
-  /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexUtilities.HexgridPanel"/> to implement
+  using HexSize  = System.Drawing.Size;
+  using Graphics = System.Drawing.Graphics;
+
+  /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexgridPanel"/> to implement
   /// a terrain map.</summary>
   public sealed class TerrainMap : MyMapDisplay {
     /// <summary>TODO</summary>
-    public TerrainMap() : base(_sizeHexes, new Size(26,30), (map,coords) => InitializeHex(map,coords)) {}
+    public TerrainMap() : base(_sizeHexes, new HexSize(26,30), (map,coords) => InitializeHex(map,coords)) {}
 
     /// <inheritdoc/>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
-      "CA2233:OperationsShouldNotOverflow", MessageId = "2*range")]
+   [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow",
+      MessageId = "2*range", Justification="No map is big enough to overflow,")]
     public override int   Heuristic(int range) { return 2 * range; }
 
     /// <inheritdoc/>
@@ -55,7 +60,7 @@ namespace PGNapoleonics.HexgridExamples {
 
     #region static Board definition
     static ReadOnlyCollection<string> _board     = MapDefinitions.TerrainMapDefinition;
-    static Size                       _sizeHexes = new Size(_board[0].Length, _board.Count);
+    static HexSize                    _sizeHexes = new HexSize(_board[0].Length, _board.Count);
     #endregion
 
     private static MapGridHex InitializeHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) {
