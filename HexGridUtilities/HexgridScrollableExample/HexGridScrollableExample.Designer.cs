@@ -5,7 +5,7 @@
 // Use of this software is permitted only as described in the attached file: license.txt.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-namespace PGNapoleonics.HexgridExamples {
+namespace PGNapoleonics.HexgridExampleCommon {
   partial class HexgridScrollableExample {
     /// <summary>
     /// Required designer variable.

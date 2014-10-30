@@ -38,7 +38,7 @@ using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
-namespace PGNapoleonics.HexgridExamples {
+namespace PGNapoleonics.HexgridExampleCommon {
   using MapGridDisplay = PGNapoleonics.HexgridPanel.MapDisplay<MapGridHex>;
 
   internal sealed partial class HexgridScrollableExample : Form, IMessageFilter {
@@ -123,7 +123,7 @@ namespace PGNapoleonics.HexgridExamples {
       var hotHex       = _mapBoard.HotspotHex;
       statusLabel.Text = string.Format(CultureInfo.InvariantCulture,
         // "Hotspot Hex: {0:gi3} / {1:uI4} / {2:c5}; {3:r6}; Path Length = {4}",
-        PGNapoleonics.HexgridExamples.Properties.Resources.StatusLabelText,
+        PGNapoleonics.HexgridExampleCommon.Properties.Resources.StatusLabelText,
         hotHex, hotHex, hotHex,
         _mapBoard.StartHex - hotHex, (_mapBoard.Path==null ? 0 : _mapBoard.Path.TotalCost));
     }

@@ -56,7 +56,7 @@
     <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>PGNapoleonics.HexgridExamples.Program</StartupObject>
+    <StartupObject>PGNapoleonics.HexgridExampleCommon.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
