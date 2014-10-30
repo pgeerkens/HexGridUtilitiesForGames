@@ -42,7 +42,7 @@ namespace PGNapoleonics.HexgridExamples {
   using MapGridDisplay = PGNapoleonics.HexgridPanel.MapDisplay<MapGridHex>;
 
   internal sealed partial class HexgridScrollableExample : Form, IMessageFilter {
-    private bool            _isPanelResizeSuppressed = false;
+    private bool           _isPanelResizeSuppressed = false;
     private MapGridDisplay _mapBoard;
 
     public HexgridScrollableExample() {
@@ -55,7 +55,7 @@ namespace PGNapoleonics.HexgridExamples {
 
       this._hexgridPanel.ScaleChange += new EventHandler<EventArgs>((o,e) => OnResizeEnd(e));
 
-      LoadTraceMenu();
+      LoadTraceMenu(menuItemDebug,this.menuItemDebugTracing_Click);
 
       comboBoxMapSelection.Items.AddRange(
          Map.MapList.Select(item => item.MapName).ToArray()
@@ -68,18 +68,18 @@ namespace PGNapoleonics.HexgridExamples {
 			get { return this.SetCompositedStyle(base.CreateParams); }
 		}
 
-    partial void LoadTraceMenu();
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+    static partial void LoadTraceMenu(ToolStripDropDownButton menuItemDebug, EventHandler handler);
+
     [System.Diagnostics.Conditional("TRACE")]
-    partial void LoadTraceMenu() {
-      foreach(var item in Enum.GetValues(typeof(TraceFlags))) {
+    static partial void LoadTraceMenu(ToolStripDropDownButton menuItemDebug, EventHandler handler) {
+      foreach(var item in Enum.GetValues(typeof(Traces))) {
         var menuItem = new System.Windows.Forms.ToolStripMenuItem();
         menuItemDebug.DropDownItems.Add(menuItem);
         menuItem.Name         = "menuItemDebugTracing" + item.ToString();
         menuItem.Size         = new System.Drawing.Size(143, 22);
         menuItem.Text         = item.ToString();
         menuItem.CheckOnClick = true;
-        menuItem.Click       += new System.EventHandler(this.menuItemDebugTracing_Click);
+        menuItem.Click       += handler;
       }
     }
 
@@ -151,9 +151,9 @@ namespace PGNapoleonics.HexgridExamples {
       var item = (ToolStripMenuItem)sender;
       item.CheckState = item.Checked ? CheckState.Checked : CheckState.Unchecked;
       var name = item.Name.Replace("menuItemDebugTracing","");
-      var flag = (TraceFlags)Enum.Parse(typeof(TraceFlags),name);
-      if( item.Checked)   DebugTracing.EnabledFlags |=  flag;
-      else                DebugTracing.EnabledFlags &= ~flag;
+      var flag = (Traces)Enum.Parse(typeof(Traces),name);
+      if( item.Checked)   DebugTracing.EnabledTraces |=  flag;
+      else                DebugTracing.EnabledTraces &= ~flag;
     }
 
     private void menuItemHelpContents_Click(object sender, EventArgs e) {
@@ -225,15 +225,15 @@ namespace PGNapoleonics.HexgridExamples {
     [System.Security.Permissions.PermissionSetAttribute(
       System.Security.Permissions.SecurityAction.Demand, Name = "FullTrust")]
     public bool PreFilterMessage(ref Message m) {
-      if ((WM)m.Msg != WM.MOUSEHWHEEL && (WM)m.Msg != WM.MOUSEWHEEL) return false;
+      if ((WM)m.Msg != WM.MouseHwheel && (WM)m.Msg != WM.MouseWheel) return false;
 
       var hWnd = NativeMethods.WindowFromPoint(WindowsMouseInput.GetPointLParam(m.LParam));
       var ctl = Control.FromChildHandle(hWnd);
       if (hWnd != IntPtr.Zero  &&  hWnd != m.HWnd  &&  ctl != null) {
         switch ((WM)m.Msg) {
-          case WM.MOUSEHWHEEL:
-          case WM.MOUSEWHEEL:
-            DebugTracing.Trace(TraceFlags.ScrollEvents, true, " - {0}.WM.{1}: ", Name, ((WM)m.Msg));
+          case WM.MouseHwheel:
+          case WM.MouseWheel:
+            DebugTracing.Trace(Traces.ScrollEvents, true, " - {0}.WM.{1}: ", Name, ((WM)m.Msg));
             return (NativeMethods.SendMessage(hWnd, m.Msg, m.WParam, m.LParam) == IntPtr.Zero);
           default: break;
         }

@@ -31,6 +31,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Windows.Forms;
 
+using System.Diagnostics.CodeAnalysis;
+
 #pragma warning disable 1587
 /// <summary>Extensions to the System.Windows.Forms technologies used by namespace PGNapoleonics.HexgridScrollable.</summary>
 #pragma warning restore 1587
@@ -41,11 +43,8 @@ namespace PGNapoleonics.WinForms {
     /// <remarks><a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms633558(v=vs.85).aspx"></a></remarks>
     /// <param name="pt">(Sign-extended) screen coordinates as a Point structure.</param>
     /// <returns>Window handle (hWnd).</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", 
-      "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "0",
-      Justification="Research suggests the Code Analysis message is incorrect.")] 
-     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", 
-       "CA1811:AvoidUncalledPrivateCode")]
+   [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", 
+      MessageId = "0", Justification="Research suggests the Code Analysis message is incorrect.")] 
     [DllImport("user32.dll")]
     internal static extern IntPtr WindowFromPoint(System.Drawing.Point pt);
 

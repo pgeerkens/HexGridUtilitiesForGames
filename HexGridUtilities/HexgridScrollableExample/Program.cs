@@ -36,6 +36,7 @@ using PGNapoleonics.WinForms;
 /// <summary>Example usage of <see cref="HexUtilities"/> with <see cref="HexUtilities.HexgridPanel"/> 
 /// in a simple <see cref="WinForms"/> application.</summary>
 #pragma warning restore 1587
+[assembly:CLSCompliant(true)]
 namespace PGNapoleonics.HexgridExamples {
   static class Program {
     /// <summary>The main entry point for the application.</summary>
