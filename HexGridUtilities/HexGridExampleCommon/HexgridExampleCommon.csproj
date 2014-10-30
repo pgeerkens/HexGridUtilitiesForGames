@@ -7,7 +7,7 @@
     <ProjectGuid>{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PGNapoleonics.HexgridExamples</RootNamespace>
+    <RootNamespace>PGNapoleonics.HexgridExampleCommon</RootNamespace>
     <AssemblyName>HexgridExampleCommon</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

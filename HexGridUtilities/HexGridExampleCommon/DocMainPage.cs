@@ -27,7 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 
-namespace PGNapoleonics.HexgridExamples {
+namespace PGNapoleonics.HexgridExampleCommon {
 #pragma warning disable 1587
 /// @mainpage HexgridUtilities V 6.4
 /// 

@@ -35,7 +35,7 @@ using System.Diagnostics.CodeAnalysis;
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
-namespace PGNapoleonics.HexgridExamples {
+namespace PGNapoleonics.HexgridExampleCommon {
   using MapGridDisplay = MapDisplay<MapGridHex>;
 
     /// <summary>TODO</summary>

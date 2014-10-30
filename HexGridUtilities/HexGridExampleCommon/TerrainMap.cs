@@ -40,7 +40,7 @@ using MyMapDisplay = PGNapoleonics.HexgridPanel.MapDisplay<PGNapoleonics.Hexgrid
 /// <summary>TODO</summary>
 #pragma warning restore 1587
 [assembly:CLSCompliant(true)]
-namespace PGNapoleonics.HexgridExamples {
+namespace PGNapoleonics.HexgridExampleCommon {
   using HexSize  = System.Drawing.Size;
   using Graphics = System.Drawing.Graphics;
 

@@ -35,7 +35,7 @@ using PGNapoleonics.HexUtilities;
 
 using MyMapDisplay = PGNapoleonics.HexgridPanel.MapDisplay<PGNapoleonics.HexgridPanel.MapGridHex>;
 
-namespace PGNapoleonics.HexgridExamples {
+namespace PGNapoleonics.HexgridExampleCommon {
   /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexgridPanel"/> to implement
   /// a maze map.</summary>
   public sealed class MazeMap : MyMapDisplay {

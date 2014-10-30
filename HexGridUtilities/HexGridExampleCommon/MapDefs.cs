@@ -29,7 +29,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace PGNapoleonics.HexgridExamples {
+namespace PGNapoleonics.HexgridExampleCommon {
   /// <summary>TODO</summary>
   public static class MapDefinitions {
 

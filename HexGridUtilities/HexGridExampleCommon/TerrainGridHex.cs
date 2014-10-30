@@ -32,7 +32,7 @@ using System.Drawing;
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
-namespace PGNapoleonics.HexgridExamples {
+namespace PGNapoleonics.HexgridExampleCommon {
   using HexSize  = System.Drawing.Size;
   using Graphics = System.Drawing.Graphics;
 
