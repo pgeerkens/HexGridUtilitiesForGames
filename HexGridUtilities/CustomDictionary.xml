@@ -76,6 +76,8 @@
             <Word>Afx</Word>
             <Word>DWM</Word>
             <Word>Cpl</Word>
+            <Word>Rtl</Word>
+            <Word>Ltr</Word>
          </Recognized>
          <Deprecated>
             <Term PreferredAlternate="EnterpriseServices">ComPlus</Term>
@@ -86,6 +88,7 @@
             <Term>TransparentPanel</Term>
             <Term>WParam</Term>
             <Term>wParam</Term>
+            <Term>LineUp</Term>
          </DiscreteExceptions>
       </Words>
       <Acronyms>

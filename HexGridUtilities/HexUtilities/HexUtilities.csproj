@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PGNapoleonics.HexUtilities</RootNamespace>
-    <AssemblyName>HexUtilities</AssemblyName>
+    <AssemblyName>PGNapoleonics.HexUtilities</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -22,27 +22,27 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\HexUtilities\bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;TraceFoV,NET45</DefineConstants>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET45, HotPriorityQueue, TraceFoV</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>
     </DocumentationFile>
-    <NoWarn>1607</NoWarn>
-    <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>1587,1607</NoWarn>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\HexUtilities\bin\Release\</OutputPath>
-    <DefineConstants>NET45</DefineConstants>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>NET45, HotPriorityQueue</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\bin\HexUtilities\bin\Release\HexUtilities.XML</DocumentationFile>
-    <NoWarn>1607</NoWarn>
+    <DocumentationFile>bin\Release\PGNapoleonics.HexUtilities.xml</DocumentationFile>
+    <NoWarn>1587,1607</NoWarn>
     <Prefer32Bit>false</Prefer32Bit>
-    <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -51,17 +51,49 @@
     <AssemblyOriginatorKeyFile>PGSoftwareSolutions.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Checked|AnyCPU'">
-    <OutputPath>..\bin\HexUtilities\bin\Checked\</OutputPath>
-    <DefineConstants>TRACE;NET45,TraceFoV</DefineConstants>
+    <OutputPath>bin\Checked\</OutputPath>
+    <DefineConstants>TRACE;NET45, HotPriorityQueue,TraceFoV</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <Optimize>true</Optimize>
-    <NoWarn>1607,1587</NoWarn>
+    <NoWarn>1587,1607</NoWarn>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET45, HotPriorityQueue, TraceFoV</DefineConstants>
+    <NoWarn>1587,1607</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRulesLessCA1303.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>NET45, HotPriorityQueue</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <Optimize>true</Optimize>
+    <NoWarn>1587,1607</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRulesLessCA1303.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Checked|x86'">
+    <OutputPath>bin\x86\Checked\</OutputPath>
+    <DefineConstants>TRACE;NET45, HotPriorityQueue,TraceFoV</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>1587,1607</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRulesLessCA1303.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -72,39 +104,26 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockedBoardStorage32x32.cs" />
     <Compile Include="BoardStorage.cs" />
-    <Compile Include="Common\Extensions.cs" />
-    <Compile Include="CustomCoordsFactory.cs" />
-    <Compile Include="Common\DebugTracing.cs" />
     <Compile Include="FlatBoardStorage.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="HexsideFlags.cs" />
-    <Compile Include="IMapDisplay.cs" />
     <Compile Include="Pathfinding\BidirectionalPathfinder.cs" />
     <Compile Include="Pathfinding\ConcurrentHashSet.cs" />
     <Compile Include="Pathfinding\DictPriorityQueue.cs" />
-    <Compile Include="Common\FastList.cs" />
-    <Compile Include="HexCoords.cs" />
     <Compile Include="HexGrid.cs" />
-    <Compile Include="Hexside.cs" />
     <Compile Include="Hex.cs" />
     <Compile Include="HexBoard.cs" />
-    <Compile Include="Common\ImmutableStack.cs" />
-    <Compile Include="Common\IntMatrix2D.cs" />
-    <Compile Include="Common\IntVector2D.cs" />
-    <Compile Include="NeighbourCoords.cs" />
-    <Compile Include="NeighbourHex.cs" />
     <Compile Include="Pathfinding\HexKeyValuePair.cs" />
     <Compile Include="Pathfinding\HotPriorityQueue.cs" />
     <Compile Include="Pathfinding\HotPriorityQueueueList.cs" />
     <Compile Include="Pathfinding\IPriorityQueue.cs" />
     <Compile Include="Pathfinding\Landmark.cs" />
-    <Compile Include="Pathfinding\IDirectedNavigableBoard.cs" />
-    <Compile Include="Common\PointExtensions.cs" />
-    <Compile Include="Pathfinding\DirectedPath.cs" />
+    <Compile Include="Pathfinding\DirectedPathCollection.cs" />
+    <Compile Include="Pathfinding\LandmarkCollection.cs" />
     <Compile Include="Pathfinding\UnidirectionalPathfinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FieldOfView\FieldOfView.cs" />
@@ -113,11 +132,8 @@
     <Compile Include="FieldOfView\FovQueue.cs" />
     <Compile Include="FieldOfView\RiseRun.cs" />
     <Compile Include="FieldOfView\ShadowCastingFov.cs" />
-    <Compile Include="FieldOfView\ShadowCastingFov_DodecantHelpers.cs" />
+    <Compile Include="FieldOfView\Dodecant.cs" />
     <Compile Include="FieldOfView\ShadowCastingFov_Utilities.cs" />
-    <Compile Include="Common\SizeExtensions.cs" />
-    <Compile Include="Common\UserCoordsRectangle.cs" />
-    <Compile Include="Common\EnumExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="license.txt">
@@ -129,6 +145,12 @@
     <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
       <Link>CustomDictionary.xml</Link>
     </CodeAnalysisDictionary>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HexInterfaces\HexInterfaces.csproj">
+      <Project>{fb103f54-74ca-4646-824d-248d33237100}</Project>
+      <Name>HexInterfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

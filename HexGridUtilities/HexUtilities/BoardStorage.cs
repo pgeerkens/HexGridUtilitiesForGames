@@ -27,25 +27,29 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Drawing;
+using System.Linq;
+using System.Threading.Tasks;
 
 using System.Diagnostics.CodeAnalysis;
 
 namespace PGNapoleonics.HexUtilities {
+  using HexSize     = System.Drawing.Size;
+
   /// <summary>Abstract specification and partial implementation of the <c>BoardStorage</c> required by <c>HexBoard</c>.</summary>
-  /// <typeparam name="T">The type of the information being stored.</typeparam>
+  /// <typeparam name="T">The type of the information being stored. 
+  /// If {T} implements IDisposable then the Dispose() method will dispose all elements.</typeparam>
   public abstract class BoardStorage<T> : IDisposable {
     /// <summary>Initializes a new instance with the specified hex extent.</summary>
     /// <param name="sizeHexes"></param>
-    protected BoardStorage(Size sizeHexes) {
+    protected BoardStorage(HexSize sizeHexes) {
       MapSizeHexes   = sizeHexes;
     }
 
-    /// <summary>Extent in hexes of the board, as a <see cref=" System.Drawing.Size"/> struct.</summary>
-    public          Size MapSizeHexes           { get; private set; }
+    /// <summary>Extent in hexes of the board, as a <see cref="System.Drawing.Size"/> struct.</summary>
+    public       HexSize MapSizeHexes           { get; private set; }
 
     /// <summary>Returns the <c>THex</c> instance at the specified coordinates.</summary>
-   [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
+    [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
     public abstract T this[HexCoords coords] { get; internal set; }
 
     /// <summary>Returns whether the hex with <see cref="HexCoords"/> <c>coords</c> is 
@@ -62,10 +66,10 @@ namespace PGNapoleonics.HexUtilities {
     public abstract void ForEach(Func<T,bool> predicate, Action<T> action);
 
     /// <summary>Perform the specified <c>action</c> in parallel on all hexes.</summary>
-    public abstract void ParallelForEach(Action<T> action);
+    public abstract ParallelLoopResult ParallelForEach(Action<T> action);
 
     /// <summary>Perform the specified <c>action</c> in parallel on all hexes satisfying <paramref name="predicate"/>.</summary>
-    public abstract void ParallelForEach(Func<T,bool> predicate, Action<T> action);
+    public abstract ParallelLoopResult ParallelForEach(Func<T,bool> predicate, Action<T> action);
 
     #region IDisposable implementation with Finalizeer
     bool _isDisposed = false;
@@ -75,6 +79,9 @@ namespace PGNapoleonics.HexUtilities {
     protected virtual void Dispose(bool disposing) {
       if (!_isDisposed) {
         if (disposing) {
+          if (typeof(T).GetInterfaces().Contains(typeof(IDisposable))) {
+            ForEach(i => ((IDisposable)i).Dispose());
+          }
         }
         _isDisposed = true;
       }

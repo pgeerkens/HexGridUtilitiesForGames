@@ -32,13 +32,6 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
 namespace PGNapoleonics.HexUtilities.FieldOfView {
-  /// <summary>Structure returned by the Field-of-View factory.</summary>
-  public interface IFov {
-    /// <summary>True if the hex at location <c>coords</c>c> is visible in this field-of-view.</summary>
-   [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
-    bool this[HexCoords coords] { get; }
-  }
-
   /// <summary>Implementation of IFov using a backing array of BitArray.</summary>
   internal class ArrayFieldOfView : IFov {
     private readonly object _syncLock = new object();

@@ -49,27 +49,27 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
 
     static int XFromVector(int y, IntVector2D v) {        return (-2 * v.Y + v.X * (3 * y + 1) + (3 * v.Y) - 1) / (3 * v.Y);
     }
-    /// <summary>Helper matrix for <c>VectorHexTop</c>.</summary>
+    /// <summary>Helper @this for <c>VectorHexTop</c>.</summary>
     static IntMatrix2D matrixHexTop = new IntMatrix2D(3,0,  0,3, 2,1);
-    /// <summary>Helper matrix for <c>VectorHexBottom</c>.</summary>
+    /// <summary>Helper @this for <c>VectorHexBottom</c>.</summary>
     static IntMatrix2D matrixHexBottom = new IntMatrix2D(3,0,  0,3, -2,-1);
 
-    /// <summary>IntVector2D for top corner of cell Canon(x,y).</summary>
+    /// <summary>IntVector2D for top corner of cell Canon(i,j).</summary>
     /// <remarks>
-    /// In first dodecant; The top corner for hex (x,y) is determined 
+    /// In first dodecant; The top corner for hex (i,j) is determined 
     /// (from close visual inspection) as:
-    ///       (x,y) + 1/3 * (2,1)
+    ///       (i,j) + 1/3 * (2,1)
     /// which reduces to:
-    ///       (x + 2/3, y + 1/3) == 1/3 * (3x + 2, 3y + 1)
+    ///       (i + 2/3, j + 1/3) == 1/3 * (3x + 2, 3y + 1)
     /// </remarks>
     static IntVector2D VectorHexTop(HexCoords hex) { return hex.Canon * matrixHexTop; }
-    /// <summary>IntVector2D for bottom corner of cell Canon(x,y).</summary>
+    /// <summary>IntVector2D for bottom corner of cell Canon(i,j).</summary>
     /// <remarks>
-    /// In first dodecant; The bottom corner for hex (x,y) is determined 
+    /// In first dodecant; The bottom corner for hex (i,j) is determined 
     /// (from close visual inspection) as:
-    ///       (x,y) + 1/3 * (-2,-1)
+    ///       (i,j) + 1/3 * (-2,-1)
     /// which reduces to:
-    ///       (x - 2/3, y - 1/3) == 1/3 * (3x - 2, 3y - 1)
+    ///       (i - 2/3, j - 1/3) == 1/3 * (3x - 2, 3y - 1)
     /// </remarks>
     static IntVector2D VectorHexBottom(HexCoords hex)  { return hex.Canon * matrixHexBottom;  }
 

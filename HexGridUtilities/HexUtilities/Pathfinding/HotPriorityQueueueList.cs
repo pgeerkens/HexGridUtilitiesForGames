@@ -118,7 +118,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       public int Count    { get { return _items.Count; } }
 
       /// <inheritdoc/>
-      public bool Any()   { return _items.Any(); }
+      bool IPriorityQueue<TKey,TValue>.Any()   { return _items.Any(); }
+
+      public bool Any { get {  return _items.Count > 0; } }
 
       /// <inheritdoc/>
       public void Clear() { _items.Clear(); }
@@ -143,14 +145,15 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
       /// <inheritdoc/>
       public bool TryDequeue(out HexKeyValuePair<TKey,TValue> result) {
-        if (!_items.Any()) {
+//        if (!_items.Any()) {
+        if (_items.Count == 0) {
           result = default(HexKeyValuePair<TKey,TValue>);
           return false;
         }
 
         result = _items[0];
 
-        // Remove the first item if there will only be 0 or 1 items left after doing so.  
+        // Remove the first item if neighbour will only be 0 or 1 items left after doing so.  
         if (_items.Count <= 2) 
           _items.RemoveAt(0);
         else { 
@@ -165,7 +168,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
       /// <inheritdoc/>
       public bool TryPeek(out HexKeyValuePair<TKey,TValue> result) {
-        if (! _items.Any()) {
+        if (_items.Count == 0) {
           result = default(HexKeyValuePair<TKey,TValue>); 
           return false;
         } 

@@ -27,156 +27,118 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
-  /// <summary>A <b>ReadOnlyCollection</b> of defined <see cref="Landmark"/> locations.</summary>
-  public sealed class LandmarkCollection : ReadOnlyCollection<Landmark> {
-    /// <summary>Creates a populated <see cref="Collection{T}"/> of <see cref="Landmark"/>
-    /// instances.</summary>
-    /// <param name="board">The board on which the collection of landmarks is to be instantiated.</param>
-    /// <param name="landmarkCoords">Board coordinates of the desired landmarks</param>
-    public static LandmarkCollection CreateLandmarks(
-      IBoard<IHex> board, 
-      IList<HexCoords> landmarkCoords
-    ) {
-      if (landmarkCoords==null) throw new ArgumentNullException("landmarkCoords");
-
-      var list = new List<Landmark>(landmarkCoords.Count);
-
-      for (var i=0; i<landmarkCoords.Count; i++) 
-        list.Add(new Landmark(landmarkCoords[i], null));
-
-      var landmarks = new LandmarkCollection(list);
-      if (board != null) landmarks.ResetLandmarks(board);
-
-      return landmarks;
-    }
-
-    /// <summary>TODO</summary>
-    /// <param name="goal"></param>
-    /// <param name="coords"></param>
-    /// <returns></returns>
-    public int Heuristic(HexCoords goal, HexCoords coords) {
-      //return this.Heuristic(goal, coords, 4);
-
-      var heuristic = this.Select(l => (l.HexDistance(coords) - l.HexDistance(goal)))
-                          .OrderByDescending(h => h)
-                          .FirstOrDefault();
-      return heuristic; //>0 ? heuristic : defaultValue;
-    }
-    /// <summary>TODO</summary>
-    /// <param name="list"></param>
-    /// <returns></returns>
-    //public int Heuristic(HexCoords goal, HexCoords coords, int defaultValue) {
-
-    //  var heuristic = this.Select(l => (l.HexDistance(coords) - l.HexDistance(goal)))
-    //                      .OrderByDescending(h => h)
-    //                      .FirstOrDefault();
-    //  return heuristic; //>0 ? heuristic : defaultValue;
-    //}
-
-    LandmarkCollection(List<Landmark> list) : base(list) {}
-
-    #region IDisposable implementation with Finalizer
-    bool _isDisposed = false;
-    /// <inheritdoc/>
-    public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
-    void Dispose(bool disposing) {
-      if (!_isDisposed) {
-        if (disposing) {
-          for(var i = this.Count;  i-->0; ) if(this[i]!=null) this[i].Dispose();
-        }
-        _isDisposed = true;
-      }
-    }
-    /// <inheritdoc/>
-    ~LandmarkCollection() { Dispose(false); }
-    #endregion
-  }
-  /// <summary>Extension methods for LandmarkCollection.</summary>
-  public static class LandmarkCollectionExtensions {
-    /// <summary>(Re)calculates distances for all landmarks using the provided IBoard {IHex}; definition.</summary>
-    /// <param name="this">The </param>
-    /// <param name="board">The </param>
-    public static void ResetLandmarks(this LandmarkCollection @this, IBoard<IHex> board) {
-      if (@this==null)  throw new ArgumentNullException("this");
-      if (board==null)  throw new ArgumentNullException("board");
-
-      Parallel.For(0, @this.Count, i => @this[i].FillLandmark(board) );
-    }
-  }
-
   /// <summary>A board location storing shortest-path distances to every board hex.</summary>
-  /// <remarks>A board location that stores shortest-path distances for every board hex, for use in 
+  /// <remarks>
+  /// A board location that stores shortest-path distances for every board hex, for use in 
   /// computing an accurate A* heuristic. A simple Dijkstra implementation is used to generate the 
-  /// distances upon creation.</remarks>
-  public sealed class Landmark : IDisposable {
+  /// distances upon creation.
+  /// No Finalizer is implemented as the class possesses no unmanaged resources.
+  /// </remarks>
+  [DebuggerDisplay("Coords={Coords}")]
+  public sealed class Landmark : ILandmark, IDisposable {
     /// <summary>Populates and returns a new landmark at the specified board coordinates.</summary>
     /// <param name="board">IBoard{IHex} on which the landmark is to be created.</param>
     /// <param name="coords">Coordinates on <c>board</c> where this landmark is to be created.</param>
     public Landmark(HexCoords coords, IBoard<IHex> board) {
+      Board  = board;
       Coords = coords;
-      FillLandmark(board);
+      FillLandmark();
     }
 
+    /// <summary>TODO</summary>
+    public IBoard<IHex> Board { get; private set; }
     /// <summary>Board coordinates for the landmark location.</summary>
-    public HexCoords Coords { get; private set; }
+    public HexCoords    Coords { get; private set; }
 
-    /// <summary>Returns the shortest-path directed-distance from the specified hex to the landmark.</summary>
-    public int HexDistance(HexCoords coords) { return backingStore[coords]; }
+    /// <summary>Returns the shortest-path directed-distance to the specified hex <b>from</b> the landmark.</summary>
+    public int DistanceTo  (HexCoords coords) { return backingStore[0][coords]; }
+    /// <summary>Returns the shortest-path directed-distance from the specified hex <b>to</b> the landmark.</summary>
+    public int DistanceFrom(HexCoords coords) { return backingStore[1][coords]; }
 
-    BoardStorage<short> backingStore;
+    private static Func<IBoard<IHex>, Func<IHex,Hexside,IHex,int>>[] DirectedCostDelegates = 
+      new Func<IBoard<IHex>, Func<IHex,Hexside,IHex,int>>[] {
+          /* Cost from here to there */ (board) => (here,hexside,there) => board.GetDirectedCostToExit(here, hexside),
+          /* Cost from there to here */ (board) => (here,hexside,there) => board.GetDirectedCostToExit(there, hexside.Reversed())
+      };
 
-    internal void FillLandmark(IBoard<IHex> board) {
-      if (board != null) {
-        backingStore = new BlockedBoardStorage32x32<short>(board.MapSizeHexes, c => -1);
+    private BoardStorage<short>[] backingStore;
 
-        var start  = board[Coords];
-        var queue  = PriorityQueueFactory.NewDictionaryQueue<int, IHex>();
-        Traces.FindPathDetail.Trace(true, "Find distances from {0}", start.Coords);
+    /// <inheritdoc/>
+    public void FillLandmark() {
+      if (Board != null) {
+        backingStore = new BoardStorage<short>[2] {
+          new BlockedBoardStorage32x32<short>(Board.MapSizeHexes, c => -1),
+          new BlockedBoardStorage32x32<short>(Board.MapSizeHexes, c => -1)
+        };
 
-        queue.Enqueue (0, start);
-
-        HexKeyValuePair<int,IHex> item;
-        while (queue.TryDequeue(out item)) {
-          var here = item.Value;
-          var key  = item.Key;
-          if( backingStore[here.Coords] > 0 ) continue;
-
-          Traces.FindPathDetail.Trace("Dequeue Path at {0} w/ cost={1,4}.", here, key);
-          backingStore[here.Coords] = (short)key;
-
-          foreach (var there in here.GetAllNeighbours().Where(n => n!=null && n.Hex.IsOnboard())) {
-            var cost = board.DirectedStepCost(here, there.HexsideEntry);
-            if (cost > 0  &&  backingStore[there.Hex.Coords] == -1) {
-              Traces.FindPathDetail.Trace("   Enqueue {0}: {1,4}", there.Hex.Coords, cost);
-              queue.Enqueue(key + cost, there.Hex);
-            }
-          }
+        for (var i = 0; i < 2; i++) {
+          var landmark  = Board[Coords];
+          if (landmark != null)
+            FillLandmarkDetail(landmark,backingStore[i],DirectedCostDelegates[i](Board));
         }
       }
     }
 
-    #region IDisposable implementation with Finalizer
+    private static void FillLandmarkDetail(IHex landmark, BoardStorage<short> store, 
+      Func<IHex,Hexside,IHex,int> directedStepCost
+    ) {
+      Traces.FindPathDetail.Trace(true, "Find distances from {0}", landmark.Coords);
+
+      #if HotPriorityQueue
+        var queue = PriorityQueueFactory.NewHotPriorityQueue<IHex>();
+      #else
+        var queue = PriorityQueueFactory.NewDictionaryQueue<int, IHex>();
+      #endif
+      queue.Enqueue (0, landmark);
+
+      HexKeyValuePair<int,IHex> item;
+      while (queue.TryDequeue(out item)) {
+        var here = item.Value;
+        var key  = item.Key;
+        if( store[here.Coords] > 0 ) continue;
+
+        Traces.FindPathDetail.Trace("Dequeue Path at {0} w/ cost={1,4}.", here, key);
+
+        store[here.Coords] = (short)key;
+
+        HexsideExtensions.HexsideList.ForEach( hexside => {
+          var neighbourCoords = here.Coords.GetNeighbour(hexside);
+          var neighbourHex = here.Board[neighbourCoords];
+
+          if (neighbourHex != null) {
+            var cost = directedStepCost(here, hexside, neighbourHex);
+            if (cost > 0  &&  store[neighbourCoords] == -1) {
+
+              Traces.FindPathDetail.Trace("   Enqueue {0}: {1,4}", neighbourCoords, cost);
+
+              queue.Enqueue(key + cost, neighbourHex);
+            }
+          }
+        } );
+      }
+    }
+
+    #region IDisposable implementation
     bool _isDisposed = false;
     /// <inheritdoc/>
     public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
     void Dispose(bool disposing) {
       if (!_isDisposed) {
         if (disposing) {
-          if (backingStore!=null) backingStore.Dispose();
+          if (backingStore!=null) {
+            if (backingStore[0] != null) backingStore[0].Dispose();
+            if (backingStore[1] != null) backingStore[1].Dispose();
+          }
         }
         _isDisposed = true;
       }
     }
-    /// <inheritdoc/>
-    ~Landmark() { Dispose(false); }
     #endregion
   }
 }

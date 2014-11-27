@@ -41,26 +41,8 @@ namespace PGNapoleonics.HexUtilities {
   using HexSize     = System.Drawing.Size;
   using RectangleF  = System.Drawing.RectangleF;
 
-  /// <summary>External interface exposed by the the implementation of <see cref="HexBoard{THex}"/>.</summary>
-  public interface IBoard<out THex> : IDirectedNavigableBoard, IFovBoard<THex> where THex : IHex {
-    /// <summary>Gets the extent in pixels o fhte grid on which hexes are to be laid out. </summary>
-    HexSize GridSize    { get; }
-
-    /// <summary>Range beyond which Fast PathFinding is used instead of Stable PathFinding.</summary>
-    int     RangeCutoff { get; }
-
-    /// <summary>Returns whether the specified hex coordinates as a valid hex on this board.</summary>
-    new bool IsOnboard(HexCoords coords);
-
-    /// <summary>Returns the Elevation Above-Sea-Level for a hex with the specified ElevationLevel.</summary>
-    int      ElevationASL(int elevationLevel);
-  }
-
-  /// <summary>TODO</summary>
-  public interface IHexBoard<THex> : IBoard<THex> where THex : class, IHex {
-  }
-
   /// <summary>Abstract implementation of a hexgrid map-board.</summary>
+  /// <remarks>No Finalizer is implemented as the class possesses no unmanaged resources.</remarks>
   public abstract class HexBoard<THex> : IHexBoard<THex>, IDisposable where THex : class, IHex {
     #region Constructors
     /// <summary>Initializes the internal contents of <see cref="HexBoard{THex}"/> with default 
@@ -69,71 +51,82 @@ namespace PGNapoleonics.HexUtilities {
     /// <see cref="System.Drawing.Size"/>.</param>
     /// <param name="gridSize">Extent in pixels of the layout grid for the hexagons, as a 
     /// <see cref="System.Drawing.Size"/>.</param>
-    protected HexBoard(HexSize sizeHexes, HexSize gridSize) {
-      _mapSizeHexes      = sizeHexes;
-      _gridSize          = gridSize;
+    /// <param name="landmarkCoords">IEnumerable{HexCoords} of the hexes to be used as Path-Finding landmarks.</param>
+    protected HexBoard(HexSize sizeHexes, HexSize gridSize, IFastList<HexCoords> landmarkCoords) {
+      _mapSizeHexes   = sizeHexes;
+      _gridSize       = gridSize;
+      _landmarkCoords = landmarkCoords;
     }
     #endregion
 
+    IFastList<HexCoords> _landmarkCoords;
+
     #region Properties
     /// <inheritdoc/>
-    public          BoardStorage<THex> BoardHexes        { get; protected set; }
+    public         BoardStorage<THex>  BoardHexes        { get; protected set; }
     /// <summary>Offset of hex centre from upper-left corner, as a <see cref="System.Drawing.Size"/> struct.</summary>
-    public          HexSize            CentreOfHexOffset { get; private set; }
+    public         HexSize             CentreOfHexOffset { get; private set; }
     /// <inheritdoc/>
-    public virtual  int                FovRadius         { get; set; }
+    public virtual int                 FovRadius         { get; set; }
     ///  <inheritdoc/>
-    public          HexSize            GridSize          { 
+    public         HexSize             GridSize          { 
       get { return _gridSize; } 
       set { _gridSize=value; ResetGrid();} 
     } HexSize _gridSize = new HexSize(27,30);
     /// <inheritdoc/>
-    public          Hexgrid            Hexgrid           { get; private set; }
+    public         Hexgrid             Hexgrid           { get; private set; }
      ///  <inheritdoc/>
-    public          bool               IsTransposed      { 
+    public         bool                IsTransposed      { 
       get { return _isTransposed; } 
       set { _isTransposed=value; ResetGrid();} 
     } bool _isTransposed = false;
     /// <inheritdoc/>
-    public          LandmarkCollection Landmarks         { get; private set; }
+    public         ILandmarkCollection Landmarks         {
+      get { 
+        if (_landmarks == null) _landmarks =  LandmarkCollection.CreateLandmarks(this, _landmarkCoords);
+        return _landmarks; 
+      }
+    } ILandmarkCollection _landmarks = null;
+    /// <summary>TODO</summary>
+    public async Task<ILandmarkCollection> GetLandmarksAsync(System.Threading.CancellationToken token) {
+        if (_landmarks == null) _landmarks = await LandmarkCollection.CreateLandmarksAsync(this, _landmarkCoords, token);
+        return _landmarks; 
+    }
     ///  <inheritdoc/>
-    public          float              MapScale          { 
+    public         float               MapScale          { 
       get { return _mapScale; } 
       set { _mapScale=value; ResetGrid();} 
     } float _mapScale = 1.00F;
     ///  <inheritdoc/>
-    public          HexSize            MapSizeHexes      { 
+    public         HexSize             MapSizeHexes      { 
       get { return _mapSizeHexes; } 
       set { _mapSizeHexes=value; ResetGrid();} 
     } HexSize _mapSizeHexes = new HexSize(1,1);
     ///  <inheritdoc/>
-    public          HexSize            MapSizePixels     { get; private set; }
+    public         HexSize             MapSizePixels     { get; private set; }
     /// <inheritdoc/>
-    public          int                RangeCutoff       { get; set; }
+    public         int                 RangeCutoff       { get; set; }
     /// <inheritdoc/>
-    public          THex               this[HexCoords coords]  { get { return BoardHexes[coords];} }
+    public         THex          this[HexCoords coords]  { get { return BoardHexes[coords];} }
     #endregion
 
     #region Methods
-    /// <summary>TODO</summary>
-    protected void SetLandmarks(IList<HexCoords> landmarkCoords) {
-      if (Landmarks != null) Landmarks.Dispose();
-      Landmarks = LandmarkCollection.CreateLandmarks(this, landmarkCoords);
-    }
-
     /// <summary>By default, landmark all four corners and midpoints of all 4 sides.</summary>
     /// <remarks>Pre-processing time on start-up can be reduced by decreasing the number of landmarks,
-    /// though at the possible expense of longer path-findign times.</remarks>
-    protected static readonly Func<HexSize, HexCoordsCollection> DefaultLandmarks = size => new HexCoordsCollection(
-      new HexPoint[] {
-        new HexPoint(0,            0), new HexPoint(size.Width/2,            0), new HexPoint(size.Width-1,            0),
-        new HexPoint(0,size.Height/2),                                           new HexPoint(size.Width-1,size.Height/2),
-        new HexPoint(0,size.Height-1), new HexPoint(size.Width/2,size.Height-1), new HexPoint(size.Width-1,size.Height-1)
-      }.Select(p => HexCoords.NewUserCoords(p)).ToList());
+    /// though at the possible expense of longer path-finding times.</remarks>
+    protected static Func<HexSize, IFastList<HexCoords>> DefaultLandmarks { 
+      get { return size => //new HexCoordsCollection(
+        new HexPoint[] {
+          new HexPoint(0,            0), new HexPoint(size.Width/2,            0), new HexPoint(size.Width-1,            0),
+          new HexPoint(0,size.Height/2),                                           new HexPoint(size.Width-1,size.Height/2),
+          new HexPoint(0,size.Height-1), new HexPoint(size.Width/2,size.Height-1), new HexPoint(size.Width-1,size.Height-1)
+        }.Select(p => HexCoords.NewUserCoords(p)).ToFastList();
+      }
+    }
 
     /// <inheritdoc/>
-    public virtual  int  DirectedStepCost(IHex hex, Hexside hexsideExit) {
-      return hex==null ? -1 : hex.DirectedStepCost(hexsideExit);
+    public virtual  int  GetDirectedCostToExit(IHex hex, Hexside hexsideExit) {
+      return hex==null ? -1 : hex.GetDirectedCostToExit(hexsideExit);
     }
     /// <inheritdoc/>
     public abstract int  ElevationASL(int elevationLevel);
@@ -173,21 +166,20 @@ namespace PGNapoleonics.HexUtilities {
     }
     #endregion
 
-    #region IDisposable implementation with Finalizer
-    bool _isDisposed = false;
+    #region IDisposable implementation
+    private bool _isDisposed = false;
     /// <inheritdoc/>
     public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
     /// <inheritdoc/>
     protected virtual void Dispose(bool disposing) {
       if (!_isDisposed) {
         if (disposing) {
-          if (BoardHexes!=null) BoardHexes.Dispose();
+          if (BoardHexes != null) { BoardHexes.Dispose(); BoardHexes = null; }
+          if (_landmarks != null) { _landmarks.Dispose(); _landmarks = null; }
         }
         _isDisposed = true;
       }
     }
-    /// <inheritdoc/>
-    ~HexBoard() { Dispose(false); }
     #endregion
   }
 
@@ -201,27 +193,54 @@ namespace PGNapoleonics.HexUtilities {
   public static partial class HexBoardExtensions {
     /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
     public static IDirectedPathCollection GetDirectedPath(this IBoard<IHex> @this, IHex start, IHex goal) {
+      return @this.GetDirectedPath(start, goal, false);
+    }
+    /// <summary>Returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
+    public static IDirectedPathCollection GetDirectedPath(this IBoard<IHex> @this, IHex start, IHex goal
+      ,bool forceUnidirectional) {
       if (@this == null) throw new ArgumentNullException("this");
       if (start == null) throw new ArgumentNullException("start");
       if (goal == null) throw new OperationCanceledException("goal");
 
-      if (@this.IsPassable(start.Coords) && @this.IsPassable(goal.Coords)) {
-        return goal.Coords.Range(start.Coords) > @this.RangeCutoff
-              ? BidirectionalPathfinder .FindDirectedPathFwd(start, goal, @this)
-              : UnidirectionalPathfinder.FindDirectedPathFwd(start, goal, @this);
+      if (@this.IsPassable(start.Coords)  &&  @this.IsPassable(goal.Coords)) {
+        return (goal.Coords.Range(start.Coords) <= @this.RangeCutoff  ||  forceUnidirectional)
+              ? UnidirectionalPathfinder.FindDirectedPathFwd(start, goal, @this)
+              : (new BidirectionalPathfinder(start, goal, @this)).PathRev;
       } else
         return default(IDirectedPathCollection);
+    }
+
+    /// <summary>TODO</summary>
+    /// <param name="this"></param>
+    /// <param name="start"></param>
+    /// <param name="goal"></param>
+    /// <returns></returns>
+    public static IPathfinder GetBidirectionalPathfinder(this INavigableBoard @this, IHex start, IHex goal) {
+      return new BidirectionalPathfinder(start, goal, @this);
+    }
+    /// <summary>TODO</summary>
+    /// <param name="this"></param>
+    /// <param name="start"></param>
+    /// <param name="goal"></param>
+    /// <returns></returns>
+    public static IPathfinder GetUnidirectionalPathfinder(this INavigableBoard @this, IHex start, IHex goal) {
+      return new BidirectionalPathfinder(start, goal, @this);
     }
 
 #if NET45
     /// <summary>Asynchronously returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
     public static Task<IDirectedPathCollection> GetDirectedPathAsync(
-      this IBoard<IHex> @this, 
-      IHex start,  IHex goal
+      this IBoard<IHex> @this, IHex start,  IHex goal
+    ) {
+      return @this.GetDirectedPathAsync(start,goal,false);
+    }
+    /// <summary>Asynchronously returns a least-cost path from the hex <c>start</c> to the hex <c>goal.</c></summary>
+    public static Task<IDirectedPathCollection> GetDirectedPathAsync(
+      this IBoard<IHex> @this, IHex start,  IHex goal, bool forceUnidirectional
     ) {
       if (@this == null) throw new ArgumentNullException("this");
       return Task.Run<IDirectedPathCollection>(
-          () => @this.GetDirectedPath(start, goal)
+          () => @this.GetDirectedPath(start, goal, forceUnidirectional)
       );
     }
 #endif

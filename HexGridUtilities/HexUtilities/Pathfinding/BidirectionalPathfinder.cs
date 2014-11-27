@@ -28,10 +28,11 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 
 using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Pathfinding;
 
 using System.Diagnostics.CodeAnalysis;
 
@@ -40,278 +41,262 @@ using System.Diagnostics.CodeAnalysis;
 /// on a <see cref="Hexgrid"/> map.</summary>
 #pragma warning restore 1587
 namespace PGNapoleonics.HexUtilities.Pathfinding {
-  /// <summary>C# (serial) implementation of NPBA* path-finding algorithm by Pijls &amp; Post (Adapted).</summary>
-  /// <remarks>Adapted to hex-grids, and to weight the most direct path favourably for better (visual) 
-  /// behaviour on a hexgrid.</remarks>
-  public class BidirectionalPathfinder {
-    /// <summary>Returns an <c>IPath</c> for the optimal path from coordinates <c>start</c> to <c>goal</c>.</summary>
-    /// <param name="start">Coordinates for the <c>last</c> step on the desired path.</param>
-    /// <param name="goal">Coordinates for the <c>first</c> step on the desired path.</param>
-    /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
-    /// <remarks>Note that <c>heuristic</c> <b>must</b> be monotonic in order for the algorithm to perform 
-    /// properly.</remarks>
-    /// See also: <a href="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html">A* Algorithm Notes</a>
-    public static IDirectedPathCollection FindDirectedPathFwd(
-      IHex start,  IHex goal,  IDirectedNavigableBoard board
-    ) {
-      if (board==null) throw new ArgumentNullException("board"); 
-      return FindDirectedPath(start, goal, board.DirectedStepCost, board.Landmarks).PathFwd;
-    }
+  using DirectedPath  = DirectedPathCollection;
+  using IDirectedPath = IDirectedPathCollection;
 
-    /// <summary>As <c>FindDirectedPathFwd</c>, except with the steps stacked in reverse.</summary>
+  /// <summary>C# (serial) implementation of NBA* path-finding algorithm by Pijls &amp; Post (Adapted).</summary>
+  /// <remarks>Adapted to hex-grids, and using a suggestion by Luis Henrique Oliveira Rios &amp; Luiz Chaimowicz.</remarks>
+    /// See also: <a href="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html">A* Algorithm Notes</a>
+    /// See also: <a href="http://www.cs.princeton.edu/courses/archive/spr06/cos423/Handouts/GW05.pdf">Computing Point-to-Point Shortest Paths from Extenal Memory - Andrew V. Goldberg &amp; Renato F. Werneck</a>
+    /// See also: <a href="http://homepages.dcc.ufmg.br/~chaimo/public/ENIA11.pdf">PNBA*: A Parallel Bidirectional Heuristic Search Algorithm - Luis Henrique Oliveira Rios &amp; Luiz Chaimowicz</a>
+    /// See also: <a href="http://repub.eur.nl/res/pub/16100/ei2009-10.pdf">Yet Another Bidirectional Algorithm for Shortest Paths - Wim Pijls &amp; Henk Post </a>
+  public sealed class BidirectionalPathfinder : Pathfinder {
+    /// <summary>Returns an <c>IPath</c> for the optimal path from coordinates <paramref name="start"/> to <paramref name="goal"/>.</summary>
+    /// <param name="start">Coordinates for the <c>first</c> step on the desired path.</param>
+    /// <param name="goal">Coordinates for the <c>last</c> step on the desired path.</param>
+    /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
+    /// <see cref="FindDirectedPathRev"/>
+    public static IDirectedPathCollection FindDirectedPathFwd(IHex start,IHex goal, INavigableBoard board) {
+      return (new BidirectionalPathfinder(start, goal, board)).PathRev;
+    }
+    /// <summary>As <see cref="FindDirectedPathFwd"/>, except with the steps stacked in reverse for more convenient use.</summary>
+    /// <param name="start">Coordinates for the <c>first</c> step on the desired path.</param>
+    /// <param name="goal">Coordinates for the <c>last</c> step on the desired path.</param>
+    /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
     /// <remarks>
     /// The path steps are ordered in reverse as the forward half-path has been stacked 
     /// onto the reverse half-path during post-processing, instead of the reverse.
     /// </remarks>
     /// <see cref="FindDirectedPathFwd"/>
-    public static IDirectedPathCollection FindDirectedPathRev(
-      IHex start,  IHex goal,  IDirectedNavigableBoard board
-    ) {
-      if (board==null) throw new ArgumentNullException("board"); 
-      return FindDirectedPath(start, goal, board.DirectedStepCost, board.Landmarks).PathRev;
+    public static IDirectedPathCollection FindDirectedPathRev(IHex start, IHex goal, INavigableBoard board) {
+      return (new BidirectionalPathfinder(start, goal, board)).PathFwd;
     }
 
-    /// <summary>Returns an <c>IPath</c> for the optimal path from coordinates <c>start</c> to <c>goal</c>.</summary>
-    /// <param name="start">Coordinates for the <c>last</c> step on the desired path.</param>
-    /// <param name="goal">Coordinates for the <c>first</c> step on the desired path.</param>
-    /// <param name="stepCost">Cost to extend path by hex at <c>coords</c> from hex at direction <c>hexside</c>.</param>
-    /// <param name="landmarks"><c>LandmarkCollection</c> of landmarks available for heuristic calculation.</param>
-    static PathHalves FindDirectedPath (
-      IHex start,  IHex goal,
-      Func<IHex, Hexside, int> stepCost,
-      LandmarkCollection       landmarks
-    ) {
-      if (start==null)      throw new ArgumentNullException("start"); 
-      if (goal==null)       throw new ArgumentNullException("goal"); 
-      if (stepCost==null)   throw new ArgumentNullException("stepCost"); 
-      if (landmarks==null)  throw new ArgumentNullException("landmarks");
+    /// <summary>Calculates an <c>IPath</c> for the optimal path from coordinates .</summary>
+    /// <param name="start">Coordinates for the <c>first</c> step on the desired path.</param>
+    /// <param name="goal">Coordinates for the <c>last</c> step on the desired path.</param>
+    /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
+    public BidirectionalPathfinder(IHex start,  IHex goal,  INavigableBoard board) : base(start,goal,board) 
+    {
+      Pathfinder.TraceFindPathDetailInit(Start.Coords, Goal.Coords);
 
-      Traces.FindPathDetail.Trace(true, 
-        "Fwd: Find path from {0} to {1}:", start.Coords, goal.Coords);
+      PathHalves          = new PathHalves(new HashSet<HexCoords>());
 
-      var closed        = new HashSet<HexCoords>();
-      var pathHalves    = new PathHalves();
+      var pathfinderFwd   = new DirectionalPathfinder.PathfinderRev(Start, Goal, Board, PathHalves);
+      var pathfinderRev   = new DirectionalPathfinder.PathfinderFwd(Start, Goal, Board, PathHalves);
 
-      var pathfinderFwd = new PathfinderFwd(start, goal, stepCost, landmarks,
-                          closed, pathHalves.SetBestSoFar, ()=>pathHalves.BestSoFar);
-      var pathfinderRev = new PathfinderRev(start, goal, stepCost, landmarks,
-                          closed, pathHalves.SetBestSoFar, ()=>pathHalves.BestSoFar);
-
+      // Alternate searching from each direction and calling the other direction
       pathfinderFwd.Partner = pathfinderRev;
       var pathfinder        = pathfinderRev.Partner
                             = pathfinderFwd;
+
       while (! pathfinder.IsFinished())  pathfinder = pathfinder.Partner; 
-
-      return pathHalves;
     }
 
-    /// <summary>Returns a measure of deviation from <paramref name="vectorGoal"/> of <paramref name="vectorGoal"/>.</summary>
-    /// <param name="vectorGoal"></param>
-    /// <param name="vectorHex"></param>
-    /// <returns></returns>
-    static int  Preference(IntVector2D vectorGoal, IntVector2D vectorHex) {
-      return (0xFFFF & Math.Abs(vectorGoal ^ vectorHex ));
-    }
+    #region Properties
+    /// <inheritdoc/>
+    public override ISet<HexCoords> ClosedSet   { get {return PathHalves.ClosedSet;} }
+    /// <inheritdoc/>
+    public ILandmarkCollection      Landmarks   { get {return Board.Landmarks;} }
+    /// <inheritdoc/>
+    [Obsolete("Deprecated - use property PathRev (or perhaps even PathFwd) instead.")]
+    public IDirectedPath            Path        { get {return PathHalves.PathRev;} }
+    /// <inheritdoc/>
+    public IDirectedPath            PathFwd     { get {return PathHalves.PathFwd;} }
+    /// <inheritdoc/>
+    public IDirectedPath            PathRev     { get {return PathHalves.PathRev;} }
+    /// <summary>TODO</summary>
+    private PathHalves              PathHalves  { get; set; }
+    #endregion
 
-    BidirectionalPathfinder   Partner  { get; set; }
-
-    DirectedPathCollection GetPartnerPath(HexCoords coords) {
-      DirectedPathCollection path;
-      _open.TryGetValue(coords,out path);
-      return path;
-    }
-
-    int  Estimate(IHex there, int totalCost) {
-      var estimate   = _heuristic(there.Coords) + totalCost;
-      //var preference = Preference(_start.Coords.Canon - there.Coords.Canon,
-      //                            _start.Coords.Canon - _goal.Coords.Canon );
-      return (estimate << 16);// + preference;
-    }
-    int  FrontierMinimum() { 
-      HexKeyValuePair<int,DirectedPathCollection> item;
-      return (_queue.TryPeek(out item) ? item.Key >> 16 : (Int32)Int16.MaxValue); 
-    }
-    int  Heuristic(HexCoords coords) { return _heuristic(coords);  }
-
-    bool IsFinished() {
-      HexKeyValuePair<int,DirectedPathCollection> item;
-      if ( ! _queue.TryDequeue(out item)) return true;
-
-      var path   = item.Value;
-      var coords = path.PathStep.Hex.Coords;
-
-      _open.Remove(coords);
-      if( ! _closed.Contains(coords) ) {
-
-        Traces.FindPathDequeue.Trace(
-          "{0} Dequeue Path at {1} w/ cost={2,4} at {3,-9}; estimate={4,4}:{5,4}.", 
-          _search, coords, path.TotalCost, path.HexsideExit, item.Key >> 16, item.Key & 0xFFFF);
-
-        if (item.Key>>16 < _getBestSoFar()
-        &&  path.TotalCost + Partner.FrontierMinimum() - Partner.Heuristic(coords) 
-                         < _getBestSoFar()
-        ) {
-          var hexsides = HexsideExtensions.HexsideList;
-          for (var index = 0; index < hexsides.Count; index++) {
-            ExpandHex(path, hexsides[index]);
-          }
-        }
-        _closed.Add(coords);
+    [DebuggerDisplay("")]
+    internal abstract class DirectionalPathfinder : Pathfinder {
+      // Common settings for both directions
+      /// <param name="start">Source hex for this half of the bidirectional path search.</param>
+      /// <param name="goal">Target hex for this this half of the bidirectional path search.</param>
+      /// <param name="board">Board on which this path search is taking place.</param>
+      /// <param name="pathHalves"></param>
+      protected DirectionalPathfinder(IHex start, IHex goal, INavigableBoard board,  PathHalves pathHalves
+      ) : base(start, goal, board) {
+        PathHalves          = pathHalves;
+        _openSet            = new Dictionary<HexCoords, IDirectedPath>();
+        _queue              = new HotPriorityQueue<IDirectedPath>(0,256);
+        var path            = new DirectedPath(start);
+        _openSet.Add(path.PathStep.Hex.Coords, path);
+        _queue.Enqueue (0, path);
       }
-      return ! _queue.Any();
-    }
-    void ExpandHex(DirectedPathCollection path, Hexside hexside) {
-      var here  = path.PathStep.Hex;
-      var there = here.Neighbour(hexside);
-      if (there != null  &&  ! _closed.Contains(there.Coords) ) {
-        var cost = _stepCost(here, hexside, there);
-        if( (cost > 0)
-        ) {
-          if( (path.TotalCost+cost < _getBestSoFar()  ||  ! _open.ContainsKey(there.Coords))
+
+      #region Properties
+      private                 int                   BestSoFar   { get {return PathHalves.BestSoFar;} }
+      public override sealed  ISet<HexCoords>       ClosedSet   { get {return PathHalves.ClosedSet;} }
+      protected               ILandmarkCollection   Landmarks   { get {return Board.Landmarks;} }
+      internal                DirectionalPathfinder Partner     { get; set; }
+      protected               PathHalves            PathHalves  { get; private set; }
+      #endregion
+
+      #region Methods
+      protected abstract  IDirectedPath AddStep(IDirectedPath path, IHex there, Hexside hexside, int cost);
+      protected           void          ExpandHex(IDirectedPath path, Hexside hexside) {
+        var here  = path.PathStep.Hex;
+        var there = here.Neighbour(hexside);
+        if (there != null  &&  ! ClosedSet.Contains(there.Coords) ) {
+          var cost = StepCost(here, hexside, there);
+          if( (cost > 0)
+          &&  (path.TotalCost+cost < BestSoFar  ||  ! _openSet.ContainsKey(there.Coords))
           ) {
-            var totalCost = cost + path.TotalCost;
-            var key       = Estimate(there, totalCost);
-            var newPath   = _addStep(path, there, hexside, cost);
+            var key     = path.TotalCost + cost + Heuristic(there.Coords);
+            var newPath = AddStep(path, there, hexside, cost);
 
-            Traces.FindPathEnqueue.Trace("   Enqueue {0}: estimate={1,4}:{2,4}",
-                                          there.Coords, key>>16, key & 0xFFFF);
+            TraceFindPathEnqueue(there.Coords, key, 0);
 
-            DirectedPathCollection oldPath;
-            if ( ! _open.TryGetValue(there.Coords, out oldPath))  {
-              _open.Add(there.Coords, newPath);
+            IDirectedPath oldPath;
+            if ( ! _openSet.TryGetValue(there.Coords, out oldPath))  {
+              _openSet.Add(there.Coords, newPath);
               _queue.Enqueue(key, newPath);
             } else if (newPath.TotalCost < oldPath.TotalCost) {
-              _open.Remove(there.Coords);
-              _open.Add(there.Coords, newPath);
+              _openSet.Remove(there.Coords);
+              _openSet.Add(there.Coords, newPath);
               _queue.Enqueue(key, newPath);
             }
 
-            _setBestSoFar(newPath, Partner.GetPartnerPath(there.Coords));
+            SetBestSoFar(newPath, Partner.GetPartnerPath(there.Coords));
           }
         }
       }
-    }
-
-    #region Fields
-    HashSet<HexCoords>                 _closed;
-    Func<int>                          _getBestSoFar;
-//    IHex                               _goal;
-    Func<HexCoords,int>                _heuristic;
-    Landmark                           _landmark;
-    Dictionary<HexCoords,DirectedPathCollection> _open;
-    HotPriorityQueue<DirectedPathCollection>     _queue;
-    string                             _search;
-//    IHex                               _start;
-    IntVector2D                        _vectorGoal;
-
-    internal  Func<DirectedPathCollection,IHex,Hexside,int,DirectedPathCollection> _addStep;
-    internal  Action<DirectedPathCollection,DirectedPathCollection>                _setBestSoFar;
-    internal  Func<IHex, Hexside, IHex, int>                   _stepCost;
-    #endregion
-
-    private sealed class PathHalves {
-      public PathHalves() { BestSoFar   = (Int32)Int16.MaxValue; }
-
-      public int          BestSoFar { get; private set; }
-      [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-      public int          KeySoFar  { get; private set; }
-      public DirectedPathCollection PathFwd   { get { return MergePaths(_pathFwd, _pathRev); } }
-      public DirectedPathCollection PathRev   { get { return MergePaths(_pathRev, _pathFwd); } }
-
-      public void SetBestSoFar(DirectedPathCollection pathFwd, DirectedPathCollection pathRev) {
-        if (pathFwd==null  ||  pathRev==null) return;
-        if( pathFwd.TotalCost + pathRev.TotalCost < BestSoFar) {
-          _pathFwd  = pathFwd; 
-          _pathRev  = pathRev; 
-          BestSoFar = _pathFwd.TotalCost + pathRev.TotalCost;
-          KeySoFar  = _pathFwd.Key + _pathRev.Key;
-          Traces.FindPathDetail.Trace("   SetBestSoFar: pathFwd at {0}; pathRev at {1}; Cost = {2}",
-              pathFwd.PathStep.Hex.Coords, _pathRev.PathStep.Hex.Coords, BestSoFar);
-        }
+      protected           int           FrontierMinimum() { 
+        HexKeyValuePair<int,IDirectedPath> item;
+        return (_queue.TryPeek(out item) ? item.Key : int.MaxValue); 
       }
+      protected           IDirectedPath GetPartnerPath(HexCoords coords) {
+        IDirectedPath path;
+        _openSet.TryGetValue(coords,out path);
+        return path;
+      }
+      protected           int           Heuristic(HexCoords coords) { 
+        return Landmarks.Max(l => LandmarkHeuristic(l,coords));
+      }
+      internal            bool          IsFinished(){
+        HexKeyValuePair<int,IDirectedPath> item;
+        if ( _queue.TryDequeue(out item)) {
+          var path   = item.Value;
+          var coords = path.PathStep.Hex.Coords;
 
-      public static DirectedPathCollection MergePaths(DirectedPathCollection fwd, DirectedPathCollection rev) {
-        if (rev!=null) {
-          while (rev.PathSoFar!=null) {
-            var hexside = rev.PathStep.HexsideEntry;
-            var cost    = rev.TotalCost - (rev = rev.PathSoFar).TotalCost;
-            fwd = fwd.AddStep(rev.PathStep.Hex, hexside, cost, cost);
+          _openSet.Remove(coords);
+          if( ! ClosedSet.Contains(coords) ) {
+
+            TraceFindPathDequeue(GetType().Name,coords, path.TotalCost, path.HexsideExit, item.Key, 0);
+
+            if (item.Key < BestSoFar
+            &&  path.TotalCost + Partner.FrontierMinimum() - Partner.Heuristic(coords) < BestSoFar
+            ) {
+              HexsideExtensions.HexsideList.ForEach(hexside => ExpandHex(path, hexside));
+            }
+            ClosedSet.Add(coords);
           }
+          return ! _queue.Any();
         }
-        return fwd;
+        return true;
+      }
+      protected abstract  int           LandmarkHeuristic(ILandmark landmark, HexCoords here);
+      protected abstract  void          SetBestSoFar(IDirectedPath fwdPath, IDirectedPath revPath);
+      protected abstract  int           StepCost(IHex here, Hexside hexside, IHex there);
+      #endregion
+
+      #region Fields
+      IDictionary<HexCoords,IDirectedPath>  _openSet;
+      IPriorityQueue<int,IDirectedPath>     _queue;
+      #endregion
+
+      /// <summary>A <see cref="DirectedPathCollection"/> from start to join-point obtained by searching forwards from start.</summary>
+      internal sealed class PathfinderFwd : DirectionalPathfinder {
+        /// <summary>Create a new instance of <see cref="PathfinderFwd"/>.</summary>
+        /// <param name="start">Source hex for this path search.</param>
+        /// <param name="goal">Target hex for this path search.</param>
+        /// <param name="board">Board on which this path search is taking place.</param>
+        /// <param name="pathHalves"></param>
+        internal PathfinderFwd(IHex start, IHex goal, INavigableBoard board, PathHalves pathHalves
+        ) : base (start, goal, board, pathHalves) {
+          TraceFindPathDetailDirection("Fwd",goal.Coords-start.Coords);
+        }
+
+        protected override sealed IDirectedPath AddStep(IDirectedPath path, IHex there, Hexside hexside, int cost) {
+          return path.AddStep(there,hexside,cost);
+        }
+        protected override sealed int           LandmarkHeuristic(ILandmark landmark, HexCoords here) {
+          return landmark.DistanceFrom(here) - landmark.DistanceFrom(Goal.Coords);
+        }
+        protected override sealed void          SetBestSoFar(IDirectedPath self, IDirectedPath partner) {
+          PathHalves.SetBestSoFar(partner, self);
+        }
+        protected override sealed int           StepCost(IHex here, Hexside hexside, IHex there) {
+          return Board.GetDirectedCostToExit(here, hexside);
+        }
       }
 
-      DirectedPathCollection _pathFwd;
-      DirectedPathCollection _pathRev;
-    }
+      /// <summary>A <see cref="DirectedPathCollection"/> from join-point to goal obtained by searching backwards from goal.</summary>
+      internal sealed class PathfinderRev : DirectionalPathfinder {
+        /// <summary>Create a new instance of <see cref="PathfinderRev"/></summary>
+        /// <param name="start">Source hex for this path search.</param>
+        /// <param name="goal">Target hex for this path search.</param>
+        /// <param name="board">Board on which this path search is taking place.</param>
+        /// <param name="pathHalves"></param>
+        internal PathfinderRev(IHex start, IHex goal, INavigableBoard board, PathHalves pathHalves
+        ) : base (goal, start, board, pathHalves) {
+          TraceFindPathDetailDirection("Rev",start.Coords-goal.Coords);
+        }
 
-    BidirectionalPathfinder(IHex start, IHex goal,
-      LandmarkCollection landmarks, HashSet<HexCoords> closed, Func<int> getBestSoFar
-    ) {
-//      _start        = start;
-//      _goal         = goal;
-      _getBestSoFar = getBestSoFar;
-      _vectorGoal   = goal.Coords.Canon - start.Coords.Canon;
-      _open         = new Dictionary<HexCoords, DirectedPathCollection>();
-      _closed       = closed;
-      _queue        = new HotPriorityQueue<DirectedPathCollection>(16);
-      _landmark     = landmarks
-              .OrderByDescending(l => l.HexDistance(goal.Coords) - l.HexDistance(start.Coords))
-              .FirstOrDefault();
-//      _heuristic    = c => _landmark.HexDistance(c) - _landmark.HexDistance(start.Coords);
-      _heuristic    = c => landmarks.Heuristic(goal.Coords, c);
-
-      var path = new DirectedPathCollection(goal);
-      _open.Add(goal.Coords, path);
-      _queue.Enqueue (0, path);
-    }
-
-    /// <summary>A <see cref="DirectedPathCollection"/> from mid-point to goal obtained by searching backwards from goal.</summary>
-    private sealed class PathfinderFwd : BidirectionalPathfinder {
-      /// <summary>Create a new instance of <see cref="PathfinderFwd"/></summary>
-      /// <param name="start"></param>
-      /// <param name="goal"></param>
-      /// <param name="stepCost"></param>
-      /// <param name="landmarks"></param>
-      /// <param name="closed"></param>
-      /// <param name="setBestSoFar"></param>
-      /// <param name="getBestSoFar"></param>
-      public PathfinderFwd(IHex start, IHex goal, Func<IHex, Hexside, int> stepCost, 
-        LandmarkCollection landmarks, HashSet<HexCoords> closed,
-        Action<DirectedPathCollection,DirectedPathCollection> setBestSoFar,   Func<int> getBestSoFar
-      ) : base (start, goal, landmarks, closed, getBestSoFar) {
-        _addStep      = (path,there,hexside,cost) => path.AddStep(there,hexside,cost);
-        _setBestSoFar = (self,partner) => setBestSoFar(self,partner);
-        _stepCost     = (here,hexside,there) => stepCost(there, hexside.Reversed());
-
-        _search       = "Fwd";
-        Traces.FindPathDetail.Trace( "   {0} Search uses: vectorGoal = {1}; and landmark at {2}", 
-          _search, _vectorGoal, _landmark.Coords);
-      }
-    }
-
-    /// <summary>A <see cref="DirectedPathCollection"/> from start to mid-point obtained by searching forwards from start.</summary>
-    private sealed class PathfinderRev : BidirectionalPathfinder {
-      /// <summary>Create a new instance of <see cref="PathfinderRev"/>.</summary>
-      /// <param name="start"></param>
-      /// <param name="goal"></param>
-      /// <param name="stepCost"></param>
-      /// <param name="landmarks"></param>
-      /// <param name="closed"></param>
-      /// <param name="setBestSoFar"></param>
-      /// <param name="getBestSoFar"></param>
-      public PathfinderRev(IHex start, IHex goal, Func<IHex, Hexside, int> stepCost, 
-        LandmarkCollection landmarks,  HashSet<HexCoords> closed,
-        Action<DirectedPathCollection,DirectedPathCollection> setBestSoFar,   Func<int> getBestSoFar
-      ) : base (goal, start, landmarks, closed, getBestSoFar) {
-        _addStep      = (path,there,hexside,cost) => path.AddStep(there,hexside.Reversed(),cost);
-        _setBestSoFar = (self,partner) => setBestSoFar(partner,self);
-        _stepCost     = (here,hexside,there) => stepCost(here, hexside);
-
-        _search       = "Rev";
-        Traces.FindPathDetail.Trace( "   {0} Search uses: vectorGoal = {1}; and landmark at {2}", 
-          _search, _vectorGoal, _landmark.Coords);
+        protected override sealed IDirectedPath AddStep(IDirectedPath path, IHex there, Hexside hexside, int cost) {
+          return path.AddStep(there,hexside.Reversed(),cost);
+        }
+        protected override sealed int           LandmarkHeuristic(ILandmark landmark, HexCoords here) {
+          return landmark.DistanceTo(here) - landmark.DistanceTo(Goal.Coords);
+        }
+        protected override sealed void          SetBestSoFar(IDirectedPath self, IDirectedPath partner) {
+          PathHalves.SetBestSoFar(self, partner);
+        }
+        protected override sealed int           StepCost(IHex here, Hexside hexside, IHex there) {
+          return Board.GetDirectedCostToExit(there, hexside.Reversed());
+        }
       }
     }
   }
+
+  [DebuggerDisplay("BestSoFar={BestSoFar}; ClosedSet={ClosedSet.Count}; PathFwd={_pathFwd.TotalSteps} steps; PathRev={_pathRev.TotalSteps} steps")]
+  internal sealed class PathHalves {
+    public PathHalves(ISet<HexCoords> closedSet) { 
+      BestSoFar   = int.MaxValue;
+      ClosedSet   = closedSet;
+    }
+
+    public int              BestSoFar { get; private set; }
+    public ISet<HexCoords>  ClosedSet { get; private set; }
+    public IDirectedPath    PathFwd   { get { return MergePaths(_pathFwd, _pathRev); } }
+    public IDirectedPath    PathRev   { get { return MergePaths(_pathRev, _pathFwd); } }
+
+    public void             SetBestSoFar(IDirectedPath pathFwd, IDirectedPath pathRev) {
+      if (pathFwd==null  ||  pathRev==null) return;
+      if( pathFwd.TotalCost + pathRev.TotalCost < BestSoFar) {
+        _pathRev  = pathFwd; 
+        _pathFwd  = pathRev; 
+        BestSoFar = _pathRev.TotalCost + _pathFwd.TotalCost;
+
+        Pathfinder.TraceFindPathDetailBestSoFar(pathFwd.PathStep.Hex.Coords, pathRev.PathStep.Hex.Coords, BestSoFar);
+      }
+    }
+
+    public static IDirectedPath MergePaths(IDirectedPath targetPath, IDirectedPath sourcePath) {
+      if (sourcePath != null) {
+        while (sourcePath.PathSoFar != null) {
+          var hexside = sourcePath.PathStep.HexsideEntry;
+          var cost    = sourcePath.TotalCost - (sourcePath = sourcePath.PathSoFar).TotalCost;
+          targetPath  = targetPath.AddStep(sourcePath.PathStep.Hex, hexside.Reversed(), cost);
+        }
+      }
+      return targetPath;
+    }
+
+    IDirectedPath   _pathFwd;
+    IDirectedPath   _pathRev;
+  }
 }
+

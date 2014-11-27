@@ -53,20 +53,36 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <remarks>PreferenceWidth is the number of low-order bits on the key that are for 
     /// alignment, the remainder being the actual left-shifted distance estimate.</remarks>
     public HotPriorityQueue() : this(0) {}
-    /// <summary>returns a new instnace with a preferenceWidthof shift bits.</summary>
-    /// <remarks>The <paramref name="preferenceWidth"/> is the number of low-order bits on 
+    /// <summary>returns a new instance with a preferenceWidth of shift bits.</summary>
+    /// <remarks></remarks>
+    /// <paramref name="preferenceWidth">the number of low-order bits on 
     /// the key that are for alignment, the remainder being the actual left-shifted distance 
-    /// estimate.</remarks>
-    public HotPriorityQueue(int preferenceWidth) { 
-      const int initialSize = 2048;
-      PoolSize         = initialSize * 7/8;
+    /// estimate.</paramref>
+    public HotPriorityQueue(int preferenceWidth) : this(preferenceWidth, 2048) {}
+    /// <summary>returns a new instance with a preferenceWidth of shift bits.</summary>
+    /// <remarks></remarks>
+    /// <param name="preferenceWidth">the number of low-order bits on 
+    /// the key that are for alignment, the remainder being the actual left-shifted distance 
+    /// estimate.</param>
+    /// <param name="initialSize">Maximum size of the Heap-On-Top; initial Pool size will be 
+    /// set at 7/8 of this value. Powers of 2 work best for a value.</param>
+    public HotPriorityQueue(int preferenceWidth, int initialSize) { 
+      PoolSize         = initialSize >> 3 * 7;
       _baseIndex       = 0;
       _preferenceWidth = preferenceWidth; 
       _queue           = new HotPriorityQueueList<int,TValue>(initialSize).PriorityQueue;
+#if UseSortedDictionary
+      _lists = new SortedDictionary<int, HotPriorityQueueList<int, TValue>>();
+#else
+      _lists = new SortedList<int, HotPriorityQueueList<int,TValue>>();
+#endif
     }
 
     /// <summary>Returns whether any elements exist in the heap.</summary>
-    public bool Any()    { return _queue.Any()  ||  (_lists!=null && _lists.Any()); }
+    bool IPriorityQueue<int,TValue>.Any()    { return this.Any; }
+
+    /// <summary>Returns whether any elements exist in the heap.</summary>
+    public bool Any      { get { return _queue.Count > 0  ||  _lists.Count > 0; } }
 
     /// <summary>Returns the number of elements in the heap.</summary>
     public int  Count    { get { return _queue.Count; } }
@@ -87,17 +103,10 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       var index = item.Key >> _preferenceWidth;
       if (index <= _baseIndex) {
         _queue.Enqueue(item);
-      } else if (_lists == null && _queue.Count < PoolSize) {
+      } else if (_lists.Count == 0  &&  _queue.Count < PoolSize) {
         _baseIndex = index;
         _queue.Enqueue(item);
       } else {
-        if (_lists == null) {
-#if UseSortedDictionary
-          _lists = new SortedDictionary<int, HotPriorityQueueList<int, TValue>>();
-#else
-          _lists = new SortedList<int, HotPriorityQueueList<int,TValue>>();
-#endif
-        }
         HotPriorityQueueList<int,TValue> list;
         if( ! _lists.TryGetValue(index, out list) ) {
           list = new HotPriorityQueueList<int,TValue>();
@@ -109,32 +118,25 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <inheritdoc/>
     public bool TryDequeue(out HexKeyValuePair<int,TValue> result) {
-      if (_queue.TryDequeue(out result))  {
-        return true;
-      } else {
-        var list   = _lists.First();
-        _baseIndex = list.Key;
-        _queue     = list.Value.PriorityQueue;
-        _lists.Remove(list.Key);
-
-        return _queue.TryDequeue(out result);
-      }
+      if (_queue.TryDequeue(out result)) return true;
+      else if (_lists.Count > 0)         return (_queue = GetNextQueue()).TryDequeue(out result);
+      else                               return false;
     }
 
     /// <inheritdoc/>
     public bool TryPeek(out HexKeyValuePair<int,TValue> result) {
-      if (_queue.TryPeek(out result))  {
-        return true;
-      //} else if (_lists==null) {
-      //  return false;
-      } else {
-        var list   = _lists.First();
-        _baseIndex = list.Key;
-        _queue     = list.Value.PriorityQueue;
-        _lists.Remove(list.Key);
+      if (_queue.TryPeek(out result))  return true;
+      else if (_lists.Count > 0)       return (_queue = GetNextQueue()).TryPeek(out result);
+      else                             return false;
+    }
 
-        return _queue.TryPeek(out result);
-      }
+    /// <summary>TODO</summary>
+    private IPriorityQueue<int,TValue> GetNextQueue() {
+      var list   = _lists.First();
+      _lists.Remove(list.Key);
+      _baseIndex = list.Key;
+
+      return list.Value.PriorityQueue;
     }
   }
 }

@@ -39,17 +39,6 @@ using PGNapoleonics.HexUtilities.Common;
 namespace PGNapoleonics.HexUtilities.FieldOfView {
   using HexsideMap = Func<Hexside,Hexside>;
 
-    /// <summary>Enumeration of line-of-sight modes</summary>
-  public enum FovTargetMode {
-    /// <summary>Target height and observer height both set to the same constant value 
-    /// (ShadowCasting.DefaultHeight) above ground eleevation</summary>
-    EqualHeights,
-    /// <summary>Use actual observer height and ground level as target height.</summary>
-    TargetHeightEqualZero,
-    /// <summary>Use actual observer and target height.</summary>
-    TargetHeightEqualActual
-  }
-
   /// <summary>Credit: Eric Lippert</summary>
   /// <a href="http://blogs.msdn.com/b/ericlippert/archive/2011/12/29/shadowcasting-in-c-part-six.aspx">Shadow Casting in C# Part Six</a>
     /// <remarks>
@@ -193,28 +182,28 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       setFieldOfView(coordsObserver);    // Always visible to self!
 
       Action<int> dodecantFov = dodecant => {
-        var matrix  = _dodecantMatrices[dodecant] * matrixOrigin;
-        var map     = _dodecantHexsides[dodecant];
-        _mapCoordsDodecant = hex => TranslateDodecant<HexCoords>(matrix,v=>v)(hex);
+        var matrix  = Dodecant.Matrices[dodecant] * matrixOrigin;
+        var map     = Dodecant.Hexsides[dodecant];
+        _mapCoordsDodecant = hex => matrix.TranslateDodecant<HexCoords>(v=>v)(hex);
         ComputeFieldOfViewInDodecantZero(
           radius,
           heightObserver,
-          TranslateDodecant(matrix, isOnboard),
-          TranslateDodecant(matrix, heightTarget),
-          TranslateDodecant(matrix, map, heightTerrain),
-          TranslateDodecant(matrix, setFieldOfView)
+          matrix.TranslateDodecant(isOnboard),
+          matrix.TranslateDodecant(heightTarget),
+          matrix.TranslateDodecant(map, heightTerrain),
+          matrix.TranslateDodecant(setFieldOfView)
           );
       };
       #if TRACE
         InSerial = true;
       #endif
       if (InSerial) {
-        for(int dodecant = 0;  dodecant < _dodecantMatrices.Count;  dodecant++) {
+        for(int dodecant = 0;  dodecant < Dodecant.Matrices.Count;  dodecant++) {
           Traces.FieldOfView.Trace(true," - Dodecant: {0}", dodecant);
           dodecantFov(dodecant);
         }
       } else {
-        Parallel.For(0, _dodecantMatrices.Count, dodecantFov);
+        Parallel.For(0, Dodecant.Matrices.Count, dodecantFov);
       }
     }
 
@@ -278,7 +267,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     ///     queueing them for later processing. 
     ///
     /// This algorithm is "center-to-center"; a more sophisticated algorithm 
-    /// would say that a cell is visible if there is *any* straight line segment that 
+    /// would say that a cell is visible if neighbour is *any* straight line segment that 
     /// passes through *any* portion of the origin cell and any portion of the target 
     /// cell, passing through only transparent cells along the way. This is the 
     /// "Permissive Field Of View" algorithm, and it is much harder to implement.

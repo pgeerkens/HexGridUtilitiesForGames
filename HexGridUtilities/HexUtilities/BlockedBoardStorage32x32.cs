@@ -28,17 +28,18 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
 using System.Diagnostics.CodeAnalysis;
 
 namespace PGNapoleonics.HexUtilities {
+    using HexSize     = System.Drawing.Size;
+
     /// <summary>A <c>BoardStorage</c> implementation optimized for large maps by blocking 
-    /// 32 x 32 arrays of hexes for improved memory caching.</summary>
+    /// 32 i 32 arrays of hexes for improved memory caching.</summary>
     /// <remarks>This <c>BoardStorage</c> implementation stores the board cells in blocks
-    /// that are 32 x 32 cells to provide better localization for the Path-Finding and
+    /// that are 32 i 32 cells to provide better localization for the Path-Finding and
     /// Field-of-View algorithms.</remarks>
     public sealed class BlockedBoardStorage32x32<T> : BoardStorage<T> {
       const int _grouping = 32;
@@ -46,7 +47,7 @@ namespace PGNapoleonics.HexUtilities {
 
       /// <summary>Construct a new instance of extent <paramref name="sizeHexes"/> and 
       /// initialized using <paramref name="initializer"/>.</summary>
-      public BlockedBoardStorage32x32(Size sizeHexes, Func<HexCoords,T> initializer) 
+      public BlockedBoardStorage32x32(HexSize sizeHexes, Func<HexCoords,T> initializer) 
         : base (sizeHexes) {
         backingStore  = new List<List<List<T>>>((MapSizeHexes.Height+_buffer) / _grouping);
         for(var y = 0;  y < backingStore.Capacity;  y++) {
@@ -56,7 +57,7 @@ namespace PGNapoleonics.HexUtilities {
           }
         }
 
-        Parallel.For(0, backingStore.Capacity, y => {
+        var result = Parallel.For(0, backingStore.Capacity, y => {
           var boardRow    = backingStore[y];
           for(var x = 0;  x < boardRow.Capacity;  x++) {
             var boardCell = backingStore[y][x];
@@ -91,34 +92,43 @@ namespace PGNapoleonics.HexUtilities {
       /// <inheritdoc/>
       public override void ForEach(Action<T> action) {
         if (action==null) throw new ArgumentNullException("action");
-        foreach(var hex in backingStore.SelectMany(lh=>lh).SelectMany(lh=>lh)) action(hex);
+        foreach(var hex in backingStore.SelectMany(lllh=>lllh.ToList())
+                                       .SelectMany(llh =>llh.ToList())
+                                       .Where(h=>h!=null)) 
+          action(hex);
       }
 
       /// <inheritdoc/>>
       public override void ForEach(Func<T,bool> predicate, Action<T> action) {
         if (action==null) throw new ArgumentNullException("action");
-        foreach(var hex in backingStore.SelectMany(lh=>lh).SelectMany(lh=>lh)
-                                       .Where(lh=>predicate(lh))) action(hex);
+        foreach(var hex in backingStore.SelectMany(lllh=>lllh.ToList())
+                                       .SelectMany(llh =>llh.ToList())
+                                       .Where(h=>h!=null && predicate(h))) 
+          action(hex);
       }
 
       /// <inheritdoc/>>
-      public override void ParallelForEach(Action<T> action) {
+      public override ParallelLoopResult ParallelForEach(Action<T> action) {
         if (action==null) throw new ArgumentNullException("action");
-        Parallel.ForEach<T>(
-          backingStore.SelectMany(lh=>lh).SelectMany(lh=>lh).Where(h=>h!=null), 
+        return Parallel.ForEach<T>(
+          backingStore.SelectMany(lllh=>lllh.ToList())
+                      .SelectMany(llh =>llh.ToList())
+                      .Where(h=>h!=null), 
           hex => action(hex)
         );
       }
 
       /// <inheritdoc/>>
-      public override void ParallelForEach(Func<T,bool> predicate, Action<T> action) {
+      public override ParallelLoopResult ParallelForEach(Func<T,bool> predicate, Action<T> action) {
         if (action==null) throw new ArgumentNullException("action");
-        Parallel.ForEach<T>(
-          backingStore.SelectMany(lh=>lh).SelectMany(lh=>lh).Where(h=>h!=null && predicate(h)), 
+        return Parallel.ForEach<T>(
+          backingStore.SelectMany(lllh=>lllh.ToList())
+                      .SelectMany(llh =>llh.ToList())
+                      .Where(h=>h!=null && predicate(h)), 
           hex => action(hex)
         );
       }
 
-      List<List<List<T>>> backingStore { get; set; }
+      private List<List<List<T>>> backingStore { get; set; }
     }
 }

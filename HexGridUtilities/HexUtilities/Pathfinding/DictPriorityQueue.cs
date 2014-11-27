@@ -42,6 +42,11 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority> {
       return new DictionaryPriorityQueue<TPriority,TValue>();
     }
+
+    /// <summary>TODO</summary>
+    public static IPriorityQueue<int,TValue> NewHotPriorityQueue<TValue>() {
+      return new HotPriorityQueue<TValue>();
+    }
   }
 
 
@@ -60,7 +65,10 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     IDictionary<TPriority,Queue<TValue>> _list = new SortedDictionary<TPriority,Queue<TValue>>();
 
     /// <inheritdoc/>
-    public bool Any() { return Enumerable().Any(); }
+    bool IPriorityQueue<TPriority,TValue>.Any() { return this.Any; }
+
+    /// <summary>Returns true exactly when the queue is not empty.</summary>
+    public bool Any { get { return this.Count > 0; } }
 
     /// <inheritdoc/>
     public int  Count { get { return _list.Count; } }
@@ -81,7 +89,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <inheritdoc/>
     public bool TryDequeue(out HexKeyValuePair<TPriority,TValue> result) {
-      if (_list.Any())  {
+      if (_list.Count > 0)  {
         var pair = _list.First();
         var v    = pair.Value.Dequeue();
         result   = new HexKeyValuePair<TPriority,TValue>(pair.Key,v);
@@ -94,7 +102,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <inheritdoc/>
     public bool TryPeek(out HexKeyValuePair<TPriority,TValue> result) {
-      if (_list.Any())  {
+      if (_list.Count > 0)  {
         var pair = _list.First();
         var v    = pair.Value.Peek();
         result   = new HexKeyValuePair<TPriority,TValue>(pair.Key,v);
