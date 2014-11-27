@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace PGNapoleonics.HexgridExampleCommon.Properties {
+namespace PGNapoleonics.HexgridScrollableExample.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace PGNapoleonics.HexgridExampleCommon.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PGNapoleonics.HexgridExampleCommon.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PGNapoleonics.HexgridScrollableExample.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,15 @@ namespace PGNapoleonics.HexgridExampleCommon.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text Files (*.txt)|*.txt|All Files (*.*)|*.*.
+        /// </summary>
+        internal static string FileExtensionMask {
+            get {
+                return ResourceManager.GetString("FileExtensionMask", resourceCulture);
             }
         }
         

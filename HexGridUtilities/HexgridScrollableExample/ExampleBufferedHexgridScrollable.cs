@@ -28,29 +28,31 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 
+using PGNapoleonics.HexgridExampleCommon;
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
-namespace PGNapoleonics.HexgridExampleCommon {
+namespace PGNapoleonics.HexgridScrollableExample {
   using MapGridDisplay = PGNapoleonics.HexgridPanel.MapDisplay<MapGridHex>;
 
-  internal sealed partial class HexgridScrollableExample : Form, IMessageFilter {
+  internal sealed partial class ExampleBufferedHexgridScrollable : Form, IMessageFilter {
     private bool           _isPanelResizeSuppressed = false;
     private MapGridDisplay _mapBoard;
 
-    public HexgridScrollableExample() {
+    public ExampleBufferedHexgridScrollable() {
       InitializeComponent();
       Application.AddMessageFilter(this);
 
-//      ComponentResourceManager resources = new ComponentResourceManager(typeof(HexgridScrollableExample));
-//      this._hexgridPanel.SetScaleList ( (IList<float>)(resources.GetObject("_hexgridPanel.Scales")) );
+      //ComponentResourceManager resources = new ComponentResourceManager(typeof(HexgridScrollableExample));
+      //this._hexgridPanel.SetScaleList ( (IList<float>)(resources.GetObject("_hexgridPanel.Scales")) );
       this._hexgridPanel.SetScaleList ( new List<float>() {0.707F,  0.841F, 1.000F, 1.189F, 1.414F}.AsReadOnly() );
 
       this._hexgridPanel.ScaleChange += new EventHandler<EventArgs>((o,e) => OnResizeEnd(e));
@@ -86,9 +88,9 @@ namespace PGNapoleonics.HexgridExampleCommon {
     private void LoadLandmarkMenu() {
       menuItemLandmarks.Items.Clear();
       menuItemLandmarks.Items.Add("None");
-      foreach(var landmark in _mapBoard.Landmarks) {
-        menuItemLandmarks.Items.Add(string.Format(CultureInfo.InvariantCulture, "{0}", landmark.Coords));
-      }
+      _mapBoard.Landmarks.ForEach(landmark =>
+        menuItemLandmarks.Items.Add(string.Format(CultureInfo.InvariantCulture, "{0}", landmark.Coords))
+      );
       menuItemLandmarks.SelectedIndexChanged += new EventHandler(menuItemLandmarks_SelectedIndexChanged);
       menuItemLandmarks.SelectedIndex = 0; 
     }
@@ -122,8 +124,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
     private void hexgridPanel_MouseMove(object sender, MouseEventArgs e) {
       var hotHex       = _mapBoard.HotspotHex;
       statusLabel.Text = string.Format(CultureInfo.InvariantCulture,
-        // "Hotspot Hex: {0:gi3} / {1:uI4} / {2:c5}; {3:r6}; Path Length = {4}",
-        PGNapoleonics.HexgridExampleCommon.Properties.Resources.StatusLabelText,
+        PGNapoleonics.HexgridScrollableExample.Properties.Resources.StatusLabelText,
         hotHex, hotHex, hotHex,
         _mapBoard.StartHex - hotHex, (_mapBoard.Path==null ? 0 : _mapBoard.Path.TotalCost));
     }

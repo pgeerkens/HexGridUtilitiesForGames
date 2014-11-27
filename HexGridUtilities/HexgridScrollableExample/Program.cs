@@ -37,8 +37,10 @@ using PGNapoleonics.WinForms;
 /// in a simple <see cref="WinForms"/> application.</summary>
 #pragma warning restore 1587
 [assembly:CLSCompliant(true)]
-namespace PGNapoleonics.HexgridExampleCommon {
+namespace PGNapoleonics.HexgridScrollableExample {
   static class Program {
+    volatile static int i = 0;
+
     /// <summary>The main entry point for the application.</summary>
     [STAThread]
     static void Main()      {
@@ -47,8 +49,13 @@ namespace PGNapoleonics.HexgridExampleCommon {
       Application.ThreadException += 
         new ThreadExceptionEventHandler(
           (new ThreadExceptionHandler()).ApplicationThreadException);
-
-      Application.Run(new HexgridScrollableExample());
+      switch (i) {
+        default:
+        case 0:  Application.Run(new MdiParent()); break;
+        case 1:  Application.Run(new ExampleHexgridPanelExample()); break;
+        case 2:  Application.Run(new ExampleHexgridScrollable()); break;
+        case 3:  Application.Run(new ExampleBufferedHexgridScrollable()); break;
+      }
     }
   }
 }

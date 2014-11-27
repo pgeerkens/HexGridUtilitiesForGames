@@ -185,7 +185,7 @@
 </value>
   </data>
   <data name="lblPathCutover.ToolTipText" xml:space="preserve">
-    <value>Range beyond which Fast PathFinding is used instead of Stable PathFinding. 
+    <value>Range beyond which Fast Path-Finding is used instead of Stable Path-Finding. 
 By way of illustration using the Terrain Map:
 1) With Path Cutover set to 20 hexes (the default;
 2) Left-click a Start-Hex along the left side of the board;
@@ -195,11 +195,11 @@ By way of illustration using the Terrain Map:
 Note how the "directness" of the path is influenced. The 
 "unstable" path-finder is significantly faster at long range, 
 but generates meandering (still optimal) paths over 
-clear terriain.
+clear terrain.
 </value>
   </data>
   <data name="txtPathCutover.ToolTipText" xml:space="preserve">
-    <value>Range beyond which Fast PathFinding is used instead of Stable PathFinding. 
+    <value>Range beyond which Fast Path-Finding is used instead of Stable Path-Finding. 
 By way of illustration using the Terrain Map:
 1) With Path Cutover set to 20 hexes (the default;
 2) Left-click a Start-Hex along the left side of the board;
@@ -209,7 +209,7 @@ By way of illustration using the Terrain Map:
 Note how the "directness" of the path is influenced. The 
 "unstable" path-finder is significantly faster at long range, 
 but generates meandering (still optimal) paths over 
-clear terriain.</value>
+clear terrain.</value>
   </data>
   <data name="menuItemHelp.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

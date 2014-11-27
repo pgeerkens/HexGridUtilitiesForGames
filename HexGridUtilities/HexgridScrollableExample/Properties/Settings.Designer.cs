@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace PGNapoleonics.HexgridExampleCommon.Properties {
+namespace PGNapoleonics.HexgridScrollableExample.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
