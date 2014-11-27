@@ -31,6 +31,8 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
 
+using System.Diagnostics.CodeAnalysis;
+
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
@@ -48,7 +50,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
     /// <see cref="System.Drawing.Size"/>.</param>
     /// <param name="initializeBoard">Delegate that creates the <see cref="BoardStorage{T}"/> backing
     /// store for this instance.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+   [SuppressMessage("Microsoft.Design", 
       "CA1006:DoNotNestGenericTypesInMemberSignatures")]
     protected HexBoardWpf(HexSize sizeHexes, HexSize gridSize, 
                                Func<HexBoardWpf<THex>,BoardStorage<THex>> initializeBoard) 
@@ -64,17 +66,15 @@ namespace PGNapoleonics.HexgridScrollViewer {
     /// store for this instance.</param>
     /// <param name="landmarkCoords">Collection of <see cref="HexCoords"/> specifying the landmark 
     /// locations to be used for pathfinding.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", 
+   [SuppressMessage("Microsoft.Design", 
       "CA1006:DoNotNestGenericTypesInMemberSignatures")]
     protected HexBoardWpf(HexSize sizeHexes, HexSize gridSize, 
                                Func<HexBoardWpf<THex>,BoardStorage<THex>> initializeBoard, 
-                               ReadOnlyCollection<HexCoords> landmarkCoords)
-    : base(sizeHexes, gridSize) {
+                                IFastList<HexCoords> landmarkCoords)
+    : base(sizeHexes, gridSize,landmarkCoords) {
       if (initializeBoard==null) throw new ArgumentNullException("initializeBoard");
 
       BoardHexes = initializeBoard(this); 
-
-      SetLandmarks(landmarkCoords);
 
       ResetGrid();
       HexgridPath       = GetGraphicsPath(GridSize);

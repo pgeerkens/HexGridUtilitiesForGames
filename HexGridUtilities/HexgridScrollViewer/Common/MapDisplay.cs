@@ -33,6 +33,8 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
+using System.Diagnostics.CodeAnalysis;
+
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
@@ -61,9 +63,9 @@ namespace PGNapoleonics.HexgridScrollViewer {
 
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
     protected MapDisplay(HexSize sizeHexes, HexSize gridSize, Func<HexBoardWpf<THex>, HexCoords, THex> initializeHex, 
-                         ReadOnlyCollection<HexCoords> landmarkCoords) 
+                         IFastList<HexCoords> landmarkCoords) 
     : base(sizeHexes, gridSize, 
-          (map) => new BoardStorage<THex>.FlatBoardStorage(sizeHexes, coords => initializeHex(map,coords)),
+          (map) => new FlatBoardStorage<THex>(sizeHexes, coords => initializeHex(map,coords)),
           landmarkCoords
     ) {
       InitializeProperties();
@@ -106,9 +108,9 @@ namespace PGNapoleonics.HexgridScrollViewer {
     /// <inheritdoc/>
     public          string        Name            { get {return "MapDisplay";} }
     /// <inheritdoc/>
-    public          IDirectedPath Path            { 
+    public          IDirectedPathCollection Path            { 
       get { return _path ?? (_path = this.GetDirectedPath(this[StartHex], this[GoalHex])); } 
-    } IDirectedPath _path;
+    } IDirectedPathCollection _path;
     /// <summary>Gets or sets the alpha component for the shading brush used by Field-of-View display to indicate non-visible hexes.</summary>
     public          byte          ShadeBrushAlpha { get; set; }
     /// <summary>Gets or sets the base color for the shading brush used by Field-of-View display to indicate non-visible hexes.</summary>
@@ -134,7 +136,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
     #endregion
 
     /// <inheritdoc/>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", 
+   [SuppressMessage("Microsoft.Usage", 
       "CA2233:OperationsShouldNotOverflow", MessageId = "10*elevationLevel")]
     public override int   ElevationASL(int elevationLevel) { return 10 * elevationLevel; }
 
@@ -151,34 +153,34 @@ namespace PGNapoleonics.HexgridScrollViewer {
 
     /// <inheritdoc/>
     public    virtual  void PaintHighlight(DrawingContext g) { 
-      if (g==null) throw new ArgumentNullException("g");
+      if (g==null) throw new ArgumentNullException("dc");
       var brushBlack = Brushes.Black;
 
       g.PushTransform(TranslateToHex(StartHex));
       g.DrawGeometry(Brushes.Transparent,new Pen(brushBlack,1),HexgridPath);
       g.Pop();
 
-      //g.DrawPath(Pens.Red, HexgridPath);
+      //dc.DrawPath(Pens.Red, HexgridPath);
 
       //if (ShowPath) {
-      //  g.EndContainer(container); container = g.BeginContainer();
-      //  PaintPath(g,Path);
+      //  dc.EndContainer(container); container = dc.BeginContainer();
+      //  PaintPath(dc,Path);
       //}
 
       //if (ShowRangeLine) {
-      //  g.EndContainer(container); container = g.BeginContainer();
+      //  dc.EndContainer(container); container = dc.BeginContainer();
       //  var target = CentreOfHex(HotspotHex);
-      //  g.DrawLine(Pens.Red, CentreOfHex(StartHex), target);
-      //  g.DrawLine(Pens.Red, target.X-8,target.Y-8, target.X+8,target.Y+8);
-      //  g.DrawLine(Pens.Red, target.X-8,target.Y+8, target.X+8,target.Y-8);
+      //  dc.DrawLine(Pens.Red, CentreOfHex(StartHex), target);
+      //  dc.DrawLine(Pens.Red, target.X-8,target.Y-8, target.X+8,target.Y+8);
+      //  dc.DrawLine(Pens.Red, target.X-8,target.Y+8, target.X+8,target.Y-8);
       //}
 
       //if (ShowFov) {
-      //  g.EndContainer(container); container = g.BeginContainer();
-      //  var clipHexes  = GetClipInHexes(g.VisibleClipBounds);
+      //  dc.EndContainer(container); container = dc.BeginContainer();
+      //  var clipHexes  = GetClipInHexes(dc.VisibleClipBounds);
       //  using(var shadeBrush = new SolidBrush(Color.FromArgb(ShadeBrushAlpha, ShadeBrushColor))) {
-      //    PaintForEachHex(g, clipHexes, coords => {
-      //      if (Fov!=null && ! Fov[coords]) { g.FillPath(shadeBrush, HexgridPath);  }
+      //    PaintForEachHex(dc, clipHexes, coords => {
+      //      if (Fov!=null && ! Fov[coords]) { dc.FillPath(shadeBrush, HexgridPath);  }
       //    } );
       //  }
       //}
@@ -186,9 +188,9 @@ namespace PGNapoleonics.HexgridScrollViewer {
 
     /// <inheritdoc/>
     public    virtual  void PaintMap(DrawingContext g) { 
-      if (g==null) throw new ArgumentNullException("g");
+      if (g==null) throw new ArgumentNullException("dc");
 
-//      g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+//      dc.InterpolationMode = InterpolationMode.HighQualityBicubic;
       var clipHexes = GetClipInHexes(HexPoint.Empty.ToWpfPoint(),MapSizeHexes.ToWpfSize());
 
       var fontSize   = SystemFonts.MenuFontSize * 0.8F;
@@ -213,11 +215,11 @@ namespace PGNapoleonics.HexgridScrollViewer {
     }
 
     /// <summary>Paint the current shortese path.</summary>
-    /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
+    /// <param name="dc">Type: Graphics - Object representing the canvas being painted.</param>
     /// <param name="path">Type: <see cref="IDirectedPath"/> - 
     /// A directed path (ie linked-list> of hexes to be painted.</param>
-    protected virtual  void PaintPath(DrawingContext g, IDirectedPath path) {
-      if (g==null) throw new ArgumentNullException("g");
+    protected virtual  void PaintPath(DrawingContext g, IDirectedPathCollection path) {
+      if (g==null) throw new ArgumentNullException("dc");
 
       var pen   = new Pen(Brushes.Black,1.0F);
       var brush = new SolidColorBrush(Color.FromArgb(78, Colors.PaleGoldenrod.R,Colors.PaleGoldenrod.G,Colors.PaleGoldenrod.B));
@@ -233,11 +235,11 @@ namespace PGNapoleonics.HexgridScrollViewer {
     }
 
     /// <summary>Paint the direction and destination indicators for each hex of the current shortest path.</summary>
-    /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
+    /// <param name="dc">Type: Graphics - Object representing the canvas being painted.</param>
     /// <param name="path">Type: <see cref="IDirectedPath"/> - 
     /// A directed path (ie linked-list> of hexes to be highlighted with a direction arrow.</param>
-    protected virtual  void PaintPathArrow(DrawingContext g, IDirectedPath path) {
-      if (g==null) throw new ArgumentNullException("g");
+    protected virtual  void PaintPathArrow(DrawingContext g, IDirectedPathCollection path) {
+      if (g==null) throw new ArgumentNullException("dc");
       if (path==null) throw new ArgumentNullException("path");
 
       g.PushTransform(new TranslateTransform(CentreOfHexOffset.Width, CentreOfHexOffset.Height));
@@ -247,12 +249,12 @@ namespace PGNapoleonics.HexgridScrollViewer {
     }
 
     /// <summary>Paint the direction arrow for each hex of the current shortest path.</summary>
-    /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
+    /// <param name="dc">Type: Graphics - Object representing the canvas being painted.</param>
     /// <param name="hexside">Type: <see cref="Hexside"/> - 
     /// Direction from this hex in which the next step is made.</param>
     /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
     protected virtual  void PaintPathArrow(DrawingContext g, Hexside hexside) {
-      if (g==null) throw new ArgumentNullException("g");
+      if (g==null) throw new ArgumentNullException("dc");
 
       var penBlack = new Pen(Brushes.Black,1.0F);
       var unit = GridSize.Height/8.0F;
@@ -264,10 +266,10 @@ namespace PGNapoleonics.HexgridScrollViewer {
     }
 
     /// <summary>Paint the destination indicator for the current shortest path.</summary>
-    /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
+    /// <param name="dc">Type: Graphics - Object representing the canvas being painted.</param>
     /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
     protected virtual  void PaintPathDestination(DrawingContext g) {
-      if (g==null) throw new ArgumentNullException("g");
+      if (g==null) throw new ArgumentNullException("dc");
 
       var penBlack = new Pen(Brushes.Black,1.0F);
       var unit = GridSize.Height/8.0F;
@@ -279,11 +281,11 @@ namespace PGNapoleonics.HexgridScrollViewer {
     public    virtual  void PaintUnits(DrawingContext g) {}
 
     /// <summary>Paints all the hexes in <paramref name="clipHexes"/> by executing <paramref name="paintAction"/>
-    /// for each hex on <paramref name="g"/>.</summary>
-    /// <param name="g">Graphics object for the canvas being painted.</param>
+    /// for each hex on <paramref name="dc"/>.</summary>
+    /// <param name="dc">Graphics object for the canvas being painted.</param>
     /// <param name="clipHexes">Type: CoordRectangle - 
     /// The rectangular extent of hexes to be painted.</param>
-    /// <param name="paintAction">Type: Action&lt;HexCoords&gt; - 
+    /// <param name="paintAction">Type: Action {HexCoords} - 
     /// The paint action to be performed for each hex.</param>
     void PaintForEachHex(DrawingContext g, CoordsRectangle clipHexes, Action<HexCoords> paintAction) {
       BoardHexes.ForEach(hex => {
@@ -299,9 +301,9 @@ namespace PGNapoleonics.HexgridScrollViewer {
     /// <summary>Returns the translation transform-matrix for the upper-left corner of the specified hex.</summary>
     /// <param name="coords">Type: HexCoords - 
     /// Coordinates of the hex to be painted next.</param>
-    //void TranslateGraphicsToHex(DrawingContext g, HexCoords coords) {
+    //void TranslateGraphicsToHex(DrawingContext dc, HexCoords coords) {
     //  var offset  = UpperLeftOfHex(coords);
-    //  g.Transform = new Matrix(1, 0, 0, 1, offset.X, offset.Y);
+    //  dc.Transform = new Matrix(1, 0, 0, 1, offset.X, offset.Y);
     //}
     Transform TranslateToHex(HexCoords coords) {
       var offset  = UpperLeftOfHex(coords);
@@ -334,7 +336,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
     protected virtual string LandmarkDistance(HexCoords coords, int landmarkToShow) { 
       if (landmarkToShow < 0  ||  Landmarks.Count <= landmarkToShow) return "";
 
-      return string.Format("{0,3}", Landmarks[landmarkToShow].HexDistance(coords));
+      return string.Format("{0,3}", Landmarks[landmarkToShow].DistanceFrom(coords));
     }
 
     /// <summary>TODO</summary>
@@ -352,7 +354,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
     [Obsolete("Use MapDisplay(Size,Size,Func<HexBoard<THex>, HexCoords, THex>) instead; client should set hex size.")]
     protected MapDisplay(HexSize sizeHexes, Func<HexBoard<THex>, HexCoords, THex> initializeHex, 
-                       ReadOnlyCollection<HexCoords> landmarkCoords) 
+                       IFastList<HexCoords> landmarkCoords) 
     : this(sizeHexes, new HexSize(27,30), initializeHex, landmarkCoords) {}
 
     /// <inheritdoc/>

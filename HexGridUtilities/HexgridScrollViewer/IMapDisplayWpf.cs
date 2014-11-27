@@ -37,7 +37,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
   using HexSize   = System.Drawing.Size;
   using WpfPoint  = System.Windows.Point;
   using WpfSize   = System.Windows.Size;
-  using HexRectF = System.Drawing.RectangleF;
+  using HexRectF  = System.Drawing.RectangleF;
 
   /// <summary>(Technology-dependent portion of) interface contract required of a map board to be displayed by the Hexgrid control.</summary>
   public interface IMapDisplayWpf : IMapDisplay {
@@ -51,15 +51,15 @@ namespace PGNapoleonics.HexgridScrollViewer {
     CoordsRectangle GetClipCells(HexRectF visibleClipBounds);
 
     /// <summary>Paint the top layer of the display, graphics that changes frequently between refreshes.</summary>
-    /// <param name="g">Graphics object for the canvas being painted.</param>
+    /// <param name="dc">Graphics object for the canvas being painted.</param>
     void  PaintHighlight(DrawingContext g);
 
     /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
-    /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
+    /// <param name="dc">Type: Graphics - Object representing the canvas being painted.</param>
     /// <remarks>For each visible hex: perform <c>paintAction</c> and then draw its hexgrid outline.</remarks>
     void  PaintMap(DrawingContext g);
     /// <summary>Paint the intermediate layer of the display, graphics that changes infrequently between refreshes.</summary>
-    /// <param name="g">Type: Graphics - Object representing the canvas being painted.</param>
+    /// <param name="dc">Type: Graphics - Object representing the canvas being painted.</param>
     void  PaintUnits(DrawingContext g);
   }
 

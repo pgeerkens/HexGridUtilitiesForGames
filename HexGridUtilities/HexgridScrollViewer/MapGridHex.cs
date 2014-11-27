@@ -26,43 +26,23 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
-using System.Drawing;
 using System.Windows.Media;
 
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridScrollViewer {
-  /// <summary>Deprecated; use interface IHex or abstract class MapGridHex instead.</summary>
-//  [Obsolete("Use interface IHex or abstract class MapGridHex instead.")]
-  public interface IMapGridHex : IHex {
-  }
 
   /// <summary>TODO</summary>
-  public abstract class MapGridHex : Hex<IMapGridHex>, IMapGridHex {
+  public abstract class MapGridHex : Hex<DrawingContext>, IHex {
     /// <summary>TODO</summary>
     protected MapGridHex(HexBoardWpf<MapGridHex> board, HexCoords coords) : base(coords) { 
       BoardX = board;
     }
 
     /// <inheritdoc/>
-    public override IBoard<IHex>                Board     { get { return BoardX; } }
+    public override IBoard<IHex>           Board  { get { return BoardX; } }
 
     /// <inheritdoc/>
-    public virtual HexBoardWpf<MapGridHex> BoardX    {  get; private set; }
-
-    /// <summary>TODO</summary>
-    protected  Size                             GridSize  { get { return Board.GridSize; } }
-
-    /// <inheritdoc/>
-    public override int  DirectedStepCost(Hexside hexsideExit) {
-      return Board[Coords.GetNeighbour(hexsideExit)].StepCost(hexsideExit);
-    }
-
-    /// <inheritdoc/>
-    public override IHex Neighbour(Hexside hexside) { return Board[Coords.GetNeighbour(hexside)]; }
-
-    /// <inheritdoc/>
-    public virtual  void Paint(DrawingContext g) {;}
+    public virtual HexBoardWpf<MapGridHex> BoardX {  get; private set; }
   }
 }

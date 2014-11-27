@@ -29,6 +29,8 @@
 using System.Windows;
 using System.Windows.Input;
 
+using System.Diagnostics.CodeAnalysis;
+
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridScrollViewer {
@@ -54,7 +56,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
     //public HexEventArgs(HexCoords coords, System.Windows.Forms.MouseEventArgs e) 
     //  : this(coords, e, System.Windows.Forms.Keys.None) {}
     /// <summary>TODO</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1")]
+   [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1")]
     public HexEventArgs(HexCoords coords, System.Windows.Forms.MouseEventArgs e, System.Windows.Forms.Keys modifierKeys)
       : base(e.Button,e.Clicks,e.X,e.Y,e.Delta) {
       Coords       = coords;

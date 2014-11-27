@@ -54,12 +54,10 @@ namespace PGNapoleonics.HexgridScrollViewer {
   }
 
   /// <summary>TODO</summary>
-  public sealed class EmptyGridHex : MapGridHex, IMapGridHex, IHex  {
+  public sealed class EmptyGridHex : MapGridHex, IHex  {
     /// <summary>TODO</summary>
     public EmptyGridHex(HexBoardWpf<MapGridHex> board, HexCoords coords) : base(board, coords) {}
 
-    /// <summary>TODO</summary>
-    public override int ElevationASL  { get { return 10 * Elevation; } }
     /// <summary>TODO</summary>
     public override int HeightTerrain { get { return ElevationASL;   } }
     /// <summary>TODO</summary>
