@@ -51,7 +51,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
     }
 
     /// <inheritdoc/>
-    public override void PaintUnits(Graphics g) { ; }
+    public override void PaintUnits(Graphics graphics) { ; }
 
     #region static Board definition
     static ReadOnlyCollection<string> _board     = MapDefinitions.MazeMapDefinition;

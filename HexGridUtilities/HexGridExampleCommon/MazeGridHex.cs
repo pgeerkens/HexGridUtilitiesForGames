@@ -40,9 +40,6 @@ namespace PGNapoleonics.HexgridExampleCommon {
     /// <param name="coords">Board location of this hex.</param>
     protected MazeGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords)
       : base(board, coords) {}
-
-    /// <inheritdoc/>
-    public override int    ElevationASL  { get { return Elevation * 10; } }
   }
 
   /// <summary>A <c>MazeGridHex</c> representing a passable hex in the maze.</summary>
@@ -76,10 +73,10 @@ namespace PGNapoleonics.HexgridExampleCommon {
     /// <inheritdoc/>
     public override int  StepCost(Hexside direction) { return -1; }
 
-    public override void Paint(Graphics g) {
-      if (g==null) throw new ArgumentNullException("g");
+    public override void Paint(Graphics graphics) {
+      if (graphics==null) throw new ArgumentNullException("graphics");
       using(var brush = new SolidBrush(Color.FromArgb(78,Color.DarkGray)))
-        g.FillPath(brush, BoardX.HexgridPath);
+        graphics.FillPath(brush, BoardX.HexgridPath);
     }
   }
 }

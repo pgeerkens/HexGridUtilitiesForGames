@@ -49,7 +49,6 @@ namespace PGNapoleonics.HexgridExampleCommon {
 
     /// <summary>TODO</summary>
     protected virtual  Brush HexBrush      { get { return Brushes.Transparent; } }
-    public    override int   ElevationASL  { get { return Board.ElevationASL(Elevation); } }
     public    override int   HeightTerrain { get { return ElevationASL; } }
 
     public    override void  Paint(Graphics g) { 
