@@ -52,9 +52,9 @@ namespace PGNapoleonics.HexgridPanel {
 //      Panel.MouseRightClick   += MouseRightClick;
 //      Panel.ScaleChange       += ScaleChange;
 
-      Scales        = new List<float>() {1.000F}.AsReadOnly();
-      SetModel(new EmptyBoard());
-      Hexgrid       = GetHexgrid();
+      Scales    = new List<float>() {1.000F}.AsReadOnly();
+      Model     = new EmptyBoard();
+      Hexgrid   = GetHexgrid();
     }
 
     HexgridScrollable Panel { get; set; }
@@ -81,9 +81,9 @@ namespace PGNapoleonics.HexgridPanel {
     //}
 
     /// <summary>TODO</summary>
-    public void SetModel(IMapDisplayWinForms model) {
-      Model = model;   
-    }
+    //public void SetModel(IMapDisplayWinForms model) {
+    //  Model = model;   
+    //}
 
     Hexgrid GetHexgrid() { 
       var margin          = Margin.OffsetSize();
@@ -98,7 +98,10 @@ namespace PGNapoleonics.HexgridPanel {
     //} WpfInput.ICommand _refreshCmd;
 
     /// <summary>MapBoard hosting this panel.</summary>
-    public IMapDisplayWinForms Model           { get; private set; }
+    public IMapDisplayWinForms Model           {
+        get { return _model; }
+        set { var model = _model as IDisposable; if (model != null) model.Dispose(); _model = value; }
+    } IMapDisplayWinForms _model;
 
     /// <summary>Gets or sets the coordinates of the hex currently underneath the mouse.</summary>
     public HexCoords   HotspotHex      { get; set; }

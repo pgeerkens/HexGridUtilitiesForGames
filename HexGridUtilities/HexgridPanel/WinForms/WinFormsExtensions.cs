@@ -50,7 +50,7 @@ namespace PGNapoleonics.WinForms {
     public static CreateParams SetCompositedStyle(this Control control, CreateParams parameters) {
       if (control==null) throw new ArgumentNullException("control");
       if (parameters==null) throw new ArgumentNullException("parameters");
-      parameters.ExStyle |= (int)WindowStylesEx.COMPOSITED;
+      parameters.ExStyle |= (int)WindowStylesEx.Composited;
       return parameters;
     }
   }

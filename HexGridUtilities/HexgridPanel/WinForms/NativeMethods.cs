@@ -40,7 +40,7 @@ namespace PGNapoleonics.WinForms {
   /// <summary>Extern declarations from the Win32 API.</summary>
   internal static partial class NativeMethods {
     /// <summary>P/Invoke declaration for user32.dll.WindowFromPoint</summary>
-		/// <remarks><a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms633558(v=vs.85).aspx"></a></remarks>
+		/// <remarks><a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms633558(vector=vs.85).aspx"></a></remarks>
 		/// <param name="point">(Sign-extended) screen coordinates as a Point structure.</param>
 		/// <returns>Window handle (hWnd).</returns>
     [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "0",
@@ -51,7 +51,8 @@ namespace PGNapoleonics.WinForms {
 
     /// <summary>TODO</summary>
     [DllImport("Gdi32.dll", SetLastError=true, ExactSpelling=true, CharSet=CharSet.Auto)]
-    [ResourceExposure(ResourceScope.None)] 
+    [ResourceExposure(ResourceScope.None)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool BitBlt(HandleRef hDC, int x, int y, int nWidth, int nHeight, 
                                      HandleRef hSrcDC, int xSrc, int ySrc, int dwRop);
 

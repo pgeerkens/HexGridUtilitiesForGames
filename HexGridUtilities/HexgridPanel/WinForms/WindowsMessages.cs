@@ -150,7 +150,7 @@ namespace PGNapoleonics.WinForms {
     /// </summary>
     FontChange = 0x001D,
     /// <summary>
-    /// A message that is sent whenever there is a change in the system time.
+    /// A message that is sent whenever neighbour is a change in the system time.
     /// </summary>
     TimeChange = 0x001E,
     /// <summary>

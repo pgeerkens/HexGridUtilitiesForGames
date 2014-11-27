@@ -83,17 +83,20 @@ namespace PGNapoleonics.HexgridPanel {
     }
     #endregion
 
-    #region Mouse Tilt Wheel (MouseHWheel) event implementation
+    #region Mouse Tilt Wheel (MouseHwheel) event implementation
     /// <summary>Occurs when the mouse tilt-wheel moves while the control has focus.</summary>
-    public event EventHandler<MouseEventArgs> MouseHwheel;
+    public virtual event EventHandler<MouseEventArgs>  MouseHwheel;
+//    public new     event EventHandler<MouseEventArgs>  MouseWheel;
 
     private int _wheelHPos = 0;   //!< <summary>Unapplied horizontal scroll.</summary>
+    private int _wheelVPos = 0;   //!< <summary>Unapplied vertical scroll.</summary>
 
-    /// <summary>TODO</summary>
+    /// <summary>Extend Windows Message Loop to receive MouseHwheel messages.</summary>
     protected override void WndProc(ref Message m) {
       if (!IsDisposed  &&  m.HWnd == this.Handle) {
         switch ((WM)m.Msg) {
-          case WM.MouseHwheel: OnMouseHwheel(CreateMouseEventArgs(m));
+          case WM.MouseHwheel: 
+            OnMouseHwheel(CreateMouseEventArgs(m));
             m.Result = (IntPtr)0;
             break;
           default: break;
@@ -108,25 +111,24 @@ namespace PGNapoleonics.HexgridPanel {
       if (e == null) throw new ArgumentNullException("e");
       if (!AutoScroll) return;
 
-      _wheelHPos += e.Delta;
-      while (_wheelHPos > MouseWheelStep) {
-        ScrollHorizontal(MouseWheelStep);
-        _wheelHPos -= MouseWheelStep;
-      }
-      while (_wheelHPos < -MouseWheelStep) {
-        ScrollHorizontal(-MouseWheelStep);
-        _wheelHPos += MouseWheelStep;
-      }
+      RollHorizontal(e.Delta);
+      MouseHwheel.Raise(this, e);
+//      base.OnScroll(new ScrollEventArgs(ScrollEventType.ThumbPosition,AutoScrollPosition.X,ScrollOrientation.HorizontalScroll));
 
-      if (MouseHwheel != null) MouseHwheel.Raise(this, e);
+      var eh = e as HandledMouseEventArgs;
+      if (eh != null) eh.Handled = true;
     }
 
-    /// <summary>TODO</summary>
-    private void ScrollHorizontal(int delta) {
-      AutoScrollPosition = new Point(
-        -AutoScrollPosition.X + delta,
-        -AutoScrollPosition.Y);
-    }
+    ///// <summary>TODO</summary>
+    ///// <param name="e"></param>
+//    protected override void OnMouseWheel(MouseEventArgs e) {
+//      if (e == null) throw new ArgumentNullException("e");
+//      if (!AutoScroll) return;
+
+////      RollVertical( - e.Delta);
+//      MouseWheel.Raise(this, e);
+//      base.OnScroll(new ScrollEventArgs(ScrollEventType.ThumbPosition,AutoScrollPosition.Y,ScrollOrientation.VerticalScroll));
+//    }
 
     /// <summary>TODO</summary>
     private static int MouseWheelStep {
@@ -150,29 +152,89 @@ namespace PGNapoleonics.HexgridPanel {
 
     #region Panel Scroll extensions
     /// <summary>TODO</summary>
-    public void ScrollVertical(ScrollEventType type, int sign) {
-      ScrollPanelCommon(type, sign, VerticalScroll);
-    }
+    public void PageUp()    { RollVertical(-1 * VerticalScroll.LargeChange); }
     /// <summary>TODO</summary>
-    public void ScrollHorizontal(ScrollEventType type, int sign) {
-      ScrollPanelCommon(type, sign, HorizontalScroll);
-    }
+    public void PageDown()  { RollVertical(+1 * VerticalScroll.LargeChange); }
     /// <summary>TODO</summary>
-    private void ScrollPanelCommon(ScrollEventType type, int sign, ScrollProperties scroll) {
-      if (sign == 0) return;
-      Func<Point, int, Point> func = (p, step) => new Point(-p.X, -p.Y + step * sign);
-      AutoScrollPosition = func(AutoScrollPosition,
-        type.HasFlag(ScrollEventType.LargeDecrement) ? scroll.LargeChange : scroll.SmallChange);
+    public void PageLeft()  { RollHorizontal(-1 * HorizontalScroll.LargeChange); }
+    /// <summary>TODO</summary>
+    public void PageRight() { RollHorizontal(+1 * HorizontalScroll.LargeChange); }
+    /// <summary>TODO</summary>
+    public void LineUp()    { RollVertical(-1 * MouseWheelStep); }
+    /// <summary>TODO</summary>
+    public void LineDown()  { RollVertical(+1 * MouseWheelStep); }
+    /// <summary>TODO</summary>
+    public void LineLeft()  { RollHorizontal(-1 * MouseWheelStep); }
+    /// <summary>TODO</summary>
+    public void LineRight() { RollHorizontal(+1 * MouseWheelStep); }
+
+    private void RollHorizontal(int delta) {
+      _wheelHPos += delta;
+      while (_wheelHPos >= MouseWheelStep) {
+        HScrollByOffset( + MouseWheelStep);
+        _wheelHPos -= MouseWheelStep;
+      }
+      while (_wheelHPos <= -MouseWheelStep) {
+        HScrollByOffset( - MouseWheelStep);
+        _wheelHPos += MouseWheelStep;
+      }
+    }
+
+    private void RollVertical(int delta) {
+      _wheelVPos += delta;
+      while (_wheelVPos >= MouseWheelStep) {
+        VScrollByOffset( + MouseWheelStep);
+        _wheelVPos -= MouseWheelStep;
+      }
+      while (_wheelVPos <= -MouseWheelStep) {
+        VScrollByOffset( - MouseWheelStep);
+        _wheelVPos += MouseWheelStep;
+      }
+    }
+
+    /// <summary>TODO</summary>
+    private void HScrollByOffset(int delta) {
+      AutoScrollPosition = new Point (-AutoScrollPosition.X + delta, -AutoScrollPosition.Y);
+    }
+
+    /// <summary>TODO</summary>
+    private void VScrollByOffset(int delta) {
+      AutoScrollPosition = new Point (-AutoScrollPosition.X, -AutoScrollPosition.Y + delta);
+    }
+
+    List<Action> ScrollActions { get { return new List<Action> {
+                                        () => PageUp(),   () => PageDown(),
+                                        () => PageLeft(), () => PageRight(),
+                                        () => LineUp(),   () => LineDown(),
+                                        () => LineLeft(), () => LineRight()  };
+      }
     }
 
     /// <summary>Service routine to execute a Panel scroll.</summary>
     [Obsolete("Use ScrollPanelVertical or ScrollPanelHorizontal instead.")]
     public void ScrollPanel(ScrollEventType type, ScrollOrientation orientation, int sign) {
-      if (orientation == ScrollOrientation.VerticalScroll)
-        ScrollVertical(type, sign);
-      else
-        ScrollHorizontal(type, sign);
+      ScrollActions [
+            ( (type.HasFlag(ScrollEventType.SmallDecrement))      ? 4 : 0 )
+          + ( (orientation == ScrollOrientation.HorizontalScroll) ? 2 : 0 )
+          + ( (sign == +1)                                        ? 1 : 0 ) ] ();
     }
+
+    ///// <summary>TODO</summary>
+    //public void ScrollVertical(ScrollEventType type, int sign) {
+    //  ScrollPanelCommon(type, sign, VerticalScroll);
+    //}
+    ///// <summary>TODO</summary>
+    //public void ScrollHorizontal(ScrollEventType type, int sign) {
+    //  ScrollPanelCommon(type, sign, HorizontalScroll);
+    //}
+
+    ///// <summary>TODO</summary>
+    //private void ScrollPanelCommon(ScrollEventType type, int sign, ScrollProperties scroll) {
+    //  if (sign == 0) return;
+    //  Func<Point, int, Point> func = (p, step) => new Point(-p.X, -p.Y + step * sign);
+    //  AutoScrollPosition = func(AutoScrollPosition,
+    //    type.HasFlag(ScrollEventType.LargeDecrement) ? scroll.LargeChange : scroll.SmallChange);
+    //}
     #endregion
   }
 }

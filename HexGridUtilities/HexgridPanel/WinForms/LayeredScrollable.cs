@@ -48,14 +48,6 @@ namespace PGNapoleonics.HexgridPanel {
       InitializeComponent();
     }
 
-    /// <summary>TODO</summary>
-    public LayeredScrollable(IContainer container) {
-      if (container == null) throw new ArgumentNullException("container");
-      container.Add(this);
-
-      InitializeComponent();
-    }
-
     #region ISupportInitialize implementation
     /// <summary>Signals the object that initialization is starting.</summary>
     public virtual void BeginInit() { 
@@ -74,7 +66,7 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>TODO</summary>
     public    LayerCollection   Layers    { get; private set; }
- 
+
     /// <inheritdoc/>
     protected override void OnResize(EventArgs e) {
       Layers.Resize(ClientRectangle);
@@ -154,11 +146,8 @@ namespace PGNapoleonics.HexgridPanel {
       );
     }
 
-    #region IDisposable implementation with Finalizeer
+    #region IDisposable implementation
     bool _isDisposed = false;
-
-    /// <inheritdoc/>
-    public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
 
     /// <summary>Anchors the Dispose chain for sub-classes.</summary>
     protected virtual void Dispose(bool disposing) {
@@ -170,9 +159,6 @@ namespace PGNapoleonics.HexgridPanel {
         _isDisposed = true;
       }
     }
-
-    /// <summary>Finalize this instance.</summary>
-    ~LayerCollection() { Dispose(false); }
     #endregion
   }
 

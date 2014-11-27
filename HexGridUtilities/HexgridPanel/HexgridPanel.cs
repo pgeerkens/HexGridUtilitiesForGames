@@ -46,14 +46,7 @@ namespace PGNapoleonics.HexgridPanel {
   public partial class HexgridPanel : TiltAwarePanel, IHexgridHost, ISupportInitialize {
     #region Constructors
     /// <summary>Creates a new instance of HexgridPanel.</summary>
-    public HexgridPanel() {
-      InitializeComponent();
-    }
-    /// <summary>Creates a new instance of HexgridPanel.</summary>
-    public HexgridPanel(IContainer container) {
-      if (container==null) throw new ArgumentNullException("container");
-      container.Add(this);
-
+    public HexgridPanel() : base() {
       InitializeComponent();
     }
     #endregion
@@ -61,8 +54,9 @@ namespace PGNapoleonics.HexgridPanel {
     #region ISupportInitialize implementation
     /// <summary>Signals the object that initialization is starting.</summary>
     public virtual void BeginInit() { 
-      ScaleList        = new List<float>() {1.000F}.AsReadOnly();
-      SetModel(new EmptyBoard());
+      ScaleList     = new List<float>() {1.000F}.AsReadOnly();
+//      SetModel(new EmptyBoard());
+      Model         = new EmptyBoard();
       HotspotHex    = HexCoords.EmptyUser;
     }
     /// <summary>Signals the object that initialization is complete.</summary>
@@ -86,16 +80,16 @@ namespace PGNapoleonics.HexgridPanel {
     public event EventHandler<EventArgs>    ScaleChange;
     #endregion
 
-    /// <summary>TODO</summary>
-    public void SetModel(MapDisplay<MapGridHex> model) {
-      Model = model;   
-      SetScrollLimits(Model);   
-      SetMapDirty();
-    }
-
     #region Properties
     /// <summary>MapBoard hosting this panel.</summary>
-    public MapDisplay<MapGridHex> Model           { get; private set; }
+    public MapDisplay<MapGridHex> Model    { 
+      get { return _model; }
+      set {  if (_model != null) _model.Dispose(); 
+             _model = value; 
+             SetScrollLimits(_model);   
+             SetMapDirty();
+          }
+    } MapDisplay<MapGridHex> _model = new EmptyBoard();
 
     /// <summary>Gets or sets the coordinates of the hex currently underneath the mouse.</summary>
     public        HexCoords HotspotHex     { get; private set; }
@@ -124,7 +118,7 @@ namespace PGNapoleonics.HexgridPanel {
     }
 
     /// <summary>Returns <code>HexCoords</code> of the hex closest to the center of the current viewport.</summary>
-    public     HexCoords   PanelCenterHex  { 
+    public     HexCoords    PanelCenterHex  { 
 //      get { return GetHexCoords( Location + Size.Round(ClientSize.Scale(0.50F)) ); }
       get { return GetHexCoords( PointToClient(new Point(Size.Round(ClientSize.Scale(0.50F))) ) ); }
     }
@@ -147,10 +141,10 @@ namespace PGNapoleonics.HexgridPanel {
     #endregion
 
     /// <summary>Force repaint of backing buffer for Map underlay.</summary>
-    public    void      SetMapDirty()     { MapBuffer = null; }
+    public         void SetMapDirty() { MapBuffer = null; }
 
     /// <summary>Set property Scales (array of supported map scales as IList {float}.</summary>
-    public void SetScaleList(IList<float> scales) { ScaleList = new ReadOnlyCollection<float>(scales); }
+    public         void SetScaleList(IList<float> scales) { ScaleList = new ReadOnlyCollection<float>(scales); }
 
     /// <summary>Set ScrollBar increments and bounds from map dimensions.</summary>
     public virtual void SetScrollLimits(IMapDisplayWinForms model) {
@@ -237,6 +231,9 @@ namespace PGNapoleonics.HexgridPanel {
 
         g.Restore(state); state = g.Save();
         Model.PaintUnits(g);
+
+        g.Restore(state); state = g.Save();
+        Model.PaintShading(g);
 
         g.Restore(state); state = g.Save();
         Model.PaintHighlight(g);

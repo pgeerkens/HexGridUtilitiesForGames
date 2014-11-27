@@ -32,6 +32,7 @@ using PGNapoleonics.HexUtilities;
 
 
 namespace PGNapoleonics.HexgridPanel {
+//  using MapGridHex = Hex<IHex>;
 
   /// <summary>TODO</summary>
   public sealed class EmptyBoard : MapDisplay<MapGridHex> {
@@ -47,8 +48,6 @@ namespace PGNapoleonics.HexgridPanel {
     public EmptyGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) : base(board,coords) {
     }
 
-    /// <summary>TODO</summary>
-    public override int ElevationASL  { get { return 10 * Elevation; } }
     /// <summary>TODO</summary>
     public override int HeightTerrain { get { return ElevationASL;   } }
     /// <summary>TODO</summary>

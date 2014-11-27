@@ -41,6 +41,7 @@ namespace PGNapoleonics.HexgridPanel {
       if (disposing && (components != null)) {
         components.Dispose();
         if (_mapBuffer!=null) _mapBuffer.Dispose();
+        if (_model  != null)  _model.Dispose();
       }
       base.Dispose(disposing);
     }

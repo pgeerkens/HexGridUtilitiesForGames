@@ -28,11 +28,9 @@
 #endregion
 using System;
 using System.Drawing.Drawing2D;
-using System.Collections.ObjectModel;
 
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.HexUtilities.Pathfinding;
 
 namespace PGNapoleonics.HexgridPanel {
   using HexPoint    = System.Drawing.Point;
@@ -68,13 +66,11 @@ namespace PGNapoleonics.HexgridPanel {
     /// locations to be used for pathfinding.</param>
     protected HexBoardWinForms(HexSize sizeHexes, HexSize gridSize, 
                                InitializeBoard<THex> initializeBoard, 
-                               ReadOnlyCollection<HexCoords> landmarkCoords)
-    : base(sizeHexes, gridSize) {
+                               IFastList<HexCoords> landmarkCoords)
+    : base(sizeHexes, gridSize, landmarkCoords) {
       if (initializeBoard==null) throw new ArgumentNullException("initializeBoard");
 
       BoardHexes = initializeBoard(this); 
-
-      SetLandmarks(landmarkCoords);
 
       ResetGrid();
       HexgridPath       = GetGraphicsPath(GridSize);
@@ -91,13 +87,13 @@ namespace PGNapoleonics.HexgridPanel {
       try {
         tempPath  = new GraphicsPath();
         tempPath.AddLines(new HexPoint[] {
-          new HexPoint(gridSize.Width*1/3,                0), 
-          new HexPoint(gridSize.Width*3/3,                0),
+          new HexPoint(gridSize.Width*1/3,              0  ), 
+          new HexPoint(gridSize.Width*3/3,              0  ),
           new HexPoint(gridSize.Width*4/3,gridSize.Height/2),
           new HexPoint(gridSize.Width*3/3,gridSize.Height  ),
           new HexPoint(gridSize.Width*1/3,gridSize.Height  ),
-          new HexPoint(                 0,gridSize.Height/2),
-          new HexPoint(gridSize.Width*1/3,                0)
+          new HexPoint(             0,    gridSize.Height/2),
+          new HexPoint(gridSize.Width*1/3,              0  )
         } );
         path     = tempPath;
         tempPath = null;

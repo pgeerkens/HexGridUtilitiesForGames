@@ -49,7 +49,7 @@ namespace  PGNapoleonics.WinForms {
 		protected override CreateParams CreateParams { 
 			get { 
 				var cp=base.CreateParams; 
-				cp.ExStyle |= (int)WindowStylesEx.TRANSPARENT;
+				cp.ExStyle |= (int)WindowStylesEx.Transparent;
 				return cp; 
 			} 
 		}
@@ -66,12 +66,7 @@ namespace  PGNapoleonics.WinForms {
     /// <param name="rectangle">Clipping <c>Rectangle</c> to be invalidated.</param>
     public virtual void Invalidate2(Rectangle rectangle) { 
 			if(Parent!=null  &&  Parent.IsHandleCreated) {
-				try {
-					Parent.Invoke((Action<Rectangle,bool>)((rc,b) => Parent.Invalidate(rc,b)), rectangle,true); 
-				} catch (InvalidOperationException e) { 
-					MessageBox.Show("Why is " + e.Message + "\n occurring in\n" +
-						"TransparentPanel.Invalidate2(Rectangle r).");
-				}
+				Parent.Invoke((Action<Rectangle,bool>)((rc,b) => Parent.Invalidate(rc,b)), rectangle,true); 
 			}
 		} 
 		/// <summary> Prevent background painting from overwriting transparent background</summary>

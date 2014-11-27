@@ -105,11 +105,11 @@ namespace PGNapoleonics.HexgridPanel {
       if (e == null) throw new ArgumentNullException("e");
 
       _wheelHPos += e.Delta;
-      while (_wheelHPos > MouseWheelStep) {
+      while (_wheelHPos >= MouseWheelStep) {
         ScrollHorizontal(MouseWheelStep);
         _wheelHPos -= MouseWheelStep;
       }
-      while (_wheelHPos < -MouseWheelStep) {
+      while (_wheelHPos <= -MouseWheelStep) {
         ScrollHorizontal(-MouseWheelStep);
         _wheelHPos += MouseWheelStep;
       }

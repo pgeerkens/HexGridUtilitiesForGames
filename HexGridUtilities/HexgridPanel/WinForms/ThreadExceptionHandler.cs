@@ -27,33 +27,43 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Globalization;
+using System.Reflection;
+using System.Resources;
 using System.Threading;
 using System.Windows.Forms;
 
 using System.Diagnostics.CodeAnalysis;
 
+using PGNapoleonics.HexgridPanel.Properties;
+
 namespace  PGNapoleonics.WinForms {
   /// <summary>A Last-chance Thread Exception handler.</summary>
   [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage()]
   public class ThreadExceptionHandler {
+    static ResourceManager StringManager =
+            new ResourceManager("en-US", Assembly.GetExecutingAssembly());
+    static CultureInfo Culture = CultureInfo.CurrentCulture;
+
     static readonly string NewLine     = Environment.NewLine;
     static readonly string NewLineX2   = Environment.NewLine + Environment.NewLine;
-    static readonly string ErrorTitle  = Application.ProductName + " - " + "Application Error";
-    static readonly string FatalTitle  = Application.ProductName + " - " + "Fatal Application Error";
-    static readonly string NullEventArgs = "Null ThreadExceptionEventArgs" + NewLine + "From: ";
-    static readonly string FatalMessage = "Fatal Error in Last-Chance Exception Handler.";
+    readonly string ErrorTitle  = Application.ProductName + Resources.SevereApplicationError;
+    readonly string FatalTitle  = Application.ProductName + Resources.FatalApplicationError;
+    readonly string NullEventArgs = Resources.NullThreadExceptionArgs;
+    readonly string FatalMessage  = Resources.FatalThreadingError;
 
     /// <summary>Handles the thread exception.</summary> 
     [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
     public void ApplicationThreadException(object sender, ThreadExceptionEventArgs e) {
       try {
-        var senderType = sender==null ? "Null sender" : sender.ToString();
+        var senderType = sender==null ? StringManager.GetString("NullSender",Culture) : sender.ToString();
         if (e == null) {  // This should never happen
             MessageBox.Show(
               NullEventArgs + senderType, 
               ErrorTitle, 
               MessageBoxButtons.OK, 
-              MessageBoxIcon.Information);
+              MessageBoxIcon.Stop,
+              MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
             Application.Exit();
         } else {
 
@@ -62,10 +72,11 @@ namespace  PGNapoleonics.WinForms {
           ||  e.Exception is InvalidOperationException
           ) {
              MessageBox.Show(
-                e.Exception.Message + NewLine + "From: " + senderType, 
+                e.Exception.Message + StringManager.GetString("From",Culture) + senderType, 
                 ErrorTitle, 
                 MessageBoxButtons.OK, 
-                MessageBoxIcon.Information);
+                MessageBoxIcon.Stop,
+                MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
           } else {
              if (ShowThreadExceptionDialog(e.Exception) == DialogResult.Abort) Application.Exit();
           }
@@ -77,7 +88,8 @@ namespace  PGNapoleonics.WinForms {
           MessageBox.Show(FatalMessage, 
             FatalTitle, 
             MessageBoxButtons.OK, 
-            MessageBoxIcon.Stop);
+            MessageBoxIcon.Stop,
+            MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
         } finally {
           Application.Exit();
         }
@@ -97,7 +109,7 @@ namespace  PGNapoleonics.WinForms {
         ex.StackTrace;
 
       using (var dialog = new ExceptionDialog(errorMessage)) {
-        dialog.Show();
+        dialog.ShowDialog();
         result = dialog.DialogResult;
       }
 
