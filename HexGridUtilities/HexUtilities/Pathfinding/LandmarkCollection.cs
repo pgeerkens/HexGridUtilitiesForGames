@@ -45,7 +45,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <param name="board">The board on which the collection of landmarks is to be instantiated.</param>
     /// <param name="landmarkCoords">Board coordinates of the desired landmarks</param>
     public static ILandmarkCollection CreateLandmarks(
-      IBoard<IHex> board, 
+      IHexBoard<IHex> board, 
       IFastList<HexCoords> landmarkCoords
     ) {
       if (landmarkCoords==null) throw new ArgumentNullException("landmarkCoords");
@@ -62,7 +62,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <param name="token"></param>
     /// <returns></returns>
     public static Task<ILandmarkCollection> CreateLandmarksAsync(
-      IBoard<IHex> board, 
+      IHexBoard<IHex> board, 
       IFastList<HexCoords> landmarkCoords,
       CancellationToken token
     ) {

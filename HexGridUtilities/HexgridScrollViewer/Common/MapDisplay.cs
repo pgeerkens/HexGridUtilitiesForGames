@@ -53,21 +53,45 @@ namespace PGNapoleonics.HexgridScrollViewer {
 
   /// <summary>Abstract class representing the basic game board.</summary>
   /// <typeparam name="THex">Type of the hex for which a game board is desired.</typeparam>
-  public abstract class MapDisplay<THex> : HexBoardWpf<THex>, IBoard<THex>, IMapDisplayWpf
+  public abstract class MapDisplay<THex> : HexBoard<THex,StreamGeometry>, IHexBoard<THex>, IMapDisplayWpf
     where THex : MapGridHex {
+
+    /// <summary>TODO</summary>
+    public delegate THex InitializeHex(HexBoard<THex,StreamGeometry> board, HexCoords coords);
+
+    /// <summary>TODO</summary>
+    private static StreamGeometry GetGraphicsPath(HexSize gridSize) {
+      StreamGeometry geometry = new StreamGeometry();
+      geometry.FillRule = FillRule.EvenOdd;
+
+      using (var context = geometry.Open()) {
+        context.BeginFigure(new Point(gridSize.Width*1/3,                0),false,true);
+        context.LineTo     (new Point(gridSize.Width*3/3,                0),true,false);
+        context.LineTo     (new Point(gridSize.Width*4/3,gridSize.Height/2),true,false);
+        context.LineTo     (new Point(gridSize.Width*3/3,gridSize.Height  ),true,false);
+        context.LineTo     (new Point(gridSize.Width*1/3,gridSize.Height  ),true,false);
+        context.LineTo     (new Point(                 0,gridSize.Height/2),true,false);
+      }
+      geometry.Freeze();
+
+      return geometry;
+    }
 
     #region Constructors
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
-    protected MapDisplay(HexSize sizeHexes, HexSize gridSize, Func<HexBoardWpf<THex>, HexCoords, THex> initializeHex) 
+    protected MapDisplay(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex) 
     : this(sizeHexes, gridSize, initializeHex, DefaultLandmarks(sizeHexes)) {}
 
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
-    protected MapDisplay(HexSize sizeHexes, HexSize gridSize, Func<HexBoardWpf<THex>, HexCoords, THex> initializeHex, 
-                         IFastList<HexCoords> landmarkCoords) 
-    : base(sizeHexes, gridSize, 
-          (map) => new FlatBoardStorage<THex>(sizeHexes, coords => initializeHex(map,coords)),
-          landmarkCoords
-    ) {
+    protected MapDisplay(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex, IFastList<HexCoords> landmarkCoords) 
+    : base(sizeHexes, gridSize, landmarkCoords, GetGraphicsPath)
+    {
+      #if FlatBoardStorage
+        _boardHexes    = new FlatBoardStorage<THex>(sizeHexes, coords => initializeHex(this,coords)); 
+      #else
+        _boardHexes    = new BlockedBoardStorage32x32<THex>(sizeHexes, coords => initializeHex(this,coords)); 
+      #endif
+
       InitializeProperties();
     }
 
@@ -83,6 +107,9 @@ namespace PGNapoleonics.HexgridScrollViewer {
       ShowPathArrow   = true;
     }
     #endregion
+
+    /// <inheritdoc/>
+    protected override BoardStorage<THex> BoardHexes { get {return _boardHexes;} } BoardStorage<THex> _boardHexes;
 
     #region Properties
     /// <summary>Gets or sets the Field-of-View for the current <see cref="HotspotHex"/>, as an <see cref="IFov"/> object.</summary>
@@ -288,7 +315,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
     /// <param name="paintAction">Type: Action {HexCoords} - 
     /// The paint action to be performed for each hex.</param>
     void PaintForEachHex(DrawingContext g, CoordsRectangle clipHexes, Action<HexCoords> paintAction) {
-      BoardHexes.ForEach(hex => {
+      ForEachHex(hex => {
         if (clipHexes.Left <= hex.Coords.User.X  &&  hex.Coords.User.X <= clipHexes.Right
         &&  clipHexes.Top  <= hex.Coords.User.Y  &&  hex.Coords.User.Y <= clipHexes.Bottom) {
           g.PushTransform(TranslateToHex(StartHex));
@@ -348,13 +375,12 @@ namespace PGNapoleonics.HexgridScrollViewer {
     #region deprecated
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
     [Obsolete("Use MapDisplay(Size,Size,Func<HexBoard<THex>, HexCoords, THex>) instead; client should set hex size.")]
-    protected MapDisplay(HexSize sizeHexes, Func<HexBoard<THex>, HexCoords, THex> initializeHex) 
-      : this(sizeHexes, new HexSize(27,30), initializeHex) {}
+    protected MapDisplay(HexSize sizeHexes, InitializeHex initializeHex) 
+    : this(sizeHexes, new HexSize(27,30), initializeHex) {}
 
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
     [Obsolete("Use MapDisplay(Size,Size,Func<HexBoard<THex>, HexCoords, THex>) instead; client should set hex size.")]
-    protected MapDisplay(HexSize sizeHexes, Func<HexBoard<THex>, HexCoords, THex> initializeHex, 
-                       IFastList<HexCoords> landmarkCoords) 
+    protected MapDisplay(HexSize sizeHexes, InitializeHex initializeHex, IFastList<HexCoords> landmarkCoords) 
     : this(sizeHexes, new HexSize(27,30), initializeHex, landmarkCoords) {}
 
     /// <inheritdoc/>
@@ -366,6 +392,20 @@ namespace PGNapoleonics.HexgridScrollViewer {
     [Obsolete("Use GetClipInHexes(RectangleF) instead.")]
     public CoordsRectangle GetClipCells(HexRectF visibleClipBounds) {
       return GetClipInHexes(visibleClipBounds, MapSizeHexes);
+    }
+    #endregion
+
+    #region IDisposable implementation
+    private bool _isDisposed = false;
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing) {
+      if (!_isDisposed) {
+        if (disposing) {
+          if (_boardHexes != null) { _boardHexes.Dispose(); _boardHexes = null; }
+        }
+        _isDisposed = true;
+      }
+      base.Dispose(disposing);
     }
     #endregion
   }

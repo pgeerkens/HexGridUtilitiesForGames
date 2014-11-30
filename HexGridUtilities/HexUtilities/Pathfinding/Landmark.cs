@@ -45,14 +45,14 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <summary>Populates and returns a new landmark at the specified board coordinates.</summary>
     /// <param name="board">IBoard{IHex} on which the landmark is to be created.</param>
     /// <param name="coords">Coordinates on <c>board</c> where this landmark is to be created.</param>
-    public Landmark(HexCoords coords, IBoard<IHex> board) {
+    public Landmark(HexCoords coords, IHexBoard<IHex> board) {
       Board  = board;
       Coords = coords;
       FillLandmark();
     }
 
     /// <summary>TODO</summary>
-    public IBoard<IHex> Board { get; private set; }
+    public IHexBoard<IHex> Board { get; private set; }
     /// <summary>Board coordinates for the landmark location.</summary>
     public HexCoords    Coords { get; private set; }
 
@@ -61,8 +61,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <summary>Returns the shortest-path directed-distance from the specified hex <b>to</b> the landmark.</summary>
     public int DistanceFrom(HexCoords coords) { return backingStore[1][coords]; }
 
-    private static Func<IBoard<IHex>, Func<IHex,Hexside,IHex,int>>[] DirectedCostDelegates = 
-      new Func<IBoard<IHex>, Func<IHex,Hexside,IHex,int>>[] {
+    private static Func<IHexBoard<IHex>, Func<IHex,Hexside,IHex,int>>[] DirectedCostDelegates = 
+      new Func<IHexBoard<IHex>, Func<IHex,Hexside,IHex,int>>[] {
           /* Cost from here to there */ (board) => (here,hexside,there) => board.GetDirectedCostToExit(here, hexside),
           /* Cost from there to here */ (board) => (here,hexside,there) => board.GetDirectedCostToExit(there, hexside.Reversed())
       };

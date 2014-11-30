@@ -33,16 +33,8 @@ using PGNapoleonics.HexUtilities;
 namespace PGNapoleonics.HexgridScrollViewer {
 
   /// <summary>TODO</summary>
-  public abstract class MapGridHex : Hex<DrawingContext>, IHex {
+  public abstract class MapGridHex : Hex<DrawingContext,StreamGeometry>, IHex {
     /// <summary>TODO</summary>
-    protected MapGridHex(HexBoardWpf<MapGridHex> board, HexCoords coords) : base(coords) { 
-      BoardX = board;
-    }
-
-    /// <inheritdoc/>
-    public override IBoard<IHex>           Board  { get { return BoardX; } }
-
-    /// <inheritdoc/>
-    public virtual HexBoardWpf<MapGridHex> BoardX {  get; private set; }
+    protected MapGridHex(HexBoard<MapGridHex,StreamGeometry> board, HexCoords coords) : base(board,coords) { }
   }
 }

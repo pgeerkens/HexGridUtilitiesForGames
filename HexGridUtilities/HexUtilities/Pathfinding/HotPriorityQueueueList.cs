@@ -114,13 +114,14 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       }
       #endregion
 
-      /// <inheritdoc/>
-      public int Count    { get { return _items.Count; } }
+      /// <summary>Returns true exactly when the heap has at least one element.</summary>
+      public bool Any     { get {  return _items.Count > 0; } }
 
       /// <inheritdoc/>
-      bool IPriorityQueue<TKey,TValue>.Any()   { return _items.Any(); }
+      public int  Count   { get { return _items.Count; } }
 
-      public bool Any { get {  return _items.Count > 0; } }
+      /// <inheritdoc/>
+      bool IPriorityQueue<TKey,TValue>.Any()   { return Any; }
 
       /// <inheritdoc/>
       public void Clear() { _items.Clear(); }
@@ -145,7 +146,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
       /// <inheritdoc/>
       public bool TryDequeue(out HexKeyValuePair<TKey,TValue> result) {
-//        if (!_items.Any()) {
         if (_items.Count == 0) {
           result = default(HexKeyValuePair<TKey,TValue>);
           return false;
@@ -177,10 +177,10 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         return true;
       }
 
-      List<HexKeyValuePair<TKey,TValue>> _items;  // < backing store
+      private List<HexKeyValuePair<TKey,TValue>> _items;  //!< backing store
 
       /// <summary>Min-Heapify by sifting-down from last parent in heap.</summary>
-      void MinHeapifyDown(int current) {
+      private void MinHeapifyDown(int current) {
 
         int leftChild;
         while ( (leftChild = 2*current + 1) < _items.Count) {

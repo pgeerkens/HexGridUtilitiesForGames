@@ -26,21 +26,17 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Windows;
 using System.Windows.Media;
 
 using PGNapoleonics.HexUtilities;
 
-
 namespace PGNapoleonics.HexgridScrollViewer {
   using HexSize  = System.Drawing.Size;
-  using HexPoint = System.Drawing.Point;
-  using HexRectF = System.Drawing.RectangleF;
 
   public class HexgridModel : MapDisplay<MapGridHex> {
     /// <summary>TODO</summary>
-    public HexgridModel(HexSize sizeHexes, HexSize gridSize, Func<HexBoardWpf<MapGridHex>, HexCoords, MapGridHex> initializeHex)
+    public HexgridModel(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex)
       : base(sizeHexes, gridSize, initializeHex) {
     }
   }
@@ -56,11 +52,22 @@ namespace PGNapoleonics.HexgridScrollViewer {
   /// <summary>TODO</summary>
   public sealed class EmptyGridHex : MapGridHex, IHex  {
     /// <summary>TODO</summary>
-    public EmptyGridHex(HexBoardWpf<MapGridHex> board, HexCoords coords) : base(board, coords) {}
+    public EmptyGridHex(HexBoard<MapGridHex,StreamGeometry> board, HexCoords coords) : base(board, coords) {
+      Board = board;
+    }
+
+    /// <summary>The Board on which this <see cref="Hex{TDrawingSurface,TPath}"/> is located</summary>
+    public new HexBoard<MapGridHex,StreamGeometry> Board { get; private set; }
+
+      ///  <inheritdoc/>
+    public override StreamGeometry  HexgridPath   { get {return Board.HexgridPath;} }
 
     /// <summary>TODO</summary>
-    public override int HeightTerrain { get { return ElevationASL;   } }
+    public override int             HeightTerrain { get { return ElevationASL;   } }
     /// <summary>TODO</summary>
-    public override int StepCost(Hexside direction) { return -1; }
+    public override int             StepCost(Hexside direction) { return -1; }
+
+      ///  <inheritdoc/>
+    public override void            Paint(DrawingContext graphics) { ; }
   }
 }

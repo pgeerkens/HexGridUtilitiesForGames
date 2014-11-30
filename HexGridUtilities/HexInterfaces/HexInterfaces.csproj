@@ -115,7 +115,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Hexsides.cs" />
-    <Compile Include="IBoard.cs" />
+    <Compile Include="IHexBoard.cs" />
     <Compile Include="Pathfinding\IDirectedNavigableBoard.cs" />
     <Compile Include="Pathfinding\IDirectedPathCollection.cs" />
     <Compile Include="IFieldOfView.cs" />

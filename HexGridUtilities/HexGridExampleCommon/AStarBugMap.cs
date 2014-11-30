@@ -29,6 +29,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 using System.Diagnostics.CodeAnalysis;
 
@@ -55,7 +56,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
     static Size _sizeHexes = new Size(_board[0].Length, _board.Count);
     #endregion
 
-    private static MapGridHex InitializeHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) {
+    private new static MapGridHex InitializeHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) {
       char value = _board[coords.User.Y][coords.User.X];
       switch(value) {
         default:   

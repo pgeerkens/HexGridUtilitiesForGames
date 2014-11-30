@@ -26,64 +26,16 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
-using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
 
-using System.Diagnostics.CodeAnalysis;
-
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.HexUtilities.Pathfinding;
 
 namespace PGNapoleonics.HexgridScrollViewer {
   using HexSize = System.Drawing.Size;
 
-  public abstract class HexBoardWpf<THex> : HexBoard<THex> where THex : class, IHex {
-    #region Constructors
-    /// <summary>Initializes the internal contents of <see cref="HexBoard{THex}"/> with default 
-    /// landmarks for pathfinding.</summary>
-    /// <param name="sizeHexes">Extent in hexes of the board being initialized, as a 
-    /// <see cref="System.Drawing.Size"/>.</param>
-    /// <param name="gridSize">Extent in pixels of the layout grid for the hexagons, as a 
-    /// <see cref="System.Drawing.Size"/>.</param>
-    /// <param name="initializeBoard">Delegate that creates the <see cref="BoardStorage{T}"/> backing
-    /// store for this instance.</param>
-   [SuppressMessage("Microsoft.Design", 
-      "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-    protected HexBoardWpf(HexSize sizeHexes, HexSize gridSize, 
-                               Func<HexBoardWpf<THex>,BoardStorage<THex>> initializeBoard) 
-    : this(sizeHexes, gridSize, initializeBoard, DefaultLandmarks(sizeHexes)) {}
-
-    /// <summary>Initializes the internal contents of <see cref="HexBoard{THex}"/> with the specified set of 
-    /// landmarks for pathfinding.</summary>
-    /// <param name="sizeHexes">Extent in hexes of the board being initialized, as a 
-    /// <see cref="System.Drawing.Size"/>.</param>
-    /// <param name="gridSize">Extent in pixels of the layout grid for the hexagons, as a 
-    /// <see cref="System.Drawing.Size"/>.</param>
-    /// <param name="initializeBoard">Delegate that creates the <see cref="BoardStorage{T}"/> backing
-    /// store for this instance.</param>
-    /// <param name="landmarkCoords">Collection of <see cref="HexCoords"/> specifying the landmark 
-    /// locations to be used for pathfinding.</param>
-   [SuppressMessage("Microsoft.Design", 
-      "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-    protected HexBoardWpf(HexSize sizeHexes, HexSize gridSize, 
-                               Func<HexBoardWpf<THex>,BoardStorage<THex>> initializeBoard, 
-                                IFastList<HexCoords> landmarkCoords)
-    : base(sizeHexes, gridSize,landmarkCoords) {
-      if (initializeBoard==null) throw new ArgumentNullException("initializeBoard");
-
-      BoardHexes = initializeBoard(this); 
-
-      ResetGrid();
-      HexgridPath       = GetGraphicsPath(GridSize);
-    }
-    #endregion
-
-      ///  <inheritdoc/>
-    public StreamGeometry               HexgridPath       { get; private set; }
-
+  public abstract class HexBoardWpf<THex> : HexBoard<THex,StreamGeometry> where THex : class, IHex {
     /// <summary>TODO</summary>
     private static StreamGeometry GetGraphicsPath(HexSize gridSize) {
       StreamGeometry geometry = new StreamGeometry();
@@ -101,5 +53,31 @@ namespace PGNapoleonics.HexgridScrollViewer {
 
       return geometry;
     }
+
+    #region Constructors
+    /// <summary>Initializes the internal contents of <see cref="HexBoard{THex}"/> with default 
+    /// landmarks for pathfinding.</summary>
+    /// <param name="sizeHexes">Extent in hexes of the board being initialized, as a 
+    /// <see cref="System.Drawing.Size"/>.</param>
+    /// <param name="gridSize">Extent in pixels of the layout grid for the hexagons, as a 
+    /// <see cref="System.Drawing.Size"/>.</param>
+    /// <param name="initializeBoard">Delegate that creates the <see cref="BoardStorage{T}"/> backing
+    /// store for this instance.</param>
+    protected HexBoardWpf(HexSize sizeHexes, HexSize gridSize) 
+    : this(sizeHexes, gridSize, DefaultLandmarks(sizeHexes)) { }
+
+    /// <summary>Initializes the internal contents of <see cref="HexBoard{THex}"/> with the specified set of 
+    /// landmarks for pathfinding.</summary>
+    /// <param name="sizeHexes">Extent in hexes of the board being initialized, as a 
+    /// <see cref="System.Drawing.Size"/>.</param>
+    /// <param name="gridSize">Extent in pixels of the layout grid for the hexagons, as a 
+    /// <see cref="System.Drawing.Size"/>.</param>
+    /// <param name="initializeBoard">Delegate that creates the <see cref="BoardStorage{T}"/> backing
+    /// store for this instance.</param>
+    /// <param name="landmarkCoords">Collection of <see cref="HexCoords"/> specifying the landmark 
+    /// locations to be used for pathfinding.</param>
+    protected HexBoardWpf(HexSize sizeHexes, HexSize gridSize, IFastList<HexCoords> landmarkCoords)
+    : base(sizeHexes, gridSize,landmarkCoords,GetGraphicsPath) { }
+    #endregion
   }
 }

@@ -39,41 +39,44 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
   /// <summary>TODO</summary>
   public interface IPathfinder {
-    /// <summary>TODO</summary>
+    /// <summary>The <see cref="INavigableBoard"/> on which the shortest-path has been requested.</summary>
     INavigableBoard Board     { get; }
-    /// <summary>TODO</summary>
+    /// <summary>The <see cref="ISet{HexCoords}"/> of all hexes expanded in finding the shortest-path.</summary>
     ISet<HexCoords> ClosedSet { get; }
-    /// <summary>TODO</summary>
-    IHex            Start     { get; }
-    /// <summary>TODO</summary>
-    IHex            Goal      { get; }
+    /// <summary>The target hex for this shortest-path search.</summary>
+    IHex            Source    { get; }
+    /// <summary>The source hex for this shortest-path search.</summary>
+    IHex            Target    { get; }
   }
 
   /// <summary></summary>
   public abstract class Pathfinder : IPathfinder {
     /// <summary>TODO</summary>
-    /// <param name="start">Source hex for this path search.</param>
-    /// <param name="goal">Target hex for this path search.</param>
-    /// <param name="board">Board on which this path search is taking place.</param>
-    protected internal Pathfinder(IHex start, IHex goal, INavigableBoard board) {
-      if (start==null)           throw new ArgumentNullException("start"); 
-      if (goal==null)            throw new ArgumentNullException("goal"); 
-      if (board==null)           throw new ArgumentNullException("board"); 
+    /// <param name="board">Board on which this shortest-path search is taking place.</param>
+    /// <param name="source">Source hex for this shortest-path search.</param>
+    /// <param name="target">Target hex for this shortest-path search.</param>
+    /// <param name="closedSet">Injected implementation of <see cref="ISet{HexCoords}"/>.</param>
+    protected internal Pathfinder(INavigableBoard board, IHex source, IHex target, ISet<HexCoords> closedSet) {
+      if (board          ==null) throw new ArgumentNullException("board"); 
       if (board.Landmarks==null) throw new ArgumentNullException("board","Member Landmarks must not be null");
+      if (closedSet      ==null) throw new ArgumentNullException("closedSet"); 
+      if (source         ==null) throw new ArgumentNullException("source"); 
+      if (target         ==null) throw new ArgumentNullException("target"); 
 
-      Start = start; 
-      Goal  = goal;
-      Board = board;
+      Board     = board;
+      ClosedSet = closedSet;
+      Source    = source;
+      Target    = target;
     }
 
     /// <inheritdoc/>
     public          INavigableBoard Board     { get; private set; }
     /// <inheritdoc/>
-    public abstract ISet<HexCoords> ClosedSet { get; }
+    public          ISet<HexCoords> ClosedSet { get; private set; }
     /// <inheritdoc/>
-    public          IHex            Start     { get; private set; }
+    public          IHex            Source    { get; private set; }
     /// <inheritdoc/>
-    public          IHex            Goal      { get; private set; }
+    public          IHex            Target    { get; private set; }
 
     #region Conditional tracing routines
     /// <summary>If the conditional constant TRACE is defined: writes the search start- and goal-coords to the trace log.</summary>

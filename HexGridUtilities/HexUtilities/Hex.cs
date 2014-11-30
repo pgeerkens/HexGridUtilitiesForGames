@@ -52,38 +52,39 @@ namespace PGNapoleonics.HexUtilities {
 
   /// <summary>Abstract implementation of the interface <see Cref="IHex"/>.</summary>
   [DebuggerDisplay("Coords: {Coords} / ElevASL: {ElevationASL}m")]
-  public abstract class Hex<TDrawingSurface> : IHex, IEquatable<Hex<TDrawingSurface>>  {
+  public abstract class Hex<TDrawingSurface,TPath> : IHex, IEquatable<Hex<TDrawingSurface,TPath>>  {
     /// <summary>Construct a new Hex instance at location <paramref name="coords"/>.</summary>
-    protected Hex(HexCoords coords) : this(coords,0) { }
+    protected Hex(IHexBoard<IHex> board, HexCoords coords) : this(board,coords,0) { }
     /// <summary>Construct a new Hex instance at location <paramref name="coords"/>.</summary>
-    protected Hex(HexCoords coords, int elevation) { 
+    protected Hex(IHexBoard<IHex> board, HexCoords coords, int elevation) {
+      Board     = board;
       Coords    = coords; 
       Elevation = elevation;
     }
 
     /// <inheritdoc/>
-    public abstract IBoard<IHex> Board          { get; }
+    public          IHexBoard<IHex> Board          { get; private set; }
 
     /// <inheritdoc/>
-    public          HexCoords    Coords         { get; private set; }
+    public          HexCoords       Coords         { get; private set; }
 
     /// <inheritdoc/>
-    public          int          Elevation      { get; protected set; }
+    public          int             Elevation      { get; protected set; }
 
     /// <inheritdoc/>
-    public          int          ElevationASL   { get {return Board.ElevationASL(Elevation);} }
+    public          int             ElevationASL   { get {return Board.ElevationASL(Elevation);} }
 
     /// <summary>TODO</summary>
-    public          HexSize      GridSize       { get { return Board.GridSize; } }
+    public          HexSize         GridSize       { get { return Board.GridSize; } }
 
     /// <inheritdoc/>
-    public virtual  int          HeightObserver { get { return ElevationASL + 1; } }
+    public virtual  int             HeightObserver { get { return ElevationASL + 1; } }
 
     /// <inheritdoc/>
-    public virtual  int          HeightTarget   { get { return ElevationASL + 1; } }
+    public virtual  int             HeightTarget   { get { return ElevationASL + 1; } }
 
     /// <inheritdoc/>
-    public abstract int          HeightTerrain  { get; }
+    public abstract int             HeightTerrain  { get; }
 
     /// <inheritdoc/>
     public abstract int  StepCost(Hexside direction);
@@ -99,13 +100,16 @@ namespace PGNapoleonics.HexUtilities {
     /// <inheritdoc/>
     public virtual  IHex Neighbour(Hexside hexside) { return Board[Coords.GetNeighbour(hexside)]; }
 
-    /// <inheritdoc/>
-    public virtual  void Paint(TDrawingSurface graphics) {;}
+    /// <summary>TODO</summary>
+    public abstract void  Paint(TDrawingSurface graphics);
+
+    /// <summary>TODO</summary>
+    public abstract TPath HexgridPath { get; }
 
     #region Value Equality
     /// <inheritdoc/>
     public override bool Equals(object obj) {
-      var hex = obj as Hex<TDrawingSurface>;
+      var hex = obj as Hex<TDrawingSurface,TPath>;
       return hex!=null && Coords.Equals(hex.Coords);
     }
 
@@ -113,7 +117,7 @@ namespace PGNapoleonics.HexUtilities {
     public override int GetHashCode()       { return Coords.GetHashCode(); }
 
     /// <inheritdoc/>
-    public bool Equals(Hex<TDrawingSurface> other)     { return other!=null  &&  this.Coords.Equals(other.Coords); }
+    public bool Equals(Hex<TDrawingSurface,TPath> other)     { return other!=null  &&  this.Coords.Equals(other.Coords); }
     #endregion
   }
 

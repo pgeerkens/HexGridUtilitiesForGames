@@ -62,19 +62,19 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <seealso cref="PGNapoleonics.HexUtilities.Pathfinding.BidirectionalPathfinder"/>
   /// </para>
   /// </remarks>
+  /// <see cref="BidirectionalPathfinder"/>
   public sealed class UnidirectionalPathfinder : Pathfinder {
     /// <summary>Returns an <c>IDirectedPath</c> for the optimal path from coordinates <c>start</c> to <c>goal</c>.</summary>
-    /// <param name="start">Coordinates for the <c>first</c> step on the desired path.</param>
-    /// <param name="goal">Coordinates for the <c>last</c> step on the desired path.</param>
     /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
+    /// <param name="source">Coordinates for the <c>first</c> step on the desired path.</param>
+    /// <param name="target">Coordinates for the <c>last</c> step on the desired path.</param>
     /// <returns>A <c>IDirectedPathCollection</c>  for the shortest path found, or null if no path was found.</returns>
     /// <remarks>
     /// <para>Note that the Heuristic provided by <paramref name="board"/> <b>must</b> be monotonic in order for the algorithm to perform properly.</para>
     /// <seealso cref="PGNapoleonics.HexUtilities.Pathfinding.UnidirectionalPathfinder"/>
     /// </remarks>
-    public static IDirectedPath FindDirectedPathFwd(IHex start,IHex goal,INavigableBoard board
-    ) {
-      return (new UnidirectionalPathfinder(start,goal,board)).Path;
+    public static IDirectedPath FindDirectedPathFwd(INavigableBoard board, IHex source, IHex target) {
+      return (new UnidirectionalPathfinder(board,source,target)).Path;
     }
 
     static int Estimate(Func<int,int> heuristic, IntVector2D vectorGoal, HexCoords start, 
@@ -88,29 +88,30 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       return (0xFFFF & Math.Abs(vectorGoal ^ vectorHex ));
     }
 
-    /// <summary>TODO</summary>
-    /// <param name="start">Coordinates for the <c>first</c> step on the desired path.</param>
-    /// <param name="goal">Coordinates for the <c>last</c> step on the desired path.</param>
+    /// <summary>Creates a new <see cref="Pathfinder"/> instance implementing a unidirectional A* from 
+    /// <paramref name="source"/> to <paramref name="target"/>.</summary>
     /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
-    public UnidirectionalPathfinder(IHex start,IHex goal,INavigableBoard board) :base(start,goal,board) {
+    /// <param name="source">Coordinates for the <c>first</c> step on the desired path.</param>
+    /// <param name="target">Coordinates for the <c>last</c> step on the desired path.</param>
+    public UnidirectionalPathfinder(INavigableBoard board, IHex source, IHex target) 
+    : base(board,source,target,new HashSet<HexCoords>()) {
       if (board==null) throw new ArgumentNullException("board");
 
       StepCost  = (hex,hexside) => board.GetDirectedCostToExit(hex,hexside);
       Heuristic = board.Heuristic;
-      _closed   = new HashSet<HexCoords>();
-
       Path      = GetPath();
+
       TraceFindPathDone(ClosedSet.Count);
     }
 
     private IDirectedPath GetPath() {
-      VectorGoal  = Goal.Coords.Canon - Start.Coords.Canon;
+      VectorGoal  = Target.Coords.Canon - Source.Coords.Canon;
       OpenSet     = new HashSet<HexCoords>();
       Queue       = new DictionaryPriorityQueue<int, IDirectedPath>();
 
-      TraceFindPathDetailInit(Start.Coords, Goal.Coords);
+      TraceFindPathDetailInit(Source.Coords, Target.Coords);
 
-      Queue.Enqueue (0, new DirectedPath(Goal));
+      Queue.Enqueue (0, new DirectedPath(Target));
 
       HexKeyValuePair<int,IDirectedPath> item;
       while (Queue.TryDequeue(out item)) {
@@ -123,7 +124,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         TraceFindPathDequeue("Rev",step.Coords, path.TotalCost, path.HexsideExit, item.Key>>16, 
                             (int) ((int)(item.Key & 0xFFFFu) - 0x7FFF));
 
-        if(step.Equals(Start))     return path;
+        if(step.Equals(Source))     return path;
 
         ClosedSet.Add(step.Coords);
 
@@ -140,7 +141,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         var cost = StepCost(neighbour.Hex, neighbour.HexsideExit);
         if (cost > 0) {
           var newPath = path.AddStep(neighbour, cost);
-          var key     = Estimate(Heuristic, VectorGoal, Start.Coords, 
+          var key     = Estimate(Heuristic, VectorGoal, Source.Coords, 
                                  neighbour.Hex.Coords, newPath.TotalCost);
 
           TraceFindPathEnqueue(neighbour.Hex.Coords, key>>16, (int)(key & 0xFFFFu));
@@ -151,14 +152,12 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     }
 
     /// <inheritdoc/>
-    public override ISet<HexCoords>   ClosedSet { get {return _closed;} } ISet<HexCoords> _closed;
-    /// <inheritdoc/>
-    public  IDirectedPath             Path      { get; private set; }
+    public  IDirectedPath                     Path        { get; private set; }
 
-    Func<int,int>                     Heuristic { get; set; }
-    ISet<HexCoords>                   OpenSet   { get; set; }
-    IPriorityQueue<int,IDirectedPath> Queue     { get; set; }
-    Func<IHex, Hexside, int>          StepCost  { get; set; }
-    IntVector2D                       VectorGoal{ get; set; }
+    private Func<int,int>                     Heuristic   { get; set; }
+    private ISet<HexCoords>                   OpenSet     { get; set; }
+    private IPriorityQueue<int,IDirectedPath> Queue       { get; set; }
+    private Func<IHex, Hexside, int>          StepCost    { get; set; }
+    private IntVector2D                       VectorGoal  { get; set; }
   }
 }

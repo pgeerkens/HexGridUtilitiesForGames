@@ -29,6 +29,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
@@ -58,7 +59,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
     static Size                       _sizeHexes = new Size(_board[0].Length, _board.Count);
     #endregion
 
-    private static MapGridHex InitializeHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) {
+    private new static MapGridHex InitializeHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) {
       switch (_board[coords.User.Y][coords.User.X]) {
         case '.': return new PathMazeGridHex(board, coords);
         default:  return new WallMazeGridHex(board, coords);

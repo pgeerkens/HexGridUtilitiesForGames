@@ -122,7 +122,6 @@
     <Compile Include="Common\EmptyBoard.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Common\HexEventArgs.cs" />
-    <Compile Include="HexBoardWinForms.cs" />
     <Compile Include="HexgridPanel.cs">
       <SubType>Component</SubType>
     </Compile>

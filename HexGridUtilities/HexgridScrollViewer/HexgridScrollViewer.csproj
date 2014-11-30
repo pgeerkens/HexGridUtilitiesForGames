@@ -52,7 +52,7 @@
     <Compile Include="Common\EmptyBoard.cs" />
     <Compile Include="Common\HexEventArgs.cs" />
     <Compile Include="Common\MapDisplay.cs" />
-    <Compile Include="HexBoardWinForms.cs" />
+    <Compile Include="HexBoardWpf.cs" />
     <Compile Include="HexgridScrollViewer.xaml.cs">
       <DependentUpon>HexgridScrollViewer.xaml</DependentUpon>
     </Compile>

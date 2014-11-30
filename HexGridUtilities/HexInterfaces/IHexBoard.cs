@@ -33,7 +33,7 @@ namespace PGNapoleonics.HexUtilities {
   using HexSize = System.Drawing.Size;
 
   /// <summary>External interface exposed by the the implementation of <see cref="IHexBoard{THex}"/>.</summary>
-  public interface IBoard<out THex> : INavigableBoard, IFovBoard<THex> where THex : IHex {
+  public interface IHexBoard<out THex> : INavigableBoard, IFovBoard<THex> where THex : class, IHex {
     /// <summary>Gets the extent in pixels o fhte grid on which hexes are to be laid out. </summary>
     HexSize GridSize    { get; }
 
@@ -45,9 +45,5 @@ namespace PGNapoleonics.HexUtilities {
 
     /// <summary>Returns the Elevation Above-Sea-Level for a hex with the specified ElevationLevel.</summary>
     int      ElevationASL(int elevationLevel);
-  }
-
-  /// <summary>TODO</summary>
-  public interface IHexBoard<THex> : IBoard<THex> where THex : class, IHex {
   }
 }

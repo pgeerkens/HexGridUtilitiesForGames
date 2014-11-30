@@ -26,23 +26,16 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridPanel {
+
   /// <summary>TODO</summary>
-  public abstract class MapGridHex : Hex<Graphics> {
+  public abstract class MapGridHex : Hex<Graphics,GraphicsPath> {
     /// <summary>TODO</summary>
-    protected MapGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) : base(coords) { 
-      BoardX = board;
-    }
-
-    /// <inheritdoc/>
-    public override IBoard<IHex>                Board  { get { return BoardX; } }
-
-    /// <inheritdoc/>
-    public virtual HexBoardWinForms<MapGridHex> BoardX {  get; private set; }
+    protected MapGridHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) : base(board,coords) { }
   }
 }

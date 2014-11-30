@@ -28,18 +28,27 @@
 #endregion
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridExampleCommon {
+
   /// <summary>Abstract class for <c>MapGridHex</c> as used in the MazeGrid example.</summary>
   internal abstract class MazeGridHex : MapGridHex {
     /// <summary>Initializes a new instance of a <see cref="MazeGridHex"/>.</summary>
     /// <param name="board"></param>
     /// <param name="coords">Board location of this hex.</param>
-    protected MazeGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords)
-      : base(board, coords) {}
+    protected MazeGridHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords)
+      : base(board, coords) {
+      Board = board;
+    }
+
+    public new HexBoard<MapGridHex,GraphicsPath> Board { get; private set; }
+
+    ///  <inheritdoc/>
+    public    override GraphicsPath HexgridPath   { get {return Board.HexgridPath;} }
   }
 
   /// <summary>A <c>MazeGridHex</c> representing a passable hex in the maze.</summary>
@@ -47,7 +56,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
     /// <summary>Create a new instance of a passable <c>MazeGridHex</c>.</summary>
     /// <param name="board">Reference to the mapboard on which this hex sits.</param>
     /// <param name="coords">Location of the new hex.</param>
-    public PathMazeGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) 
+    public PathMazeGridHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) 
       : base(board, coords) {
       Elevation = 0;
     }
@@ -56,6 +65,9 @@ namespace PGNapoleonics.HexgridExampleCommon {
     public override int  HeightTerrain  { get { return ElevationASL + 0; } }
     /// <inheritdoc/>
     public override int  StepCost(Hexside direction) { return  1; }
+
+    ///  <inheritdoc/>
+    public    override void         Paint(Graphics graphics) { ; }
   }
 
   /// <summary>A <c>MazeGridHex</c> representing an impassable hex, or wall, in the maze.</summary>
@@ -63,7 +75,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
     /// <summary>Create a new instance of an impassable <c>MazeGridHex</c>.</summary>
     /// <param name="board">Reference to the mapboard on which this hex sits.</param>
     /// <param name="coords">Location of the new hex.</param>
-    public WallMazeGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) 
+    public WallMazeGridHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) 
       : base(board, coords) {
       Elevation = 1;
     }
@@ -76,7 +88,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
     public override void Paint(Graphics graphics) {
       if (graphics==null) throw new ArgumentNullException("graphics");
       using(var brush = new SolidBrush(Color.FromArgb(78,Color.DarkGray)))
-        graphics.FillPath(brush, BoardX.HexgridPath);
+        graphics.FillPath(brush, HexgridPath);
     }
   }
 }

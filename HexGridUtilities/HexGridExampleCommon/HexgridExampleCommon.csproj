@@ -111,7 +111,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="TerrainGridHex.cs" />
-    <Compile Include="AStarBug.cs" />
+    <Compile Include="AStarBugMap.cs" />
     <Compile Include="TerrainMap.cs" />
   </ItemGroup>
   <ItemGroup>

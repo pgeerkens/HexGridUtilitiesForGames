@@ -40,12 +40,12 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// </remarks>
   /// <a href="http://en.wikipedia.org/wiki/Heapsort">Wikepedia - Heapsort</a>/>
   [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
-    Justification="The suffix has an unambiguous meaning in the application domain.")]
+    Justification="The suffix 'PriorityQueue' has an unambiguous meaning in the application domain.")]
   [DebuggerDisplay("Count={Count}")]
   public sealed class HotPriorityQueue<TValue> : IPriorityQueue<int,TValue> {
 
-    int _baseIndex;
-    int  _preferenceWidth;
+    int                                                _baseIndex;
+    int                                                _preferenceWidth;
     IPriorityQueue<int, TValue>                        _queue;
     IDictionary<int, HotPriorityQueueList<int,TValue>> _lists;
 

@@ -47,30 +47,50 @@ using System.Diagnostics.CodeAnalysis;
 namespace PGNapoleonics.HexgridPanel {
   using Int32ValueEventArgs = ValueChangedEventArgs<Int32>;
 
-  /// <summary>TODO</summary>
-  public delegate THex InitializeHex<THex>(HexBoardWinForms<THex> board, HexCoords coords) where THex : class, IHex;
-
   /// <summary>Abstract class representing the basic game board.</summary>
   /// <typeparam name="THex">Type of the hex for which a game board is desired.</typeparam>
-  public abstract class MapDisplay<THex> : HexBoardWinForms<THex>, IBoard<THex>, IMapDisplayWinForms
+  public abstract class MapDisplay<THex> : HexBoard<THex,GraphicsPath>, IHexBoard<THex>, IMapDisplayWinForms
     where THex : MapGridHex {
+
+    /// <summary>TODO</summary>
+    protected delegate THex InitializeHex(HexBoard<THex,GraphicsPath> board, HexCoords coords);
+
+    /// <summary>TODO</summary>
+    private static GraphicsPath GetGraphicsPath(Size gridSize) {
+      GraphicsPath path     = null;
+      GraphicsPath tempPath = null;
+      try {
+        tempPath  = new GraphicsPath();
+        tempPath.AddLines(new Point[] {
+          new Point(gridSize.Width*1/3,              0  ), 
+          new Point(gridSize.Width*3/3,              0  ),
+          new Point(gridSize.Width*4/3,gridSize.Height/2),
+          new Point(gridSize.Width*3/3,gridSize.Height  ),
+          new Point(gridSize.Width*1/3,gridSize.Height  ),
+          new Point(             0,    gridSize.Height/2),
+          new Point(gridSize.Width*1/3,              0  )
+        } );
+        path     = tempPath;
+        tempPath = null;
+      } finally { if(tempPath!=null) tempPath.Dispose(); }
+      return path;
+    }
 
     #region Constructors
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
-    protected MapDisplay(Size sizeHexes, Size gridSize, InitializeHex<THex> initializeHex) 
+    protected MapDisplay(Size sizeHexes, Size gridSize, InitializeHex initializeHex) 
     : this(sizeHexes, gridSize, initializeHex, DefaultLandmarks(sizeHexes)) {}
 
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
-    protected MapDisplay(Size sizeHexes, Size gridSize, InitializeHex<THex> initializeHex, 
-                         IFastList<HexCoords> landmarkCoords) 
-    : base(sizeHexes, gridSize, 
-        #if FlatBoardStorage
-          (map) => new FlatBoardStorage<THex>(sizeHexes, coords => initializeHex(map,coords)),
-        #else
-          (map) => new BlockedBoardStorage32x32<THex>(sizeHexes, coords => initializeHex(map,coords)),
-        #endif
-          landmarkCoords
-    ) {
+    protected MapDisplay(Size sizeHexes, Size gridSize, InitializeHex initializeHex, IFastList<HexCoords> landmarkCoords) 
+    : base(sizeHexes, gridSize, landmarkCoords, GetGraphicsPath)
+    {
+      #if FlatBoardStorage
+        _boardHexes    = new FlatBoardStorage<THex>(sizeHexes, coords => initializeHex(this,coords)); 
+      #else
+        _boardHexes    = new BlockedBoardStorage32x32<THex>(sizeHexes, coords => initializeHex(this,coords)); 
+      #endif
+
       InitializeProperties();
     }
 
@@ -86,6 +106,9 @@ namespace PGNapoleonics.HexgridPanel {
       ShowPathArrow   = true;
     }
     #endregion
+
+    /// <inheritdoc/>
+    protected override BoardStorage<THex> BoardHexes { get {return _boardHexes;} } BoardStorage<THex> _boardHexes;
 
     #region Properties
     /// <summary>Gets or sets the Field-of-View for the current <see cref="HotspotHex"/>, as an <see cref="IFov"/> object.</summary>
@@ -211,12 +234,12 @@ namespace PGNapoleonics.HexgridPanel {
     #region deprecated
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
     [Obsolete("Use MapDisplay(Size,Size,Func<HexBoardWinForms<THex>, HexCoords, THex>) instead; client should set hex size.")]
-    protected MapDisplay(Size sizeHexes, InitializeHex<THex> initializeHex) 
+    protected MapDisplay(Size sizeHexes, InitializeHex initializeHex) 
       : this(sizeHexes, new Size(27,30), initializeHex) {}
 
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
     [Obsolete("Use MapDisplay(Size,Size,Func<HexBoardWinForms<THex>, HexCoords, THex>) instead; client should set hex size.")]
-    protected MapDisplay(Size sizeHexes, InitializeHex<THex> initializeHex, 
+    protected MapDisplay(Size sizeHexes, InitializeHex initializeHex, 
                        IFastList<HexCoords> landmarkCoords) 
     : this(sizeHexes, new Size(27,30), initializeHex, landmarkCoords) {}
 
@@ -229,6 +252,20 @@ namespace PGNapoleonics.HexgridPanel {
     [Obsolete("Use GetClipInHexes(RectangleF) instead.")]
     public CoordsRectangle GetClipCells(RectangleF visibleClipBounds) {
       return GetClipInHexes(visibleClipBounds, MapSizeHexes);
+    }
+    #endregion
+
+    #region IDisposable implementation
+    private bool _isDisposed = false;
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing) {
+      if (!_isDisposed) {
+        if (disposing) {
+          if (_boardHexes != null) { _boardHexes.Dispose(); _boardHexes = null; }
+        }
+        _isDisposed = true;
+      }
+      base.Dispose(disposing);
     }
     #endregion
   }

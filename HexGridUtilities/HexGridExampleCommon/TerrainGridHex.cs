@@ -28,13 +28,12 @@
 #endregion
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridExampleCommon {
-  using HexSize  = System.Drawing.Size;
-  using Graphics = System.Drawing.Graphics;
 
   /// <summary>Abstract class for <c>MapGridHex</c> as used in the TerrainGridHex example.</summary>
   internal abstract class TerrainGridHex : MapGridHex {
@@ -42,25 +41,33 @@ namespace PGNapoleonics.HexgridExampleCommon {
     /// <summary>Initializes a new instance of a <see cref="TerrainGridHex"/>.</summary>
     /// <param name="board"></param>
     /// <param name="coords">Board location of this hex.</param>
-    protected TerrainGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) 
+    protected TerrainGridHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) 
       : base(board,coords) {
       Elevation = 0;
+      Board = board;
     }
 
+    public new HexBoard<MapGridHex,GraphicsPath> Board { get; private set; }
+
+    ///  <inheritdoc/>
+    public    override GraphicsPath HexgridPath   { get {return Board.HexgridPath;} }
     /// <summary>TODO</summary>
-    protected virtual  Brush HexBrush      { get { return Brushes.Transparent; } }
-    public    override int   HeightTerrain { get { return ElevationASL; } }
+    protected virtual  Brush        HexBrush      { get { return Brushes.Transparent; } }
+    ///  <inheritdoc/>
+    public    override int          HeightTerrain { get { return ElevationASL; } }
 
-    public    override void  Paint(Graphics g) { 
+    ///  <inheritdoc/>
+    public    override void         Paint(Graphics g) { 
       if (g==null) throw new ArgumentNullException("g");
-      g.FillPath(HexBrush, BoardX.HexgridPath);
+      g.FillPath(HexBrush, HexgridPath);
     }
-    public    override int   StepCost(Hexside direction) { return  4; }
+    ///  <inheritdoc/>
+    public    override int          StepCost(Hexside direction) { return  4; }
   }
   /// <summary>A <see cref="TerrainGridHex"/> representing clear terrain.</summary>
   internal sealed class ClearTerrainGridHex    : TerrainGridHex {
     /// <summary>Creates a new instance of a clear <see cref="TerrainGridHex"/>.</summary>
-    public ClearTerrainGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) 
+    public ClearTerrainGridHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) 
       : base(board, coords) { }
 
     /// <inheritdoc/>
@@ -70,7 +77,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
   /// <summary>A <see cref="TerrainGridHex"/> representing a river ford.</summary>
   internal sealed class FordTerrainGridHex     : TerrainGridHex {
     /// <summary>Creates a new instance of a ford <see cref="TerrainGridHex"/>.</summary>
-    public FordTerrainGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) 
+    public FordTerrainGridHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) 
       : base(board, coords) { }
 
     /// <inheritdoc/>
@@ -82,7 +89,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
   /// <summary>A <see cref="TerrainGridHex"/> representing a river (impassable terrain).</summary>
   internal sealed class RiverTerrainGridHex    : TerrainGridHex {
     /// <summary>Creates a new instance of a river <see cref="TerrainGridHex"/>.</summary>
-    public RiverTerrainGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) 
+    public RiverTerrainGridHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) 
       : base(board, coords) { }
 
     /// <inheritdoc/>
@@ -94,7 +101,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
 
   /// <summary>A <see cref="TerrainGridHex"/> representing a pike (ie a major road).</summary>
   internal sealed class PikeTerrainGridHex     : TerrainGridHex {
-    public PikeTerrainGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) 
+    public PikeTerrainGridHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) 
       : base(board, coords) { }
 
     /// <inheritdoc/>
@@ -103,13 +110,13 @@ namespace PGNapoleonics.HexgridExampleCommon {
     public    override void  Paint(Graphics g) { 
       if (g==null) throw new ArgumentNullException("g");
       using(var brush = new SolidBrush(Color.FromArgb(78,Color.DarkGray)))
-        g.FillPath(brush, BoardX.HexgridPath); 
+        g.FillPath(brush, HexgridPath); 
     }
   }
 
   /// <summary>A <see cref="TerrainGridHex"/> representing a (secondary) road..</summary>
   internal sealed class RoadTerrainGridHex     : TerrainGridHex {
-    public RoadTerrainGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) 
+    public RoadTerrainGridHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) 
       : base(board, coords) { }
 
     /// <inheritdoc/>
@@ -118,13 +125,13 @@ namespace PGNapoleonics.HexgridExampleCommon {
     public    override void  Paint(Graphics g) { 
       if (g==null) throw new ArgumentNullException("g");
       using(var brush = new SolidBrush(Color.FromArgb(78,Color.SaddleBrown)))
-        g.FillPath(brush, BoardX.HexgridPath); 
+        g.FillPath(brush, HexgridPath); 
     }
   }
 
   /// <summary>A <see cref="TerrainGridHex"/> representing elevated terrain.</summary>
   internal sealed class HillTerrainGridHex     : TerrainGridHex {
-    public HillTerrainGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) 
+    public HillTerrainGridHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) 
       : base(board, coords) { 
       Elevation = 1;
     }
@@ -137,7 +144,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
 
   /// <summary>A <see cref="TerrainGridHex"/> representing double elevated terrain.</summary>
   internal sealed class MountainTerrainGridHex : TerrainGridHex {
-    public MountainTerrainGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) 
+    public MountainTerrainGridHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) 
       : base(board, coords) {
       Elevation = 2;
     }
@@ -150,7 +157,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
 
   /// <summary>A <see cref="TerrainGridHex"/> representing forested terrain.</summary>
   internal sealed class WoodsTerrainGridHex    : TerrainGridHex {
-    public WoodsTerrainGridHex(HexBoardWinForms<MapGridHex> board, HexCoords coords) 
+    public WoodsTerrainGridHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) 
       : base(board, coords) { }
 
     /// <inheritdoc/>
