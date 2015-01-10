@@ -157,7 +157,7 @@ namespace PGNapoleonics.HexgridPanel {
       if (sign == 0) return;
       Func<Point, int, Point> func = (p, step) => new Point(-p.X, -p.Y + step * sign);
       AutoScrollPosition = func(AutoScrollPosition,
-        type.HasFlag(ScrollEventType.LargeDecrement) ? scroll.LargeChange : scroll.SmallChange);
+        type.Hasflag(ScrollEventType.LargeDecrement) ? scroll.LargeChange : scroll.SmallChange);
     }
 
     /// <summary>Service routine to execute a Panel scroll.</summary>

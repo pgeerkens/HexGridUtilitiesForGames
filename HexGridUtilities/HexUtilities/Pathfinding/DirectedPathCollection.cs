@@ -72,6 +72,11 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         return string.Format(CultureInfo.InvariantCulture,"Hex: {0} exits {1} with TotalCost={2,3}",
           PathStep.Hex.Coords, PathStep.HexsideEntry, TotalCost);
     }
+    public string StatusText { 
+      get { return string.Format(CultureInfo.InvariantCulture,
+                  "Path Length: {0}/{1}", TotalCost,TotalSteps);
+      }
+    }
 
     /// <summary>Returns the ordered sequence of sub-paths comprising this DirectedPath.</summary>
     public IEnumerator<IDirectedPathCollection> GetEnumerator() {

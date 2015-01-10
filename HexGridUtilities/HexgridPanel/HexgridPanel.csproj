@@ -131,7 +131,6 @@
     <Compile Include="Common\MapDisplay.cs" />
     <Compile Include="IMapDisplayWinForms.cs" />
     <Compile Include="MapDisplayPainter.cs" />
-    <Compile Include="MapGridHex.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -206,10 +205,6 @@
     <None Include="PGSoftwareSolutions.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HexInterfaces\HexInterfaces.csproj">
-      <Project>{fb103f54-74ca-4646-824d-248d33237100}</Project>
-      <Name>HexInterfaces</Name>
-    </ProjectReference>
     <ProjectReference Include="..\HexUtilities\HexUtilities.csproj">
       <Project>{013628e1-60e2-40a6-91d4-8b446f397a0a}</Project>
       <Name>HexUtilities</Name>

@@ -30,18 +30,11 @@
 namespace PGNapoleonics.HexUtilities {
   /// <summary>External interface exposed by individual hexes.</summary>
   public interface IHex {
-    /// <summary>The <c>IBoard {IHex}</c> on which this hex is located.</summary>
-    IHexBoard<IHex> Board          { get; }
-
     /// <summary>The <c>HexCoords</c> coordinates for this hex on <c>Board</c>.</summary>
     HexCoords       Coords         { get; }
 
     /// <summary>Elevation of this hex in "steps" above the minimum elevation of the board.</summary>
-    int             Elevation      { get; }
-
-    /// <summary>Elevation "Above Sea Level" in <i>game units</i> of the ground in this hex.</summary>
-    /// <remarks>Calculated as BaseElevationASL + Elevation * ElevationStep.</remarks>
-    int             ElevationASL   { get; }
+    int             ElevationLevel { get; }
 
     /// <summary>Height ASL in <i>game units</i> of observer's eyes for FOV calculations.</summary>
     int             HeightObserver { get; }
@@ -52,14 +45,8 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>Height ASL in <i>game units</i> of any blocking terrian in this hex.</summary>
     int             HeightTerrain  { get; }
 
-    /// <summary>Returns the neighbouring hex across <c>Hexside</c> <c>hexside</c>.</summary>
-    IHex Neighbour(Hexside hexside);
-
     /// <summary>Cost to extend the path with the hex located across the <c>Hexside</c> at <c>direction</c>.</summary>
-    int  StepCost(Hexside direction);
-
-    /// <summary>Cost to exit this hex through the <c>Hexside</c> <c>hexsideExit</c>.</summary>
-    int  GetDirectedCostToExit(Hexside hexsideExit);
+    int  StepCost(Hexside hexsideExit);
 
     /// <summary>Height ASL in <i>game units</i> of any blocking terrain in this hex and the specified Hexside.</summary>
     int  HeightHexside(Hexside hexside);

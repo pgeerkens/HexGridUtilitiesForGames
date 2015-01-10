@@ -206,8 +206,8 @@ namespace PGNapoleonics.HexgridScrollViewer {
 //    /// <summary>Gets a SizeF struct for the hex GridSize under the current scaling.</summary>
 //    public SizeF      GridSizeF      { get { return Model.GridSize.Scale(MapScale); } }
 
-//    //CoordsRectangle  GetClipCells(PointF point, SizeF size) {
-//    //  return Model.GetClipCells(point, size);
+//    //CoordsRectangle  GetClipInHexes(PointF point, SizeF size) {
+//    //  return Model.GetClipInHexes(point, size);
 //    //}
 
 //    /// <summary>Returns ScrollPosition that places given hex in the upper-Left of viewport.</summary>

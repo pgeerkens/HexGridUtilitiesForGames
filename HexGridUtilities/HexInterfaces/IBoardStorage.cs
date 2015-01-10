@@ -26,15 +26,32 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System.Windows.Media;
+using System;
 
-using PGNapoleonics.HexUtilities;
+using System.Diagnostics.CodeAnalysis;
 
-namespace PGNapoleonics.HexgridScrollViewer {
-
+namespace PGNapoleonics.HexUtilities {
   /// <summary>TODO</summary>
-  public abstract class MapGridHex : Hex<DrawingContext,StreamGeometry>, IHex {
+  /// <typeparam name="T"></typeparam>
+  public interface IBoardStorage<out T> : IDisposable {
+    /// <summary>Returns the <c>THex</c> instance at the specified coordinates.</summary>
+    [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
+    T this[HexCoords coords] { get; }
+
+    /// <summary>Perform <paramref name="action"/> for all neighbours of <paramref name="coords"/>.</summary>
+    void ForAllNeighbours(HexCoords coords, Action<T,Hexside> action);
+
+    /// <summary>Perform the specified <c>action</c> serially on all hexes.</summary>
+    void ForEach(Action<T> action);
+
+    /// <summary>Returns whether the hex with <see cref="HexCoords"/> <c>coords</c> is 
+    /// within the extent of the board.</summary>
+    bool IsOnboard(HexCoords coords);
+
     /// <summary>TODO</summary>
-    protected MapGridHex(HexBoard<MapGridHex,StreamGeometry> board, HexCoords coords) : base(board,coords) { }
+    /// <param name="coords"></param>
+    /// <param name="hexside"></param>
+    /// <returns></returns>
+    T Neighbour(HexCoords coords, Hexside hexside);
   }
 }

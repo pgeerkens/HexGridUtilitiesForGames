@@ -27,7 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
@@ -37,12 +36,12 @@ using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridExampleCommon {
-  using MapGridDisplay = MapDisplay<MapGridHex>;
+  using MapGridHex      = Hex<Graphics,GraphicsPath>;
 
     /// <summary>TODO</summary>
-  public sealed class AStarBugMap : MapGridDisplay {
+  public sealed class AStarBugMap : MapDisplay<MapGridHex> {
     /// <summary>TODO</summary>
-     public AStarBugMap() : base(_sizeHexes, new Size(26,30), (map, coords) => InitializeHex(map, coords)) { }
+     public AStarBugMap() : base(_sizeHexes, new Size(26,30), InitializeHex) { }
 
     /// <inheritdoc/>
    [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "2*range")]
@@ -52,22 +51,22 @@ namespace PGNapoleonics.HexgridExampleCommon {
     public override void PaintUnits(Graphics graphics) { ; }
 
     #region static Board definition
-    static ReadOnlyCollection<string> _board = MapDefinitions.AStarBugMapDefinition;
-    static Size _sizeHexes = new Size(_board[0].Length, _board.Count);
+    static IList<string> _board     = MapDefinitions.AStarBugMapDefinition;
+    static Size          _sizeHexes = new Size(_board[0].Length, _board.Count);
     #endregion
 
-    private new static MapGridHex InitializeHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) {
+    private new static MapGridHex InitializeHex(GraphicsPath hexgridPath, HexCoords coords) {
       char value = _board[coords.User.Y][coords.User.X];
       switch(value) {
         default:   
-        case '.':  return new ClearTerrainGridHex   (board, coords);
-        case '2':  return new PikeTerrainGridHex    (board, coords);
-        case '3':  return new RoadTerrainGridHex    (board, coords);
-        case 'F':  return new FordTerrainGridHex    (board, coords);
-        case 'H':  return new HillTerrainGridHex    (board, coords);
-        case 'M':  return new MountainTerrainGridHex(board, coords);
-        case 'R':  return new RiverTerrainGridHex   (board, coords);
-        case 'W':  return new WoodsTerrainGridHex   (board, coords);
+        case '.':  return new ClearTerrainGridHex   (hexgridPath, coords);
+        case '2':  return new PikeTerrainGridHex    (hexgridPath, coords);
+        case '3':  return new RoadTerrainGridHex    (hexgridPath, coords);
+        case 'F':  return new FordTerrainGridHex    (hexgridPath, coords);
+        case 'H':  return new HillTerrainGridHex    (hexgridPath, coords);
+        case 'M':  return new MountainTerrainGridHex(hexgridPath, coords);
+        case 'R':  return new RiverTerrainGridHex   (hexgridPath, coords);
+        case 'W':  return new WoodsTerrainGridHex   (hexgridPath, coords);
       }
     }
   }

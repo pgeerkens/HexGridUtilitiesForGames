@@ -32,12 +32,13 @@ using System.Drawing.Drawing2D;
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridPanel {
-    using HexSize = System.Drawing.Size;
+  using HexSize         = System.Drawing.Size;
+  using MapGridHex      = Hex<Graphics,GraphicsPath>;
 
   /// <summary>TODO</summary>
   public sealed class EmptyBoard : MapDisplay<MapGridHex> {
     /// <summary>TODO</summary>
-    public EmptyBoard() : base(new Size(1,1), new Size(26,30), (mb,c) => new EmptyGridHex(mb,c)) {
+    public EmptyBoard() : base(new HexSize(1,1), new HexSize(26,30), (path,c) => new EmptyGridHex(c)) {
       FovRadius = 20;
     }
   }
@@ -45,22 +46,13 @@ namespace PGNapoleonics.HexgridPanel {
   /// <summary>TODO</summary>
   public sealed class EmptyGridHex : MapGridHex, IHex {
     /// <summary>TODO</summary>
-    public EmptyGridHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) : base(board,coords) {
-      Board = board;
-    }
+    public EmptyGridHex(HexCoords coords) : base(coords,0) {}
 
-    /// <summary>The Board on which this <see cref="Hex{TDrawingSurface,TPath}"/> is located</summary>
-    public new HexBoard<MapGridHex,GraphicsPath> Board { get; private set; }
-
+    /// <summary>TODO</summary>
+    public override int           HeightTerrain { get { return 0;   } }
+    /// <summary>TODO</summary>
+    public override int           StepCost(Hexside hexsideExit) { return -1; }
     ///  <inheritdoc/>
-    public override GraphicsPath  HexgridPath   { get {return Board.HexgridPath;} }
-
-    /// <summary>TODO</summary>
-    public override int           HeightTerrain { get { return ElevationASL;   } }
-    /// <summary>TODO</summary>
-    public override int           StepCost(Hexside direction) { return -1; }
-
-      ///  <inheritdoc/>
     public override void          Paint(Graphics graphics) { ; }
   }
 }

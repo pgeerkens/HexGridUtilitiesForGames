@@ -27,6 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 using System.Diagnostics.CodeAnalysis;
@@ -36,17 +37,17 @@ using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridExampleCommon {
-  using MapGridDisplay = MapDisplay<MapGridHex>;
+  using MapGridHex      = Hex<System.Drawing.Graphics,System.Drawing.Drawing2D.GraphicsPath>;
 
   /// <summary>TODO</summary>
-  public delegate MapGridDisplay MapExtractor();
+  public delegate MapDisplay<MapGridHex> MapExtractor();
 
   /// <summary>TODO</summary>
   public struct Map {
     /// <summary>TODO</summary>
     public string MapName { get; private set; }
     /// <summary>TODO</summary>
-    public MapGridDisplay MapBoard { get { return _mapExtractor(); } } MapExtractor _mapExtractor;
+    public MapDisplay<MapGridHex> MapBoard { get { return _mapExtractor(); } } MapExtractor _mapExtractor;
 
     /// <summary>TODO</summary>
     public Map(string mapName, MapExtractor mapExtractor)
@@ -55,7 +56,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
       _mapExtractor = mapExtractor;
     }
 
-    private static ReadOnlyCollection<Map> _mapList = 
+    private static IList<Map> _mapList = 
         new ReadOnlyCollection<Map>(new Map[] {
             new Map("Terrain Map",   () => new TerrainMap()),
             new Map("Maze Map",      () => new MazeMap()),
@@ -63,7 +64,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
           } );
 
     /// <summary>TODO</summary>
-    public static ReadOnlyCollection<Map> MapList { get { return _mapList; } }
+    public static IList<Map> MapList { get { return _mapList; } }
 
     #region Value Equality
     /// <inheritdoc/>

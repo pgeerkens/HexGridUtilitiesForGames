@@ -27,8 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
@@ -38,22 +36,22 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexUtilities.FieldOfView;
 
-using System.Diagnostics.CodeAnalysis;
-
 #pragma warning disable 1587
 /// <summary>WinForms-specific utilities, including implementation of the subclasses HexgridPanel
 /// and MapDisplay<THex>, utilizing the System.Windows.Forms technology.</summary>
 #pragma warning restore 1587
 namespace PGNapoleonics.HexgridPanel {
   using Int32ValueEventArgs = ValueChangedEventArgs<Int32>;
+  using IDirectedPath       = IDirectedPathCollection;
+  using MapGridHex          = Hex<Graphics,GraphicsPath>;
 
   /// <summary>Abstract class representing the basic game board.</summary>
   /// <typeparam name="THex">Type of the hex for which a game board is desired.</typeparam>
-  public abstract class MapDisplay<THex> : HexBoard<THex,GraphicsPath>, IHexBoard<THex>, IMapDisplayWinForms
+  public abstract class MapDisplay<THex> : HexBoard<THex,GraphicsPath>, IMapDisplayWinForms
     where THex : MapGridHex {
 
     /// <summary>TODO</summary>
-    protected delegate THex InitializeHex(HexBoard<THex,GraphicsPath> board, HexCoords coords);
+    protected delegate THex InitializeHex(GraphicsPath hexgridPath, HexCoords coords);
 
     /// <summary>TODO</summary>
     private static GraphicsPath GetGraphicsPath(Size gridSize) {
@@ -83,15 +81,15 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
     protected MapDisplay(Size sizeHexes, Size gridSize, InitializeHex initializeHex, IFastList<HexCoords> landmarkCoords) 
-    : base(sizeHexes, gridSize, landmarkCoords, GetGraphicsPath)
-    {
+    : base(sizeHexes, gridSize, landmarkCoords, GetGraphicsPath
       #if FlatBoardStorage
-        _boardHexes    = new FlatBoardStorage<THex>(sizeHexes, coords => initializeHex(this,coords)); 
+        ,() => new FlatBoardStorage<THex>(sizeHexes, coords => initializeHex(board,coords))
       #else
-        _boardHexes    = new BlockedBoardStorage32x32<THex>(sizeHexes, coords => initializeHex(this,coords)); 
+        ,() => new BlockedBoardStorage32x32<THex>(sizeHexes, coords => initializeHex(GetGraphicsPath(gridSize),coords))
       #endif
-
+    ) {
       InitializeProperties();
+      var grid = TransposableHexgrid.GetNewGrid(false,gridSize,1.0F);
     }
 
     void InitializeProperties() {
@@ -106,9 +104,6 @@ namespace PGNapoleonics.HexgridPanel {
       ShowPathArrow   = true;
     }
     #endregion
-
-    /// <inheritdoc/>
-    protected override BoardStorage<THex> BoardHexes { get {return _boardHexes;} } BoardStorage<THex> _boardHexes;
 
     #region Properties
     /// <summary>Gets or sets the Field-of-View for the current <see cref="HotspotHex"/>, as an <see cref="IFov"/> object.</summary>
@@ -133,9 +128,9 @@ namespace PGNapoleonics.HexgridPanel {
     /// <inheritdoc/>
     public          string        Name            { get {return "MapDisplay";} }
     /// <inheritdoc/>
-    public          IDirectedPathCollection Path            { 
+    public          IDirectedPath Path            { 
       get { return _path ?? (_path = this.GetDirectedPath(this[StartHex], this[GoalHex])); } 
-    } IDirectedPathCollection _path;
+    } IDirectedPath _path;
     /// <summary>Gets or sets the alpha component for the shading brush used by Field-of-View display to indicate non-visible hexes.</summary>
     public          byte          ShadeBrushAlpha { get; set; }
     /// <summary>Gets or sets the base color for the shading brush used by Field-of-View display to indicate non-visible hexes.</summary>
@@ -159,11 +154,6 @@ namespace PGNapoleonics.HexgridPanel {
       set { if (IsOnboard(value)) _startHex = value; _path = null; if (ShowRangeLine) _fov = null; } 
     } HexCoords _startHex = HexCoords.EmptyUser;
     #endregion
-
-    /// <inheritdoc/>
-    [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", 
-      MessageId = "10*elevationLevel", Justification="No map has such a high elevation.")]
-    public override int   ElevationASL(int elevationLevel) { return 10 * elevationLevel; }
 
     #region Painting
     /// <inheritdoc/>
@@ -230,44 +220,6 @@ namespace PGNapoleonics.HexgridPanel {
       if (e==null) throw new ArgumentNullException("e");
       FovRadius = RangeCutoff = e.Value;
     }
-
-    #region deprecated
-    /// <summary>Creates a new instance of the MapDisplay class.</summary>
-    [Obsolete("Use MapDisplay(Size,Size,Func<HexBoardWinForms<THex>, HexCoords, THex>) instead; client should set hex size.")]
-    protected MapDisplay(Size sizeHexes, InitializeHex initializeHex) 
-      : this(sizeHexes, new Size(27,30), initializeHex) {}
-
-    /// <summary>Creates a new instance of the MapDisplay class.</summary>
-    [Obsolete("Use MapDisplay(Size,Size,Func<HexBoardWinForms<THex>, HexCoords, THex>) instead; client should set hex size.")]
-    protected MapDisplay(Size sizeHexes, InitializeHex initializeHex, 
-                       IFastList<HexCoords> landmarkCoords) 
-    : this(sizeHexes, new Size(27,30), initializeHex, landmarkCoords) {}
-
-    /// <inheritdoc/>
-    [Obsolete("Use GetClipInHexes(PointF,SizeF) instead.")]
-    public CoordsRectangle GetClipCells(PointF point, SizeF size) {
-      return GetClipInHexes( new RectangleF(point,size), MapSizeHexes );
-    }
-    /// <inheritdoc/>
-    [Obsolete("Use GetClipInHexes(RectangleF) instead.")]
-    public CoordsRectangle GetClipCells(RectangleF visibleClipBounds) {
-      return GetClipInHexes(visibleClipBounds, MapSizeHexes);
-    }
-    #endregion
-
-    #region IDisposable implementation
-    private bool _isDisposed = false;
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing) {
-      if (!_isDisposed) {
-        if (disposing) {
-          if (_boardHexes != null) { _boardHexes.Dispose(); _boardHexes = null; }
-        }
-        _isDisposed = true;
-      }
-      base.Dispose(disposing);
-    }
-    #endregion
   }
 
   /// <summary>TODO</summary>

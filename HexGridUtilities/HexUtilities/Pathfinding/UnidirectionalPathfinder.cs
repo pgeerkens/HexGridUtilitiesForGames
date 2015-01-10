@@ -73,7 +73,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <para>Note that the Heuristic provided by <paramref name="board"/> <b>must</b> be monotonic in order for the algorithm to perform properly.</para>
     /// <seealso cref="PGNapoleonics.HexUtilities.Pathfinding.UnidirectionalPathfinder"/>
     /// </remarks>
-    public static IDirectedPath FindDirectedPathFwd(INavigableBoard board, IHex source, IHex target) {
+    public static IDirectedPath FindDirectedPathFwd(INavigableBoard<IHex> board, IHex source, IHex target) {
       return (new UnidirectionalPathfinder(board,source,target)).Path;
     }
 
@@ -93,8 +93,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
     /// <param name="source">Coordinates for the <c>first</c> step on the desired path.</param>
     /// <param name="target">Coordinates for the <c>last</c> step on the desired path.</param>
-    public UnidirectionalPathfinder(INavigableBoard board, IHex source, IHex target) 
-    : base(board,source,target,new HashSet<HexCoords>()) {
+    public UnidirectionalPathfinder(INavigableBoard<IHex> board, IHex source, IHex target) 
+    : base(board,source,target,new HashSet<HexCoords>()
+    ) {
       if (board==null) throw new ArgumentNullException("board");
 
       StepCost  = (hex,hexside) => board.GetDirectedCostToExit(hex,hexside);
@@ -128,7 +129,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
         ClosedSet.Add(step.Coords);
 
-        foreach (var neighbour in step.GetNeighbourHexes()) {
+        foreach (var neighbour in Board.GetNeighbourHexes(step)) {
           ExpandNeighbour(path,neighbour);
         }
       }

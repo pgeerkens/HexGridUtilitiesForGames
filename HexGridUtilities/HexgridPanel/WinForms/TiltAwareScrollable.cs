@@ -214,7 +214,7 @@ namespace PGNapoleonics.HexgridPanel {
     [Obsolete("Use ScrollPanelVertical or ScrollPanelHorizontal instead.")]
     public void ScrollPanel(ScrollEventType type, ScrollOrientation orientation, int sign) {
       ScrollActions [
-            ( (type.HasFlag(ScrollEventType.SmallDecrement))      ? 4 : 0 )
+            ( (type.Hasflag(ScrollEventType.SmallDecrement))      ? 4 : 0 )
           + ( (orientation == ScrollOrientation.HorizontalScroll) ? 2 : 0 )
           + ( (sign == +1)                                        ? 1 : 0 ) ] ();
     }
@@ -233,7 +233,7 @@ namespace PGNapoleonics.HexgridPanel {
     //  if (sign == 0) return;
     //  Func<Point, int, Point> func = (p, step) => new Point(-p.X, -p.Y + step * sign);
     //  AutoScrollPosition = func(AutoScrollPosition,
-    //    type.HasFlag(ScrollEventType.LargeDecrement) ? scroll.LargeChange : scroll.SmallChange);
+    //    type.Hasflag(ScrollEventType.LargeDecrement) ? scroll.LargeChange : scroll.SmallChange);
     //}
     #endregion
   }

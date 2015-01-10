@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
@@ -43,11 +44,11 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridScrollableExample {
-  using MapGridDisplay = PGNapoleonics.HexgridPanel.MapDisplay<MapGridHex>;
+  using MapGridHex      = Hex<Graphics,GraphicsPath>;
 
   internal sealed partial class ExampleHexgridPanelExample : Form, IMessageFilter {
     private bool            _isPanelResizeSuppressed = false;
-    private MapGridDisplay _mapBoard;
+    private MapDisplay<MapGridHex> _mapBoard;
 
     [SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "resources")]
     public ExampleHexgridPanelExample() {
@@ -166,11 +167,11 @@ namespace PGNapoleonics.HexgridScrollableExample {
     private void comboBoxMapSelection_SelectionChanged(object sender, EventArgs e) {
       SetMapBoard(ParseMapName(((ToolStripItem)sender).Text));
     }
-    private static MapGridDisplay ParseMapName(string mapName) {
+    private static MapDisplay<MapGridHex> ParseMapName(string mapName) {
      return Map.MapList.First(item => item.MapName == mapName).MapBoard;
    }
 
-    private void SetMapBoard(MapGridDisplay mapBoard) {
+    private void SetMapBoard(MapDisplay<MapGridHex> mapBoard) {
       _hexgridPanel.Model     = (_mapBoard = mapBoard);
       _mapBoard.ShowPathArrow = buttonPathArrow.Checked;
       _mapBoard.ShowFov       = buttonFieldOfView.Checked;

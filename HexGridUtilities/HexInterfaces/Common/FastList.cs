@@ -10,75 +10,103 @@ using System.Diagnostics.CodeAnalysis;
 /// <summary>Joe Duffy's Simple (Fast) List enumerator.</summary>
 #pragma warning restore 1587
 namespace PGNapoleonics.HexUtilities.Common {
+
+  #region Default implementations
+  /// <inheritdoc/>
+  [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
+    Justification="The suffix has an unambiguous meaning in the application domain.")]
+  public sealed class FastList<TItem> : AbstractFastList<TItem> {
+    /// <summary>Constructs a new instance from <paramref name="array"/>.</summary>
+    public FastList(TItem[] array) : base(array) { }
+  }
+
+  /// <inheritdoc/>
+  [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
+    Justification="The suffix has an unambiguous meaning in the application domain.")]
+  public sealed class FastListDisposable<TItem> : AbstractFastList<TItem>, IDisposable 
+    where TItem : IDisposable {
+    /// <summary>Constructs a new instance from <paramref name="array"/>.</summary>
+    public FastListDisposable(TItem[] array) : base(array)  { }
+
+    #region IDisposable implementation with Finalizer
+    private bool _isDisposed = false;  //!<True if already Disposed.
+    /// <inheritdoc/>
+    public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
+    /// <summary>Utility routine to do the hard-lifting for Dispose().</summary>
+    private void Dispose(bool disposing) {
+      if (! _isDisposed  &&  disposing) {
+        ForEach ( item => item.Dispose() );
+        _array = null;
+      }
+      _isDisposed = true;
+    }
+    #endregion
+  }
+  #endregion
+
+
   /// <summary>Adapted implementation of Joe Duffy's Simple (Fast) List enumerator.</summary>
+  /// <remarks>
   /// <a href="http://www.bluebytesoftware.com/blog/2008/09/21/TheCostOfEnumeratingInNET.aspx">
   /// The Cost of Enumeration in DotNet</a>
-  [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+  /// </remarks>
+  /// <typeparam name="TItem">The Type of the Item to be stored and iterated over.</typeparam>
+  [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
+    Justification="The suffix has an unambiguous meaning in the application domain.")]
   [DebuggerDisplay("Count={Count}")]
-  public sealed class FastList<TItem> : IFastList<TItem>, IDisposable
-  {
-    private TItem[] _array;
+  private abstract class AbstractFastList<TItem> : IFastList<TItem> {
+    ///// <summary>Returns a new instance from <paramref name="array"/>.</summary>
+    //[SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
+    //[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+    //public static IFastList<TItem> NewDisposableFastList(TItem[] array) {
+    //  AbstractFastList<TItem>.FastListDisposable tempFastList = null;
+    //  AbstractFastList<TItem>.FastListDisposable fastList     = null;
+    //  try {
+    //    tempFastList = new FastListDisposable(array);
+    //    fastList     = tempFastList;
+    //    tempFastList = null;
+    //  } finally { if (tempFastList != null) tempFastList.Dispose(); }
+
+    //  return fastList;
+    //}
+
+    /// <summary>TODO</summary>
+    internal TItem[] _array;
 
     /// <summary>Constructs a new instance from <paramref name="array"/>.</summary>
-    public FastList(TItem[] array) { _array = array; }
+    protected AbstractFastList(TItem[] array) { _array = array; }
 
-    IEnumerator                       IEnumerable.GetEnumerator(){
+    /// <inheritdoc/>>
+    public IEnumerator<TItem>                     GetEnumerator(){
       return new ClassicEnumerable<TItem>(_array);
     }
-    IEnumerator<TItem>         IEnumerable<TItem>.GetEnumerator(){
-      return new ClassicEnumerable<TItem>(_array);
-    }
+    IEnumerator                       IEnumerable.GetEnumerator() {return this.GetEnumerator();}
     IFastEnumerator<TItem> IFastEnumerable<TItem>.GetEnumerator(){
       return new FastEnumerable<TItem>(_array);
     }
 
     /// <summary>IForEachable{TItem} implementation.</summary>
-#if ! CHECKED
-    [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-#endif
-    public void ForEach(Action<TItem> action) {
-#if CHECKED
+    public void  ForEach(Action<TItem> action) {
       if (action==null) throw new ArgumentNullException("action");
-#endif
+
       TItem[] a = _array;
       for (int i = 0; i < a.Length; i++)    action(a[i]);
     }
 
     /// <summary>IForEachable2{TItem} implementation</summary>
-#if ! CHECKED
-    [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-#endif
-    public void ForEach(FastIteratorFunctor<TItem> functor) {
-#if CHECKED
+    public void  ForEach(FastIteratorFunctor<TItem> functor) {
       if (functor==null) throw new ArgumentNullException("functor");
-#endif
+
       TItem[] a = _array;
       for (int i = 0; i < a.Length; i++)    functor.Invoke(a[i]);
     }
 
     /// <inheritdoc/>
-    public int   Count           { get {return _array.Length;} }
-
+    public int   Count               { get {return _array.Length;} }
     /// <inheritdoc/>
-    public TItem this[int index] { get { return _array[index]; } }
-
-    #region IDisposable implementation with Finalizer
-    private bool isDisposed = false;  //!<True if already Disposed.
+    public TItem this[int index]     { get { return _array[index]; } }
     /// <inheritdoc/>
-    public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
-    /// <summary>Utility routine to do the hard-lifting for Dispose().</summary>
-    private void Dispose(bool disposing) {
-      if (!isDisposed) {
-        if (disposing) {
-          if (typeof(TItem).GetInterfaces().Contains(typeof(IDisposable))) {
-            ForEach (i => ((IDisposable)i).Dispose());
-          }
-
-          _array = null;
-        }
-      }
-    }
-    #endregion
+    public int   IndexOf(TItem item) { return Array.IndexOf(_array, item); }
   }
 
   /// <summary>Optimized ForEach.</summary>
@@ -95,7 +123,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     IFastEnumerator<TItem> GetEnumerator();
   }
 
-    /// <summary>Returns the items of a list in order.</summary>
+  /// <summary>Returns the items of a list in order.</summary>
   public interface IFastEnumerator<T>{
     /// <summary>Return the next item in the enumeration.</summary>
     [SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "0#")]
@@ -132,13 +160,17 @@ namespace PGNapoleonics.HexUtilities.Common {
 
   /// <summary>TODO</summary>
   [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-  public interface IFastList<TItem> : IEnumerable<TItem>, IFastEnumerable<TItem>,
-                                      IForEachable<TItem>, IForEachable2<TItem> {
+  public interface IFastList<TItem> : IEnumerable<TItem>,
+    IFastEnumerable<TItem>, IForEachable<TItem>, IForEachable2<TItem> {
     /// <summary>Gets the item at location <paramref name="index"/>.</summary>
     TItem this[int index] { get; }
 
     /// <summary>Returns the current size of the list.</summary>
     int Count { get; }
+
+    /// <summary>Returns the index of the specified item in the internal array storage.</summary>
+    /// <param name="item"></param>
+    int IndexOf(TItem item);
   }
 
   /// <summary>Abstract base class for a <c>FastList</c> functor.</summary>
@@ -152,11 +184,11 @@ namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>Implements IEnumerable{TItem} in the <i><b>standard</b></i> way:</summary>
   /// <typeparam name="TItem">Type of the objects being enumerated.</typeparam>
   [DebuggerDisplay("Count={Count}")]
-  public class ClassicEnumerable<TItem> : IEnumerator<TItem> {
+  public sealed class ClassicEnumerable<TItem> : IEnumerator<TItem> {
     internal ClassicEnumerable(TItem[] a) { _a = a; }
 
     private TItem[] _a;
-    private int     _index = -1;
+    private int     _index = -1;  ///< Index of the currently-enumerated element.
 
     /// <summary>Return the next item in the enumeration.</summary>
     public bool   MoveNext() { return ++_index < _a.Length; }
@@ -169,18 +201,15 @@ namespace PGNapoleonics.HexUtilities.Common {
     public void Reset() { _index = -1; }
 
     #region IDisposable implementation with Finalizer
-    private bool isDisposed = false;  //!<True if already Disposed.
+    private bool _isDisposed = false;  //!<True if already Disposed.
     /// <inheritdoc/>
     public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
     /// <summary>Utility routine to do the hard-lifting for Dispose().</summary>
-    protected virtual void Dispose(bool disposing) {
-      if (!isDisposed) {
-        if (disposing) {
-          if (typeof(TItem).GetInterfaces().Contains(typeof(IDisposable))) {
-            foreach(var i in _a) ((IDisposable)i).Dispose();
-          }
-        }
+    private void Dispose(bool disposing) {
+      if (! _isDisposed  &&  disposing  &&  typeof(TItem).GetInterfaces().Contains(typeof(IDisposable))) {
+        foreach(var i in _a) ((IDisposable)i).Dispose();
       }
+      _isDisposed = true;
     }
     #endregion
   }
@@ -188,7 +217,7 @@ namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>Implements IEnumerable{TItem} in the <i><b>fast</b></i> way:</summary>
   /// <typeparam name="TItem">Type of the objects being enumerated.</typeparam>
   [DebuggerDisplay("Count={Count}")]
-  public class FastEnumerable<TItem> : IFastEnumerator<TItem> {
+  public sealed class FastEnumerable<TItem> : IFastEnumerator<TItem> {
     /// <summary>Construct a new instance from array <c>a</c>.</summary>
     /// <param name="a">The array of type <c>TItem</c> to make enumerable.</param>
     internal FastEnumerable(TItem[] a) { _array = a; } 
@@ -198,7 +227,7 @@ namespace PGNapoleonics.HexUtilities.Common {
 
     /// <summary>Return the next item in the enumeration.</summary>
     public bool MoveNext(ref TItem item) {
-      TItem[] a = _array;
+      var a = _array;
       int i;
       if ((i = ++_index) >= a.Length)     return false;
       item = a[i];

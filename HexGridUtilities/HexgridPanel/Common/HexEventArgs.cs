@@ -31,6 +31,7 @@ using System.Windows.Forms;
 using System.Diagnostics.CodeAnalysis;
 
 using PGNapoleonics.HexUtilities;
+using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexgridPanel {
   /// <summary></summary>
@@ -39,11 +40,11 @@ namespace PGNapoleonics.HexgridPanel {
     public HexCoords  Coords       { get; private set; }
 
     /// <summary>TODO</summary>
-    public bool     Alt          { get { return ModifierKeys.HasFlag(Keys.Alt);  } }
+    public bool     Alt          { get { return ModifierKeys.Hasflag(Keys.Alt);  } }
     /// <summary>TODO</summary>
-    public bool     Control      { get { return ModifierKeys.HasFlag(Keys.Control); } }
+    public bool     Control      { get { return ModifierKeys.Hasflag(Keys.Control); } }
     /// <summary>TODO</summary>
-    public bool     Shift        { get { return ModifierKeys.HasFlag(Keys.Shift); } }
+    public bool     Shift        { get { return ModifierKeys.Hasflag(Keys.Shift); } }
 
     /// <summary>TODO</summary>
     public Keys     ModifierKeys { get; private set; }

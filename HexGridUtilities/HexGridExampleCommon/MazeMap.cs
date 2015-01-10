@@ -27,42 +27,41 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
-using MyMapDisplay = PGNapoleonics.HexgridPanel.MapDisplay<PGNapoleonics.HexgridPanel.MapGridHex>;
-
 namespace PGNapoleonics.HexgridExampleCommon {
+  using MapGridHex   = Hex<Graphics,GraphicsPath>;
+
   /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexgridPanel"/> to implement
   /// a maze map.</summary>
-  public sealed class MazeMap : MyMapDisplay {
+  public sealed class MazeMap : MapDisplay<MapGridHex> {
     /// <summary>TODO</summary>
-    public MazeMap() : base(_sizeHexes, new Size(26,30), (map,coords) => InitializeHex(map,coords)) {}
+    public MazeMap() : base(_sizeHexes, new Size(26,30), InitializeHex) {}
 
     /// <inheritdoc/>
     public override int   Heuristic(int range) { return range; }
 
     /// <inheritdoc/>
     public override bool  IsPassable(HexCoords coords) { 
-      return IsOnboard(coords)  &&  this[coords].Elevation == 0; 
+      return base.IsPassable(coords)  &&  this[coords].ElevationLevel == 0; 
     }
 
     /// <inheritdoc/>
     public override void PaintUnits(Graphics graphics) { ; }
 
     #region static Board definition
-    static ReadOnlyCollection<string> _board     = MapDefinitions.MazeMapDefinition;
-    static Size                       _sizeHexes = new Size(_board[0].Length, _board.Count);
+    static IList<string> _board     = MapDefinitions.MazeMapDefinition;
+    static Size          _sizeHexes = new Size(_board[0].Length, _board.Count);
     #endregion
 
-    private new static MapGridHex InitializeHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) {
+    private new static MapGridHex InitializeHex(GraphicsPath hexgridPath, HexCoords coords) {
       switch (_board[coords.User.Y][coords.User.X]) {
-        case '.': return new PathMazeGridHex(board, coords);
-        default:  return new WallMazeGridHex(board, coords);
+        case '.': return new PathMazeGridHex(hexgridPath, coords);
+        default:  return new WallMazeGridHex(hexgridPath, coords);
       }
     }
   }

@@ -108,6 +108,7 @@
     <Compile Include="Common\SizeExtensions.cs" />
     <Compile Include="Common\UserCoordsRectangle.cs" />
     <Compile Include="CustomCoordsFactory.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HexCoords.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -115,16 +116,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Hexsides.cs" />
+    <Compile Include="IBoardStorage.cs" />
     <Compile Include="IHexBoard.cs" />
-    <Compile Include="Pathfinding\IDirectedNavigableBoard.cs" />
-    <Compile Include="Pathfinding\IDirectedPathCollection.cs" />
+    <Compile Include="IHexgrid.cs" />
     <Compile Include="IFieldOfView.cs" />
     <Compile Include="IHex.cs" />
     <Compile Include="IMapDisplay.cs" />
     <Compile Include="NeighbourCoords.cs" />
     <Compile Include="NeighbourHex.cs" />
-    <Compile Include="Pathfinding\ILandmark.cs" />
-    <Compile Include="Pathfinding\IPathfinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +132,9 @@
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="CustomDictionary.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Pathfinding\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

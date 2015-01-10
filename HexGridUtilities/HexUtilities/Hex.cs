@@ -51,111 +51,71 @@ namespace PGNapoleonics.HexUtilities {
   using HexSize = System.Drawing.Size;
 
   /// <summary>Abstract implementation of the interface <see Cref="IHex"/>.</summary>
-  [DebuggerDisplay("Coords: {Coords} / ElevASL: {ElevationASL}m")]
+  [DebuggerDisplay("Coords: {Coords} / ElevLevel: {ElevationLevel}")]
   public abstract class Hex<TDrawingSurface,TPath> : IHex, IEquatable<Hex<TDrawingSurface,TPath>>  {
     /// <summary>Construct a new Hex instance at location <paramref name="coords"/>.</summary>
-    protected Hex(IHexBoard<IHex> board, HexCoords coords) : this(board,coords,0) { }
+    protected Hex(HexCoords coords) : this(coords,0) { }
     /// <summary>Construct a new Hex instance at location <paramref name="coords"/>.</summary>
-    protected Hex(IHexBoard<IHex> board, HexCoords coords, int elevation) {
-      Board     = board;
-      Coords    = coords; 
-      Elevation = elevation;
+    protected Hex(HexCoords coords, int elevationLevel) {
+      Coords         = coords; 
+      ElevationLevel = elevationLevel;
     }
 
     /// <inheritdoc/>
-    public          IHexBoard<IHex> Board          { get; private set; }
+    public          HexCoords Coords         { get; private set; }
 
     /// <inheritdoc/>
-    public          HexCoords       Coords         { get; private set; }
+    public          int       ElevationLevel { get; private set; }
 
     /// <inheritdoc/>
-    public          int             Elevation      { get; protected set; }
+    public virtual  int       HeightObserver { get { return 1; } }
 
     /// <inheritdoc/>
-    public          int             ElevationASL   { get {return Board.ElevationASL(Elevation);} }
-
-    /// <summary>TODO</summary>
-    public          HexSize         GridSize       { get { return Board.GridSize; } }
+    public virtual  int       HeightTarget   { get { return 1; } }
 
     /// <inheritdoc/>
-    public virtual  int             HeightObserver { get { return ElevationASL + 1; } }
+    public abstract int       HeightTerrain  { get; }
 
     /// <inheritdoc/>
-    public virtual  int             HeightTarget   { get { return ElevationASL + 1; } }
-
-    /// <inheritdoc/>
-    public abstract int             HeightTerrain  { get; }
-
-    /// <inheritdoc/>
-    public abstract int  StepCost(Hexside direction);
-
-    /// <inheritdoc/>
-    public virtual  int  GetDirectedCostToExit(Hexside hexsideExit) {
-      return Board[Coords.GetNeighbour(hexsideExit)].StepCost(hexsideExit);
-    }
+    public abstract int       StepCost(Hexside hexsideExit);
 
     /// <summary>Default implementation, assuming no blocking hexside terrain.</summary>
-    public virtual  int  HeightHexside(Hexside hexside) { return HeightTerrain; }
-
-    /// <inheritdoc/>
-    public virtual  IHex Neighbour(Hexside hexside) { return Board[Coords.GetNeighbour(hexside)]; }
+    public virtual  int       HeightHexside(Hexside hexside) { return HeightTerrain; }
 
     /// <summary>TODO</summary>
-    public abstract void  Paint(TDrawingSurface graphics);
-
-    /// <summary>TODO</summary>
-    public abstract TPath HexgridPath { get; }
+    public abstract void      Paint(TDrawingSurface graphics);
 
     #region Value Equality
     /// <inheritdoc/>
-    public override bool Equals(object obj) {
-      var hex = obj as Hex<TDrawingSurface,TPath>;
-      return hex!=null && Coords.Equals(hex.Coords);
-    }
+    public override bool  Equals(object obj) { return this.Equals(obj as Hex<TDrawingSurface,TPath>); }
 
     /// <inheritdoc/>
-    public override int GetHashCode()       { return Coords.GetHashCode(); }
+    public override int   GetHashCode()      { return Coords.GetHashCode(); }
 
     /// <inheritdoc/>
-    public bool Equals(Hex<TDrawingSurface,TPath> other)     { return other!=null  &&  this.Coords.Equals(other.Coords); }
+    public bool Equals(Hex<TDrawingSurface,TPath> other) { return other!=null  &&  Coords.Equals(other.Coords); }
     #endregion
   }
 
   /// <summary>Extension methods for <see Cref="Hex"/>.</summary>
   public static partial class HexExtensions {
     /// <summary>Returns the requested neighbours for this hex.</summary>
-    /// <param name="this"></param>
-    /// <param name="directions">A HexsideFlags specification of requested neighbours.</param>
+    /// <param name="this">TODO</param>
+    /// <param name="here">TODO</param>
     /// <returns></returns>
-    public static IEnumerable<NeighbourHex> GetNeighbourHexes(this IHex @this, Hexsides directions) {
-      return from n in @this.GetNeighbourHexes()
-             where directions.HasFlag(n.HexsideEntry.Direction()) && n.Hex.IsOnboard()
-             select n;
+    public static IEnumerable<NeighbourHex> GetNeighbourHexes(
+      this INavigableBoard<IHex> @this, IHex here
+    ) {
+      if (@this  == null) throw new ArgumentNullException("this");
+      return @this.GetAllNeighbours(here).Where(n => n.Hex!=null);
     }
-    /// <summary>All neighbours of this hex, as an <c>IEnumerable {NeighbourHex}</c></summary>
-    public static IEnumerable<NeighbourHex> GetAllNeighbours(this IHex @this) {
+    /// <summary>All neighbours of this hex, as an <see cref="IEnumerable {NeighbourHex}"/></summary>
+    public static IEnumerable<NeighbourHex> GetAllNeighbours(
+      this INavigableBoard<IHex> @this,  IHex here
+    ) {
+      if (@this  == null) throw new ArgumentNullException("this");
       return HexsideExtensions.HexsideList.Select(hexside => 
-            new NeighbourHex(@this.Board[@this.Coords.GetNeighbour(hexside)], hexside.Reversed()));
-    }
-    /// <summary>Perform <c>action</c> for all neighbours of this hex.</summary>
-    public static void ForAllNeighbours<THex>(this IHex @this, Func<HexCoords,THex> board, Action<THex,Hexside> action) where THex : IHex {
-      if (@this == null) throw new ArgumentNullException("this");
-      if (board == null) throw new ArgumentNullException("board");
-      if (action == null) throw new ArgumentNullException("action");
-
-      HexsideExtensions.HexsideList.ForEach( hexside =>
-        action(board(@this.Coords.GetNeighbour(hexside)), hexside)
-      );
-    }
-
-    /// <summary>All <i>OnBoard</i> neighbours of this hex, as an <c>IEnumerable {NeighbourHex}</c></summary>
-    public static IEnumerable<NeighbourHex> GetNeighbourHexes(this IHex @this) { 
-      return @this.GetAllNeighbours().Where(n => n.Hex!=null);
-    }
-
-    /// <inheritdoc/>
-    public static IEnumerator GetEnumerator(this IHex @this) { 
-      return @this.GetNeighbourHexes().GetEnumerator();
+            new NeighbourHex(@this[here.Coords.GetNeighbour(hexside)], hexside.Reversed()));
     }
 
     /// <summary>The <i>Manhattan</i> distance from this hex to that at <c>coords</c>.</summary>
@@ -164,17 +124,6 @@ namespace PGNapoleonics.HexUtilities {
       if (target==null) throw new ArgumentNullException("target");
 
       return @this.Coords.Range(target.Coords); 
-    }
-
-    /// <summary>Returns a least-cost path from this hex to the hex <c>goal.</c></summary>
-    public static IDirectedPathCollection GetDirectedPath(this IHex @this, IHex goal) {
-      if (@this==null) throw new ArgumentNullException("this");
-      return @this.Board.GetDirectedPath(@this,goal);
-    }
-
-    /// <summary>Returns whether this hex is "On Board".</summary>
-    public static bool IsOnboard(this IHex @this) {
-      return @this!=null  &&  @this.Board.IsOnboard(@this.Coords);
     }
   }
 }

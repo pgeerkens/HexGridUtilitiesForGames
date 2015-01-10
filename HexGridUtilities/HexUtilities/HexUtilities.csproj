@@ -107,10 +107,33 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlockedBoardStorage32x32.cs" />
-    <Compile Include="BoardStorage.cs" />
-    <Compile Include="FlatBoardStorage.cs" />
+    <Compile Include="Common\BlockedBoardStorage32x32.cs" />
+    <Compile Include="Common\BoardStorage.cs" />
+    <Compile Include="Common\DebugTracing.cs" />
+    <Compile Include="Common\EnumExtensions.cs" />
+    <Compile Include="Common\EnumHelper.cs" />
+    <Compile Include="Common\Extensions.cs" />
+    <Compile Include="Common\FastList.cs" />
+    <Compile Include="Common\ImmutableStack.cs" />
+    <Compile Include="Common\IntMatrix2D.cs" />
+    <Compile Include="Common\IntVector2D.cs" />
+    <Compile Include="Common\PointExtensions.cs" />
+    <Compile Include="Common\SizeExtensions.cs" />
+    <Compile Include="Common\UserCoordsRectangle.cs" />
+    <Compile Include="CustomCoordsFactory.cs" />
+    <Compile Include="Common\FlatBoardStorage.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="HexCoords.cs" />
+    <Compile Include="Hexside.cs" />
+    <Compile Include="Hexsides.cs" />
+    <Compile Include="Common\IBoardStorage.cs" />
+    <Compile Include="FieldOfView\IFieldOfView.cs" />
+    <Compile Include="IHex.cs" />
+    <Compile Include="IHexBoard.cs" />
+    <Compile Include="IHexgrid.cs" />
+    <Compile Include="IMapDisplay.cs" />
+    <Compile Include="NeighbourCoords.cs" />
+    <Compile Include="NeighbourHex.cs" />
     <Compile Include="Pathfinding\BidirectionalPathfinder.cs" />
     <Compile Include="Pathfinding\ConcurrentHashSet.cs" />
     <Compile Include="Pathfinding\DictPriorityQueue.cs" />
@@ -120,6 +143,10 @@
     <Compile Include="Pathfinding\HexKeyValuePair.cs" />
     <Compile Include="Pathfinding\HotPriorityQueue.cs" />
     <Compile Include="Pathfinding\HotPriorityQueueueList.cs" />
+    <Compile Include="Pathfinding\IDirectedPathCollection.cs" />
+    <Compile Include="Pathfinding\ILandmark.cs" />
+    <Compile Include="Pathfinding\INavigableBoard.cs" />
+    <Compile Include="Pathfinding\IPathfinder.cs" />
     <Compile Include="Pathfinding\IPriorityQueue.cs" />
     <Compile Include="Pathfinding\Landmark.cs" />
     <Compile Include="Pathfinding\DirectedPathCollection.cs" />
@@ -145,12 +172,6 @@
     <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
       <Link>CustomDictionary.xml</Link>
     </CodeAnalysisDictionary>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\HexInterfaces\HexInterfaces.csproj">
-      <Project>{fb103f54-74ca-4646-824d-248d33237100}</Project>
-      <Name>HexInterfaces</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

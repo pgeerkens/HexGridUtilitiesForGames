@@ -55,23 +55,22 @@ namespace PGNapoleonics.HexUtilities {
     public static IFastList<Hexside> HexsideList { get {  return _hexsideList; } }
     static IFastList<Hexside> _hexsideList  = EnumExtensions.EnumGetValues<Hexside>().ToFastList();
 
-    internal static readonly ReadOnlyCollection<Hexsides> HexsideFlags
-      = HexsideList.Select(h=>EnumExtensions.ParseEnum<Hexsides>(h.ToString()))
-                   .ToList().AsReadOnly();
+    internal static readonly IFastList<Hexsides> HexsideBits
+      = HexsideList.Select(h=>EnumExtensions.ParseEnum<Hexsides>(h.ToString())).ToFastList();
 
     /// <summary>Static List {HexSideFlags} for enumerations.</summary>
-    public static IEnumerable<Hexsides> HexsideCollection { get { return HexsideFlags; } }
+    public static IFastList<Hexsides> HexsideCollection { get { return HexsideBits; } }
 
     /// <summary>The <c>Hexside</c> corresponding to this <c>Hexside</c> bit, or -1 if it doesn't exist.</summary>
     public static Hexside IndexOf(this Hexsides @this) {
-      return (Hexside)HexsideFlags.IndexOf(@this);
+      return (Hexside)HexsideBits.IndexOf(@this);
     }
 
     /// <summary>The <c>Hexsides</c> bit corresponding to this <c>HexSide</c>.</summary>
-    public static Hexsides Direction(this Hexside @this) { return HexsideFlags[(int)@this]; }
+    public static Hexsides Direction(this Hexside @this) { return HexsideBits[(int)@this]; }
 
-    /// <summary>Returns the reversed, or opposite, <c>Hexside</c> to the supplied value.</summary>
-    /// <param name="this"></param>
+    /// <summary>Returns the reversed, or opposite, <see cref="Hexside"/> to the supplied value.</summary>
+    /// <param name="this">The Hexside for which a reversal is desired.</param>
     public static Hexside Reversed(this Hexside @this) {
       return (@this <= Hexside.Southeast) ? (@this + 3) : (@this - 3);
     }

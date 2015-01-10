@@ -40,10 +40,12 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
+  using MapGridHex      = Hex<Graphics,GraphicsPath>;
+
   /// <summary>Sub-class implementation of a <b>WinForms</b> Panel with integrated <see cref="Hexgrid"/> support.</summary>
   [DockingAttribute(DockingBehavior.AutoDock)]
   [Obsolete("Use PGNapoleonics.HexgridPanel.HexgridScrollable instead.")]
-  public partial class HexgridPanel : TiltAwarePanel, IHexgridHost, ISupportInitialize {
+  public partial class HexgridPanel : TiltAwarePanel, ISupportInitialize {
     #region Constructors
     /// <summary>Creates a new instance of HexgridPanel.</summary>
     public HexgridPanel() : base() {
@@ -92,39 +94,38 @@ namespace PGNapoleonics.HexgridPanel {
     } MapDisplay<MapGridHex> _model = new EmptyBoard();
 
     /// <summary>Gets or sets the coordinates of the hex currently underneath the mouse.</summary>
-    public        HexCoords HotspotHex     { get; private set; }
+    public     HexCoords    HotspotHex     { get; private set; }
 
     /// <summary>Gets whether the <b>Alt</b> <i>shift</i> key is depressed.</summary>
-    protected static  bool  IsAltKeyDown   { get {return ModifierKeys.HasFlag(Keys.Alt);} }
+    protected static  bool  IsAltKeyDown   { get {return ModifierKeys.Hasflag(Keys.Alt);} }
     /// <summary>Gets whether the <b>Ctl</b> <i>shift</i> key is depressed.</summary>
-    protected static  bool  IsCtlKeyDown   { get {return ModifierKeys.HasFlag(Keys.Control);} }
+    protected static  bool  IsCtlKeyDown   { get {return ModifierKeys.Hasflag(Keys.Control);} }
     /// <summary>Gets whether the <b>Shift</b> <i>shift</i> key is depressed.</summary>
-    protected static  bool  IsShiftKeyDown { get { return ModifierKeys.HasFlag(Keys.Shift); } }
+    protected static  bool  IsShiftKeyDown { get { return ModifierKeys.Hasflag(Keys.Shift); } }
 
     /// <summary>Gets or sets whether the board is transposed from flat-topped hexes to pointy-topped hexes.</summary>
     [Browsable(true)]
-    public     bool         IsTransposed  { 
+    public     bool         IsTransposed   { 
       get { return Model.IsTransposed; }
       set { Model.IsTransposed = value;  SetScrollLimits(Model); }
     }
 
     /// <inheritdoc/>
-    public     Size         MapSizePixels { get {return Model.MapSizePixels;} } // + MapMargin.Scale(2);} }
+    public     Size         MapSizePixels  { get {return Model.MapSizePixels;} } // + MapMargin.Scale(2);} }
 
     /// <summary>Current scaling factor for map display.</summary>
-    public     float        MapScale      { 
+    public     float        MapScale       { 
       get { return Model.MapScale; } 
       private set { Model.MapScale = value;  SetScrollLimits(Model); } 
     }
 
     /// <summary>Returns <code>HexCoords</code> of the hex closest to the center of the current viewport.</summary>
-    public     HexCoords    PanelCenterHex  { 
-//      get { return GetHexCoords( Location + Size.Round(ClientSize.Scale(0.50F)) ); }
+    public     HexCoords    PanelCenterHex { 
       get { return GetHexCoords( PointToClient(new Point(Size.Round(ClientSize.Scale(0.50F))) ) ); }
     }
 
     /// <summary>Index into <code>Scales</code> of current map scale.</summary>
-    public virtual int     ScaleIndex    { 
+    public virtual int      ScaleIndex     { 
       get { return _scaleIndex; }
       set { var newValue = Math.Max(0, Math.Min(ScaleList.Count-1, value));
             if( _scaleIndex != newValue) {
@@ -137,7 +138,7 @@ namespace PGNapoleonics.HexgridPanel {
     } int _scaleIndex;
 
     /// <summary>Array of supported map scales  as IList {float}.</summary>
-    public ReadOnlyCollection<float>     ScaleList        { get; private set; }
+    public IList<float>     ScaleList      { get; private set; }
     #endregion
 
     /// <summary>Force repaint of backing buffer for Map underlay.</summary>
@@ -170,17 +171,17 @@ namespace PGNapoleonics.HexgridPanel {
 
     #region Grid Coordinates
     /// <inheritdoc/>
-    protected Hexgrid     Hexgrid         { get {return Model.Hexgrid;} }
+    protected IHexgrid    Hexgrid         { get {return Model.Hexgrid;} }
     /// <summary>Gets the current Panel AutoScrollPosition.</summary>
     public    Point       ScrollPosition  { get { return AutoScrollPosition; } }
 
-    CoordsRectangle       GetClipCells(PointF point, SizeF size) {
-      return Model.GetClipCells(point, size);
+    CoordsRectangle       GetClipInHexes(PointF point, SizeF size) {
+      return Model.GetClipInHexes(point, size);
     }
 
     /// <summary>Returns, as a Rectangle, the IUserCoords for the currently visible extent.</summary>
     public virtual CoordsRectangle VisibleRectangle {
-      get { return GetClipCells( AutoScrollPosition.Scale(-1.0F/MapScale), 
+      get { return GetClipInHexes( AutoScrollPosition.Scale(-1.0F/MapScale), 
                                          ClientSize.Scale( 1.0F/MapScale) );
       }
     }
@@ -314,7 +315,7 @@ namespace PGNapoleonics.HexgridPanel {
       if (e == null) throw new ArgumentNullException("e");
       Traces.ScrollEvents.Trace(" - {0}.OnMouseWheel: {1}", Model.Name, e.ToString());
 
-      if (Control.ModifierKeys.HasFlag(Keys.Control))   ScaleIndex += Math.Sign(e.Delta);
+      if (Control.ModifierKeys.Hasflag(Keys.Control))   ScaleIndex += Math.Sign(e.Delta);
       else if (IsShiftKeyDown)                          base.OnMouseHwheel(e);
       else                                              base.OnMouseWheel(e);
     }

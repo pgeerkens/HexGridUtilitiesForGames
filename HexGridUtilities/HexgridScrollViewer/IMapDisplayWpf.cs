@@ -33,10 +33,6 @@ using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexgridScrollViewer {
-  using HexPoint  = System.Drawing.Point;
-  using HexSize   = System.Drawing.Size;
-  using WpfPoint  = System.Windows.Point;
-  using WpfSize   = System.Windows.Size;
   using HexRectF  = System.Drawing.RectangleF;
 
   /// <summary>(Technology-dependent portion of) interface contract required of a map board to be displayed by the Hexgrid control.</summary>
@@ -45,23 +41,34 @@ namespace PGNapoleonics.HexgridScrollViewer {
     /// <summary>Gets the CoordsRectangle description of the clipping region.</summary>
     /// <param name="point">Upper-left corner in pixels of the clipping region.</param>
     /// <param name="size">Width and height of the clipping region in pixels.</param>
-    CoordsRectangle GetClipCells(Point point, Size size);
+    CoordsRectangle GetClipInHexes(Point point, Size size);
     /// <summary>Gets the CoordsRectangle description of the clipping region.</summary>
     /// <param name="visibleClipBounds">Rectangular extent in pixels of the clipping region.</param>
-    CoordsRectangle GetClipCells(HexRectF visibleClipBounds);
+    CoordsRectangle GetClipInHexes(HexRectF visibleClipBounds);
 
     /// <summary>Paint the top layer of the display, graphics that changes frequently between refreshes.</summary>
     /// <param name="dc">Graphics object for the canvas being painted.</param>
-    void  PaintHighlight(DrawingContext g);
+    void  PaintHighlight(DrawingContext graphics);
 
     /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
     /// <param name="dc">Type: Graphics - Object representing the canvas being painted.</param>
     /// <remarks>For each visible hex: perform <c>paintAction</c> and then draw its hexgrid outline.</remarks>
-    void  PaintMap(DrawingContext g);
+    void  PaintMap(DrawingContext graphics);
     /// <summary>Paint the intermediate layer of the display, graphics that changes infrequently between refreshes.</summary>
     /// <param name="dc">Type: Graphics - Object representing the canvas being painted.</param>
-    void  PaintUnits(DrawingContext g);
+    void  PaintUnits(DrawingContext graphics);
   }
+}
+
+namespace PGNapoleonics.HexgridScrollViewer {
+  using HexPoint  = System.Drawing.Point;
+  using HexPointF = System.Drawing.PointF;
+  using HexSize   = System.Drawing.Size;
+  using HexSizeF  = System.Drawing.SizeF;
+  using HexRectF  = System.Drawing.RectangleF;
+
+  using WpfPoint  = System.Windows.Point;
+  using WpfSize   = System.Windows.Size;
 
   public static partial class PointExtensions {
     public static HexPoint ToHexPoint(this WpfPoint @this) {
@@ -70,7 +77,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
     public static WpfPoint ToWpfPoint(this HexPoint @this) {
       return new WpfPoint(@this.X, @this.Y);
     }
-    public static WpfPoint ToWpfPoint(this System.Drawing.PointF @this) {
+    public static WpfPoint ToWpfPoint(this HexPointF @this) {
       return new WpfPoint(@this.X,@this.Y);
     }
   }
@@ -82,7 +89,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
     public static WpfSize ToWpfSize(this HexSize @this) {
       return new WpfSize(@this.Width, @this.Height);
     }
-    public static WpfSize ToWpfSize(this System.Drawing.SizeF @this) {
+    public static WpfSize ToWpfSize(this HexSizeF @this) {
       return new WpfSize(@this.Width, @this.Height);
     }
   }

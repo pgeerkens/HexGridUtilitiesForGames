@@ -34,14 +34,14 @@ using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexgridPanel {
   /// <summary>(Technology-dependent portion of) interface contract required of a map board to be displayed by the Hexgrid control.</summary>
-  public interface IMapDisplayWinForms : IMapDisplay{ //, IDisposable {
+  public interface IMapDisplayWinForms : IMapDisplay{
     /// <summary>Gets the CoordsRectangle description of the clipping region.</summary>
     /// <param name="point">Upper-left corner in pixels of the clipping region.</param>
     /// <param name="size">Width and height of the clipping region in pixels.</param>
-    CoordsRectangle GetClipCells(PointF point, SizeF size);
+    CoordsRectangle GetClipInHexes(PointF point, SizeF size);
     /// <summary>Gets the CoordsRectangle description of the clipping region.</summary>
     /// <param name="visibleClipBounds">Rectangular extent in pixels of the clipping region.</param>
-    CoordsRectangle GetClipCells(RectangleF visibleClipBounds);
+    CoordsRectangle GetClipInHexes(RectangleF visibleClipBounds);
 
     /// <summary>Paint the top layer of the display, graphics that changes frequently between refreshes.</summary>
     /// <param name="graphics">Graphics object for the canvas being painted.</param>

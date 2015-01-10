@@ -53,14 +53,14 @@ namespace PGNapoleonics.HexUtilities {
   [DebuggerDisplay("User: {User}")]
   public struct HexCoords : IEquatable<HexCoords>, IFormattable  {
     #region Public static members
-    /// <summary>Create a new instance located at the specified vector offset as interpreted in the Canon(ical) frame.</summary>
-    public static HexCoords NewCanonCoords (IntVector2D vector){ return new HexCoords(true, vector); }
-    /// <summary>Create a new instance located at the specified vector offset as interpreted in the Rectangular (User) frame.</summary>
-    public static HexCoords NewUserCoords  (IntVector2D vector){ return new HexCoords(false,vector); }
     /// <summary>Create a new instance located at the specified i and j offsets as interpreted in the Canon(ical) frame.</summary>
-    public static HexCoords NewCanonCoords (int x, int y) { return new HexCoords(true, x,y); }
+    public static HexCoords NewCanonCoords (int x, int y) { return NewCanonCoords(new IntVector2D(x,y)); }
     /// <summary>Create a new instance located at the specified i and j offsets as interpreted in the ectangular (User) frame.</summary>
-    public static HexCoords NewUserCoords  (int x, int y) { return new HexCoords(false,x,y); }
+    public static HexCoords NewUserCoords  (int x, int y) { return NewUserCoords(new IntVector2D(x,y)); }
+    /// <summary>Create a new instance located at the specified vector offset as interpreted in the Canon(ical) frame.</summary>
+    public static HexCoords NewCanonCoords (IntVector2D vector){ return new HexCoords(vector, vector * MatrixCanonToUser); }
+    /// <summary>Create a new instance located at the specified vector offset as interpreted in the Rectangular (User) frame.</summary>
+    public static HexCoords NewUserCoords  (IntVector2D vector){ return new HexCoords(vector * MatrixUserToCanon, vector); }
 
     /// <summary>Origin of the Canon(ical) coordinate frame.</summary>
     public static HexCoords EmptyCanon { get { return _EmptyCanon; } }
@@ -116,11 +116,6 @@ namespace PGNapoleonics.HexUtilities {
     #endregion
 
     #region Constructors
-    private HexCoords(bool isCanon, int x, int y) : this(isCanon, new IntVector2D(x,y)) {}
-    private HexCoords(bool isCanon, IntVector2D vector) : this() {
-      if (isCanon) { Canon = vector; }
-      else         { User  = vector; }
-    }
     private HexCoords(IntVector2D canon, IntVector2D user) :this() {
       _canon = canon;
       _user  = user;
@@ -129,29 +124,24 @@ namespace PGNapoleonics.HexUtilities {
 
     #region Properties
     /// <summary>Returns an <c>IntVector2D</c> representing the Canonical (obtuse) coordinates of this hex.</summary>
-    public  IntVector2D Canon {
-      get { return _canon ?? (_canon = _user * MatrixUserToCanon).Value; }
-      private set { _canon = value;    _user = _canon.Value * MatrixCanonToUser; }
-    } private IntVector2D? _canon;
+    public  IntVector2D Canon { get {return _canon;} } readonly IntVector2D _canon;
 
     /// <summary>Returns an <c>IntVector2D</c> representing the User (rectangular) coordinates of this hex.</summary>
-    public  IntVector2D User  {
-      get { return _user; }
-      private set { _user  = value;  _canon = null; }
-    } private IntVector2D _user;
+    public  IntVector2D User  { get {return _user;} } readonly IntVector2D _user;
+
+    /// <summary>Modified <i>Manhattan</i> distance of supplied coordinate from the origin.</summary>
+    public  int         RangeFromOrigin { get { return EmptyCanon.Range(this);} }
     #endregion
 
     #region Methods
     /// <summary>Returns an <c>HexCoords</c> for the hex in direction <c>hexside</c> from this one.</summary>
     public HexCoords GetNeighbour(Hexside hexside) {
-      if ( ! _canon.HasValue)
-        return NewCanonCoords(Canon + HexsideVectorsCanon[(int)hexside]); 
-      else if ((User.X % 2) == 0) 
-        return new HexCoords(_canon.Value + HexsideVectorsCanon[(int)hexside]
-                            ,_user        + HexsideVectorsUserEven[(int)hexside]);
+      if ((User.X % 2) == 0) 
+        return new HexCoords(Canon + HexsideVectorsCanon[(int)hexside]
+                            ,User  + HexsideVectorsUserEven[(int)hexside]);
       else 
-        return new HexCoords(_canon.Value + HexsideVectorsCanon[(int)hexside]
-                            ,_user        + HexsideVectorsUserOdd[(int)hexside]);
+        return new HexCoords(Canon + HexsideVectorsCanon[(int)hexside]
+                            ,User  + HexsideVectorsUserOdd[(int)hexside]);
     }
 
     /// <summary>Returns all neighbouring hexes as IEnumerable.</summary>

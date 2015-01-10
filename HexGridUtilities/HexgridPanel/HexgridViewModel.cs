@@ -38,7 +38,7 @@ using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
   /// <summary>TODO</summary>
-  public class HexgridViewModel : IHexgridHost {
+  public class HexgridViewModel {
     /// <summary>TODO</summary>
     public HexgridViewModel(PGNapoleonics.HexgridPanel.HexgridScrollable panel) {
       HotspotHex    = HexCoords.EmptyUser;
@@ -54,7 +54,7 @@ namespace PGNapoleonics.HexgridPanel {
 
       Scales    = new List<float>() {1.000F}.AsReadOnly();
       Model     = new EmptyBoard();
-      Hexgrid   = GetHexgrid();
+      Grid   = GetHexgrid();
     }
 
     HexgridScrollable Panel { get; set; }
@@ -85,10 +85,9 @@ namespace PGNapoleonics.HexgridPanel {
     //  Model = model;   
     //}
 
-    Hexgrid GetHexgrid() { 
+    IHexgrid GetHexgrid() { 
       var margin          = Margin.OffsetSize();
-      return IsTransposed ? new TransposedHexgrid(Model.GridSize.Scale(MapScale),margin) 
-                          : new Hexgrid(Model.GridSize.Scale(MapScale),margin);     
+      return TransposableHexgrid.GetNewGrid(IsTransposed,Model.GridSize,MapScale,margin);
     }
 
     #region Properties
@@ -117,7 +116,7 @@ namespace PGNapoleonics.HexgridPanel {
     public bool        IsTransposed    { 
       get { return _isTransposed; }
       set { _isTransposed = value;  
-            Hexgrid = GetHexgrid();
+            Grid = GetHexgrid();
             if (Panel.IsHandleCreated) Panel.SetScrollLimits(Model);   
           }
     } bool _isTransposed;
@@ -126,19 +125,19 @@ namespace PGNapoleonics.HexgridPanel {
     public Size        MapSizePixels   { get {return Model.MapSizePixels;} } // + MapMargin.Scale(2);} }
 
     /// <summary>Current scaling factor for map display.</summary>
-    public float       MapScale      { 
+    public float       MapScale        { 
       get { return Model.MapScale; } 
       private set { Model.MapScale = value; } 
     }
 
     /// <inheritdoc/>
-    public Padding  Margin     { 
+    public Padding     Margin          { 
       get { return _margin; } 
-      set { _margin = value; Hexgrid.Margin = new Size(_margin.Left, _margin.Top); }
+      set { _margin = value; Grid.Margin = new Size(_margin.Left, _margin.Top); }
     } Padding _margin;
 
     /// <summary>TODO</summary>
-    public    bool   IsMapDirty   { 
+    public    bool     IsMapDirty      { 
       get { return _isMapDirty; }
       set { 
         _isMapDirty = value; 
@@ -146,7 +145,7 @@ namespace PGNapoleonics.HexgridPanel {
       }
     } bool _isMapDirty;
     /// <summary>TODO</summary>
-    public    bool   IsUnitsDirty { 
+    public    bool     IsUnitsDirty    { 
       get { return _isUnitsDirty; }
       set { 
         _isUnitsDirty = value; 
@@ -155,16 +154,15 @@ namespace PGNapoleonics.HexgridPanel {
     } bool _isUnitsDirty;
 
     /// <summary>Array of supported map scales  as IList {float}.</summary>
-    public ReadOnlyCollection<float> Scales        { get; private set; }
+    public IList<float> Scales         { get; private set; }
     /// <summary>Index into <code>Scales</code> of current map scale.</summary>
-    public virtual int ScaleIndex    { 
+    public virtual int ScaleIndex      { 
       get { return _scaleIndex; }
       set { var newValue = Math.Max(0, Math.Min(Scales.Count-1, value));
             if( _scaleIndex != newValue) {
               _scaleIndex = newValue;
               MapScale    = Scales[ScaleIndex];
-              Hexgrid     = IsTransposed ? new TransposedHexgrid(Model.GridSize.Scale(MapScale)) 
-                                         : new Hexgrid(Model.GridSize.Scale(MapScale)); 
+              Grid        = TransposableHexgrid.GetNewGrid(IsTransposed,Model.GridSize,MapScale);
               ScaleChange.Raise(this, EventArgs.Empty);
             }
           } 
@@ -173,7 +171,6 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>TODO</summary>
     public void SetScales (IList<float> scales) {
-//      if (scales == null) throw new ArgumentNullException("scales");
       Scales = new ReadOnlyCollection<float>(scales);
     }
     #region Events
@@ -200,19 +197,19 @@ namespace PGNapoleonics.HexgridPanel {
 
     #region Grid Coordinates
     /// <inheritdoc/>
-    public Hexgrid    Hexgrid        { get; set; }
+    public IHexgrid   Grid        { get; set; }
     /// <summary>Gets a SizeF struct for the hex GridSize under the current scaling.</summary>
     public SizeF      GridSizeF      { get { return Model.GridSize.Scale(MapScale); } }
 
-    //CoordsRectangle  GetClipCells(PointF point, SizeF size) {
-    //  return Model.GetClipCells(point, size);
+    //CoordsRectangle  GetClipInHexes(PointF point, SizeF size) {
+    //  return Model.GetClipInHexes(point, size);
     //}
 
     /// <summary>Returns ScrollPosition that places given hex in the upper-Left of viewport.</summary>
     /// <param name="coordsNewULHex"><c>HexCoords</c> for new upper-left hex</param>
     /// <returns>Pixel coordinates in Client reference frame.</returns>
     public Point     HexCenterPoint(HexCoords coordsNewULHex) {
-      return Hexgrid.HexCenterPoint(coordsNewULHex);
+      return Grid.HexCenterPoint(coordsNewULHex);
     }
     #endregion
   }

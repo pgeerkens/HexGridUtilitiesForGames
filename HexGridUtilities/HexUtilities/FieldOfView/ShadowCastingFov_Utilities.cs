@@ -28,16 +28,19 @@
 #endregion
 using System;
 
+using System.Diagnostics.CodeAnalysis;
+
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.FieldOfView {
   public static partial class ShadowCasting {
+    [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "code")]
     static IntVector2D LogAndEnqueue(Action<FovCone> enqueue, int range, IntVector2D top, 
             IntVector2D bottom, RiseRun riseRun, int code
     ) {
       if( top.GT(bottom)) {
         var cone = new FovCone(range+1, top, bottom, riseRun);
-        Traces.FieldOfView.Trace(false, "  EQ: ({0}) code: {1}",cone,code);
+        FieldOfViewTrace(false, "  EQ: ({0}) code: {1}",cone,code);
         enqueue(cone);
         return bottom;
       } else {
@@ -45,13 +48,12 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       }
     }
 
-    private static int GetRange(HexCoords coords) { return HexCoords.EmptyCanon.Range(coords); }
-
-    static int XFromVector(int y, IntVector2D v) {        return (-2 * v.Y + v.X * (3 * y + 1) + (3 * v.Y) - 1) / (3 * v.Y);
+    static int XFromVector(int y, IntVector2D v) {
+      return (-2 * v.Y + v.X * (3 * y + 1) + (3 * v.Y) - 1) / (3 * v.Y);
     }
-    /// <summary>Helper @this for <c>VectorHexTop</c>.</summary>
-    static IntMatrix2D matrixHexTop = new IntMatrix2D(3,0,  0,3, 2,1);
-    /// <summary>Helper @this for <c>VectorHexBottom</c>.</summary>
+    /// <summary>Helper IntMatrix2D for <c>VectorHexTop</c>.</summary>
+    static IntMatrix2D matrixHexTop    = new IntMatrix2D(3,0,  0,3,  2, 1);
+    /// <summary>Helper IntMatrix2D for <c>VectorHexBottom</c>.</summary>
     static IntMatrix2D matrixHexBottom = new IntMatrix2D(3,0,  0,3, -2,-1);
 
     /// <summary>IntVector2D for top corner of cell Canon(i,j).</summary>
@@ -77,12 +79,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     static IntVector2D VectorMax(IntVector2D lhs, IntVector2D rhs) {
       return lhs.GT(rhs) ? lhs : rhs; 
     }
-    //static IntVector2D VectorMin(IntVector2D lhs, IntVector2D rhs) {
-    //  return lhs.LE(rhs) ? lhs : rhs;
-    //}
-    private static bool GT(this IntVector2D lhs, IntVector2D rhs) {
-      return lhs.X*rhs.Y > lhs.Y*rhs.X; 
-    }
-    private static bool LE(this IntVector2D lhs, IntVector2D rhs) { return ! lhs.GT(rhs); }
+    static bool GT(this IntVector2D lhs, IntVector2D rhs) { return lhs.X*rhs.Y > lhs.Y*rhs.X; }
+    static bool LE(this IntVector2D lhs, IntVector2D rhs) { return ! lhs.GT(rhs); }
   }
 }

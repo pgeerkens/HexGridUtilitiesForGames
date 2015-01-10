@@ -27,6 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing.Drawing2D;
 
@@ -35,24 +36,23 @@ using System.Diagnostics.CodeAnalysis;
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
-using MyMapDisplay = PGNapoleonics.HexgridPanel.MapDisplay<PGNapoleonics.HexgridPanel.MapGridHex>;
-
 #pragma warning disable 1587
 /// <summary>TODO</summary>
 #pragma warning restore 1587
-[assembly:CLSCompliant(true)]
 namespace PGNapoleonics.HexgridExampleCommon {
   using HexSize  = System.Drawing.Size;
   using Graphics = System.Drawing.Graphics;
 
+  using MapGridHex      = Hex<System.Drawing.Graphics,GraphicsPath>;
+
   /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexgridPanel"/> to implement
   /// a terrain map.</summary>
-  public sealed class TerrainMap : MyMapDisplay {
+  public sealed class TerrainMap : MapDisplay<MapGridHex> {
     /// <summary>TODO</summary>
-    public TerrainMap() : base(_sizeHexes, new HexSize(26,30), (map,coords) => InitializeHex(map,coords)) {}
+    public TerrainMap() : base(_sizeHexes, new HexSize(26,30), InitializeHex) {}
 
     /// <inheritdoc/>
-   [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow",
+    [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow",
       MessageId = "2*range", Justification="No map is big enough to overflow,")]
     public override int   Heuristic(int range) { return 2 * range; }
 
@@ -60,22 +60,22 @@ namespace PGNapoleonics.HexgridExampleCommon {
     public override void PaintUnits(Graphics graphics) { ; }
 
     #region static Board definition
-    static ReadOnlyCollection<string> _board     = MapDefinitions.TerrainMapDefinition;
-    static HexSize                    _sizeHexes = new HexSize(_board[0].Length, _board.Count);
+    static IList<string> _board     = MapDefinitions.TerrainMapDefinition;
+    static HexSize       _sizeHexes = new HexSize(_board[0].Length, _board.Count);
     #endregion
 
-    private new static MapGridHex InitializeHex(HexBoard<MapGridHex,GraphicsPath> board, HexCoords coords) {
+    private new static MapGridHex InitializeHex(GraphicsPath hexgridPath, HexCoords coords) {
       char value = _board[coords.User.Y][coords.User.X];
       switch(value) {
         default:   
-        case '.':  return new ClearTerrainGridHex   (board, coords);
-        case '2':  return new PikeTerrainGridHex    (board, coords);
-        case '3':  return new RoadTerrainGridHex    (board, coords);
-        case 'F':  return new FordTerrainGridHex    (board, coords);
-        case 'H':  return new HillTerrainGridHex    (board, coords);
-        case 'M':  return new MountainTerrainGridHex(board, coords);
-        case 'R':  return new RiverTerrainGridHex   (board, coords);
-        case 'W':  return new WoodsTerrainGridHex   (board, coords);
+        case '.':  return new ClearTerrainGridHex   (hexgridPath, coords);
+        case '2':  return new PikeTerrainGridHex    (hexgridPath, coords);
+        case '3':  return new RoadTerrainGridHex    (hexgridPath, coords);
+        case 'F':  return new FordTerrainGridHex    (hexgridPath, coords);
+        case 'H':  return new HillTerrainGridHex    (hexgridPath, coords);
+        case 'M':  return new MountainTerrainGridHex(hexgridPath, coords);
+        case 'R':  return new RiverTerrainGridHex   (hexgridPath, coords);
+        case 'W':  return new WoodsTerrainGridHex   (hexgridPath, coords);
       }
     }
   }

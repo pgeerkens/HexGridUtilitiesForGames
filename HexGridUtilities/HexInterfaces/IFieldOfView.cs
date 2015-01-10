@@ -45,21 +45,32 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
   /// <summary>Interface required to make use of ShadowCasting Field-of-View calculation.</summary>
   public interface IFovBoard<out THex> where THex : IHex {
     /// <summary>Distance in hexes out to which Field-of-View is to be calculated.</summary>
-    int      FovRadius             { get; set; }
+    int  FovRadius               { get; set; }
 
     /// <summary>The rectangular extent of the board's hexagonal grid, in hexes.</summary>
-    Size     MapSizeHexes             { get; }
+    Size MapSizeHexes            { get; }
 
     /// <summary>Returns the <c>IHex</c> at location <c>coords</c>.</summary>
-   [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
-    THex     this[HexCoords  coords] { get; }
+    [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
+    THex this[HexCoords  coords] { get; }
+
+    /// <summary>TODO</summary>
+    int  ElevationGroundASL(HexCoords coords);
+    /// <summary>TODO</summary>
+    int  ElevationHexsideASL(HexCoords coords, Hexside hexside);
+    /// <summary>TODO</summary>
+    int  ElevationObserverASL(HexCoords coords);
+    /// <summary>TODO</summary>
+    int  ElevationTargetASL(HexCoords coords);
+    /// <summary>TODO</summary>
+    int  ElevationTerrainASL(HexCoords coords);
 
     /// <summary>Returns whether the hex at location <c>coords</c>is "on board".</summary>
-    bool     IsOnboard(HexCoords coords);
+    bool IsOnboard(HexCoords coords);
 
     /// <summary>Returns whether the hex at location <c>coords</c> is passable.</summary>
     /// <param name="coords"></param>
-    bool     IsPassable(HexCoords coords);
+    bool IsPassable(HexCoords coords);
   }
 
   /// <summary>Structure returned by the Field-of-View factory.</summary>

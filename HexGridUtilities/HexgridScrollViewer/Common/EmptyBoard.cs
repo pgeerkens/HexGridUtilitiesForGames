@@ -26,48 +26,32 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System.Windows;
 using System.Windows.Media;
 
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridScrollViewer {
-  using HexSize  = System.Drawing.Size;
-
-  public class HexgridModel : MapDisplay<MapGridHex> {
-    /// <summary>TODO</summary>
-    public HexgridModel(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex)
-      : base(sizeHexes, gridSize, initializeHex) {
-    }
-  }
+  using HexSize         = System.Drawing.Size;
+  using MapGridHex      = Hex<DrawingContext,StreamGeometry>;
 
   /// <summary>TODO</summary>
-  public sealed class EmptyBoard : HexgridModel {
+  public sealed class EmptyBoard : MapDisplay<MapGridHex> {
     /// <summary>TODO</summary>
-    public EmptyBoard() : base(new HexSize(1,1), new HexSize(26,30), (mb,c) => new EmptyGridHex(mb,c)) {
+    public EmptyBoard() : base(new HexSize(1,1), new HexSize(26,30), (path,c) => new EmptyGridHex(c)) {
       FovRadius = 20;
     }
   }
 
   /// <summary>TODO</summary>
-  public sealed class EmptyGridHex : MapGridHex, IHex  {
+  public sealed class EmptyGridHex : MapGridHex, IHex {
     /// <summary>TODO</summary>
-    public EmptyGridHex(HexBoard<MapGridHex,StreamGeometry> board, HexCoords coords) : base(board, coords) {
-      Board = board;
-    }
-
-    /// <summary>The Board on which this <see cref="Hex{TDrawingSurface,TPath}"/> is located</summary>
-    public new HexBoard<MapGridHex,StreamGeometry> Board { get; private set; }
-
-      ///  <inheritdoc/>
-    public override StreamGeometry  HexgridPath   { get {return Board.HexgridPath;} }
+    public EmptyGridHex(HexCoords coords) : base(coords,0) {}
 
     /// <summary>TODO</summary>
-    public override int             HeightTerrain { get { return ElevationASL;   } }
+    public override int           HeightTerrain { get { return 0;   } }
     /// <summary>TODO</summary>
-    public override int             StepCost(Hexside direction) { return -1; }
-
-      ///  <inheritdoc/>
-    public override void            Paint(DrawingContext graphics) { ; }
+    public override int           StepCost(Hexside hexsideExit) { return -1; }
+    ///  <inheritdoc/>
+    public override void          Paint(DrawingContext graphics) { ; }
   }
 }

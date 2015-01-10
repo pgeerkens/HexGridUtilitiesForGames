@@ -26,6 +26,8 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
+using System.Diagnostics.CodeAnalysis;
+
 using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexUtilities.FieldOfView;
 
@@ -33,17 +35,18 @@ namespace PGNapoleonics.HexUtilities {
   using HexSize = System.Drawing.Size;
 
   /// <summary>External interface exposed by the the implementation of <see cref="IHexBoard{THex}"/>.</summary>
-  public interface IHexBoard<out THex> : INavigableBoard, IFovBoard<THex> where THex : class, IHex {
+  public interface IHexBoard<out THex> : IBoardStorage<THex>, INavigableBoard<THex>, IFovBoard<THex> where THex : class, IHex {
     /// <summary>Gets the extent in pixels o fhte grid on which hexes are to be laid out. </summary>
-    HexSize GridSize    { get; }
+    HexSize  GridSize    { get; }
 
     /// <summary>Range beyond which Fast PathFinding is used instead of Stable PathFinding.</summary>
-    int     RangeCutoff { get; }
+    int      RangeCutoff { get; }
 
     /// <summary>Returns whether the specified hex coordinates as a valid hex on this board.</summary>
     new bool IsOnboard(HexCoords coords);
 
-    /// <summary>Returns the Elevation Above-Sea-Level for a hex with the specified ElevationLevel.</summary>
-    int      ElevationASL(int elevationLevel);
+    /// <summary>Returns the <c>IHex</c> at location <c>coords</c>.</summary>
+   [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
+    new THex this[HexCoords coords] {get; }
   }
 }

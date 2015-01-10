@@ -41,11 +41,11 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridScrollableExample {
-  using MapGridDisplay = PGNapoleonics.HexgridPanel.MapDisplay<MapGridHex>;
+  using MapGridHex      = Hex<Graphics,System.Drawing.Drawing2D.GraphicsPath>;
 
   internal sealed partial class ExampleBufferedHexgridScrollable : Form, IMessageFilter {
     private bool           _isPanelResizeSuppressed = false;
-    private MapGridDisplay _mapBoard;
+    private MapDisplay<MapGridHex> _mapBoard;
 
     public ExampleBufferedHexgridScrollable() {
       InitializeComponent();
@@ -126,7 +126,14 @@ namespace PGNapoleonics.HexgridScrollableExample {
       statusLabel.Text = string.Format(CultureInfo.InvariantCulture,
         PGNapoleonics.HexgridScrollableExample.Properties.Resources.StatusLabelText,
         hotHex, hotHex, hotHex,
-        _mapBoard.StartHex - hotHex, (_mapBoard.Path==null ? 0 : _mapBoard.Path.TotalCost));
+        _mapBoard.StartHex - hotHex, (_mapBoard.Path==null ? 0 : _mapBoard.Path.TotalCost))
+        
+        + string.Format(CultureInfo.InvariantCulture,
+        "  Elevation: Ground={0}; Observer={1}; Target={2}", 
+        _mapBoard.ElevationGroundASL(hotHex), 
+        _mapBoard.ElevationObserverASL(hotHex), 
+        _mapBoard.ElevationTargetASL(hotHex)
+        );
     }
 
     private void txtPathCutover_TextChanged(object sender, EventArgs e) {
@@ -164,11 +171,11 @@ namespace PGNapoleonics.HexgridScrollableExample {
     private void comboBoxMapSelection_SelectionChanged(object sender, EventArgs e) {
       SetMapBoard(ParseMapName(((ToolStripItem)sender).Text));
     }
-    private static MapGridDisplay ParseMapName(string mapName) {
+    private static MapDisplay<MapGridHex> ParseMapName(string mapName) {
      return Map.MapList.First(item => item.MapName == mapName).MapBoard;
    }
 
-    private void SetMapBoard(MapGridDisplay mapBoard) {
+    private void SetMapBoard(MapDisplay<MapGridHex> mapBoard) {
       _hexgridPanel.SetModel( _mapBoard = mapBoard);
       _mapBoard.ShowPathArrow = buttonPathArrow.Checked;
       _mapBoard.ShowFov       = buttonFieldOfView.Checked;

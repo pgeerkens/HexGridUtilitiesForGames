@@ -43,11 +43,11 @@ namespace PGNapoleonics.HexUtilities.Common {
 
     #region Properties
     /// <summary>Get the i-component.</summary>
-    public int X { get; private set; }
+    public int X { get {return _x;} } readonly int _x;
     /// <summary>Get the j-component.</summary>
-    public int Y { get; private set; }
+    public int Y { get {return _y;} } readonly int _y;
     /// <summary>Get the w-component (ie scale factor).</summary>
-    public int W { get; private set; }
+    public int W { get {return _w;} } readonly int _w;
     #endregion
 
     #region Constructors
@@ -63,9 +63,9 @@ namespace PGNapoleonics.HexUtilities.Common {
     internal IntVector2D(int x, int y, int norm) : this() {
       if (norm == 0) throw new ArgumentOutOfRangeException("norm", norm, "Parameter 'norm' cannot be 0.");
 //      if (norm == 0) norm = 1;
-      X = x;
-      Y = y;
-      W = norm;
+      _x = x;
+      _y = y;
+      _w = norm;
     }
     #endregion
 

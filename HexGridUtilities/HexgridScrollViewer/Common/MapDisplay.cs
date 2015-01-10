@@ -27,11 +27,9 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Shapes;
 
 using System.Diagnostics.CodeAnalysis;
 
@@ -45,9 +43,10 @@ using PGNapoleonics.HexUtilities.FieldOfView;
 /// and MapDisplay<THex>, utilizing the System.Windows.Forms technology.</summary>
 #pragma warning restore 1587
 namespace PGNapoleonics.HexgridScrollViewer {
-  using HexSize  = System.Drawing.Size;
-  using HexPoint = System.Drawing.Point;
-  using HexRectF = System.Drawing.RectangleF;
+  using HexSize    = System.Drawing.Size;
+  using HexPoint   = System.Drawing.Point;
+  using HexRectF   = System.Drawing.RectangleF;
+  using MapGridHex = Hex<DrawingContext,StreamGeometry>;
 
   using Int32ValueEventArgs = ValueChangedEventArgs<Int32>;
 
@@ -57,7 +56,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
     where THex : MapGridHex {
 
     /// <summary>TODO</summary>
-    public delegate THex InitializeHex(HexBoard<THex,StreamGeometry> board, HexCoords coords);
+    public delegate THex InitializeHex(StreamGeometry hexgridPath, HexCoords coords);
 
     /// <summary>TODO</summary>
     private static StreamGeometry GetGraphicsPath(HexSize gridSize) {
@@ -84,14 +83,13 @@ namespace PGNapoleonics.HexgridScrollViewer {
 
     /// <summary>Creates a new instance of the MapDisplay class.</summary>
     protected MapDisplay(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex, IFastList<HexCoords> landmarkCoords) 
-    : base(sizeHexes, gridSize, landmarkCoords, GetGraphicsPath)
-    {
+    : base(sizeHexes, gridSize, landmarkCoords, GetGraphicsPath
       #if FlatBoardStorage
-        _boardHexes    = new FlatBoardStorage<THex>(sizeHexes, coords => initializeHex(this,coords)); 
+        ,() => new FlatBoardStorage<THex>(sizeHexes, coords => initializeHex(GetGraphicsPath(gridSize),coords))
       #else
-        _boardHexes    = new BlockedBoardStorage32x32<THex>(sizeHexes, coords => initializeHex(this,coords)); 
+        ,() => new BlockedBoardStorage32x32<THex>(sizeHexes, coords => initializeHex(GetGraphicsPath(gridSize),coords))
       #endif
-
+    ) {
       InitializeProperties();
     }
 
@@ -108,13 +106,9 @@ namespace PGNapoleonics.HexgridScrollViewer {
     }
     #endregion
 
-    /// <inheritdoc/>
-    protected override BoardStorage<THex> BoardHexes { get {return _boardHexes;} } BoardStorage<THex> _boardHexes;
-
     #region Properties
     /// <summary>Gets or sets the Field-of-View for the current <see cref="HotspotHex"/>, as an <see cref="IFov"/> object.</summary>
     public virtual  IFov          Fov             {
-//      get { return _fov ?? (_fov = this.GetFieldOfView(HotspotHex)); }
       get { return _fov ?? (_fov = this.GetFieldOfView(ShowRangeLine ? StartHex : HotspotHex)); }
       protected set { _fov = value; }
     } IFov _fov;
@@ -162,11 +156,6 @@ namespace PGNapoleonics.HexgridScrollViewer {
     } HexCoords _startHex = HexCoords.EmptyUser;
     #endregion
 
-    /// <inheritdoc/>
-   [SuppressMessage("Microsoft.Usage", 
-      "CA2233:OperationsShouldNotOverflow", MessageId = "10*elevationLevel")]
-    public override int   ElevationASL(int elevationLevel) { return 10 * elevationLevel; }
-
     #region Painting
     /// <inheritdoc/>
     public CoordsRectangle GetClipInHexes(Point point, Size size) {
@@ -179,13 +168,13 @@ namespace PGNapoleonics.HexgridScrollViewer {
     }
 
     /// <inheritdoc/>
-    public    virtual  void PaintHighlight(DrawingContext g) { 
-      if (g==null) throw new ArgumentNullException("dc");
+    public    virtual  void PaintHighlight(DrawingContext graphics) { 
+      if (graphics==null) throw new ArgumentNullException("dc");
       var brushBlack = Brushes.Black;
 
-      g.PushTransform(TranslateToHex(StartHex));
-      g.DrawGeometry(Brushes.Transparent,new Pen(brushBlack,1),HexgridPath);
-      g.Pop();
+      graphics.PushTransform(TranslateToHex(StartHex));
+      graphics.DrawGeometry(Brushes.Transparent,new Pen(brushBlack,1),HexgridPath);
+      graphics.Pop();
 
       //dc.DrawPath(Pens.Red, HexgridPath);
 
@@ -214,8 +203,8 @@ namespace PGNapoleonics.HexgridScrollViewer {
     }
 
     /// <inheritdoc/>
-    public    virtual  void PaintMap(DrawingContext g) { 
-      if (g==null) throw new ArgumentNullException("dc");
+    public    virtual  void PaintMap(DrawingContext graphics) { 
+      if (graphics==null) throw new ArgumentNullException("graphics");
 
 //      dc.InterpolationMode = InterpolationMode.HighQualityBicubic;
       var clipHexes = GetClipInHexes(HexPoint.Empty.ToWpfPoint(),MapSizeHexes.ToWpfSize());
@@ -224,11 +213,11 @@ namespace PGNapoleonics.HexgridScrollViewer {
       var brush      = Brushes.Black;
       var textOffset = new HexPoint(GridSize.Scale(0.50F).ToSize()).ToWpfPoint()
                      - new Vector(fontSize,fontSize);
-      PaintForEachHex(g, clipHexes, coords => {
-        this[coords].Paint(g);
-        if (ShowHexgrid) g.DrawGeometry(Brushes.Transparent,new Pen(Brushes.Black,1), HexgridPath);
+      PaintForEachHex(graphics, clipHexes, coords => {
+        this[coords].Paint(graphics);
+        if (ShowHexgrid) graphics.DrawGeometry(Brushes.Transparent,new Pen(Brushes.Black,1), HexgridPath);
         if (LandmarkToShow > 0) {
-          g.DrawText(new FormattedText(
+          graphics.DrawText(new FormattedText(
               LandmarkDistance(coords,LandmarkToShow-1),
               CultureInfo.GetCultureInfo("en-US"),
               FlowDirection.LeftToRight,
@@ -238,24 +227,24 @@ namespace PGNapoleonics.HexgridScrollViewer {
             textOffset);
         }
       } );
-      g.Pop();
+      graphics.Pop();
     }
 
     /// <summary>Paint the current shortese path.</summary>
     /// <param name="dc">Type: Graphics - Object representing the canvas being painted.</param>
     /// <param name="path">Type: <see cref="IDirectedPath"/> - 
     /// A directed path (ie linked-list> of hexes to be painted.</param>
-    protected virtual  void PaintPath(DrawingContext g, IDirectedPathCollection path) {
-      if (g==null) throw new ArgumentNullException("dc");
+    protected virtual  void PaintPath(DrawingContext graphics, IDirectedPathCollection path) {
+      if (graphics==null) throw new ArgumentNullException("graphics");
 
       var pen   = new Pen(Brushes.Black,1.0F);
       var brush = new SolidColorBrush(Color.FromArgb(78, Colors.PaleGoldenrod.R,Colors.PaleGoldenrod.G,Colors.PaleGoldenrod.B));
       while (path != null) {
         var coords = path.PathStep.Hex.Coords;
-        g.PushTransform(TranslateToHex(StartHex));
-        g.DrawGeometry(brush,pen,HexgridPath);
+        graphics.PushTransform(TranslateToHex(StartHex));
+        graphics.DrawGeometry(brush,pen,HexgridPath);
 
-        if (ShowPathArrow) PaintPathArrow(g, path);
+        if (ShowPathArrow) PaintPathArrow(graphics, path);
 
         path = path.PathSoFar;
       }
@@ -265,14 +254,14 @@ namespace PGNapoleonics.HexgridScrollViewer {
     /// <param name="dc">Type: Graphics - Object representing the canvas being painted.</param>
     /// <param name="path">Type: <see cref="IDirectedPath"/> - 
     /// A directed path (ie linked-list> of hexes to be highlighted with a direction arrow.</param>
-    protected virtual  void PaintPathArrow(DrawingContext g, IDirectedPathCollection path) {
-      if (g==null) throw new ArgumentNullException("dc");
+    protected virtual  void PaintPathArrow(DrawingContext graphics, IDirectedPathCollection path) {
+      if (graphics==null) throw new ArgumentNullException("graphics");
       if (path==null) throw new ArgumentNullException("path");
 
-      g.PushTransform(new TranslateTransform(CentreOfHexOffset.Width, CentreOfHexOffset.Height));
-      if (path.PathSoFar == null)    PaintPathDestination(g);
-      else                           PaintPathArrow(g, path.PathStep.HexsideEntry);
-      g.Pop();
+      graphics.PushTransform(new TranslateTransform(CentreOfHexOffset.Width, CentreOfHexOffset.Height));
+      if (path.PathSoFar == null)    PaintPathDestination(graphics);
+      else                           PaintPathArrow(graphics, path.PathStep.HexsideEntry);
+      graphics.Pop();
     }
 
     /// <summary>Paint the direction arrow for each hex of the current shortest path.</summary>
@@ -280,32 +269,32 @@ namespace PGNapoleonics.HexgridScrollViewer {
     /// <param name="hexside">Type: <see cref="Hexside"/> - 
     /// Direction from this hex in which the next step is made.</param>
     /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
-    protected virtual  void PaintPathArrow(DrawingContext g, Hexside hexside) {
-      if (g==null) throw new ArgumentNullException("dc");
+    protected virtual  void PaintPathArrow(DrawingContext graphics, Hexside hexside) {
+      if (graphics==null) throw new ArgumentNullException("graphics");
 
       var penBlack = new Pen(Brushes.Black,1.0F);
       var unit = GridSize.Height/8.0F;
-      g.PushTransform(new RotateTransform(60 * (int)hexside));
-      g.DrawLine(penBlack, new Point(0,unit*4), new Point(      0,  -unit));
-      g.DrawLine(penBlack, new Point(0,unit*4), new Point(-unit*3/2, unit*2));
-      g.DrawLine(penBlack, new Point(0,unit*4), new Point( unit*3/2, unit*2));
-      g.Pop();
+      graphics.PushTransform(new RotateTransform(60 * (int)hexside));
+      graphics.DrawLine(penBlack, new Point(0,unit*4), new Point(      0,  -unit));
+      graphics.DrawLine(penBlack, new Point(0,unit*4), new Point(-unit*3/2, unit*2));
+      graphics.DrawLine(penBlack, new Point(0,unit*4), new Point( unit*3/2, unit*2));
+      graphics.Pop();
     }
 
     /// <summary>Paint the destination indicator for the current shortest path.</summary>
     /// <param name="dc">Type: Graphics - Object representing the canvas being painted.</param>
     /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
-    protected virtual  void PaintPathDestination(DrawingContext g) {
-      if (g==null) throw new ArgumentNullException("dc");
+    protected virtual  void PaintPathDestination(DrawingContext graphics) {
+      if (graphics==null) throw new ArgumentNullException("graphics");
 
       var penBlack = new Pen(Brushes.Black,1.0F);
       var unit = GridSize.Height/8.0F;
-      g.DrawLine(penBlack, new Point(-unit*2,-unit*2), new Point(unit*2, unit*2));
-      g.DrawLine(penBlack, new Point(-unit*2, unit*2), new Point(unit*2,-unit*2));
+      graphics.DrawLine(penBlack, new Point(-unit*2,-unit*2), new Point(unit*2, unit*2));
+      graphics.DrawLine(penBlack, new Point(-unit*2, unit*2), new Point(unit*2,-unit*2));
     }
 
     /// <inheritdoc/>
-    public    virtual  void PaintUnits(DrawingContext g) {}
+    public    virtual  void PaintUnits(DrawingContext graphics) {}
 
     /// <summary>Paints all the hexes in <paramref name="clipHexes"/> by executing <paramref name="paintAction"/>
     /// for each hex on <paramref name="dc"/>.</summary>
@@ -314,11 +303,11 @@ namespace PGNapoleonics.HexgridScrollViewer {
     /// The rectangular extent of hexes to be painted.</param>
     /// <param name="paintAction">Type: Action {HexCoords} - 
     /// The paint action to be performed for each hex.</param>
-    void PaintForEachHex(DrawingContext g, CoordsRectangle clipHexes, Action<HexCoords> paintAction) {
+    void PaintForEachHex(DrawingContext graphics, CoordsRectangle clipHexes, Action<HexCoords> paintAction) {
       ForEachHex(hex => {
         if (clipHexes.Left <= hex.Coords.User.X  &&  hex.Coords.User.X <= clipHexes.Right
         &&  clipHexes.Top  <= hex.Coords.User.Y  &&  hex.Coords.User.Y <= clipHexes.Bottom) {
-          g.PushTransform(TranslateToHex(StartHex));
+          graphics.PushTransform(TranslateToHex(StartHex));
           paintAction(hex.Coords);
         }
       } );
@@ -371,43 +360,6 @@ namespace PGNapoleonics.HexgridScrollViewer {
       if (e==null) throw new ArgumentNullException("e");
       FovRadius = RangeCutoff = e.Value;
     }
-
-    #region deprecated
-    /// <summary>Creates a new instance of the MapDisplay class.</summary>
-    [Obsolete("Use MapDisplay(Size,Size,Func<HexBoard<THex>, HexCoords, THex>) instead; client should set hex size.")]
-    protected MapDisplay(HexSize sizeHexes, InitializeHex initializeHex) 
-    : this(sizeHexes, new HexSize(27,30), initializeHex) {}
-
-    /// <summary>Creates a new instance of the MapDisplay class.</summary>
-    [Obsolete("Use MapDisplay(Size,Size,Func<HexBoard<THex>, HexCoords, THex>) instead; client should set hex size.")]
-    protected MapDisplay(HexSize sizeHexes, InitializeHex initializeHex, IFastList<HexCoords> landmarkCoords) 
-    : this(sizeHexes, new HexSize(27,30), initializeHex, landmarkCoords) {}
-
-    /// <inheritdoc/>
-    [Obsolete("Use GetClipInHexes(PointF,SizeF) instead.")]
-    public CoordsRectangle GetClipCells(Point point, Size size) {
-      return GetClipInHexes( new HexRectF(point.ToHexPoint(),size.ToHexSize()), MapSizeHexes );
-    }
-    /// <inheritdoc/>
-    [Obsolete("Use GetClipInHexes(RectangleF) instead.")]
-    public CoordsRectangle GetClipCells(HexRectF visibleClipBounds) {
-      return GetClipInHexes(visibleClipBounds, MapSizeHexes);
-    }
-    #endregion
-
-    #region IDisposable implementation
-    private bool _isDisposed = false;
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing) {
-      if (!_isDisposed) {
-        if (disposing) {
-          if (_boardHexes != null) { _boardHexes.Dispose(); _boardHexes = null; }
-        }
-        _isDisposed = true;
-      }
-      base.Dispose(disposing);
-    }
-    #endregion
   }
 
   /// <summary>TODO</summary>

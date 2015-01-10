@@ -36,8 +36,10 @@ using System.Linq;
 /// and <b>T</b>riangle-inequality heuristic) <b>path-finding</b> on a <see cref="Hexgrid"/> map.</summary>
 #pragma warning restore 1587
 namespace PGNapoleonics.HexUtilities.Pathfinding {
-  using DirectedPath  = DirectedPathCollection;
-  using IDirectedPath = IDirectedPathCollection;
+  using DirectedPath    = DirectedPathCollection;
+  using IDirectedPath   = IDirectedPathCollection;
+  using IPriorityQueue  = IPriorityQueue<int,IDirectedPathCollection>;
+  using IDictionary     = IDictionary<HexCoords,IDirectedPathCollection>;
 
   /// <summary>Interface of common data structures exposed to <see cref="BidirectionalPathfinder.DirectionalPathfinder"/>s.</summary>
   internal interface IPathHalves {
@@ -60,7 +62,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <param name="target">Coordinates for the <c>last</c> step on the desired path.</param>
     /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
     /// <see cref="FindDirectedPathRev"/>
-    public static IDirectedPath FindDirectedPathFwd(INavigableBoard board, IHex source, IHex target) {
+    public static IDirectedPath FindDirectedPathFwd(INavigableBoard<IHex> board, IHex source, IHex target) {
       return (new BidirectionalPathfinder(board, source, target)).PathRev;
     }
     /// <summary>As <see cref="FindDirectedPathFwd"/>, except with the steps stacked in reverse for more convenient use.</summary>
@@ -72,7 +74,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// onto the reverse half-path during post-processing, instead of the reverse.
     /// </remarks>
     /// <see cref="FindDirectedPathFwd"/>
-    public static IDirectedPath FindDirectedPathRev(INavigableBoard board, IHex source, IHex target) {
+    public static IDirectedPath FindDirectedPathRev(INavigableBoard<IHex> board, IHex source, IHex target) {
       return (new BidirectionalPathfinder(board, source, target)).PathFwd;
     }
 
@@ -80,7 +82,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
     /// <param name="source">Coordinates for the <c>first</c> step on the desired path.</param>
     /// <param name="target">Coordinates for the <c>last</c> step on the desired path.</param>
-    public BidirectionalPathfinder(INavigableBoard board, IHex source, IHex target) 
+    public BidirectionalPathfinder(INavigableBoard<IHex> board, IHex source, IHex target) 
     : base(board, source, target, new HashSet<HexCoords>()) {
       Pathfinder.TraceFindPathDetailInit(Source.Coords, Target.Coords);
 
@@ -134,9 +136,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       if (sourcePath != null) {
         while (sourcePath.PathSoFar != null) {
           var hexside = sourcePath.PathStep.HexsideExit;
-          var cost    = sourcePath.TotalCost - sourcePath.PathSoFar.TotalCost;
+          var cost    = sourcePath.TotalCost - (sourcePath = sourcePath.PathSoFar).TotalCost;
           targetPath  = targetPath.AddStep(sourcePath.PathStep.Hex, hexside, cost);
-          sourcePath = sourcePath.PathSoFar;
         }
       }
       return targetPath;
@@ -156,7 +157,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       /// <param name="start">Start hex for this half of the bidirectional path search.</param>
       /// <param name="goal">Goal hex for this this half of the bidirectional path search.</param>
       /// <param name="pathHalves"></param>
-      protected DirectionalPathfinder(INavigableBoard board, IHex start, IHex goal, IPathHalves pathHalves)
+      protected DirectionalPathfinder(INavigableBoard<IHex> board, IHex start, IHex goal, IPathHalves pathHalves)
       : base(board, start, goal, pathHalves.ClosedSet) {
         PathHalves  = pathHalves;
         OpenSet     = new Dictionary<HexCoords, IDirectedPath>();
@@ -170,18 +171,18 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       protected   IPathHalves           PathHalves  { get; private set; }
 
       /// <summary>The start hex for this directional path search (Source for Fwd; Target for Rev).</summary>
-      protected abstract  IHex          Start       { get; }
+      protected abstract IHex           Start       { get; }
       /// <summary>The goal hex for this directional path search (Target for Fwd; Source for Rev).</summary>
       protected abstract IHex           Goal        { get; }
 
-      protected IDictionary<HexCoords,IDirectedPath>  OpenSet { get; private set; }
-      protected IPriorityQueue<int,IDirectedPath>     Queue   { get; private set; }
+      protected     IDictionary         OpenSet     { get; private set; }
+      protected     IPriorityQueue      Queue       { get; private set; }
       #endregion
 
       #region Methods
       private             void          ExpandHex(IDirectedPath path, Hexside hexside) {
         var here  = path.PathStep.Hex;
-        var there = here.Neighbour(hexside);
+        var there = Board[here.Coords.GetNeighbour(hexside)];
         if (there != null  &&  ! ClosedSet.Contains(there.Coords) ) {
           var cost = StepCost(here, hexside, there);
           if( (cost > 0)
@@ -247,14 +248,14 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       protected abstract  int           LandmarkPotential(ILandmark landmark, HexCoords coords);
       protected abstract  void          SetBestSoFar(IDirectedPath fwdPath, IDirectedPath revPath);
       protected           void          StartPath(IHex start) {
-        var path            = new DirectedPath(Start);
+        var path            = new DirectedPath(start);
         OpenSet.Add(path.PathStep.Hex.Coords, path);
         Queue.Enqueue (0, path);
       }
       protected abstract  int           StepCost(IHex here, Hexside hexside, IHex there);
       #endregion
 
-      /// <summary>A <see cref="DirectedPathCollection"/> from start to join-point obtained by searching forwards from start.</summary>
+      /// <summary>A <see cref="DirectedPath"/> from start to join-point obtained by searching forwards from start.</summary>
       /// <remarks>
       /// <i>Source</i> and <i>Target</i> refer to the path beginning and ending hexes from the client 
       /// perspective; <c>Start</c> and <c>Goal</c> refer to the directional beginning and ending hexes
@@ -268,7 +269,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// <param name="source">Source hex for this path search, the start for the directional path search.</param>
         /// <param name="target">Target hex for this path search, the goal for the directional path search.</param>
         /// <param name="pathHalves"></param>
-        internal PathfinderFwd(INavigableBoard board, IHex source, IHex target, IPathHalves pathHalves)
+        internal PathfinderFwd(INavigableBoard<IHex> board, IHex source, IHex target, IPathHalves pathHalves)
         : base (board,source,target,pathHalves) {
           TraceFindPathDetailDirection("Fwd", Goal.Coords - Start.Coords);
           StartPath(Start);
@@ -289,13 +290,13 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         }
       }
 
-      /// <summary>A <see cref="DirectedPathCollection"/> from join-point to goal obtained by searching backwards from goal.</summary>
+      /// <summary>A <see cref="DirectedPath"/> from join-point to goal obtained by searching backwards from goal.</summary>
       /// <remarks>
       /// <i>Source</i> and <i>Target</i> refer to the path beginning and ending hexes from the client 
       /// perspective; <c>Start</c> and <c>Goal</c> refer to the directional beginning and ending hexes
       /// of the path from the algorithmic perspective. In the case of a reverse half-search, such as
       /// in the implementation of BidirectionalPathfinder, the Target becomes the Start, and the
-      /// Source becomes the Goal. This transition occurs in the constructor of <c>Pathfinder</c>.
+      /// Source becomes the Goal. This transition occurs in the constructor of <see cref="Pathfinder"/>.
       /// </remarks>
       internal sealed class PathfinderRev : DirectionalPathfinder {
         /// <summary>Create a new instance of <see cref="PathfinderRev"/>, a backward-searching <see cref="DirectionalPathfinder"/>.</summary>
@@ -303,7 +304,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// <param name="source">Source hex for this path search, the goal for the directional path search.</param>
         /// <param name="target">Target hex for this path search, the start for the directional path search.</param>
         /// <param name="pathHalves"></param>
-        internal PathfinderRev(INavigableBoard board, IHex source, IHex target, IPathHalves pathHalves)
+        internal PathfinderRev(INavigableBoard<IHex> board, IHex source, IHex target, IPathHalves pathHalves)
         : base (board,source,target,pathHalves)  {
           TraceFindPathDetailDirection("Fwd", Goal.Coords - Start.Coords);
           StartPath(Start);

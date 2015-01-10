@@ -30,12 +30,13 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
 
 namespace PGNapoleonics.HexgridPanel {
+  using MapGridHex      = Hex<Graphics,GraphicsPath>;
+
   internal static class MapDisplayPainter {
     /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
     /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>

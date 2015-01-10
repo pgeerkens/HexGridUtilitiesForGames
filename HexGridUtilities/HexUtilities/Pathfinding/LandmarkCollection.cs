@@ -34,7 +34,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
@@ -50,23 +49,30 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     ) {
       if (landmarkCoords==null) throw new ArgumentNullException("landmarkCoords");
 
-      return new LandmarkCollection( (
-          from coords in landmarkCoords.AsParallel().AsOrdered()
-          where board.IsOnboard(coords) 
-          select new Landmark(coords,board)
-        ).ToList<ILandmark>() );
+      ILandmarkCollection tempLandmarks = null, landmarks = null;
+      try {
+        tempLandmarks = new LandmarkCollection( (
+                              from coords in landmarkCoords.AsParallel().AsOrdered()
+                              where board.IsOnboard(coords) 
+                              select new Landmark(coords,board)
+                        ).ToList<ILandmark>() );
+        landmarks     = tempLandmarks;
+        tempLandmarks = null;
+      } finally { if (tempLandmarks != null) tempLandmarks.Dispose(); }
+      return landmarks;
     }
+
     /// <summary>TODO</summary>
     /// <param name="board"></param>
     /// <param name="landmarkCoords"></param>
     /// <param name="token"></param>
     /// <returns></returns>
     public static Task<ILandmarkCollection> CreateLandmarksAsync(
-      IHexBoard<IHex> board, 
+      IHexBoard<IHex>      board, 
       IFastList<HexCoords> landmarkCoords,
-      CancellationToken token
+      CancellationToken    token
     ) {
-      return Task.Run(() => CreateLandmarks(board,landmarkCoords));
+      return Task.Run( () => CreateLandmarks(board,landmarkCoords) );
     }
 
     /// <summary>TODO</summary>
@@ -77,6 +83,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     private LandmarkCollection(IList<ILandmark> list) { // : base(list.ToArray()) {
       fastList = list.ToFastList();
     }
+
+    /// <inheritdoc/>
+    public int IndexOf(ILandmark item) { return fastList.IndexOf(item); }
 
     #region IFastList implemenation
     /// <inheritdoc/>

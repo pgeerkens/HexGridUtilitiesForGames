@@ -41,7 +41,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// No Finalizer is implemented as the class possesses no unmanaged resources.
   /// </remarks>
   [DebuggerDisplay("Coords={Coords}")]
-  public sealed class Landmark : ILandmark, IDisposable {
+  public sealed partial class Landmark : ILandmark, IDisposable {
     /// <summary>Populates and returns a new landmark at the specified board coordinates.</summary>
     /// <param name="board">IBoard{IHex} on which the landmark is to be created.</param>
     /// <param name="coords">Coordinates on <c>board</c> where this landmark is to be created.</param>
@@ -52,9 +52,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     }
 
     /// <summary>TODO</summary>
-    public IHexBoard<IHex> Board { get; private set; }
+    public IHexBoard<IHex> Board  { get; private set; }
     /// <summary>Board coordinates for the landmark location.</summary>
-    public HexCoords    Coords { get; private set; }
+    public HexCoords       Coords { get; private set; }
 
     /// <summary>Returns the shortest-path directed-distance to the specified hex <b>from</b> the landmark.</summary>
     public int DistanceTo  (HexCoords coords) { return backingStore[0][coords]; }
@@ -80,47 +80,53 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         for (var i = 0; i < 2; i++) {
           var landmark  = Board[Coords];
           if (landmark != null)
-            FillLandmarkDetail(landmark,backingStore[i],DirectedCostDelegates[i](Board));
+            FindPathDetailTrace(true, "Find distances from {0}", landmark.Coords);
+
+            #if HotPriorityQueue
+              var queue = PriorityQueueFactory.NewHotPriorityQueue<IHex>();
+            #else
+              var queue = PriorityQueueFactory.NewDictionaryQueue<int, IHex>();
+            #endif
+            queue.Enqueue (0, landmark);
+
+            FillLandmarkDetail(queue, backingStore[i], DirectedCostDelegates[i](Board));
         }
       }
     }
 
-    private static void FillLandmarkDetail(IHex landmark, BoardStorage<short> store, 
-      Func<IHex,Hexside,IHex,int> directedStepCost
+    private void FillLandmarkDetail(IPriorityQueue<int,IHex> queue, 
+      BoardStorage<short> store, Func<IHex,Hexside,IHex,int> directedStepCost
     ) {
-      Traces.FindPathDetail.Trace(true, "Find distances from {0}", landmark.Coords);
-
-      #if HotPriorityQueue
-        var queue = PriorityQueueFactory.NewHotPriorityQueue<IHex>();
-      #else
-        var queue = PriorityQueueFactory.NewDictionaryQueue<int, IHex>();
-      #endif
-      queue.Enqueue (0, landmark);
-
       HexKeyValuePair<int,IHex> item;
       while (queue.TryDequeue(out item)) {
         var here = item.Value;
         var key  = item.Key;
         if( store[here.Coords] > 0 ) continue;
 
-        Traces.FindPathDetail.Trace("Dequeue Path at {0} w/ cost={1,4}.", here, key);
+        FindPathDetailTrace("Dequeue Path at {0} w/ cost={1,4}.", here, key);
 
         store[here.Coords] = (short)key;
 
-        HexsideExtensions.HexsideList.ForEach( hexside => {
-          var neighbourCoords = here.Coords.GetNeighbour(hexside);
-          var neighbourHex = here.Board[neighbourCoords];
+        HexsideExtensions.HexsideList.ForEach( hexside =>
+          ExpandNode(store,directedStepCost,queue,here,key,hexside)
+        );
+      }
+    }
 
-          if (neighbourHex != null) {
-            var cost = directedStepCost(here, hexside, neighbourHex);
-            if (cost > 0  &&  store[neighbourCoords] == -1) {
+    private void ExpandNode(BoardStorage<short> store, Func<IHex,Hexside,IHex,int> directedStepCost, 
+      IPriorityQueue<int,IHex> queue, IHex here, int key, Hexside hexside
+    ) {
+      var neighbourCoords = here.Coords.GetNeighbour(hexside);
+      var neighbourHex    = Board[neighbourCoords];
 
-              Traces.FindPathDetail.Trace("   Enqueue {0}: {1,4}", neighbourCoords, cost);
+      if (neighbourHex != null) {
+        var cost = directedStepCost(here, hexside, neighbourHex);
+        if (cost > 0  &&  store[neighbourCoords] == -1) {
 
-              queue.Enqueue(key + cost, neighbourHex);
-            }
-          }
-        } );
+          FindPathDetailTrace("   Enqueue {0}: {1,4}", neighbourCoords, cost);
+
+          queue.Enqueue(key + cost, neighbourHex);
+        }
       }
     }
 
@@ -139,6 +145,19 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         _isDisposed = true;
       }
     }
+    #endregion
+
+    #region Tracing partial methods
+    static partial void FindPathDetailTrace(string format, params object[] paramArgs);
+    static partial void FindPathDetailTrace(bool newline, string format, params object[] paramArgs);
+    #if TRACE
+    static partial void FindPathDetailTrace(string format, params object[] paramArgs) {
+      Traces.FindPathDetail.Trace(format, paramArgs);
+    }
+    static partial void FindPathDetailTrace(bool newline, string format, params object[] paramArgs) {
+      Traces.FindPathDetail.Trace(newline, format, paramArgs);
+    }
+    #endif
     #endregion
   }
 }

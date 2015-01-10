@@ -27,6 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reflection;
@@ -38,14 +39,15 @@ namespace PGNapoleonics.HexUtilities.Common {
     public static partial class EnumExtensions{
       #region Enum Parsing utilities
       /// <summary>Typesafe wrapper for <c>Enum.GetValues(typeof(TEnum).</c></summary>
-      public static ReadOnlyCollection<TEnum> EnumGetValues<TEnum>() {
-        return new ReadOnlyCollection<TEnum>((TEnum[])(Enum.GetValues(typeof(TEnum))));
+      public static IList<TEnum> EnumGetValues<TEnum>() {
+        return new List<TEnum>((TEnum[])(Enum.GetValues(typeof(TEnum)))).AsReadOnly();
       }
 
       /// <summary>TODO</summary>
-     [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
-      public static ReadOnlyCollection<string> EnumGetNames<TEnum>() where TEnum : struct {
-        return new ReadOnlyCollection<string>((string[])(Enum.GetNames(typeof(TEnum))));
+      [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+      [Obsolete("Less useful or convenient than originally thought - just use Enum.GetNames({TEnum}).")]
+      public static IList<string> EnumGetNames<TEnum>() where TEnum : struct {
+        return new List<string>((string[])(Enum.GetNames(typeof(TEnum)))).AsReadOnly();
       }
 
       /// <summary>Typesafe wrapper for <c>Enum.ParseEnum()</c> that automatically checks 

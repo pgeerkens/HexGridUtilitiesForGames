@@ -42,9 +42,9 @@ using WpfInput = System.Windows.Input;
 
 namespace PGNapoleonics.HexgridPanel {
 
-  /// <summary>Sub-class implementation of a <b>WinForms</b> Panel with integrated <see cref="Hexgrid"/> support.</summary>
+  /// <summary>Sub-class implementation of a <b>WinForms</b> Panel with integrated <see cref="TransposableHexgrid"/> support.</summary>
   [DockingAttribute(DockingBehavior.AutoDock)]
-  public partial class HexgridScrollable : TiltAwareScrollableControl, IHexgridHost, ISupportInitialize {
+  public partial class HexgridScrollable : TiltAwareScrollableControl, ISupportInitialize {
     /// <summary>Creates a new instance of HexgridScrollable.</summary>
     public HexgridScrollable() : base() {
       InitializeComponent();
@@ -88,11 +88,11 @@ namespace PGNapoleonics.HexgridPanel {
     /// <summary>Gets or sets the coordinates of the hex currently underneath the mouse.</summary>
     public         HexCoords       HotspotHex        { get { return DataContext.HotspotHex; } }
     /// <summary>Gets whether the <b>Alt</b> <i>shift</i> key is depressed.</summary>
-    public static  bool            IsAltKeyDown      { get { return ModifierKeys.HasFlag(Keys.Alt); } }
+    public static  bool            IsAltKeyDown      { get { return ModifierKeys.Hasflag(Keys.Alt); } }
     /// <summary>Gets whether the <b>Ctl</b> <i>shift</i> key is depressed.</summary>
-    public static  bool            IsCtlKeyDown      { get { return ModifierKeys.HasFlag(Keys.Control); } }
+    public static  bool            IsCtlKeyDown      { get { return ModifierKeys.Hasflag(Keys.Control); } }
     /// <summary>Gets whether the <b>Shift</b> <i>shift</i> key is depressed.</summary>
-    public static  bool            IsShiftKeyDown    { get { return ModifierKeys.HasFlag(Keys.Shift); } }
+    public static  bool            IsShiftKeyDown    { get { return ModifierKeys.Hasflag(Keys.Shift); } }
     /// <summary>TODO</summary>
     public         bool            IsMapDirty        { 
       get { return _isMapDirty; }
@@ -140,7 +140,7 @@ namespace PGNapoleonics.HexgridPanel {
     }
     /// <summary>Returns, as a Rectangle, the IUserCoords for the currently visible extent.</summary>
     public virtual CoordsRectangle VisibleRectangle  {
-      get { return GetClipCells( AutoScrollPosition.Scale(-1.0F/MapScale), 
+      get { return GetClipInHexes( AutoScrollPosition.Scale(-1.0F/MapScale), 
                                          ClientSize.Scale( 1.0F/MapScale) );
       }
     }
@@ -155,13 +155,13 @@ namespace PGNapoleonics.HexgridPanel {
     }
 
     /// <summary>TODO</summary>
-        CoordsRectangle GetClipCells(PointF point, SizeF size) { return DataContext.Model.GetClipCells(point, size); }
+        CoordsRectangle GetClipInHexes(PointF point, SizeF size) { return DataContext.Model.GetClipInHexes(point, size); }
     /// <summary><c>HexCoords</c> for a selected hex.</summary>
     /// <param name="point">Screen point specifying hex to be identified.</param>
     /// <returns>Coordinates for a hex specified by a screen point.</returns>
     /// <remarks>See "file://Documentation/HexGridAlgorithm.mht"</remarks>
     public    HexCoords GetHexCoords(Point point) {
-      return DataContext.Hexgrid.GetHexCoords(point, new Size(AutoScrollPosition));
+      return DataContext.Grid.GetHexCoords(point, new Size(AutoScrollPosition));
     }
 
     /// <summary>Force repaint of backing buffer for Map underlay.</summary>
@@ -202,7 +202,7 @@ namespace PGNapoleonics.HexgridPanel {
       HorizontalScroll.LargeChange = Math.Max(largeChange.Width,  smallChange.Width);
       VerticalScroll.LargeChange   = Math.Max(largeChange.Height, smallChange.Height);
 
-      var size                     = DataContext.Hexgrid.GetSize(MapSizePixels,MapScale)
+      var size                     = DataContext.Grid.GetSize(MapSizePixels,MapScale)
                                    + Margin.Size;
       if (AutoScrollMinSize != size) {
         AutoScrollMinSize          = size;
@@ -222,13 +222,13 @@ namespace PGNapoleonics.HexgridPanel {
     /// <param name="coordsNewULHex"><c>HexCoords</c> for new upper-left hex</param>
     /// <returns>Pixel coordinates in Client reference frame.</returns>
     public Point HexCenterPoint(HexCoords coordsNewULHex) {
-      return DataContext.Hexgrid.HexCenterPoint(coordsNewULHex);
+      return DataContext.Grid.HexCenterPoint(coordsNewULHex);
     }
     /// <summary>Returns the scroll position to center a specified hex in viewport.</summary>
     /// <param name="coordsNewCenterHex"><c>HexCoords</c> for the hex to be centered in viewport.</param>
     /// <returns>Pixel coordinates in Client reference frame.</returns>
     protected Point ScrollPositionToCenterOnHex(HexCoords coordsNewCenterHex) {
-      return DataContext.Hexgrid.ScrollPositionToCenterOnHex(coordsNewCenterHex,VisibleRectangle);
+      return DataContext.Grid.ScrollPositionToCenterOnHex(coordsNewCenterHex,VisibleRectangle);
     }
     #endregion
 
@@ -247,7 +247,7 @@ namespace PGNapoleonics.HexgridPanel {
         g.Clip = new Region(e.ClipRectangle);
         if (IsTransposed) { g.Transform = TransposeMatrix; }
 
-        var scroll = DataContext.Hexgrid.GetScrollPosition(AutoScrollPosition);
+        var scroll = DataContext.Grid.GetScrollPosition(AutoScrollPosition);
         g.TranslateTransform(scroll.X, scroll.Y);
         g.TranslateTransform(Margin.Left,Margin.Top);
         g.ScaleTransform(MapScale,MapScale);
@@ -372,7 +372,7 @@ namespace PGNapoleonics.HexgridPanel {
       if (e == null) throw new ArgumentNullException("e");
       Traces.ScrollEvents.Trace(" - {0}.OnMouseWheel: {1}", Name, e.ToString());
 
-      if (Control.ModifierKeys.HasFlag(Keys.Control)) ScaleIndex += Math.Sign(e.Delta);
+      if (Control.ModifierKeys.Hasflag(Keys.Control)) ScaleIndex += Math.Sign(e.Delta);
       else if (IsShiftKeyDown)                        base.OnMouseHwheel(e);
       else                                            base.OnMouseWheel(e);
       var he = e as HandledMouseEventArgs;
@@ -392,12 +392,12 @@ namespace PGNapoleonics.HexgridPanel {
       if (sign == 0) return;
       Func<Point, int, Point> func = (p, step) => new Point(-p.X, -p.Y + step * sign);
       AutoScrollPosition = func(AutoScrollPosition,
-        type.HasFlag(ScrollEventType.LargeDecrement) ? scroll.LargeChange : scroll.SmallChange);
+        type.Hasflag(ScrollEventType.LargeDecrement) ? scroll.LargeChange : scroll.SmallChange);
     }
     #endregion
 
     /// <summary>Array of supported map scales  as IList {float}.</summary>
-    public ReadOnlyCollection<float>     Scales        { 
+    public IList<float>     Scales        { 
       get { return DataContext.Scales; }
       private set { DataContext.SetScales(value); }
     }

@@ -45,7 +45,7 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>The hexside on the lower-left of the hex.</summary>
     Southwest = 1 << Hexside.Southwest,
     /// <summary>The hexside on the upper-left of the hex.</summary>
-    Northwest = 1 << Hexside.Northwest,
+    Northwest = 1 << Hexside.Northwest
   }
 
   /// <summary>TODO</summary>
@@ -73,6 +73,12 @@ namespace PGNapoleonics.HexUtilities {
     public static Hexsides SetBits(this Hexsides @this, Hexsides bits) {
       return @this | bits;
     }
+    /// <summary>TODO</summary>
+    public static Hexsides ValidBitsMask(this Hexsides @this) {
+      const Hexsides HexsidesMask = Hexsides.North | Hexsides.Northeast | Hexsides.Southeast
+                                  | Hexsides.South | Hexsides.Southwest | Hexsides.Northwest;
+      return @this &= HexsidesMask;
+    }
     /// <summary>Performs action for all bits set in this.</summary>
     public static void ForEach(this Hexsides @this, Action<Hexsides> action) {
       if (action == null) throw new ArgumentNullException("action");
@@ -82,7 +88,8 @@ namespace PGNapoleonics.HexUtilities {
       }
     }
 
-    private static readonly int[] LookupTable = Enumerable.Range(0,256).Select(CountBits).ToArray();
+    private static readonly int[] LookupTable = 
+      Enumerable.Range(0,256).Select(CountBits).ToArray();
 
     private static int CountBits(int value) {
       int count = 0;

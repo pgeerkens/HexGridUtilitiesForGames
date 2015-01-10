@@ -28,7 +28,6 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 using PGNapoleonics.HexUtilities.Common;
 
@@ -36,21 +35,18 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
   using HexsideMap = Func<Hexside,Hexside>;
 
   /// <summary>Extension methods to support the identification of and translation between Dodecants.</summary>
-  internal static class Dodecant {
-    #region TranslateDodecant
-    internal static Action<HexCoords> TranslateDodecant(this IntMatrix2D @this, Action<HexCoords> action) {
-      return (coords) => action(HexCoords.NewCanonCoords(coords.Canon * @this));
-    }
-    internal static Func<HexCoords,T> TranslateDodecant<T>(this IntMatrix2D @this, Func<HexCoords,T> func) {
-      return (coords) => func(HexCoords.NewCanonCoords(coords.Canon * @this));
-    }
-    internal static Func<HexCoords,Hexside,T> TranslateDodecant<T>(this IntMatrix2D @this, HexsideMap map,Func<HexCoords,Hexside,T> func) {
-      return (coords,hexside) => func(HexCoords.NewCanonCoords(coords.Canon * @this), map(hexside));
-    }
+  internal class Dodecant {
+    #region Mod6 - replace an integer modulo operation with a lookup into a table twice as long 
+    private static readonly IList<Hexside> _hexsideMap = new Hexside[] {
+      Hexside.North, Hexside.Northeast, Hexside.Southeast, 
+      Hexside.South, Hexside.Southwest, Hexside.Northwest,
+
+      Hexside.North, Hexside.Northeast, Hexside.Southeast, 
+      Hexside.South, Hexside.Southwest, Hexside.Northwest 
+    };
     #endregion
 
-    #region Matrices
-    //         Sextant map
+    //           Sextant map
     //                    X-axis
     //         \     |     /
     //           \ 3 | 2 /
@@ -60,51 +56,46 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     //           / 5 | 0 \  
     //         /     |     \
     //             Y-axis
-    internal static IList<IntMatrix2D> Matrices {
-      get { return _matrices; }
-    } static readonly IList<IntMatrix2D> _matrices = (
-        new List<IntMatrix2D>() {
-          new IntMatrix2D( 1, 0,  0, 1),  new IntMatrix2D(-1, 0,  1, 1),
-          new IntMatrix2D( 0,-1,  1, 1),  new IntMatrix2D( 0, 1,  1, 0),
-          new IntMatrix2D(-1,-1,  1, 0),  new IntMatrix2D( 1, 1,  0,-1),
-          new IntMatrix2D(-1, 0,  0,-1),  new IntMatrix2D( 1, 0, -1,-1),
-          new IntMatrix2D( 0, 1, -1,-1),  new IntMatrix2D( 0,-1, -1, 0),
-          new IntMatrix2D( 1, 1, -1, 0),  new IntMatrix2D(-1,-1,  0, 1) 
-        }.AsReadOnly());
-    #endregion
+    public static IFastList<Dodecant> Dodecants = new FastList<Dodecant>( new Dodecant[] {
+      new Dodecant( 0, new IntMatrix2D( 1, 0,  0, 1)), //  CW  from Hexside.North
+      new Dodecant( 1, new IntMatrix2D( 0,-1,  1, 1)), //  CW  from Hexside.Northwest
+      new Dodecant( 2, new IntMatrix2D(-1,-1,  1, 0)), //  CW  from Hexside.Southwest
+      new Dodecant( 3, new IntMatrix2D(-1, 0,  0,-1)), //  CW  from Hexside.South
+      new Dodecant( 4, new IntMatrix2D( 0, 1, -1,-1)), //  CW  from Hexside.Southeast
+      new Dodecant( 5, new IntMatrix2D( 1, 1, -1, 0)), //  CW  from Hexside.Northeast
 
-    #region Hexsides
-    internal static IList<Func<Hexside,Hexside>> Hexsides { get { return _hexsides; } } 
-    private static readonly IList<Func<Hexside,Hexside>> _hexsides = (
-        new List<Func<Hexside,Hexside>>() {
-          hexside => Mod6( 0 + (int)hexside), //  CW  from Hexside.North
-          hexside => Mod6(11 - (int)hexside), // CCW  from Hexside.Northwest
+      new Dodecant( 6, new IntMatrix2D(-1,-1,  0, 1)), // CCW  from Hexside.North
+      new Dodecant( 7, new IntMatrix2D( 0,-1, -1, 0)), // CCW  from Hexside.Northeast
+      new Dodecant( 8, new IntMatrix2D( 1, 0, -1,-1)), // CCW  from Hexside.Southeast
+      new Dodecant( 9, new IntMatrix2D( 1, 1,  0,-1)), // CCW  from Hexside.South
+      new Dodecant(10, new IntMatrix2D( 0, 1,  1, 0)), // CCW  from Hexside.Southwest
+      new Dodecant(11, new IntMatrix2D(-1, 0,  1, 1))  // CCW  from Hexside.Northwest
+    } );
 
-          hexside => Mod6( 1 + (int)hexside), //  CW  from Hexside.Northwest
-          hexside => Mod6(10 - (int)hexside), // CCW  from Hexside.Southwest
+    private Dodecant(int hexsideBase, IntMatrix2D matrix) {
+       var sign  = Math.Sign(matrix.Determinant);
+      HexsideMap = hexside => _hexsideMap[hexsideBase + sign * (int)hexside];
+      Matrix     = matrix;
+    }
 
-          hexside => Mod6( 2 + (int)hexside), //  CW  from Hexside.Southwest
-          hexside => Mod6( 9 - (int)hexside), // CCW  from Hexside.South
+    public Dodecant(Dodecant dodecant, IntMatrix2D matrixOrigin) {
+      HexsideMap = dodecant.HexsideMap;
+      Matrix     = dodecant.Matrix * matrixOrigin;
+    }
 
-          hexside => Mod6( 3 + (int)hexside), //  CW  from Hexside.South
-          hexside => Mod6( 8 - (int)hexside), // CCW  from Hexside.Southeast
+    public  Func<Hexside, Hexside> HexsideMap { get; private set; }
+    public  IntMatrix2D            Matrix     { get; private set; }
 
-          hexside => Mod6( 4 + (int)hexside), //  CW  from Hexside.Southeast
-          hexside => Mod6( 7 - (int)hexside), // CCW  from Hexside.Northeast
-
-          hexside => Mod6( 5 + (int)hexside), //  CW  from Hexside.Northeast
-          hexside => Mod6( 6 - (int)hexside), // CCW  from Hexside.North
-        }.AsReadOnly()
-    );
-    #endregion
-
-    #region Mod6 - replace an integer modulo operation with a lookup innto t table twice as long 
-    private static Func<int,Hexside> Mod6 = (intHexside) => _hexsideMap [intHexside];
-
-    private static readonly IList<Hexside> _hexsideMap = new Hexside[] {
-      Hexside.North, Hexside.Northeast, Hexside.Southeast, Hexside.South, Hexside.Southwest, Hexside.Northwest,
-      Hexside.North, Hexside.Northeast, Hexside.Southeast, Hexside.South, Hexside.Southwest, Hexside.Northwest 
-    };
+    #region TranslateDodecant
+    public Action<HexCoords> TranslateDodecant(Action<HexCoords> action) {
+      return (coords) => action(HexCoords.NewCanonCoords(coords.Canon * this.Matrix));
+    }
+    public Func<HexCoords,T> TranslateDodecant<T>(Func<HexCoords,T> func) {
+      return (coords) => func(HexCoords.NewCanonCoords(coords.Canon * this.Matrix));
+    }
+    public Func<HexCoords,Hexside,T> TranslateDodecant<T>(Func<HexCoords,Hexside,T> func) {
+      return (coords,hexside) => func(HexCoords.NewCanonCoords(coords.Canon * this.Matrix), HexsideMap(hexside));
+    }
     #endregion
   }
 }

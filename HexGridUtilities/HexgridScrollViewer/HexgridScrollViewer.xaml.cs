@@ -28,34 +28,19 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-using System.Diagnostics.CodeAnalysis;
 
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexgridScrollViewer {
-  using WpfInput  = System.Windows.Input;
 
-  using HexPoint  = System.Drawing.Point;
-  using HexSize   = System.Drawing.Size;
-  using WpfPoint  = System.Windows.Point;
-  using WpfSize   = System.Windows.Size;
 
-  /// <summary>Sub-class implementation of a <b>WinForms</b> Panel with integrated <see cref="Hexgrid"/> support.</summary>
+  /// <summary>Sub-class implementation of a <b>WPF</b> Scrollable with integrated <see cref="TransposableHexgrid"/> support.</summary>
   public partial class HexgridScrollViewer : Canvas { //, IHexgridHost {
     /// <summary>Creates a new instance of HexgridScrollable.</summary>
     public HexgridScrollViewer() : base() {
@@ -164,7 +149,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
 
 //    /// <summary>Returns, as a Rectangle, the IUserCoords for the currently visible extent.</summary>
 //    public virtual CoordsRectangle VisibleRectangle  {
-//      get { return GetClipCells( ScrollPosition.Scale(-1.0F/MapScale).ToWpfPoint(), 
+//      get { return GetClipInHexes( ScrollPosition.Scale(-1.0F/MapScale).ToWpfPoint(), 
 //                                         ClientSize.Scale( 1.0F/MapScale).ToWpfSize() );
 //      }
 //    }
@@ -180,7 +165,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
 //    }
 
 //    /// <summary>TODO</summary>
-//        CoordsRectangle GetClipCells(WpfPoint point, WpfSize size) { return DataContext.Model.GetClipCells(point, size); }
+//        CoordsRectangle GetClipInHexes(WpfPoint point, WpfSize size) { return DataContext.Model.GetClipInHexes(point, size); }
 //    /// <summary><c>HexCoords</c> for a selected hex.</summary>
 //    /// <param name="point">Screen point specifying hex to be identified.</param>
 //    /// <returns>Coordinates for a hex specified by a screen point.</returns>
@@ -449,10 +434,10 @@ namespace PGNapoleonics.HexgridScrollViewer {
 }
 
 namespace PGNapoleonics.HexgridScrollViewer {
-  using HexPoint  = System.Drawing.Point;
   using HexPointF = System.Drawing.PointF;
-  using HexSize   = System.Drawing.Size;
-  using HexSizeF  = System.Drawing.SizeF;
+  using HexSizeF = System.Drawing.SizeF;
+
+  using MapGridHex      = Hex<DrawingContext,StreamGeometry>;
 
   public class HexgridScrollViewerViewModel : ViewModelBase {
     public HexgridScrollViewerViewModel() : base("HexgridScrollViewer Test (WPF)") {
@@ -503,7 +488,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
     }
 
     /// <summary>Index into <code>Scales</code> of current map scale.</summary>
-    public virtual int     ScaleIndex    { 
+    public virtual int      ScaleIndex    { 
       get { return _scaleIndex; }
       set { var newValue = Math.Max(0, Math.Min(ScaleList.Count-1, value));
             if( _scaleIndex != newValue) {
@@ -516,14 +501,14 @@ namespace PGNapoleonics.HexgridScrollViewer {
     } int _scaleIndex;
 
     /// <summary>Array of supported map scales  as IList {float}.</summary>
-    public ReadOnlyCollection<float>     ScaleList        { get; private set; }
+    public IList<float>     ScaleList        { get; private set; }
 
     private HexgridScrollViewer View { get; set; }
     #endregion
   
     #region Grid Coordinates
     /// <inheritdoc/>
-    protected Hexgrid     Hexgrid         { get {return Model.Hexgrid;} }
+    protected IHexgrid    Hexgrid         { get {return Model.Hexgrid;} }
     /// <summary><c>HexCoords</c> for a selected hex.</summary>
     /// <param name="point">Screen point specifying hex to be identified.</param>
     /// <returns>Coordinates for a hex specified by a screen point.</returns>
