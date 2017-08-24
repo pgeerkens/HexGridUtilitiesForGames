@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -26,43 +26,65 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using PGNapoleonics.HexUtilities.Common;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
-namespace PGNapoleonics.HexUtilities.PathFinding {
-  /// <summary>Heap-On-Top (HOT) Priority Queue implementation.</summary>
-  /// <typeparam name="TKey">Type of the key used for queue-item prioirty.</typeparam>
+namespace PGNapoleonics.HexUtilities.Pathfinding {
+  /// <summary>Heap-On-Top (HOT) Priority Queue implementation with a key of type <c>int</c>.</summary>
   /// <typeparam name="TValue">Type of the queue-item value.</typeparam>
   /// <remarks>
   /// 
   /// </remarks>
-  /// <seealso cref="http://en.wikipedia.org/wiki/Heapsort"/>
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-    "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
-  internal sealed class HotPriorityQueue<TValue> : IPriorityQueue<int,TValue> {
-    public static int InitialSize { get; set; }
+  /// <a href="http://en.wikipedia.org/wiki/Heapsort">Wikepedia - Heapsort</a>/>
+  [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
+    Justification="The suffix 'PriorityQueue' has an unambiguous meaning in the application domain.")]
+  [DebuggerDisplay("Count={Count}")]
+  public sealed class HotPriorityQueue<TValue> : IPriorityQueue<int,TValue> {
 
-    int _baseIndex;
-    int  _shift;
+    int                                                _baseIndex;
+    int                                                _preferenceWidth;
     IPriorityQueue<int, TValue>                        _queue;
     IDictionary<int, HotPriorityQueueList<int,TValue>> _lists;
 
+    /// <summary>Constructs a new instance with a preferenceWidth of 0 bits.</summary>
+    /// <remarks>PreferenceWidth is the number of low-order bits on the key that are for 
+    /// alignment, the remainder being the actual left-shifted distance estimate.</remarks>
     public HotPriorityQueue() : this(0) {}
-    public HotPriorityQueue(int shift) { 
-      const int initialSize = 2048;
-      PoolSize   = initialSize * 7/8;
-      _baseIndex = 0;
-      _shift     = shift; 
-      _queue     = new HotPriorityQueueList<int,TValue>(initialSize).PriorityQueue;
+    /// <summary>returns a new instance with a preferenceWidth of shift bits.</summary>
+    /// <remarks></remarks>
+    /// <paramref name="preferenceWidth">the number of low-order bits on 
+    /// the key that are for alignment, the remainder being the actual left-shifted distance 
+    /// estimate.</paramref>
+    public HotPriorityQueue(int preferenceWidth) : this(preferenceWidth, 2048) {}
+    /// <summary>returns a new instance with a preferenceWidth of shift bits.</summary>
+    /// <remarks></remarks>
+    /// <param name="preferenceWidth">the number of low-order bits on 
+    /// the key that are for alignment, the remainder being the actual left-shifted distance 
+    /// estimate.</param>
+    /// <param name="initialSize">Maximum size of the Heap-On-Top; initial Pool size will be 
+    /// set at 7/8 of this value. Powers of 2 work best for a value.</param>
+    public HotPriorityQueue(int preferenceWidth, int initialSize) { 
+      PoolSize         = initialSize >> 3 * 7;
+      _baseIndex       = 0;
+      _preferenceWidth = preferenceWidth; 
+      _queue           = new HotPriorityQueueList<int,TValue>(initialSize).PriorityQueue;
+#if UseSortedDictionary
+      _lists = new SortedDictionary<int, HotPriorityQueueList<int, TValue>>();
+#else
+      _lists = new SortedList<int, HotPriorityQueueList<int,TValue>>();
+#endif
     }
 
-    /// <inheritdoc/>
-    public bool Any()    { return _queue.Any()  ||  (_lists!=null && _lists.Any()); }
+    /// <summary>Returns whether any elements exist in the heap.</summary>
+    bool IPriorityQueue<int,TValue>.Any()    { return this.Any; }
 
-    /// <inheritdoc/>
+    /// <summary>Returns whether any elements exist in the heap.</summary>
+    public bool Any      { get { return _queue.Count > 0  ||  _lists.Count > 0; } }
+
+    /// <summary>Returns the number of elements in the heap.</summary>
     public int  Count    { get { return _queue.Count; } }
 
     /// <summary>The number of elements which are handled by a straight HeapPriorityQueue.</summary>
@@ -78,20 +100,13 @@ namespace PGNapoleonics.HexUtilities.PathFinding {
     }
     /// <inheritdoc/>
     public void Enqueue(HexKeyValuePair<int,TValue> item) {
-      var index = item.Key >> _shift;
+      var index = item.Key >> _preferenceWidth;
       if (index <= _baseIndex) {
         _queue.Enqueue(item);
-      } else if (_lists == null && _queue.Count < PoolSize) {
+      } else if (_lists.Count == 0  &&  _queue.Count < PoolSize) {
         _baseIndex = index;
         _queue.Enqueue(item);
       } else {
-        if (_lists == null) {
-#if UseSortedDictionary
-          _lists = new SortedDictionary<ushort, HotPriorityQueueList<PathPriority, TValue>>();
-#else
-          _lists = new SortedList<int, HotPriorityQueueList<int,TValue>>();
-#endif
-        }
         HotPriorityQueueList<int,TValue> list;
         if( ! _lists.TryGetValue(index, out list) ) {
           list = new HotPriorityQueueList<int,TValue>();
@@ -103,30 +118,25 @@ namespace PGNapoleonics.HexUtilities.PathFinding {
 
     /// <inheritdoc/>
     public bool TryDequeue(out HexKeyValuePair<int,TValue> result) {
-      if (_queue.TryDequeue(out result))  {
-        return true;
-      } else {
-        var list   = _lists.First();
-        _baseIndex = list.Key;
-        _queue     = list.Value.PriorityQueue;
-        _lists.Remove(list.Key);
-
-        return _queue.TryDequeue(out result);
-      }
+      if (_queue.TryDequeue(out result)) return true;
+      else if (_lists.Count > 0)         return (_queue = GetNextQueue()).TryDequeue(out result);
+      else                               return false;
     }
 
     /// <inheritdoc/>
     public bool TryPeek(out HexKeyValuePair<int,TValue> result) {
-      if (_queue.TryPeek(out result))  {
-        return true;
-      } else {
-        var list   = _lists.First();
-        _baseIndex = list.Key;
-        _queue     = list.Value.PriorityQueue;
-        _lists.Remove(list.Key);
+      if (_queue.TryPeek(out result))  return true;
+      else if (_lists.Count > 0)       return (_queue = GetNextQueue()).TryPeek(out result);
+      else                             return false;
+    }
 
-        return _queue.TryPeek(out result);
-      }
+    /// <summary>TODO</summary>
+    private IPriorityQueue<int,TValue> GetNextQueue() {
+      var list   = _lists.First();
+      _lists.Remove(list.Key);
+      _baseIndex = list.Key;
+
+      return list.Value.PriorityQueue;
     }
   }
 }
