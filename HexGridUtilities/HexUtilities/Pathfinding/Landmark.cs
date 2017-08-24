@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -27,97 +27,137 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexUtilities.PathFinding {
-  public sealed class LandmarkCollection : ReadOnlyCollection<Landmark> {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", 
-      "CA2000:Dispose objects before losing scope")]
-    public static LandmarkCollection CreateLandmarks(
-      IBoard<IHex> board, 
-      ReadOnlyCollection<HexCoords> landmarkCoords
+namespace PGNapoleonics.HexUtilities.Pathfinding {
+  /// <summary>A board location storing shortest-path distances to every board hex.</summary>
+  /// <remarks>
+  /// A board location that stores shortest-path distances for every board hex, for use in 
+  /// computing an accurate A* heuristic. A simple Dijkstra implementation is used to generate the 
+  /// distances upon creation.
+  /// No Finalizer is implemented as the class possesses no unmanaged resources.
+  /// </remarks>
+  [DebuggerDisplay("Coords={Coords}")]
+  public sealed partial class Landmark : ILandmark, IDisposable {
+    /// <summary>Populates and returns a new landmark at the specified board coordinates.</summary>
+    /// <param name="board">IBoard{IHex} on which the landmark is to be created.</param>
+    /// <param name="coords">Coordinates on <c>board</c> where this landmark is to be created.</param>
+    public Landmark(HexCoords coords, IHexBoard<IHex> board) {
+      Board  = board;
+      Coords = coords;
+      FillLandmark();
+    }
+
+    /// <summary>TODO</summary>
+    public IHexBoard<IHex> Board  { get; private set; }
+    /// <summary>Board coordinates for the landmark location.</summary>
+    public HexCoords       Coords { get; private set; }
+
+    /// <summary>Returns the shortest-path directed-distance to the specified hex <b>from</b> the landmark.</summary>
+    public int DistanceTo  (HexCoords coords) { return backingStore[0][coords]; }
+    /// <summary>Returns the shortest-path directed-distance from the specified hex <b>to</b> the landmark.</summary>
+    public int DistanceFrom(HexCoords coords) { return backingStore[1][coords]; }
+
+    private static Func<IHexBoard<IHex>, Func<IHex,Hexside,IHex,int>>[] DirectedCostDelegates = 
+      new Func<IHexBoard<IHex>, Func<IHex,Hexside,IHex,int>>[] {
+          /* Cost from here to there */ (board) => (here,hexside,there) => board.GetDirectedCostToExit(here, hexside),
+          /* Cost from there to here */ (board) => (here,hexside,there) => board.GetDirectedCostToExit(there, hexside.Reversed())
+      };
+
+    private BoardStorage<short>[] backingStore;
+
+    /// <inheritdoc/>
+    public void FillLandmark() {
+      if (Board != null) {
+        backingStore = new BoardStorage<short>[2] {
+          new BlockedBoardStorage32x32<short>(Board.MapSizeHexes, c => -1),
+          new BlockedBoardStorage32x32<short>(Board.MapSizeHexes, c => -1)
+        };
+
+        for (var i = 0; i < 2; i++) {
+          var landmark  = Board[Coords];
+          if (landmark != null)
+            FindPathDetailTrace(true, "Find distances from {0}", landmark.Coords);
+
+            #if HotPriorityQueue
+              var queue = PriorityQueueFactory.NewHotPriorityQueue<IHex>();
+            #else
+              var queue = PriorityQueueFactory.NewDictionaryQueue<int, IHex>();
+            #endif
+            queue.Enqueue (0, landmark);
+
+            FillLandmarkDetail(queue, backingStore[i], DirectedCostDelegates[i](Board));
+        }
+      }
+    }
+
+    private void FillLandmarkDetail(IPriorityQueue<int,IHex> queue, 
+      BoardStorage<short> store, Func<IHex,Hexside,IHex,int> directedStepCost
     ) {
-      if (board==null)  throw new ArgumentNullException("board");
-      if (landmarkCoords==null) throw new ArgumentNullException("landmarkCoords");
-
-      var list = new List<Landmark>(landmarkCoords.Count);
-
-      for (var i=0; i<landmarkCoords.Count; i++) list.Add(null);
-
-      Parallel.For(0, landmarkCoords.Count, i => {
-        Landmark tempLandmark = null;
-        try {
-          tempLandmark = new Landmark(landmarkCoords[i],board);
-          list[i]      = tempLandmark;
-          tempLandmark = null;
-        } finally { if (tempLandmark!=null) tempLandmark.Dispose(); }
-      } );
-
-      return new LandmarkCollection(list);
-    }
-
-    LandmarkCollection(List<Landmark> list) : base(list) {}
-  }
-
-  public sealed class Landmark : IDisposable {
-    public Landmark(HexCoords coords, IBoard<IHex> board) {
-      if (board == null) throw new ArgumentNullException("board"); 
-
-      Coords       = coords;
-      backingStore = new BoardStorage<short>.BlockedBoardStorage32x32(board.MapSizeHexes, c => -1);
-      FillLandmark(board);
-    }
-
-    public HexCoords Coords { get; private set; }
-
-    public int HexDistance(HexCoords coords) { return backingStore[coords]; }
-
-    BoardStorage<short> backingStore;
-
-    void FillLandmark(IBoard<IHex> board) {
-      var start  = board[Coords];
-      var queue  = DictionaryPriorityQueue<int, IHex>.NewQueue();
-      TraceFlags.FindPathDetail.Trace(true, "Find distances from {0}", start.Coords);
-
-      queue.Enqueue (0, start);
-
       HexKeyValuePair<int,IHex> item;
       while (queue.TryDequeue(out item)) {
         var here = item.Value;
         var key  = item.Key;
-        if( backingStore[here.Coords] > 0 ) continue;
+        if( store[here.Coords] > 0 ) continue;
 
-        TraceFlags.FindPathDetail.Trace("Dequeue Path at {0} w/ cost={1,4}.", here, key);
-        backingStore[here.Coords] = (short)key;
+        FindPathDetailTrace("Dequeue Path at {0} w/ cost={1,4}.", here, key);
 
-        foreach (var there in here.GetAllNeighbours().Where(n => n!=null && n.Hex.IsOnboard())) {
-          var cost = board.DirectedStepCost(here, there.HexsideEntry);
-          if (cost > 0  &&  backingStore[there.Hex.Coords] == -1) {
-            TraceFlags.FindPathDetail.Trace("   Enqueue {0}: {1,4}", there.Hex.Coords, cost);
-            queue.Enqueue(key + cost, there.Hex);
-          }
+        store[here.Coords] = (short)key;
+
+        HexsideExtensions.HexsideList.ForEach( hexside =>
+          ExpandNode(store,directedStepCost,queue,here,key,hexside)
+        );
+      }
+    }
+
+    private void ExpandNode(BoardStorage<short> store, Func<IHex,Hexside,IHex,int> directedStepCost, 
+      IPriorityQueue<int,IHex> queue, IHex here, int key, Hexside hexside
+    ) {
+      var neighbourCoords = here.Coords.GetNeighbour(hexside);
+      var neighbourHex    = Board[neighbourCoords];
+
+      if (neighbourHex != null) {
+        var cost = directedStepCost(here, hexside, neighbourHex);
+        if (cost > 0  &&  store[neighbourCoords] == -1) {
+
+          FindPathDetailTrace("   Enqueue {0}: {1,4}", neighbourCoords, cost);
+
+          queue.Enqueue(key + cost, neighbourHex);
         }
       }
     }
 
-    #region IDisposable implementation with Finalizer
+    #region IDisposable implementation
     bool _isDisposed = false;
+    /// <inheritdoc/>
     public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
     void Dispose(bool disposing) {
       if (!_isDisposed) {
         if (disposing) {
-          if (backingStore!=null) backingStore.Dispose();
+          if (backingStore!=null) {
+            if (backingStore[0] != null) backingStore[0].Dispose();
+            if (backingStore[1] != null) backingStore[1].Dispose();
+          }
         }
         _isDisposed = true;
       }
     }
-    ~Landmark() { Dispose(false); }
+    #endregion
+
+    #region Tracing partial methods
+    static partial void FindPathDetailTrace(string format, params object[] paramArgs);
+    static partial void FindPathDetailTrace(bool newline, string format, params object[] paramArgs);
+    #if TRACE
+    static partial void FindPathDetailTrace(string format, params object[] paramArgs) {
+      Traces.FindPathDetail.Trace(format, paramArgs);
+    }
+    static partial void FindPathDetailTrace(bool newline, string format, params object[] paramArgs) {
+      Traces.FindPathDetail.Trace(newline, format, paramArgs);
+    }
+    #endif
     #endregion
   }
 }
