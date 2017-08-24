@@ -1,0 +1,63 @@
+The impementation of the tree coordinate systems is in a single struct **Coords**, that has an explicit interface implementation of **ICoordsUser**, **ICoordsCanon**, and **ICoordsCustom**. The simplest of these is **ICoordsUser**, presented here:
+{{
+  public interface ICoordsUser {
+    int             X         { get; }
+    int             Y         { get; }
+    IntVector2D     Vector    { get; set; }
+    ICoordsCanon    Canon     { get; }
+    ICoordsUser     Clone();
+    string          ToString();
+    int             Range(ICoordsUser coords);
+    IEnumerable<NeighbourCoords> GetNeighbours(Hexside hexsides);
+  }
+
+  public partial struct Coords {
+    int           ICoordsUser.X          { get { return VectorUser.X; } }
+    int           ICoordsUser.Y          { get { return VectorUser.Y; } }
+    IntVector2D   ICoordsUser.Vector     { get { return VectorUser;   }
+                                           set { VectorUser=value;    } }
+    ICoordsCanon  ICoordsUser.Canon      { get { return this; } } 
+    ICoordsUser   ICoordsUser.Clone()    { return NewUserCoords( this.VectorUser);  }
+    string        ICoordsUser.ToString() { return VectorUser.ToString(); }
+
+    IEnumerable<NeighbourCoords> ICoordsUser.GetNeighbours(Hexside hexsides) { 
+      return GetNeighbours(hexsides); 
+    }
+    int ICoordsUser.Range(ICoordsUser coords) { return ((ICoordsCanon)this).Range(coords.Canon); }
+  }
+}}
+Instantiation of a Coords instance, of any flavour, is done with these static methods of **Coords**:
+{{
+    public static ICoordsCanon  NewCanonCoords (IntVector2D vector){
+      return new Coords(CoordsType.Canon, vector); 
+    }
+    public static ICoordsUser   NewUserCoords  (IntVector2D vector){
+      return new Coords(CoordsType.User,vector); 
+    }
+    public static ICoordsCustom NewCustomCoords(IntVector2D vector){ 
+      return new Coords(CoordsType.Custom,vector); 
+    }
+    public static ICoordsCanon  NewCanonCoords (int x, int y) { 
+      return new Coords(CoordsType.Canon, x,y); 
+    }
+    public static ICoordsUser   NewUserCoords  (int x, int y) { 
+      return new Coords(CoordsType.User,x,y); 
+    }
+    public static ICoordsUser   NewCustomCoords(int x, int y) { 
+      return new Coords(CoordsType.Custom,x,y); 
+    }
+
+    private Coords(CoordsType coordsType, int x, int y) 
+    : this(coordsType, new IntVector2D(x,y)) {}
+    private Coords(CoordsType coordsType, IntVector2D vector) : this() {
+      switch(coordsType) {
+        default:
+        case CoordsType.Canon:   
+          vectorCanon  = vector;  isUserNull   = isCustomNull = true;  break;
+        case CoordsType.User:    
+          vectorUser   = vector;  isCustomNull = isCanonNull  = true;  break;
+        case CoordsType.Custom:  
+          vectorCustom = vector;  isCanonNull  = isUserNull   = true;  break;
+      }
+    }
+}}
