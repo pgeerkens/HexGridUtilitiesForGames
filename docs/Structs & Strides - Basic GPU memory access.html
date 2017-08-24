@@ -1,0 +1,53 @@
+<div class="wikidoc">
+<p>Tests GpuTsp_2 and <em>GpuTsp_3a</em> introduce a key concept in PGU programming: understanding memory access. Understanding how the thread-warp on each GPU access memory on each instruction cycle, particularly how it access the very fast (on-chip) Shared
+ Memory, is essential to getting the best performance.</p>
+<p>The best description of Shared Memory structure is to visualize it as a 2D table. This table appears to be in row-major order when conceptualized by a serial algorithm, such as when written to, or read from, by the host CPU; however for optimal performance
+ it must&nbsp;appear&nbsp;in column-major order for each thread of a warp. In the simple 1D case here that means putting the
+<em>thread-threadidx.x</em> index last. The same analysis holds for the paired-arrays
+<em>gpuLatitude </em>and <em>gpuLongitude</em>.</p>
+<p>The <strong>CUDA</strong> and <strong>CUDAfy</strong> infrastructures endeavour to align data suitably, but it is also incumbent of developers to recognize the pattern. Thus a substantial performance gain is seen by converting the paired arrays
+<em>gpuLatitude </em>and <em>gpuLongitude </em>to a <strong>struct </strong>array of
+<em>LatLongStruct</em>, and re-ordering the dimensions of the&nbsp;<em>paths</em> array.</p>
+<div style="color:black; background-color:white">
+<pre>[Cudafy] <br><span style="color:blue">public</span> <span style="color:blue">struct</span> LatLongStruct {<br>   <span style="color:blue">public</span> <span style="color:blue">float</span> Latitude;<br>   <span style="color:blue">public</span> <span style="color:blue">float</span> Longitude;<br>   <span style="color:blue">public</span> <span style="color:blue">float</span> Distance(LatLongStruct other) {<br>      <span style="color:blue">return</span> (<span style="color:blue">float</span>)GMath.Sqrt(Square(Latitude - other.Latitude)<br>                             &#43; Square(Longitude - other.Longitude));<br>   } <br><span style="color:blue">   public</span> <span style="color:blue">float</span> Square(<span style="color:blue">float</span> value) { <span style="color:blue">return</span> value * value; } <br>} </pre>
+<pre style="color:black; background-color:white"><pre>[Cudafy]
+<span style="color:blue">public</span> <span style="color:blue">static</span> <span style="color:blue">void</span> GpuFindPathDistance(GThread thread, 
+   <span style="color:blue">int</span>  permutations, LatLongStruct[] gpuLatLong, AnswerStruct[] answer) {
+   <span style="color:blue">var</span> threadsPerGrid	= thread.blockDim.x * thread.gridDim.x;
+   <span style="color:blue">var</span> paths		= thread.AllocateShared&lt;<span style="color:blue">int</span>&gt;(<span style="color:#a31515">&quot;path&quot;, _cities</span>, _threadsPerBlock);
+   <span style="color:blue">var</span> bestDistances	= thread.AllocateShared&lt;<span style="color:blue">float</span>&gt;(<span style="color:#a31515">&quot;dist&quot;</span>, _threadsPerBlock);
+   <span style="color:blue">var</span> bestPermutations = thread.AllocateShared&lt;<span style="color:blue">int</span>&gt; (<span style="color:#a31515">&quot;perm&quot;</span>,	_threadsPerBlock);
+
+   <span style="color:blue">var</span> permutation	= (<span style="color:blue">int</span>)(thread.threadIdx.x &#43; thread.blockIdx.x * thread.blockDim.x);
+   <span style="color:blue">var</span> bestDistance	= <span style="color:blue">float</span>.MaxValue;
+   <span style="color:blue">var</span> bestPermutation	= 0;
+   <span style="color:blue">while</span> (permutation &lt; permutations) {
+      <span style="color:blue">var</span> distance = FindPathDistance(thread, permutations, permutation, gpuLatLong, paths);
+      <span style="color:blue">if</span> (distance &lt; bestDistance) {
+         bestDistance	= distance;
+         bestPermutation= permutation;
+      }
+      permutation	  &#43;= threadsPerGrid;
+   }
+
+</pre>
+</pre>
+Along the way, in test GpuTsp_3 we also set the Architecture and Compute Capability (2.1 for the GT 630M GPU) before compiling and CUDAfying the code:
+<pre><div style="color:black; background-color:white"><pre><span style="color:blue">internal</span> <span style="color:blue">override</span> Answer GetAnswer() {
+   <span style="color:blue">var</span> stopWatchLoad	= Stopwatch.StartNew();
+   <span style="color:blue">using</span> (<span style="color:blue">var</span> gpu	= CudafyHost.GetDevice()) {
+      <span style="color:blue">var</span> arch		= gpu.GetDeviceProperties().Capability.GetArchitecture();
+      gpu.LoadModule(CudafyTranslator.Cudafy(ePlatform.x64,arch));
+      LoadTime	= stopWatchLoad.ElapsedMilliseconds;
+      <span style="color:green">// etc.</span>
+   }
+   <span style="color:green">// etc.</span>
+}</pre>
+</div>
+</pre>
+</div>
+<p>This latter may not seem beneficial in the short 11-city case, but in the 12-city case it provides a small net gain. If you know that specific features of newer architectures will benefit your performance, the code above demonstrates how to query the available
+ devide and instruct <strong>CUDAfy</strong> to use it to advanatage.</p>
+<p>Next: <a href="http://cudafytuningtutorial.codeplex.com/wikipage?title=13%20Factorial%20Doesn%27t%20Compute%21">
+13 Factorial Doesn't Compute!</a></p>
+</div><div class="ClearBoth"></div>

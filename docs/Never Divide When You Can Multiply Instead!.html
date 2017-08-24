@@ -1,0 +1,51 @@
+<div class="wikidoc">
+<p>This offending code in PathFromRoutePermutation</p>
+<div style="color:black; background-color:white">
+<pre><span style="color:blue">var</span> divisor = permutations;
+<span style="color:blue">for</span> (<span style="color:blue">int</span> city = _cities; city &gt; 1L; <span style="color:green">/* decrement in loop body */</span>) {
+   divisor	/= city;
+   <span style="color:blue">var</span> dest	= (<span style="color:blue">int</span>)((permutation / divisor) % city);
+   city--;
+</pre>
+</div>
+<p>has imposed a 200&#43;% performance penalty on converting from Int32 to Int64 . Fortunately, an equally valid generation of paths is available with this code, which multiplies instead of dividing.</p>
+<div style="color:black; background-color:white">
+<pre><span style="color:blue">var</span> divisor = 1L;
+<span style="color:blue">for</span> (<span style="color:blue">int</span> city = _cities; city &gt; 1L; <span style="color:green">/* decrement in loop body */</span>) {
+   <span style="color:blue">var</span> dest	= (<span style="color:blue">int</span>)((permutation / divisor) % city);
+   divisor	*= city;
+   city--;</pre>
+</div>
+<p>And when we run the before and after for 12 cities we obtain spectacular results:</p>
+<pre>x64 Release ( 128 threads_per * 768 blocks = 98304 threads)
+Cities  12;   Permutations:  479001600:
+---------------------------------------
+           Total     Load      Run
+              ms       ms       ms  distance
+GpuTsp4     8953 =    100 &#43;   8853; 111.3318:  - 4_Long
+GpuTsp4a    7841 =    103 &#43;   7738; 111.3318:  - 4_PathArrayStrided
+GpuTsp4b    6643 =    100 &#43;   <strong>6543;</strong> 111.3318:  - 4_DivisorsCachedGlobal
+
+GpuTsp4c    2639 =    103 &#43;   <strong>2536;</strong> 111.3318:  - 4_MultiplyInstead
+</pre>
+<p>Changing those two lines around,&nbsp;from a non-hardware-supported Int-64 division to a hardware-supported Int-64 multiplication provided a 65% time reduction. With bang like that for our buck, even implementing it on the Int-32 division was worthwhile,
+ as seen here, proving that even hard-ware supprted integer division can be slow.</p>
+<pre>x64 Release ( 128 threads_per * 768 blocks = 98304 threads)
+Cities  12;   Permutations:  479001600:
+---------------------------------------
+           Total     Load      Run
+              ms       ms       ms  distance
+GpuTsp3b    2328 =    101 &#43;   <strong>2227;</strong> 111.3318:  - 3_DivisorsCachedGlobal
+
+GpuTsp3c    1935 =    105 &#43;   <strong>1830;</strong> 111.3318:  - 3_MultiplyInstead
+</pre>
+<p>To wrap up for now, one run with 13 cities (with Int-64's of course):</p>
+<pre><pre>x64 Release ( 128 threads_per * 768 blocks = 98304 threads)
+Cities  13;   Permutations: 6,227,020,800:
+---------------------------------------
+           Total     Load      Run
+              ms       ms       ms             distance
+GpuTsp4c   38830 =   3228 &#43;  <strong>35602;</strong> 111.9742:  - 4_MultiplyInstead</pre>
+</pre>
+<p>At 14 * the 12-city time, our implementation is still&nbsp;scaling reasonably.</p>
+</div><div class="ClearBoth"></div>

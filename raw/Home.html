@@ -1,0 +1,49 @@
+<div class="wikidoc">
+<p><strong>Tuning Tutorial for CUDA applications using CUDAfy</strong><br>
+<br>
+An excellent introduction to <strong>CUDA a</strong>nd <strong>CUDAfy </strong>has been presented by
+<a rel="author" href="http://www.blogger.com/profile/08000428730772303767">John Michael Hauck</a> here:
+<a href="http://w8isms.blogspot.ca/2012/09/cudafy-me-part-4-of-4.html?showComment=1351631983305#!/2012/09/cudafy-me-part-1-of-4.html">
+cudafy-me-part-1-of-4.html</a> using the Travelling Salesman problem. This tutorial expands on that presentation, showing how the performance of the selected algorithm can be speeded up almost 3* by better exploiting the strengths of the
+<strong>CUDA </strong>architecture as exposed through <strong>CUDAfy</strong>. As we step through obtaining that improvement, it is hoped that the reader will observe a routine which can later be applied to other problem applications.</p>
+<p>Below is a listing of the results obtained by running the tuning steps for an 11-city TSP problem, with key performance benchmarks in
+<strong>bold</strong>. The run-time of an 11-city TSP problem implemented on a CUDA GPU is reduced from 379 ms to 135 ms or to 187 ms (using Int32 or Int64 respectively).</p>
+<pre>x64 Release ( 128 threads_per * 768 blocks = 98304 threads)
+Cities  11;   Permutations:   39916800:
+---------------------------------------
+With disk cache empty and only a single class ...
+           Total     Load      Run
+              ms       ms       ms  distance
+CpuTsp     14693 =      0 &#43;  14693; 110.7368: 
+MpuTsp      7404 =      0 &#43;   7404; 110.7368: 
+MpuTspA     5148 =      0 &#43;   5148; 110.7368: - MpuTsp_Better
+GpuTsp0     3012 =   2576 &#43;    436; 110.7368: - cold
+<strong>GpuTsp0     1832 =   1453 &#43;    379; 110.7368: - warm
+</strong></pre>
+<pre>/* some detail elided - complete table available under Documentation */</pre>
+<pre>... and now with disk cache populated.
+           Total     Load      Run
+              ms       ms       ms  distance
+GpuTsp1      430 =     88 &#43;    342; 110.7368: - 1_SeparateClass
+GpuTsp2      231 =     90 &#43;    141; 110.7368: - 2_StructArray
+
+GpuTsp3      264 =     93 &#43;    171; 110.7368: - 3_Architecture_x64_2_1
+GpuTsp3a     263 =     93 &#43;    170; 110.7368: - 3_PathArrayStrided
+GpuTsp3b     269 =     98 &#43;    171; 110.7368: - 3_DivisorsCachedGlobal
+
+GpuTsp4      641 =     97 &#43;    544; 110.7368: - 4_Long
+GpuTsp4a     640 =    100 &#43;    540; 110.7368: - 4_PathArrayStrided
+GpuTsp4b     615 =    106 &#43;    509; 110.7368: - 4_DivisorsCachedGlobal
+
+<strong>GpuTsp3c     240 =    105 &#43;    135; 110.7368: - 3_MultiplyInstead
+GpuTsp4c     290 =    103 &#43;    187; 110.7368: - 4_MultiplyInstead</strong>
+</pre>
+<p>Part 2: <a href="http://cudafytuningtutorial.codeplex.com/wikipage?title=The%20%22Better%22%20MpuTsp%20-%20and%20some%20odds%20%26%20ends">
+The Better MpuTsp - and some odds &amp; ends</a></p>
+<p>Part 3: <a href="http://cudafytuningtutorial.codeplex.com/wikipage?title=Structs%20%26%20Strides%20-%20Basic%20GPU%20memory%20access">
+Structs &amp; Strides - Basic GPU Memory Access</a></p>
+<p>Part 4: <a href="http://cudafytuningtutorial.codeplex.com/wikipage?title=13%20Factorial%20Doesn%27t%20Compute%21">
+13 Factorial Doesn't Compute!</a></p>
+<p>Part 5: <a href="http://cudafytuningtutorial.codeplex.com/wikipage?title=Never%20Divide%20When%20You%20Can%20Multiply%20Instead%21">
+Never Divide When You Can Multiply Instead!</a></p>
+</div><div class="ClearBoth"></div>
