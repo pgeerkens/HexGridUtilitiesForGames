@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -27,15 +27,15 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 
-namespace PGNapoleonics.HexUtilities.PathFinding {
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+using System.Diagnostics.CodeAnalysis;
+
+namespace PGNapoleonics.HexUtilities.Pathfinding {
+  /// <summary>TODO</summary>
+  [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
+    Justification="The suffix has an unambiguous meaning in the application domain.")]
   public interface IPriorityQueue<TPriority,TValue> 
-    where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority>, IComparable
+    where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority>
   {
     /// <summary>Returns whether any elements exist in the heap.</summary>
     bool Any();
@@ -43,13 +43,13 @@ namespace PGNapoleonics.HexUtilities.PathFinding {
     /// <summary>The number of items in the queue.</summary>
     int  Count { get; }
 
-    /// <summary>Creates and adds an entry with the specified <c>priority</c> and <c>value</c to the queue.></summary>
+    /// <summary>Creates and adds an entry with the specified <c>priority</c> and <c>value</c> to the queue.></summary>
     /// <param name="priority">The <c>TPriority</c> value for the new entry.</param>
     /// <param name="value">The <c>TValue</c> value for the new entry.</param>
     void Enqueue(TPriority priority, TValue value);
 
-    /// <summary>Adds the specified <c>&lt;HexKeyValuePair></c> to the queue.</summary>
-    /// <param name="item">The <c>HexKeyValuePair&lt;Tpriority,TValue></c> entry to be added to the queue. </param>
+    /// <summary>Adds the specified <c>HexKeyValuePair</c> to the queue.</summary>
+    /// <param name="item">The <c>HexKeyValuePair {Tpriority,TValue}</c> entry to be added to the queue. </param>
     void Enqueue(HexKeyValuePair<TPriority,TValue> item);
 
     /// <summary>Returns whether the top queue entry has been successfully stored in <c>result</c> 
@@ -60,42 +60,4 @@ namespace PGNapoleonics.HexUtilities.PathFinding {
     bool TryPeek(out HexKeyValuePair<TPriority,TValue> result);
   }
 
-  public struct HexKeyValuePair<TKey,TValue> : IComparable<HexKeyValuePair<TKey,TValue>>
-    where TKey : struct, IComparable<TKey>, IComparable
-  {
-    public TKey   Key     { get; private set; }
-    public TValue Value   { get; private set; }
-
-    public HexKeyValuePair(TKey key, TValue value) : this() {
-      Key   = key;
-      Value = value;
-    }
-    public int CompareTo(HexKeyValuePair<TKey,TValue> other) { 
-      return Key.CompareTo(other.Key); 
-    }
-    public override bool Equals(object obj) {
-      return obj is HexKeyValuePair<TKey,TValue> 
-        &&  Key.Equals(((HexKeyValuePair<TKey,TValue>)obj).Key);
-    }
-    public override int GetHashCode() { return Key.GetHashCode(); }
-
-    public static bool operator == (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
-      return lhs.Key.Equals(rhs.Key);
-    }
-    public static bool operator != (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
-      return ! (lhs == rhs);
-    }
-    public static bool operator <  (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
-      return lhs.Key.CompareTo(rhs.Key) < 0;;
-    }
-    public static bool operator <= (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
-      return lhs.Key.CompareTo(rhs.Key) <= 0;;
-    }
-    public static bool operator >= (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
-      return lhs.Key.CompareTo(rhs.Key) >= 0;
-    }
-    public static bool operator >  (HexKeyValuePair<TKey,TValue> lhs, HexKeyValuePair<TKey,TValue> rhs) {
-      return lhs.Key.CompareTo(rhs.Key) > 0;
-    }
-  }
 }
