@@ -1,0 +1,8 @@
+var searchData=
+[
+  ['heuristic',['Heuristic',['../class_p_g_napoleonics_1_1_hex_utilities_1_1_hex_board_3_01_t_hex_01_4.html#a7941ed2ae19fb79edd839515834068ff',1,'PGNapoleonics::HexUtilities::HexBoard&lt; THex &gt;']]],
+  ['hex',['Hex',['../class_p_g_napoleonics_1_1_hex_utilities_1_1_hex.html#ae93c9685b2813263ad3096c969e59a8d',1,'PGNapoleonics::HexUtilities::Hex']]],
+  ['hexboard',['HexBoard',['../class_p_g_napoleonics_1_1_hex_utilities_1_1_hex_board_3_01_t_hex_01_4.html#a6bc71fe4bdf97a473b7aab418525746d',1,'PGNapoleonics.HexUtilities.HexBoard&lt; THex &gt;.HexBoard(Size sizeHexes, Size gridSize, Func&lt; HexBoard&lt; THex &gt;, BoardStorage&lt; THex &gt;&gt; initializeBoard)'],['../class_p_g_napoleonics_1_1_hex_utilities_1_1_hex_board_3_01_t_hex_01_4.html#a60023babed75b5c7a148ab2757728849',1,'PGNapoleonics.HexUtilities.HexBoard&lt; THex &gt;.HexBoard(Size sizeHexes, Size gridSize, Func&lt; HexBoard&lt; THex &gt;, BoardStorage&lt; THex &gt;&gt; initializeBoard, ReadOnlyCollection&lt; HexCoords &gt; landmarkCoords)']]],
+  ['hexcenterpoint',['HexCenterPoint',['../interface_p_g_napoleonics_1_1_hex_utilities_1_1_i_hexgrid.html#a71f8e61c3d2ec2f05bf7d2dda375163a',1,'PGNapoleonics.HexUtilities.IHexgrid.HexCenterPoint()'],['../class_p_g_napoleonics_1_1_hex_utilities_1_1_hexgrid.html#ace00c864fe57a248c6285b986aa46798',1,'PGNapoleonics.HexUtilities.Hexgrid.HexCenterPoint()'],['../class_p_g_napoleonics_1_1_hex_utilities_1_1_transposed_hexgrid.html#a1b5dea23638c8a89482fd80ab4582e76',1,'PGNapoleonics.HexUtilities.TransposedHexgrid.HexCenterPoint()']]],
+  ['hexgrid',['Hexgrid',['../class_p_g_napoleonics_1_1_hex_utilities_1_1_hexgrid.html#a8e2061ca7dd7cb58152b8cc788b7e368',1,'PGNapoleonics::HexUtilities::Hexgrid']]]
+];

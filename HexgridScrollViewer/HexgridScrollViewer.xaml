@@ -1,0 +1,20 @@
+﻿<UserControl
+   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+   xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+   xmlns:HexgridScrollViewer="clr-namespace:PGNapoleonics.HexgridScrollViewer" 
+   xmlns:local="clr-namespace:PGNapoleonics.HexgridPanel" 
+   x:Class="PGNapoleonics.HexgridPanel.ScrollViewer" 
+   mc:Ignorable="d" 
+   d:DesignHeight="300" Width="447">
+   <UserControl.DataContext>
+      <HexgridScrollViewer:HexgridScrollViewerViewModel/>
+   </UserControl.DataContext>
+   <HexgridScrollViewer:HexgridScrollViewer HorizontalAlignment="Left" Height="280" Margin="10,10,0,0" 
+           VerticalAlignment="Top" Width="427" >
+      <HexgridScrollViewer:HexgridScrollViewer.DataContext>
+         <HexgridScrollViewer:HexgridScrollViewerViewModel/>
+      </HexgridScrollViewer:HexgridScrollViewer.DataContext>
+   </HexgridScrollViewer:HexgridScrollViewer>
+</UserControl>

@@ -1,0 +1,118 @@
+﻿#region The MIT License - Copyright (C) 2012-2015 Pieter Geerkens
+/////////////////////////////////////////////////////////////////////////////////////////
+//                PG Software Solutions Inc. - Hex-Grid Utilities
+/////////////////////////////////////////////////////////////////////////////////////////
+// The MIT License:
+// ----------------
+// 
+// Copyright (c) 2012-2015 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, 
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+// permit persons to whom the Software is furnished to do so, subject to the following 
+// conditions:
+//     The above copyright notice and this permission notice shall be 
+//     included in all copies or substantial portions of the Software.
+// 
+//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+//     OTHER DEALINGS IN THE SOFTWARE.
+/////////////////////////////////////////////////////////////////////////////////////////
+#endregion
+using System;
+using System.Diagnostics.Contracts;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Reflection;
+using System.Resources;
+using System.Threading;
+using System.Windows.Forms;
+
+using PGNapoleonics.HexgridPanel.Properties;
+
+namespace  PGNapoleonics.WinForms {
+  /// <summary>A Last-chance Thread Exception handler.</summary>
+  [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage()]
+  public class ThreadExceptionHandler {
+    static ResourceManager StringManager =
+            new ResourceManager("en-US", Assembly.GetExecutingAssembly());
+    static CultureInfo Culture = CultureInfo.CurrentCulture;
+
+    static readonly string NewLine       = Environment.NewLine;
+    static readonly string NewLineX2     = Environment.NewLine + Environment.NewLine;
+           readonly string ErrorTitle    = Application.ProductName + Resources.SevereApplicationError;
+           readonly string FatalTitle    = Application.ProductName + Resources.FatalApplicationError;
+    //       readonly string NullEventArgs = Resources.NullThreadExceptionArgs;
+           readonly string FatalMessage  = Resources.FatalThreadingError;
+
+    /// <summary>Handles the thread exception.</summary> 
+    [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+    public void ApplicationThreadException(object sender, ThreadExceptionEventArgs e) {
+      e.RequiredNotNull("e");
+      try {
+        var senderType = sender==null ? StringManager.GetString("NullSender",Culture) : sender.ToString();
+        var aggregateException = e.Exception as AggregateException;
+        if (aggregateException != null) {
+          foreach (var ex in aggregateException.InnerExceptions)
+            ShowException(ex, senderType);
+        }
+        else if( e.Exception is NotImplementedException
+        ||  e.Exception is NotSupportedException
+        ||  e.Exception is InvalidOperationException
+        ) {
+          ShowException(e.Exception, senderType);
+        } else {
+            if (ShowThreadExceptionDialog(e.Exception) == DialogResult.Abort) Application.Exit();
+        }
+        Application.ExitThread();
+      } catch(Exception ex) {
+
+        try {
+          MessageBox.Show(FatalMessage + Environment.NewLine + ex.StackTrace, 
+            FatalTitle, 
+            MessageBoxButtons.OK, 
+            MessageBoxIcon.Stop,
+            MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
+        } finally { Application.Exit(); }
+      }
+    }
+
+    private void ShowException(Exception ex, string senderType) {
+      var stackTrace = ex.StackTrace.Replace(@"c:\Users\Pieter_2\Documents\Visual Studio 2012\Projects\HexGridExampleTemp",".");
+      MessageBox.Show(
+          ex.Message + Environment.NewLine +
+          StringManager.GetString("From",Culture) + senderType + Environment.NewLine + 
+          stackTrace,
+          ErrorTitle, 
+          MessageBoxButtons.OK, 
+          MessageBoxIcon.Stop,
+          MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
+    }
+
+    /// <summary>Creates and displays the error message.</summary>
+    private static DialogResult ShowThreadExceptionDialog(Exception ex) {
+      var result = DialogResult.Abort;
+
+      var errorMessage = 
+        "Unhandled Exception:" + NewLineX2 +
+        ex.Message             + NewLineX2 +
+        ex.GetType()           + NewLineX2 +
+        "Stack Trace:"         + NewLine +
+        ex.StackTrace;
+
+      using (var dialog = new ExceptionDialog(errorMessage)) {
+        dialog.ShowDialog();
+        result = dialog.DialogResult;
+      }
+
+      return result;
+    }
+  }
+}

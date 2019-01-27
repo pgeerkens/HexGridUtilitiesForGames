@@ -1,0 +1,391 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{013628E1-60E2-40A6-91D4-8B446F397A0A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PGNapoleonics.HexUtilities</RootNamespace>
+    <AssemblyName>PGNapoleonics.HexUtilities</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <HighEntropyVA>False</HighEntropyVA>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;HotPriorityQueue, TraceFoV</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\PGNapoleonics.HexUtilities.XML</DocumentationFile>
+    <NoWarn>1587,1607</NoWarn>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <FileAlignment>512</FileAlignment>
+    <HighEntropyVA>False</HighEntropyVA>
+    <DynamicBase>False</DynamicBase>
+    <BaseAddress>255066112</BaseAddress>
+    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>False</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>True</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>True</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>True</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>True</CodeContractsRedundantAssumptions>
+    <CodeContractsAssertsToContractsCheckBox>True</CodeContractsAssertsToContractsCheckBox>
+    <CodeContractsRedundantTests>True</CodeContractsRedundantTests>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsMissingPublicEnsuresAsWarnings>True</CodeContractsMissingPublicEnsuresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>True</CodeContractsInferEnsures>
+    <CodeContractsInferEnsuresAutoProperties>True</CodeContractsInferEnsuresAutoProperties>
+    <CodeContractsInferObjectInvariants>True</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestAssumptionsForCallees>True</CodeContractsSuggestAssumptionsForCallees>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsNecessaryEnsures>True</CodeContractsNecessaryEnsures>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsSuggestReadonly>True</CodeContractsSuggestReadonly>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions>-outputwarnmasks</CodeContractsExtraAnalysisOptions>
+    <CodeContractsSQLServerOption>%28LocalDb%29\MSSQLLocalDB</CodeContractsSQLServerOption>
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsSkipAnalysisIfCannotConnectToCache>False</CodeContractsSkipAnalysisIfCannotConnectToCache>
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsBeingOptimisticOnExternal>True</CodeContractsBeingOptimisticOnExternal>
+    <CodeContractsRuntimeCheckingLevel>Pre and Post</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>2</CodeContractsAnalysisWarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>NET45, HotPriorityQueue</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\PGNapoleonics.HexUtilities.xml</DocumentationFile>
+    <NoWarn>1587,1607</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>255066112</BaseAddress>
+    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>True</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>True</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>True</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>True</CodeContractsRedundantAssumptions>
+    <CodeContractsAssertsToContractsCheckBox>True</CodeContractsAssertsToContractsCheckBox>
+    <CodeContractsRedundantTests>True</CodeContractsRedundantTests>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsMissingPublicEnsuresAsWarnings>True</CodeContractsMissingPublicEnsuresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>True</CodeContractsInferEnsures>
+    <CodeContractsInferEnsuresAutoProperties>True</CodeContractsInferEnsuresAutoProperties>
+    <CodeContractsInferObjectInvariants>True</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestAssumptionsForCallees>True</CodeContractsSuggestAssumptionsForCallees>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsNecessaryEnsures>True</CodeContractsNecessaryEnsures>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsSuggestReadonly>True</CodeContractsSuggestReadonly>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsSQLServerOption>%28LocalDb%29\MSSQLLocalDB</CodeContractsSQLServerOption>
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsSkipAnalysisIfCannotConnectToCache>True</CodeContractsSkipAnalysisIfCannotConnectToCache>
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsBeingOptimisticOnExternal>True</CodeContractsBeingOptimisticOnExternal>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>2</CodeContractsAnalysisWarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>HexgridUtilities.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Checked|AnyCPU'">
+    <OutputPath>bin\Checked\</OutputPath>
+    <DefineConstants>TRACE;NET45, HotPriorityQueue,TraceFoV</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <Optimize>true</Optimize>
+    <NoWarn>1587,1607</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <BaseAddress>255066112</BaseAddress>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>True</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>False</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>True</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>True</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>True</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>True</CodeContractsRedundantAssumptions>
+    <CodeContractsAssertsToContractsCheckBox>True</CodeContractsAssertsToContractsCheckBox>
+    <CodeContractsRedundantTests>True</CodeContractsRedundantTests>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsMissingPublicEnsuresAsWarnings>True</CodeContractsMissingPublicEnsuresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>True</CodeContractsInferEnsures>
+    <CodeContractsInferEnsuresAutoProperties>True</CodeContractsInferEnsuresAutoProperties>
+    <CodeContractsInferObjectInvariants>True</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestAssumptionsForCallees>True</CodeContractsSuggestAssumptionsForCallees>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsNecessaryEnsures>True</CodeContractsNecessaryEnsures>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsSuggestReadonly>True</CodeContractsSuggestReadonly>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsSQLServerOption>%28LocalDb%29\MSSQLLocalDB</CodeContractsSQLServerOption>
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsSkipAnalysisIfCannotConnectToCache>False</CodeContractsSkipAnalysisIfCannotConnectToCache>
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsBeingOptimisticOnExternal>True</CodeContractsBeingOptimisticOnExternal>
+    <CodeContractsRuntimeCheckingLevel>Pre and Post</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>2</CodeContractsAnalysisWarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET45, HotPriorityQueue, TraceFoV</DefineConstants>
+    <NoWarn>1587,1607</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRulesLessCA1303.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>NET45, HotPriorityQueue</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <Optimize>true</Optimize>
+    <NoWarn>1587,1607</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRulesLessCA1303.ruleset</CodeAnalysisRuleSet>
+    <BaseAddress>4194304</BaseAddress>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Checked|x86'">
+    <OutputPath>bin\x86\Checked\</OutputPath>
+    <DefineConstants>TRACE;NET45, HotPriorityQueue,TraceFoV</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>1587,1607</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRulesLessCA1303.ruleset</CodeAnalysisRuleSet>
+    <BaseAddress>4194304</BaseAddress>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET45, HotPriorityQueue, TraceFoV</DefineConstants>
+    <BaseAddress>255066112</BaseAddress>
+    <NoWarn>1587,1607</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>NET45, HotPriorityQueue</DefineConstants>
+    <BaseAddress>255066112</BaseAddress>
+    <DocumentationFile>bin\Release\PGNapoleonics.HexUtilities.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <NoWarn>1587,1607</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <FileAlignment>512</FileAlignment>
+    <HighEntropyVA>False</HighEntropyVA>
+    <DynamicBase>False</DynamicBase>
+    <BaseAddress>255066112</BaseAddress>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Checked|x64'">
+    <OutputPath>bin\x64\Checked\</OutputPath>
+    <DefineConstants>TRACE;NET45, HotPriorityQueue,TraceFoV</DefineConstants>
+    <BaseAddress>255066112</BaseAddress>
+    <Optimize>true</Optimize>
+    <NoWarn>1587,1607</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\ContractExtensions.cs" />
+    <Compile Include="Common\EventHandlerExtensions.cs" />
+    <Compile Include="Common\LinqExtensions1.cs" />
+    <Compile Include="Common\Maybe.cs" />
+    <Compile Include="Common\MaybeExtensions.cs" />
+    <Compile Include="Common\ValurEventArgs.cs" />
+    <Compile Include="IMapDisplay.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Pathfinding\DirectedLandmark.cs" />
+    <Compile Include="Pathfinding\HexsideCosts.cs" />
+    <Compile Include="Pathfinding\ILandmarkBoard.cs" />
+    <Compile Include="Pathfinding\LandmarkPopulator.cs" />
+    <Compile Include="Pathfinding\PriorityQueueFactory.cs" />
+    <Compile Include="Storage\BlockedBoardStorage.cs" />
+    <Compile Include="Storage\BlockedBoardStorage32x32.cs" />
+    <Compile Include="Storage\BoardStorage.cs" />
+    <Compile Include="Common\Tracing.cs" />
+    <Compile Include="Common\EnumExtensions.cs" />
+    <Compile Include="Common\EnumHelper.cs" />
+    <Compile Include="Common\Extensions.cs" />
+    <Compile Include="FastLists\ClassicEnumerable.cs" />
+    <Compile Include="FastLists\FastEnumerable.cs" />
+    <Compile Include="FastLists\FastIteratorFunctor.cs" />
+    <Compile Include="FastLists\FastList.cs" />
+    <Compile Include="FastLists\FastListContracts.cs" />
+    <Compile Include="FastLists\FastListExtensions.cs" />
+    <Compile Include="FastLists\IFastList.cs" />
+    <Compile Include="FastLists\IFastEnumerable.cs" />
+    <Compile Include="FastLists\IFastEnumerator.cs" />
+    <Compile Include="FastLists\IFastListX.cs" />
+    <Compile Include="FastLists\IForEachable.cs" />
+    <Compile Include="Common\ImmutableStack.cs" />
+    <Compile Include="Common\IntMatrix2D.cs" />
+    <Compile Include="Common\IntVector2D.cs" />
+    <Compile Include="Common\PointExtensions.cs" />
+    <Compile Include="Common\SizeExtensions.cs" />
+    <Compile Include="Common\UserCoordsRectangle.cs" />
+    <Compile Include="CustomCoords.cs" />
+    <Compile Include="Storage\FlatBoardStorage.cs" />
+    <Compile Include="FastLists\IForEachable2.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="HexCoords.cs" />
+    <Compile Include="Hexside.cs" />
+    <Compile Include="Hexsides.cs" />
+    <Compile Include="Storage\IBoardStorage.cs" />
+    <Compile Include="FieldOfView\IFovBoard.cs" />
+    <Compile Include="IHex.cs" />
+    <Compile Include="IHexgrid.cs" />
+    <Compile Include="Namespaces.cs" />
+    <Compile Include="NativeMethods.cs" />
+    <Compile Include="Pathfinding\DirectedPathStepHex.cs" />
+    <Compile Include="Pathfinding\LandmarkPathfinder.cs" />
+    <Compile Include="Pathfinding\DictPriorityQueue.cs" />
+    <Compile Include="HexGrid.cs" />
+    <Compile Include="Hex.cs" />
+    <Compile Include="HexBoard.cs" />
+    <Compile Include="Pathfinding\DirectionalPathfinder.cs" />
+    <Compile Include="Pathfinding\HexBoardPathfindingExtensions.cs" />
+    <Compile Include="Pathfinding\HexKeyValuePair.cs" />
+    <Compile Include="Pathfinding\HotPriorityQueue.cs" />
+    <Compile Include="Pathfinding\HotPriorityQueueueList.cs" />
+    <Compile Include="Pathfinding\IDirectedPathCollection.cs" />
+    <Compile Include="Pathfinding\IHotPrioirtyQueueList.cs" />
+    <Compile Include="Pathfinding\ILandmark.cs" />
+    <Compile Include="Pathfinding\INavigableBoard.cs" />
+    <Compile Include="Pathfinding\IPathfinder.cs" />
+    <Compile Include="Pathfinding\IPathHalves.cs" />
+    <Compile Include="Pathfinding\IPriorityQueue.cs" />
+    <Compile Include="Pathfinding\Landmark.cs" />
+    <Compile Include="Pathfinding\DirectedPathCollection.cs" />
+    <Compile Include="Pathfinding\LandmarkCollection.cs" />
+    <Compile Include="Pathfinding\MinListHeap.cs" />
+    <Compile Include="Pathfinding\Pathfinder.cs" />
+    <Compile Include="Pathfinding\StandardPathfinder.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="FieldOfView\FieldOfView.cs" />
+    <Compile Include="FieldOfView\FovFactory.cs" />
+    <Compile Include="FieldOfView\FovCone.cs" />
+    <Compile Include="FieldOfView\FovQueue.cs" />
+    <Compile Include="FieldOfView\RiseRun.cs" />
+    <Compile Include="FieldOfView\ShadowCastingFov.cs" />
+    <Compile Include="FieldOfView\Dodecant.cs" />
+    <Compile Include="FieldOfView\ShadowCastingFov_Utilities.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="HexgridUtilities.snk" />
+    <None Include="license.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="PGSoftwareSolutions.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
+      <Link>CustomDictionary.xml</Link>
+    </CodeAnalysisDictionary>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
