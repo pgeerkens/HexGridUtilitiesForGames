@@ -45,7 +45,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
 
         /// <inheritdoc/>
         [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "2*range")]
-        public override short?  Heuristic(HexCoords source, HexCoords target) { return (short)(2 * source.Range(target)); }
+        public override short?  Heuristic(HexCoords source, HexCoords target) => (short)(2 * source.Range(target));
 
         /// <inheritdoc/>
         protected override int  ElevationBase =>  0;
@@ -55,8 +55,8 @@ namespace PGNapoleonics.HexgridExampleCommon {
         public    override void PaintUnits(Graphics graphics) { ; }
 
         #region static Board definition
-        static IList<string> _board     = MapDefinitions.AStarBugMapDefinition;
-        static Size          _sizeHexes = new Size(_board[0].Length, _board.Count);
+        static IReadOnlyList<string> _board     = MapDefinitions.AStarBugMapDefinition;
+        static Size                  _sizeHexes = new Size(_board[0].Length, _board.Count);
         #endregion
     }
 }

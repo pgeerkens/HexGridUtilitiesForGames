@@ -56,8 +56,8 @@ namespace PGNapoleonics.HexgridExampleCommon {
         public override    void PaintUnits(Graphics graphics) { ; }
 
         #region static Board definition
-        static IList<string> _board     = MapDefinitions.MazeMapDefinition;
-        static Size          _sizeHexes = new Size(_board[0].Length, _board.Count);
+        static IReadOnlyList<string> _board     = MapDefinitions.MazeMapDefinition;
+        static Size                  _sizeHexes = new Size(_board[0].Length, _board.Count);
         #endregion
 
         private new static MapGridHex InitializeHex(HexCoords coords) {

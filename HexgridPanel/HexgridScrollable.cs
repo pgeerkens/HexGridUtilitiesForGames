@@ -385,18 +385,17 @@ namespace PGNapoleonics.HexgridPanel {
     }
     #endregion
 
-    #region MouseWheel & Scroll event handlers
-    /// <inheritdoc/>
-    protected override void OnMouseWheel(MouseEventArgs e) {
-      if (e == null) throw new ArgumentNullException("e");
-      Tracing.ScrollEvents.Trace(" - {0}.OnMouseWheel: {1}", Name, e.ToString());
+        #region MouseWheel & Scroll event handlers
+        /// <inheritdoc/>
+        protected override void OnMouseWheel(MouseEventArgs e) {
+            if (e == null) throw new ArgumentNullException("e");
+            Tracing.ScrollEvents.Trace(" - {0}.OnMouseWheel: {1}", Name, e.ToString());
 
-      if (Control.ModifierKeys.HasFlag(Keys.Control)) ScaleIndex += Math.Sign(e.Delta);
-      else if (IsShiftKeyDown)                        base.OnMouseHwheel(e);
-      else                                            base.OnMouseWheel(e);
-      var he = e as HandledMouseEventArgs;
-      if (he != null) he.Handled = true;
-    }
+            if (ModifierKeys.HasFlag(Keys.Control)) ScaleIndex += Math.Sign(e.Delta);
+            else if (IsShiftKeyDown)                        base.OnMouseHwheel(e);
+            else                                            base.OnMouseWheel(e);
+            if(e is HandledMouseEventArgs he) he.Handled = true;
+        }
 
     /// <summary>TODO</summary>
     public void ScrollPanelVertical(ScrollEventType type, int sign) {

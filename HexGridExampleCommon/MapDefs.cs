@@ -27,7 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace PGNapoleonics.HexgridExampleCommon {
     /// <summary>TODO</summary>
@@ -35,8 +34,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
 
         #region Map Definitions
         /// <summary>TODO</summary>
-        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly IList<string> TerrainMapDefinition = new List<string>() {
+        public static readonly IReadOnlyList<string> TerrainMapDefinition = new List<string>() {
           "...................3.......22...........R..............",
           "...................3.........222222.....R..............",
           "...................3..............2.....R..............",
@@ -70,8 +68,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
         }.AsReadOnly();
 
         /// <summary>TODO</summary>
-        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly IList<string> MazeMapDefinition = new List<string>() {
+        public static readonly IReadOnlyList<string> MazeMapDefinition = new List<string>() {
           ".............|.........|.......|.........|.............",
           ".............|.........|.......|.........|.............",
           "....xxxxxxxxx|....|....|...|...|...|.....|.............",
@@ -105,8 +102,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
         }.AsReadOnly();
 
         /// <summary>TODO</summary>
-        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly IList<string> AStarBugMapDefinition = new List<string>() {
+        public static readonly IReadOnlyList<string> AStarBugMapDefinition = new List<string>() {
           ".2333333333R..........2",
           ".2........R33333333.22.",
           ".2.......R........22...",

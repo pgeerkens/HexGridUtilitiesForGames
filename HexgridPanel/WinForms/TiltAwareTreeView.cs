@@ -35,158 +35,141 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridPanel.WinForms {
-  /// <summary>TODO</summary>
-  public partial class TiltAwareTreeView : TreeView {
-    private const int VerticalScrollLargeChange   = 120;
-    private const int HorizontalScrollLargeChange = 120;
-
     /// <summary>TODO</summary>
-    public TiltAwareTreeView() {
-      InitializeComponent();
-    }
+    public partial class TiltAwareTreeView : TreeView {
+        /// <summary>TODO</summary>
+        public TiltAwareTreeView() => InitializeComponent();
 
-    #region SelectablePanel implementation
-    /// <inheritdoc/>
-    protected override void OnMouseEnter(EventArgs e) {
-      base.OnMouseEnter(e);
-      Focus();
-    }
-    /// <inheritdoc/>
-    protected override void OnMouseLeave(EventArgs e) {
-      Parent.Focus();
-      base.OnMouseEnter(e);
-    }
-    /// <inheritdoc/>
-    protected override void OnPaint(PaintEventArgs e) {
-      base.OnPaint(e);
-      if (this.Focused  &&  this.ShowFocusCues) {
-        var rc = this.ClientRectangle;
-        rc.Inflate(-2, -2);
-        ControlPaint.DrawFocusRectangle(e.Graphics, rc);
-      }
-    }
-    #endregion
+        /// <summary>Occurs when the mouse tilt-wheel moves while the control has focus.</summary>
+        public virtual event EventHandler<MouseEventArgs>  MouseHwheel;
 
-    #region Mouse Tilt Wheel (MouseHwheel) event implementation
-    /// <summary>Occurs when the mouse tilt-wheel moves while the control has focus.</summary>
-    public virtual event EventHandler<MouseEventArgs>  MouseHwheel;
+        #region Panel Scroll extensions
+        /// <summary>TODO</summary>
+        public void PageUp()    { RollVertical( - VerticalScrollLargeChange); }
+        /// <summary>TODO</summary>
+        public void PageDown()  { RollVertical( + VerticalScrollLargeChange); }
+        /// <summary>TODO</summary>
+        public void PageLeft()  { RollHorizontal( - HorizontalScrollLargeChange); }
+        /// <summary>TODO</summary>
+        public void PageRight() { RollHorizontal( + HorizontalScrollLargeChange); }
+        /// <summary>TODO</summary>
+        public void LineUp()    { RollVertical( - MouseWheelStep); }
+        /// <summary>TODO</summary>
+        public void LineDown()  { RollVertical( + MouseWheelStep); }
+        /// <summary>TODO</summary>
+        public void LineLeft()  { RollHorizontal( - MouseWheelStep); }
+        /// <summary>TODO</summary>
+        public void LineRight() { RollHorizontal( + MouseWheelStep); }
+        #endregion
 
-    private int _unappliedHorizontalScroll = 0;
-    private int _unappliedVerticalScroll   = 0;
-
-    /// <summary>Extend Windows Message Loop to receive MouseHwheel messages.</summary>
-    protected override void WndProc(ref Message m) {
-      if (!IsDisposed  &&  m.HWnd == this.Handle) {
-        switch ((WM)m.Msg) {
-          case WM.MouseHwheel:  OnMouseHwheel(CreateMouseEventArgs(m));
-                                m.Result = (IntPtr)0;
-                                break;
-          default:              break;
+        #region SelectablePanel implementation
+        /// <inheritdoc/>
+        protected override void OnMouseEnter(EventArgs e) {
+            base.OnMouseEnter(e);
+            Focus();
         }
-      }
-      base.WndProc(ref m);
+        /// <inheritdoc/>
+        protected override void OnMouseLeave(EventArgs e) {
+            Parent.Focus();
+            base.OnMouseEnter(e);
+        }
+        /// <inheritdoc/>
+        protected override void OnPaint(PaintEventArgs e) {
+            base.OnPaint(e);
+            if (Focused  &&  ShowFocusCues) {
+                var rc = ClientRectangle;
+                rc.Inflate(-2, -2);
+                ControlPaint.DrawFocusRectangle(e.Graphics, rc);
+            }
+        }
+        #endregion
+
+        #region Mouse Tilt Wheel (MouseHwheel) event implementation
+        /// <summary>Extend Windows Message Loop to receive MouseHwheel messages.</summary>
+        protected override void WndProc(ref Message m) {
+            if (!IsDisposed  &&  m.HWnd == Handle) {
+                switch ((WM)m.Msg) {
+                  case WM.MouseHwheel:  OnMouseHwheel(CreateMouseEventArgs(m));
+                                        m.Result = (IntPtr)0;
+                                        break;
+                  default:              break;
+                }
+            }
+            base.WndProc(ref m);
+        }
+
+        /// <summary>TODO</summary>
+        /// <param name="e"></param>
+        protected virtual void OnMouseHwheel(MouseEventArgs e) {
+            if (e == null) throw new ArgumentNullException("e");
+            if (!Scrollable) return;
+
+            RollHorizontal(e.Delta);
+            MouseHwheel.Raise(this, e);
+
+            if (e is HandledMouseEventArgs eh) eh.Handled = true;
+        }
+
+        /// <summary>TODO</summary>
+        protected virtual int MouseWheelStep
+        => SystemInformation.MouseWheelScrollDelta / SystemInformation.MouseWheelScrollLines;
+
+        /// <summary>TODO</summary>
+        private static MouseEventArgs CreateMouseEventArgs(Message m) {
+          return new MouseEventArgs(
+              (MouseButtons)NativeMethods.LoWord(m.WParam),
+              0,
+              NativeMethods.LoWord(m.LParam),
+              NativeMethods.HiWord(m.LParam),
+              NativeMethods.HiWord(m.WParam)
+            );
+        }
+
+        private const int VerticalScrollLargeChange   = 120;
+        private const int HorizontalScrollLargeChange = 120;
+
+        private int _unappliedHorizontalScroll = 0;
+        private int _unappliedVerticalScroll   = 0;
+        #endregion
+
+        private void RollHorizontal(int delta) {
+            _unappliedHorizontalScroll += delta;
+            while (_unappliedHorizontalScroll >= MouseWheelStep) {
+                HScrollByOffset( + MouseWheelStep);
+                _unappliedHorizontalScroll -= MouseWheelStep;
+            }
+            while (_unappliedHorizontalScroll <= -MouseWheelStep) {
+                HScrollByOffset( - MouseWheelStep);
+                _unappliedHorizontalScroll += MouseWheelStep;
+            }
+        }
+
+        private void RollVertical(int delta) {
+            _unappliedVerticalScroll += delta;
+            while (_unappliedVerticalScroll >= MouseWheelStep) {
+                VScrollByOffset( + MouseWheelStep);
+                _unappliedVerticalScroll -= MouseWheelStep;
+            }
+            while (_unappliedVerticalScroll <= -MouseWheelStep) {
+                VScrollByOffset( - MouseWheelStep);
+                _unappliedVerticalScroll += MouseWheelStep;
+            }
+        }
+
+        /// <summary>TODO</summary>
+        private void HScrollByOffset(int delta) {
+            AutoScrollOffset = new Point (-AutoScrollOffset.X + delta, -AutoScrollOffset.Y);
+        }
+
+        /// <summary>TODO</summary>
+        internal void VScrollByOffset(int delta) {
+            AutoScrollOffset = new Point (-AutoScrollOffset.X, -AutoScrollOffset.Y + delta);
+        }
+
+        private IReadOnlyList<Action> ScrollActions => new List<Action> {
+                () => PageUp(),   () => PageDown(),
+                () => PageLeft(), () => PageRight(),
+                () => LineUp(),   () => LineDown(),
+                () => LineLeft(), () => LineRight()  }.AsReadOnly();
     }
-
-    /// <summary>TODO</summary>
-    /// <param name="e"></param>
-    protected virtual void OnMouseHwheel(MouseEventArgs e) {
-      if (e == null) throw new ArgumentNullException("e");
-      if (!Scrollable) return;
-
-      RollHorizontal(e.Delta);
-      MouseHwheel.Raise(this, e);
-
-      var eh = e as HandledMouseEventArgs;
-      if (eh != null) eh.Handled = true;
-    }
-
-    /// <summary>TODO</summary>
-    protected virtual int MouseWheelStep {
-      get { return SystemInformation.MouseWheelScrollDelta
-                 / SystemInformation.MouseWheelScrollLines;
-      }
-    }
-
-    /// <summary>TODO</summary>
-    private static MouseEventArgs CreateMouseEventArgs(Message m) {
-      return new MouseEventArgs(
-          (MouseButtons)NativeMethods.LoWord(m.WParam),
-          0,
-          NativeMethods.LoWord(m.LParam),
-          NativeMethods.HiWord(m.LParam),
-          (Int16)NativeMethods.HiWord(m.WParam)
-        );
-    }
-    #endregion
-
-    #region Panel Scroll extensions
-    /// <summary>TODO</summary>
-    public void PageUp()    { RollVertical(-1 * VerticalScrollLargeChange); }
-    /// <summary>TODO</summary>
-    public void PageDown()  { RollVertical(+1 * VerticalScrollLargeChange); }
-    /// <summary>TODO</summary>
-    public void PageLeft()  { RollHorizontal(-1 * HorizontalScrollLargeChange); }
-    /// <summary>TODO</summary>
-    public void PageRight() { RollHorizontal(+1 * HorizontalScrollLargeChange); }
-    /// <summary>TODO</summary>
-    public void LineUp()    { RollVertical(-1 * MouseWheelStep); }
-    /// <summary>TODO</summary>
-    public void LineDown()  { RollVertical(+1 * MouseWheelStep); }
-    /// <summary>TODO</summary>
-    public void LineLeft()  { RollHorizontal(-1 * MouseWheelStep); }
-    /// <summary>TODO</summary>
-    public void LineRight() { RollHorizontal(+1 * MouseWheelStep); }
-
-    private void RollHorizontal(int delta) {
-      _unappliedHorizontalScroll += delta;
-      while (_unappliedHorizontalScroll >= MouseWheelStep) {
-        HScrollByOffset( + MouseWheelStep);
-        _unappliedHorizontalScroll -= MouseWheelStep;
-      }
-      while (_unappliedHorizontalScroll <= -MouseWheelStep) {
-        HScrollByOffset( - MouseWheelStep);
-        _unappliedHorizontalScroll += MouseWheelStep;
-      }
-    }
-
-    private void RollVertical(int delta) {
-      _unappliedVerticalScroll += delta;
-      while (_unappliedVerticalScroll >= MouseWheelStep) {
-        VScrollByOffset( + MouseWheelStep);
-        _unappliedVerticalScroll -= MouseWheelStep;
-      }
-      while (_unappliedVerticalScroll <= -MouseWheelStep) {
-        VScrollByOffset( - MouseWheelStep);
-        _unappliedVerticalScroll += MouseWheelStep;
-      }
-    }
-
-    /// <summary>TODO</summary>
-    private void HScrollByOffset(int delta) {
-      AutoScrollOffset = new Point (-AutoScrollOffset.X + delta, -AutoScrollOffset.Y);
-    }
-
-    /// <summary>TODO</summary>
-    private void VScrollByOffset(int delta) {
-      AutoScrollOffset = new Point (-AutoScrollOffset.X, -AutoScrollOffset.Y + delta);
-    }
-
-    List<Action> ScrollActions { get { return new List<Action> {
-                                        () => PageUp(),   () => PageDown(),
-                                        () => PageLeft(), () => PageRight(),
-                                        () => LineUp(),   () => LineDown(),
-                                        () => LineLeft(), () => LineRight()  };
-      }
-    }
-
-    /// <summary>Service routine to execute a Panel scroll.</summary>
-    [Obsolete("Use ScrollPanelVertical or ScrollPanelHorizontal instead.")]
-    public void ScrollPanel(ScrollEventType type, ScrollOrientation orientation, int sign) {
-      ScrollActions [
-            ( (type.HasFlag(ScrollEventType.SmallDecrement))      ? 4 : 0 )
-          + ( (orientation == ScrollOrientation.HorizontalScroll) ? 2 : 0 )
-          + ( (sign == +1)                                        ? 1 : 0 ) ] ();
-    }
-    #endregion
-  }
 }

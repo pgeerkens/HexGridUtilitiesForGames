@@ -33,7 +33,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>TODO</summary>
     public static partial class NullableExtensions {
         /// <summary>Returns the value of <paramref name="this">this</paramref> it it has one; otherwise returns <paramref name="alternate"/>().</summary>
-        /// <param name="this">The <see cref="{TOut}?"/> being operated upon.</param>
+        /// <param name="this">The <see cref="{TOut}"/> being operated upon.</param>
         /// <param name="alternate">The action to be perrofmed if <paramref name="this"/> has no value.</param>
         public static TOut? Else<TOut>(this TOut? @this, Func<TOut> alternate) where TOut:struct
         => @this.Match(e => e, alternate); 

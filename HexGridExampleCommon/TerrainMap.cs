@@ -63,8 +63,8 @@ namespace PGNapoleonics.HexgridExampleCommon {
         public    override void     PaintUnits(Graphics graphics) { ; }
 
         #region static Board definition
-        static IList<string> _board     = MapDefinitions.TerrainMapDefinition;
-        static HexSize       _sizeHexes = new HexSize(_board[0].Length, _board.Count);
+        static IReadOnlyList<string> _board     = MapDefinitions.TerrainMapDefinition;
+        static HexSize               _sizeHexes = new HexSize(_board[0].Length, _board.Count);
         #endregion
 
         public new static MapGridHex InitializeHex(HexCoords coords) {

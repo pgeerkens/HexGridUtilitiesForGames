@@ -98,8 +98,8 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>MapBoard hosting this panel.</summary>
     public IMapDisplayWinForms Model           {
-        get { return _model; }
-        set { var model = _model as IDisposable; if (model != null) model.Dispose(); _model = value; }
+        get => _model;
+        set { if(_model is IDisposable model) model.Dispose(); _model = value; }
     } IMapDisplayWinForms _model;
 
     /// <summary>Gets or sets the coordinates of the hex currently underneath the mouse.</summary>
