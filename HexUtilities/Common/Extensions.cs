@@ -70,12 +70,11 @@ namespace PGNapoleonics.HexUtilities.Common {
         /// The returned <see cref="IDisposable"/> instance has been constructed and initialized in a manner
         /// that does not raise the warning: <b>CA2000:</b> <i>Dispose objects before losing scope</i>.
         /// </remarks>
-        public static T InitializeDisposable<T>(Func<T> initializer) where T : class, IDisposable {
+        public static T InitializeDisposable<T>(this Func<T> initializer) where T : class, IDisposable {
             T item     = null;
             T tempItem = null;
             try {
                 tempItem = initializer();
-
                 item     = tempItem;
                 tempItem = null;
               } finally { if(tempItem!=null) tempItem.Dispose(); }

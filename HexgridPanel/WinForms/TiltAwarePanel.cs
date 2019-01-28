@@ -29,7 +29,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -45,8 +44,6 @@ namespace PGNapoleonics.HexgridPanel {
   public class TiltAwarePanel : Panel {
     /// <summary>TODO</summary>
     public TiltAwarePanel() : base() {
-      Contract.Assert(HorizontalScroll != null);  // Verifed from Reference Source
-      Contract.Assert(VerticalScroll   != null);  // Verifed from Reference Source
       this.SetStyle(ControlStyles.Selectable, true);
       this.TabStop = true;
        _scrollActions = new List<Action> { PageUp,   PageDown,   PageLeft, PageRight,
@@ -118,12 +115,8 @@ namespace PGNapoleonics.HexgridPanel {
     }
 
     /// <summary>TODO</summary>
-    protected virtual int MouseWheelStep {
-      get { Contract.Assume(SystemInformation.MouseWheelScrollLines != 0);
-            return SystemInformation.MouseWheelScrollDelta
-                 / SystemInformation.MouseWheelScrollLines;
-      }
-    }
+    protected virtual int MouseWheelStep 
+    => SystemInformation.MouseWheelScrollDelta / SystemInformation.MouseWheelScrollLines;
 
     /// <summary>TODO</summary>
     private static MouseEventArgs CreateMouseEventArgs(Message m) {

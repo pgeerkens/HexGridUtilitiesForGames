@@ -26,7 +26,6 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System.Diagnostics.Contracts;
 using System.Diagnostics.CodeAnalysis;
 
 using PGNapoleonics.HexUtilities;
@@ -63,22 +62,20 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <summary>An array of PathTypes enum constants describing the elements of <see cref="MapDisplay{THex}.HexgridPathPoints"/>.</summary>
         private static readonly byte[] _hexgridPathPointTypes = {
-            (byte)Start, (byte)Line, (byte)Line,
-            (byte)Line,  (byte)Line, (byte)Line|(byte)CloseSubpath
-        };
+                (byte)Start, (byte)Line, (byte)Line,
+                (byte)Line,  (byte)Line, (byte)Line|(byte)CloseSubpath
+            };
 
         /// <summary>Returns an array of six <see cref="HexPoint"/>s describing the corners of a hex on this <see cref="HexBoard{THex,TPath}"/>.</summary>
         /// <param name="gridSize">Dimensions of a hex on this <see cref="HexBoard{THex,TPath}"/> in pixels.</param>
-        private static HexPoint[] HexgridPathPoints(HexSize gridSize) {
-            Contract.Ensures(Contract.Result<HexPoint[]>() != null);
-            return new HexPoint[] { new HexPoint(gridSize.Width*1/3,              0  ),
-                                    new HexPoint(gridSize.Width*3/3,              0  ),
-                                    new HexPoint(gridSize.Width*4/3,gridSize.Height/2),
-                                    new HexPoint(gridSize.Width*3/3,gridSize.Height  ),
-                                    new HexPoint(gridSize.Width*1/3,gridSize.Height  ),
-                                    new HexPoint(             0,    gridSize.Height/2)
-                                  };
-        }
+        private static HexPoint[] HexgridPathPoints(HexSize gridSize)
+        => new HexPoint[] { new HexPoint(gridSize.Width*1/3,              0  ),
+                            new HexPoint(gridSize.Width*3/3,              0  ),
+                            new HexPoint(gridSize.Width*4/3,gridSize.Height/2),
+                            new HexPoint(gridSize.Width*3/3,gridSize.Height  ),
+                            new HexPoint(gridSize.Width*1/3,gridSize.Height  ),
+                            new HexPoint(             0,    gridSize.Height/2)
+                          };
 
         #region Constructors
         /// <summary>Creates a new instance of the MapDisplay class.</summary>
@@ -102,7 +99,7 @@ namespace PGNapoleonics.HexgridPanel {
 
             InitializeProperties();
             HexgridPath = Extensions.InitializeDisposable(() =>
-                new GraphicsPath(HexgridPathPoints(gridSize), _hexgridPathPointTypes));
+                    new GraphicsPath(HexgridPathPoints(gridSize), _hexgridPathPointTypes));
         }
 
         void InitializeProperties() {

@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -310,7 +309,6 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>TODO</summary>
     static protected Matrix TransposeMatrix { get {
-      Contract.Ensures(Contract.Result<Matrix>() != null);
       return new Matrix(0F,1F, 1F,0F, 0F,0F);
     } }
     #endregion
@@ -425,7 +423,6 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>TODO</summary>
     public void SetScaleList (IList<float> scales) {
-      Contract.Requires(scales.Count > 0);
       Scales = new ReadOnlyCollection<float>(scales);
     }
   }

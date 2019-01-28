@@ -27,7 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;

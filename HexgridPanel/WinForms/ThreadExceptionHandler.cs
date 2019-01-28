@@ -27,7 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Diagnostics.Contracts;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;

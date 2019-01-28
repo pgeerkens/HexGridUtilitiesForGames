@@ -118,17 +118,16 @@ namespace PGNapoleonics.HexgridPanel {
         /// The paint action to be performed for each hex.</param>
         public static void PaintForEachHex<THex>(this MapDisplay<THex> @this, Graphics graphics, 
                             CoordsRectangle clipHexes, Action<HexCoords> paintAction) 
-        where THex : MapGridHex {
-            @this.ForEachHex(maybe => {
+        where THex : MapGridHex
+        =>  @this.ForEachHex(maybe => {
                 maybe.IfHasValueDo(hex => {
-                  if( (uint)(hex.Coords.User.X - clipHexes.Left) <= clipHexes.Right
-                  &&  (uint)(hex.Coords.User.Y - clipHexes.Top)  <= clipHexes.Bottom) {
-                    graphics.Transform = @this.TranslateToHex(hex.Coords);
-                    paintAction(hex.Coords);
-                  }
+                    if( (uint)(hex.Coords.User.X - clipHexes.Left) <= clipHexes.Right
+                    &&  (uint)(hex.Coords.User.Y - clipHexes.Top)  <= clipHexes.Bottom) {
+                        graphics.Transform = @this.TranslateToHex(hex.Coords);
+                        paintAction(hex.Coords);
+                    }
                 } );
             } );
-        }
 
         /// <summary>Paint the current shortese path.</summary>
         /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
@@ -143,13 +142,13 @@ namespace PGNapoleonics.HexgridPanel {
             var path = maybePath.ElseDefault();
             using(var brush = new SolidBrush(Color.FromArgb(78, Color.PaleGoldenrod))) {
                 while (path != null) {
-                  var coords = path.PathStep.Coords;
-                  graphics.Transform = @this.TranslateToHex(coords);
-                  graphics.FillPath(brush, @this.HexgridPath);
+                    var coords = path.PathStep.Coords;
+                    graphics.Transform = @this.TranslateToHex(coords);
+                    graphics.FillPath(brush, @this.HexgridPath);
 
-                  if (@this.ShowPathArrow) @this.PaintPathArrow(graphics, path);
+                    if (@this.ShowPathArrow) @this.PaintPathArrow(graphics, path);
 
-                  path = path.PathSoFar;
+                    path = path.PathSoFar;
                 }
             }
         }
@@ -165,8 +164,8 @@ namespace PGNapoleonics.HexgridPanel {
             if (path==null) throw new ArgumentNullException("path");
 
             graphics.TranslateTransform(@this.CentreOfHexOffset.Width, @this.CentreOfHexOffset.Height);
-            if (path.PathSoFar == null)    @this.PaintPathDestination(graphics);
-            else                           @this.PaintPathArrow(graphics, path.PathStep.HexsideExit);
+            if (path.PathSoFar == null) @this.PaintPathDestination(graphics);
+            else                        @this.PaintPathArrow(graphics, path.PathStep.HexsideExit);
         }
 
         /// <summary>Paint the direction arrow for each hex of the current shortest path.</summary>

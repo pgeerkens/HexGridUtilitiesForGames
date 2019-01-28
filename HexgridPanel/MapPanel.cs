@@ -27,7 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,7 +44,6 @@ namespace PGNapoleonics.HexgridPanel {
     /// <inheritdoc/>
     public override int ScaleIndex {
       set {
-        Contract.Assert(DataContext != null); //     if (DataContext.Scales == null) return;
         var CenterHex   = PanelCenterHex;
         base.ScaleIndex = value;
         SetScroll(CenterHex);
@@ -156,7 +154,7 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>Service routine to paint the backing store bitmap for the map underlay.</summary>
     protected virtual Bitmap PaintBuffer(Rectangle clipBounds) {
-      Contract.Assert(DataContext.Model != null); // if (DataContext.Model==null) return null;
+      if (DataContext.Model==null) return null;
 
       Bitmap bitmap = null, temp = AllocateBuffer(ClientSize);
       try {
@@ -174,7 +172,7 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>Service routine to paint the backing store bitmap for the map underlay.</summary>
     protected virtual Bitmap ScrollBuffer(Rectangle clipBounds) {
-      Contract.Assert(DataContext.Model != null); // if (DataContext.Model==null) return null;
+      if (DataContext.Model==null) return null;
 
       using(var graphics = Graphics.FromImage(_backBuffer)) {
         graphics.Clip = new Region(clipBounds);
