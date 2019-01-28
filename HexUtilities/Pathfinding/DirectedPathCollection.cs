@@ -28,81 +28,65 @@
 #endregion
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 
 using System.Diagnostics;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
 
-  /// <summary>A directed sequence of <see cref="Hex{TDrawingSurface,TPath}"/>steps comprising a travel path.</summary>
-  [DebuggerDisplay("TotalCost={TotalCost} / TotalSteps={TotalSteps}")]
-  internal sealed class DirectedPathCollection : IDirectedPathCollection {
-    #region Properties
-    /// <inheritdoc/>
-    public Hexside                  HexsideExit { get { return PathStep.HexsideExit; } }
-    /// <inheritdoc/>
-    public IDirectedPathCollection  PathSoFar   { get { return _pathSoFar; } }
-    /// <inheritdoc/>
-    public DirectedPathStepHex      PathStep    { get { return _pathStep; } }
-    /// <inheritdoc/>
-    public string                   StatusText  { 
-      get { return string.Format(CultureInfo.InvariantCulture,
-                  "Path Length: {0}/{1}", TotalCost,TotalSteps);
-      }
+    /// <summary>A directed sequence of <see cref="Hex{TDrawingSurface,TPath}"/>steps comprising a travel path.</summary>
+    [DebuggerDisplay("TotalCost={TotalCost} / TotalSteps={TotalSteps}")]
+    internal sealed class DirectedPathCollection : IDirectedPathCollection {
+        #region Properties
+        /// <inheritdoc/>
+        public Hexside                  HexsideExit => PathStep.HexsideExit;
+        /// <inheritdoc/>
+        public IDirectedPathCollection  PathSoFar   { get; }
+        /// <inheritdoc/>
+        public DirectedPathStepHex      PathStep    { get; }
+        /// <inheritdoc/>
+        public string                   StatusText  => $"Path Length: {TotalCost}/{TotalSteps}";
+        /// <inheritdoc/>
+        public HexCoords                StepCoords  => PathStep.Coords;
+        /// <inheritdoc/>
+        public int                      TotalCost   { get; }
+        /// <inheritdoc/>
+        public int                      TotalSteps  { get; }
+        #endregion
+
+        /// <inheritdoc/>
+        public IDirectedPathCollection AddStep(HexCoords coords, Hexside hexsideExit, int stepCost)
+        => AddStep(new DirectedPathStepHex(coords,hexsideExit), stepCost);
+        
+        /// <inheritdoc/>
+        public IDirectedPathCollection AddStep(DirectedPathStepHex neighbour, int stepCost)
+        => new DirectedPathCollection(this, neighbour, TotalCost + stepCost);
+
+        /// <inheritdoc/>
+        public override string ToString()
+        => PathSoFar == null
+            ? $"Hex: {PathStep.Coords} arrives with TotalCost={TotalCost}"
+            : $"Hex: {PathStep.Coords} exits {PathStep.HexsideEntry} with TotalCost={TotalCost}";
+
+        /// <summary>Returns the ordered sequence of sub-paths comprising this DirectedPath.</summary>
+        public IEnumerator<IDirectedPathCollection> GetEnumerator() {
+            yield return this;
+            for (var p = (IDirectedPathCollection)this; p.PathSoFar != null; p = p.PathSoFar) 
+                yield return p.PathSoFar;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        /////////////////////////////  Internals  //////////////////////////////////
+        /// <summary>Returns a DirectedPath composed by extending this DirectedPath by one hex.</summary>
+        internal DirectedPathCollection(HexCoords start) : this(null, new DirectedPathStepHex(start, Hexside.North), 0) {
+        }
+
+        /// <summary>Returns a DirectedPath composed by extending this DirectedPath by one hex.</summary>
+        internal DirectedPathCollection(IDirectedPathCollection pathSoFar, DirectedPathStepHex pathStep, int totalCost) {
+            PathStep    = pathStep;
+            PathSoFar   = pathSoFar;
+            TotalCost   = totalCost;
+            TotalSteps  = pathSoFar==null ? 0 : pathSoFar.TotalSteps+1;
+        }
     }
-    /// <inheritdoc/>
-    public HexCoords                StepCoords  { get { return PathStep.Coords; } }
-    /// <inheritdoc/>
-    public int                      TotalCost   { get { return _totalCost; } }
-    /// <inheritdoc/>
-    public int                      TotalSteps  { get { return _totalSteps; } }
-
-    private readonly IDirectedPathCollection _pathSoFar;
-    private readonly DirectedPathStepHex     _pathStep;
-    private readonly int                     _totalCost;
-    private readonly int                     _totalSteps;
-    #endregion
-
-    /// <inheritdoc/>
-    public IDirectedPathCollection AddStep(HexCoords coords, Hexside hexsideExit, int stepCost) {
-      return AddStep(new DirectedPathStepHex(coords,hexsideExit), stepCost);
-    }
-    /// <inheritdoc/>
-    public IDirectedPathCollection AddStep(DirectedPathStepHex neighbour, int stepCost) {
-      return new DirectedPathCollection(this, neighbour, TotalCost + stepCost);
-    }
-
-    /// <inheritdoc/>
-    public override string ToString() {
-      if (PathSoFar == null) 
-        return string.Format(CultureInfo.InvariantCulture,"Hex: {0} arrives with TotalCost={1,3}",
-          PathStep.Coords, TotalCost);
-      else
-        return string.Format(CultureInfo.InvariantCulture,"Hex: {0} exits {1} with TotalCost={2,3}",
-          PathStep.Coords, PathStep.HexsideEntry, TotalCost);
-    }
-
-    /// <summary>Returns the ordered sequence of sub-paths comprising this DirectedPath.</summary>
-    public IEnumerator<IDirectedPathCollection> GetEnumerator() {
-      yield return this;
-      for (var p = (IDirectedPathCollection)this; p.PathSoFar != null; p = p.PathSoFar) 
-        yield return p.PathSoFar;
-    }
-
-    IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
-
-    /////////////////////////////  Internals  //////////////////////////////////
-    /// <summary>Returns a DirectedPath composed by extending this DirectedPath by one hex.</summary>
-    internal DirectedPathCollection(HexCoords start) : this(null, new DirectedPathStepHex(start, Hexside.North), 0) {
-    }
-
-    /// <summary>Returns a DirectedPath composed by extending this DirectedPath by one hex.</summary>
-    internal DirectedPathCollection(IDirectedPathCollection pathSoFar, DirectedPathStepHex pathStep, int totalCost) {
-
-      _pathStep    = pathStep;
-      _pathSoFar   = pathSoFar;
-      _totalCost   = totalCost;
-      _totalSteps  = pathSoFar==null ? 0 : pathSoFar.TotalSteps+1;
-    }
-  }
 }
