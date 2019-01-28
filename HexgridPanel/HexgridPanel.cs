@@ -56,8 +56,7 @@ namespace PGNapoleonics.HexgridPanel {
         #region ISupportInitialize implementation
         /// <summary>Signals the object that initialization is starting.</summary>
         public virtual void BeginInit() { 
-            ScaleList   = new List<float>() {1.000F}.AsReadOnly();
-    //      SetModel(new EmptyBoard());
+            ScaleList   = DefaultScaleList;
             Model       = EmptyBoard.TheOne;
             HotspotHex  = HexCoords.EmptyUser;
         }
@@ -136,14 +135,18 @@ namespace PGNapoleonics.HexgridPanel {
         } int _scaleIndex;
 
         /// <summary>Array of supported map scales  as IList {float}.</summary>
-        public IList<float>     ScaleList      { get; private set; }
+        public IReadOnlyList<float> ScaleList { get; private set; }
+
+        IReadOnlyList<float> DefaultScaleList = new List<float>() {
+           .177F, .210F, .250F, .297F, .354F, .420F, .5000F, .594F, 0.707F, 0.841F, 1.000F, 1.189F, 1.414F
+        }.AsReadOnly();
         #endregion
 
         /// <summary>Force repaint of backing buffer for Map underlay.</summary>
         public         void SetMapDirty() => MapBuffer = null;
 
         /// <summary>Set property Scales (array of supported map scales as IList {float}.</summary>
-        public         void SetScaleList(IList<float> scales) => ScaleList = new ReadOnlyCollection<float>(scales);
+        public         void SetScaleList(IReadOnlyList<float> scales) => ScaleList = scales;
 
         /// <summary>Set ScrollBar increments and bounds from map dimensions.</summary>
         public virtual void SetScrollLimits(IMapDisplayWinForms model) {

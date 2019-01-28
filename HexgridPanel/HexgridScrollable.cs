@@ -416,14 +416,12 @@ namespace PGNapoleonics.HexgridPanel {
     #endregion
 
     /// <summary>Array of supported map scales  as IList {float}.</summary>
-    public IList<float>     Scales        { 
+    public IReadOnlyList<float>     Scales        { 
       get { return DataContext.Scales; }
       private set { DataContext.SetScales(value); }
     }
 
     /// <summary>TODO</summary>
-    public void SetScaleList (IList<float> scales) {
-      Scales = new ReadOnlyCollection<float>(scales);
-    }
+    public void SetScaleList (IReadOnlyList<float> scales) => Scales = scales;
   }
 }

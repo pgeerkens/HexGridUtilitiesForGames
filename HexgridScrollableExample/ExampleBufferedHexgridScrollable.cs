@@ -49,17 +49,12 @@ namespace PGNapoleonics.HexgridScrollableExample {
         private MapDisplay<MapGridHex> _mapBoard;
         private CustomCoords   _customCoords;
 
-        IList<float> DefaultScaleList = new List<float>() {0.707F,  0.841F, 1.000F, 1.189F, 1.414F}.AsReadOnly();
-
         public ExampleBufferedHexgridScrollable() {
             InitializeComponent();
             Application.AddMessageFilter(this);
 
             //ComponentResourceManager resources = new ComponentResourceManager(typeof(HexgridScrollableExample));
-            //this._hexgridPanel.SetScaleList ( (IList<float>)(resources.GetObject("_hexgridPanel.Scales")) );
-            _hexgridPanel.SetScaleList(DefaultScaleList);
-
-            _hexgridPanel.ScaleChange += new EventHandler<EventArgs>((o,e) => OnResizeEnd(e));
+            _hexgridPanel.ScaleChange += (o,e) => OnResizeEnd(e);
 
             LoadTraceMenu(menuItemDebugTracing_Click);
 
@@ -96,7 +91,6 @@ namespace PGNapoleonics.HexgridScrollableExample {
 
         #region Event handlers
         private void HexGridExampleForm_Load(object sender, EventArgs e) {
-            _hexgridPanel.SetScaleList (DefaultScaleList);
             _hexgridPanel.ScaleIndex = _hexgridPanel.Scales
                                       .Select((f,i) => new {value=f, index=i})
                                       .Where(s => s.value==1.0F)

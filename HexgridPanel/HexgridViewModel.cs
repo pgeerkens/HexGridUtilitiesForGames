@@ -154,7 +154,7 @@ namespace PGNapoleonics.HexgridPanel {
     } bool _isUnitsDirty;
 
     /// <summary>Array of supported map scales  as IList {float}.</summary>
-    public IList<float> Scales         { get; private set; }
+    public IReadOnlyList<float> Scales         { get; private set; }
     /// <summary>Index into <code>Scales</code> of current map scale.</summary>
     public virtual int ScaleIndex      { 
       get { return _scaleIndex; }
@@ -170,8 +170,8 @@ namespace PGNapoleonics.HexgridPanel {
     #endregion
 
     /// <summary>TODO</summary>
-    public void SetScales (IList<float> scales) {
-      Scales = new ReadOnlyCollection<float>(scales);
+    public void SetScales (IReadOnlyList<float> scales) {
+      Scales = scales;
     }
     #region Events
     /// <summary>TODO</summary>

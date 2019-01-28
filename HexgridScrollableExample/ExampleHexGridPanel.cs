@@ -58,9 +58,8 @@ namespace PGNapoleonics.HexgridScrollableExample {
             Application.AddMessageFilter(this);
 
             //var resources = new ComponentResourceManager(typeof(ExampleHexgridPanelExample));
-            _hexgridPanel.SetScaleList (new List<float>() {0.707F,  0.841F, 1.000F, 1.189F, 1.414F}.AsReadOnly() );
 
-            _hexgridPanel.ScaleChange += new EventHandler<EventArgs>((o,e) => OnResizeEnd(e));
+            _hexgridPanel.ScaleChange += (o,e) => OnResizeEnd(e);
 
             LoadTraceMenu(menuItemDebugTracing_Click);
 
@@ -93,14 +92,13 @@ namespace PGNapoleonics.HexgridScrollableExample {
             menuItemLandmarks.SelectedIndex = 0;
         }
 
-        #region Event handlers
+        #region Event handlers 
         private void HexGridExampleForm_Load(object sender, EventArgs e) {
-            _hexgridPanel.SetScaleList (new List<float>() {0.707F,  0.841F, 1.000F, 1.189F, 1.414F});
             _hexgridPanel.ScaleIndex = _hexgridPanel.ScaleList
-                                    .Select((f,i) => new {value=f, index=i})
-                                    .Where(s => s.value==1.0F)
-                                    .Select(s => s.index).FirstOrDefault(); 
-            var padding = this.toolStripContainer1.ContentPanel.Padding;
+                                                    .Select((f,i) => new {value=f, index=i})
+                                                    .Where(v => v.value > 0.95F)
+                                                    .Select(s => s.index).FirstOrDefault(); 
+            var padding = toolStripContainer1.ContentPanel.Padding;
             Size = _hexgridPanel.MapSizePixels  + new Size(21,93)
                  + new Size(padding.Left+padding.Right, padding.Top+padding.Bottom);
         }
