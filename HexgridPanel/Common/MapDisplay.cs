@@ -46,13 +46,12 @@ namespace PGNapoleonics.HexgridPanel {
     using Color         = System.Drawing.Color;
     using GraphicsPath  = System.Drawing.Drawing2D.GraphicsPath;
     using Matrix        = System.Drawing.Drawing2D.Matrix;
+    using MapGridHex    = Hex<System.Drawing.Graphics, System.Drawing.Drawing2D.GraphicsPath>;
+
+    using static System.Drawing.Drawing2D.PathPointType;
 
     using Int32ValueEventArgs = ValueEventArgs<int>;
     using IDirectedPath       = IDirectedPathCollection;
-    using MapGridHex          = Hex<System.Drawing.Graphics, System.Drawing.Drawing2D.GraphicsPath>;
-
-    using static System.Drawing.Drawing2D.PathPointType;
-    using System;
 
     /// <summary>Abstract class representing the basic game board.</summary>
     /// <typeparam name="THex">Type of the hex for which a game board is desired.</typeparam>
@@ -98,11 +97,8 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Creates a new instance of the MapDisplay class.</summary>
         private MapDisplay(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex,
                 IFastList<HexCoords> landmarkCoords, BoardStorage<Maybe<THex>> storage)
-        : base(sizeHexes, gridSize, storage)
-        {
-            _board = new Lazy<LandmarkBoard>(() =>
-                new LandmarkBoard(MapSizeHexes, EntryCosts, ExitCosts, MinimumStepCost, Landmarks));
-            ResetLandmarksAsync(landmarkCoords);//.ContinueWith(t => t.Result);
+        : base(sizeHexes, gridSize, storage) {
+            ResetLandmarksAsync(landmarkCoords);
 
             InitializeProperties();
             HexgridPath = Extensions.InitializeDisposable(() =>
@@ -172,20 +168,12 @@ namespace PGNapoleonics.HexgridPanel {
         } HexCoords _startHex = HexCoords.EmptyUser;
         #endregion
 
-        /// <inheritdoc/>
-        public override INavigableBoard NavigableBoard => Board;
-
-        private LandmarkBoard Board => _board?.Value;
-
-        /// <summary>TODO</summary>
-        private readonly Lazy<LandmarkBoard> _board;
-
         /// <summary>TODO</summary>
         public void PathSet() =>
             _path = this[StartHex].Bind(source =>
                     this[GoalHex].Bind(target => source.Range(target) <= RangeCutoff
-                         ? source.Coords.GetDirectedPath(target.Coords, Board.GetStandardPathfinder())
-                         : target.Coords.GetDirectedPath(source.Coords, Board.GetLandmarkPathfinder())
+                         ? source.Coords.GetDirectedPath(target.Coords, this.GetStandardPathfinder())
+                         : target.Coords.GetDirectedPath(source.Coords, this.GetLandmarkPathfinder())
                     ));
         /// <summary>TODO</summary>
         public void PathClear() => _path = Maybe<IDirectedPath>.NoValue();

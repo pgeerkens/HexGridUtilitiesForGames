@@ -106,17 +106,12 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
    //   TraceFindPathDone(ClosedSet.Count);
     }
     
-    private Maybe<int> Estimate(HexCoords start, HexCoords hex, int totalCost) {
+    private int? Estimate(HexCoords start, HexCoords hex, int totalCost) {
       var vectorStart = start.Canon - hex.Canon;
-      //var preference = Preference(_vectorGoal, vectorStart);
-      //var estimate   = _heuristic(start,hex) + totalCost;
-      //return (estimate << 16) + preference;
       return from heuristic in _heuristic(start,hex)
-             let estimate   = heuristic + totalCost
-             let preference = Preference(_vectorGoal, vectorStart)
-             select (estimate << 16) + preference;
+             select ((heuristic + totalCost) << 16)
+                  + Preference(_vectorGoal, vectorStart);
     }
-
     
     static int Preference(IntVector2D vectorGoal, IntVector2D vectorHex) {
       return (0xFFFF & Math.Abs(vectorGoal ^ vectorHex));
@@ -126,12 +121,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       TraceFindPathDetailInit(Source, Target);
 
       // Minimize field references by putting these on the stack now
-      ISet<HexCoords> openSet         = _openSet;
-      IPriorityQueue  queue           = _queue;
-      TryDirectedCost tryDirectedCost = _tryDirectedCost;
-
-     // Func<HexCoords,HexCoords,int> heuristic       = _heuristic;
-     // IntVector2D                   vectorGoal      = _vectorGoal;
+      var openSet         = _openSet;
+      var queue           = _queue;
+      var tryDirectedCost = _tryDirectedCost;
 
       queue.Enqueue (0, new DirectedPath(Target));
 
@@ -178,7 +170,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [Obsolete("Deprecated - use property PathForward instead.",true)]
     public  IDirectedPath           Path        { get {return PathForward;} }
 
-    readonly Func<HexCoords,HexCoords,Maybe<short>> _heuristic;
+    readonly Func<HexCoords,HexCoords,short?> _heuristic;
     readonly ISet<HexCoords>                 _openSet;
     readonly IPriorityQueue                  _queue;
     readonly IntVector2D                     _vectorGoal;

@@ -49,8 +49,7 @@ namespace PGNapoleonics.HexUtilities {
     /// <typeparam name="THex">TODO</typeparam>
     /// <typeparam name="TPath">TODO</typeparam>
     /// <remarks>No Finalizer is implemented as the class possesses no unmanaged resources.</remarks>
-    public abstract class HexBoard<THex,TPath> : ILandmarkBoard, IFovBoard,
-    IForEachable<Maybe<THex>>, IDisposable
+    public abstract class HexBoard<THex,TPath> : ILandmarkBoard, IFovBoard, IForEachable<Maybe<THex>>, IDisposable
     where THex : IHex {
         /// <summary>By default, landmark all four corners and midpoints of all 4 sides.</summary>
         /// <remarks>Pre-processing time on start-up can be reduced by decreasing the number of landmarks,
@@ -80,11 +79,11 @@ namespace PGNapoleonics.HexUtilities {
         /// <param name="boardHexes">TODO</param>
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         protected HexBoard(HexSize sizeHexes, HexSize gridSize, BoardStorage<Maybe<THex>> boardHexes) {
-            MapScale        = 1.00F;
-            IsTransposed    = false;
-            MapSizeHexes    = sizeHexes;
-            GridSize        = gridSize;
-            BoardHexes      = boardHexes;
+            MapScale     = 1.00F;
+            IsTransposed = false;
+            MapSizeHexes = sizeHexes;
+            GridSize     = gridSize;
+            BoardHexes   = boardHexes;
 
             EntryCosts = new BlockedBoardStorage32x32<Maybe<HexsideCosts>>(sizeHexes, 
                                     hexCoords => HexsideCosts.EntryCosts(boardHexes,hexCoords), 1);
@@ -102,7 +101,7 @@ namespace PGNapoleonics.HexUtilities {
         /// <param name="landmarkCoords"><see cref="IFastList{HexCoords}"/> of the hexes to be used as Path-Finding landmarks.</param>
         /// <returns></returns>
         protected         bool       ResetLandmarks(IFastList<HexCoords> landmarkCoords) { 
-            Landmarks = LandmarkCollection.New(NavigableBoard, landmarkCoords);
+            Landmarks = LandmarkCollection.New(this, landmarkCoords);
             OnLandmarksReady(new ValueEventArgs<ILandmarks>(Landmarks));
             return true;
         }
@@ -229,13 +228,10 @@ namespace PGNapoleonics.HexUtilities {
         /// <summary>TODO</summary>
         protected virtual int MinimumStepCost => 2;
 
-        /// <summary>TODO</summary>
-        public virtual   INavigableBoard NavigableBoard =>
-            new NavigableBoard(MapSizeHexes, EntryCosts, ExitCosts, MinimumStepCost);
-
         #region IDisposable implementation (w/o Finalizer as the class possesses no unmanaged resources.)
         /// <summary>Clean up any resources being used, and suppress finalization.</summary>
         public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
+
         /// <summary>True if already Disposed.</summary>
         private bool _isDisposed = false;
         /// <summary>Clean up any resources being used.</summary>

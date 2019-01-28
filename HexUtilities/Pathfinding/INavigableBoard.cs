@@ -47,7 +47,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// is usually suffficient. Note that <c>heuristic</c> <b>must</b> be monotonic in order 
         /// for the algorithm to perform properly and reliably return an optimum path.
         /// </remarks>
-        Maybe<short>  Heuristic(HexCoords source, HexCoords target);
+        short?  Heuristic(HexCoords source, HexCoords target);
 
         /// <summary>TODO</summary>
         short? TryExitCost(HexCoords hexCoords, Hexside hexside);
@@ -78,10 +78,10 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// <summary>TODO</summary>
         [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow",
                 MessageId = "2*range", Justification="No map is big enough to overflow,")]
-        public Maybe<short> Heuristic(HexCoords here, HexCoords target) =>
+        public short? Heuristic(HexCoords here, HexCoords target) =>
             MapSizeHexes.IsOnboard(target)  &&  MapSizeHexes.IsOnboard(here)
                 ? (short)(here.Range(target) * _minimumCost)
-                : Maybe<short>.NoValue();
+                : default(short?);
 
         /// <summary>TODO</summary>
         public short? TryExitCost(HexCoords hexCoords, Hexside hexside) =>
