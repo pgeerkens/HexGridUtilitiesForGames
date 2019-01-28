@@ -28,7 +28,6 @@
 #endregion
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>TODO</summary>

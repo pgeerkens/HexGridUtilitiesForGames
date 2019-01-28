@@ -26,22 +26,13 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using PGNapoleonics.HexUtilities.FastLists;
 
 namespace PGNapoleonics.HexUtilities.FastLists {
   /// <summary>TODO</summary>
   [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
     Justification="The suffix has an unambiguous meaning in the application domain.")]
-  [ContractClass(typeof(IFastListContract<>))]
   public interface IFastList<TItem> : IEnumerable<TItem>,
     IFastEnumerable<TItem>, IForEachable<TItem>, IForEachable2<TItem> {
     /// <summary>Gets the item at location <paramref name="index"/>.</summary>
@@ -53,28 +44,5 @@ namespace PGNapoleonics.HexUtilities.FastLists {
     /// <summary>Returns the index of the specified item in the internal array storage.</summary>
     /// <param name="item"></param>
     int   IndexOf(TItem item);
-  }
-
-  /// <summary>Internal contract class for <see cref="IFastList{TItem}"/></summary>
-  /// <typeparam name="TItem"></typeparam>
-  [ContractClassFor(typeof(IFastList<>))]
-  internal abstract class IFastListContract<TItem> : IFastList<TItem> {
-    private IFastListContract() { }
-
-    public int Count { get { return default(int); } }
-
-    public TItem this[int index] { get {
-        return default(TItem);
-    } }
-    public int   IndexOf(TItem item) {
-      return default(int);
-    }
-
-    public abstract void  ForEach(Action<TItem> action);
-    public abstract void  ForEach(FastIteratorFunctor<TItem> functor);
-    
-    public abstract IEnumerator<TItem>            GetEnumerator();
-    IEnumerator                       IEnumerable.GetEnumerator() { return GetEnumerator(); }
-    IFastEnumerator<TItem> IFastEnumerable<TItem>.GetEnumerator() { return null; }
   }
 }

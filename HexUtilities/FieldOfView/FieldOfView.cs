@@ -26,10 +26,7 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Collections;
-using System.Diagnostics.Contracts;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using PGNapoleonics.HexUtilities.Common;
@@ -44,11 +41,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       _fovBacking   = ( from i in Enumerable.Range(0,board.MapSizeHexes.Width)
                         select new BitArray(board.MapSizeHexes.Height)
                       ).ToArray();
-    }
-
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
     }
 
     public bool this[HexCoords coords] {

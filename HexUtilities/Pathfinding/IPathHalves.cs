@@ -26,44 +26,16 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   using IDirectedPath   = IDirectedPathCollection;
   
   /// <summary>Interface of common data structures exposed to <see cref="DirectionalPathfinder"/>s.</summary>
-  [ContractClass(typeof(IPathHalvesContract))]
   internal interface IPathHalves {
     int              BestSoFar { get; }
     ISet<HexCoords>  ClosedSet { get; }
 
     void             SetBestSoFar(IDirectedPath pathRev, IDirectedPath pathFwd);
-  }
-
-  /// <summary>Contract class for <c>IPathHalves</c>.</summary>
-  [ContractClassFor(typeof(IPathHalves))]
-  internal abstract class IPathHalvesContract : IPathHalves {
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
-    }
-
-    private IPathHalvesContract() {
-      _closedSet = new HashSet<HexCoords>(); 
-    }
-
-    public int             BestSoFar { get { return default(int); } }
-    public ISet<HexCoords> ClosedSet { get { 
-      return _closedSet; 
-    } } ISet<HexCoords> _closedSet;
-
-    public void            SetBestSoFar(IDirectedPath pathRev, IDirectedPath pathFwd) {
-    }
-
-    public abstract IDirectedPath PathRev { get; }
-    public abstract IDirectedPath PathFwd { get; }
   }
 }

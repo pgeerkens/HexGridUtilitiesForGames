@@ -28,7 +28,6 @@
 #endregion
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 using PGNapoleonics.HexUtilities.Common;
@@ -41,7 +40,6 @@ namespace PGNapoleonics.HexUtilities.Storage {
     /// <typeparam name="T">The type of the information being stored. 
     /// If {T} implements IDisposable then the Dispose() method will dispose all elements.
     /// </typeparam>
-    [ContractClass(typeof(BoardStorageContract<>))]
     public abstract class BoardStorage<T> : IBoardStorage<T>, IForEachable<T>, IForEachable2<T>, IDisposable {
         /// <summary>Initializes a new instance with the specified hex extent.</summary>
         /// <param name="sizeHexes"></param>
@@ -53,11 +51,11 @@ namespace PGNapoleonics.HexUtilities.Storage {
         public       HexSize MapSizeHexes           { get; }
 
         /// <summary>Returns the <c>THex</c> instance at the specified coordinates.</summary>
-        [Pure, SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
+        [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
         public          T    this[HexCoords coords] => this[coords.User];
 
         /// <summary>Returns the <c>THex</c> instance at the specified user coordinates.</summary>
-        [Pure, SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
+        [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
         public virtual  T    this[IntVector2D userCoords] {
             get { 
                 return MapSizeHexes.IsOnboard(userCoords) ? ItemInner (userCoords.X,userCoords.Y) : default(T);
@@ -121,21 +119,5 @@ namespace PGNapoleonics.HexUtilities.Storage {
         /// <summary>Finalize this instance.</summary>
         ~BoardStorage() { Dispose(false); }
         #endregion
-    }
-
-    [ContractClassFor(typeof(BoardStorage<>))]
-    internal abstract class BoardStorageContract<T> : BoardStorage<T> {
-        private BoardStorageContract(HexSize sizeHexes) : base(sizeHexes) { }
-
-        protected override T ItemInner(int x, int y) {
-
-          return default(T);
-        }
-
-        public override void ForEachSerial(Action<T> action) { }
-
-        /// <summary>TOTO</summary>
-        public override void ForEachSerial(FastIteratorFunctor<T> functor) { }
-
     }
 }

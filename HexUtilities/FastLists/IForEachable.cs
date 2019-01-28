@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 
 namespace PGNapoleonics.HexUtilities.FastLists {
   /// <summary>Delegated ForEach - <c>action</c> describes the work to be performed on each iteration.</summary>
@@ -15,17 +14,8 @@ namespace PGNapoleonics.HexUtilities.FastLists {
   /// Delegate dispatch is also much faster than interface method dispatch.  The result is
   /// nearly twice as fast as the classic IEnumerator{T} pattern (when /o+ isn’t defined).  
   /// </remarks>
-  [ContractClass(typeof(IForEachableContract<>))]
   public interface IForEachable<TItem>{
     /// <summary>Perform the supplied <paramref name="action"/> for every item in the enumeration.</summary>
     void ForEach(Action<TItem> action);
-  }
-
-  /// <summary>Internal contract-class for <see cref="IForEachable{TItem}"/></summary>
-  /// <typeparam name="TItem">The type of object being iterated.</typeparam>
-  [ContractClassFor(typeof(IForEachable<>))]
-  internal abstract class IForEachableContract<TItem> : IForEachable<TItem> {
-    public   void  ForEach(Action<TItem> action) {
-    }
   }
 }

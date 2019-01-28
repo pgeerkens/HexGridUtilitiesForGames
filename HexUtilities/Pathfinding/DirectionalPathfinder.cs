@@ -30,7 +30,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 using PGNapoleonics.HexUtilities.Common;
@@ -43,7 +42,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
   /// <summary>The shared algorithm of the forward- and backward-searches.</summary>
   [DebuggerDisplay("")]
-  [ContractClass(typeof(DirectionalPathfinderContract))]
   internal abstract class DirectionalPathfinder : Pathfinder {
     // Common settings for both directions
     /// <param name="board">Board on which this path search is taking place.</param>
@@ -63,11 +61,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 #else
       _queue      = HotPriorityQueue.New<IDirectedPath>(0,256);
 #endif
-    }
-
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
     }
 
     #region Properties
@@ -283,23 +276,5 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       public    override IDirectedPath PathForward { get { throw new NotImplementedException(); } }
       public    override IDirectedPath PathReverse { get { throw new NotImplementedException(); } }
    }
-  }
-
-  [ContractClassFor(typeof(DirectionalPathfinder))]
-  internal abstract class DirectionalPathfinderContract : DirectionalPathfinder {
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    private DirectionalPathfinderContract() : base(null,null, HexCoords.EmptyUser, HexCoords.EmptyUser, null){ }
-
-    protected override Hexside      HexsideDirection(Hexside hexside) {
-      return default(Hexside);
-    }
-    protected override short? LandmarkPotential(ILandmark landmark, HexCoords coords) {
-      return default(int);
-    }
-    protected override void         SetBestSoFar(IDirectedPath selfPath, IDirectedPath partnerPath) {
-    }
-    protected override short? TryStepCost(HexCoords here, Hexside hexside) {
-      return default(short?);
-    }
   }
 }

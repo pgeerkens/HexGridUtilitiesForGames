@@ -26,19 +26,11 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
-using System.Linq;
 
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities {
   /// <summary>External interface exposed by individual hexes.</summary>
-  [ContractClass(typeof(IHexContract))]
   public interface IHex {
     /// <summary>The <c>HexCoords</c> coordinates for this hex on <c>Board</c>.</summary>
     HexCoords Coords         { get; }
@@ -61,27 +53,4 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>Height ASL in <i>game units</i> of any blocking terrain in this hex and the specified Hexside.</summary>
     int       HeightHexside(Hexside hexside);
   }
-
-    /// <summary>Internal contract class for <see cref="IHex"/></summary>
-    [ContractClassFor(typeof(IHex))]
-    internal abstract class IHexContract : IHex {
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        private IHexContract() { }
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        private void ObjectInvariant() {
-        }
-
-        
-        public short? TryStepCost(Hexside hexsideExit) {
-          return default(short?);
-        }
-
-        public abstract HexCoords Coords         { get; }
-        public abstract int       ElevationLevel { get; }
-        public abstract int       HeightObserver { get; }
-        public abstract int       HeightTarget   { get; }
-        public abstract int       HeightTerrain  { get; }
-        public abstract int       HeightHexside(Hexside hexside);
-    }
 }

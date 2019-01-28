@@ -31,7 +31,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>Heap-On-Top (HOT) Priority Queue implementation.</summary>
@@ -54,11 +53,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <summary>Create a new instance with the specified capacity.</summary>
     public HotPriorityQueueList(int capacity) {
       _list = new List<HexKeyValuePair<TKey,TValue>>(capacity);
-    }
-
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
     }
 
     /// <inheritdoc/>

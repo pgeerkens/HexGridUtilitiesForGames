@@ -26,13 +26,11 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
 

@@ -32,7 +32,6 @@ using System.Linq;
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>Stable (insertion-order preserving for equal-priority elements) PriorityQueue implementation.</summary>
@@ -48,11 +47,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority>
 //    where TValue : class
   {
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
-    }
-
     IDictionary<TPriority,Queue<TValue>> _dictionary = new SortedDictionary<TPriority,Queue<TValue>>();
 
     /// <inheritdoc/>

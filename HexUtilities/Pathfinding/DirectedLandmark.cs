@@ -27,8 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Storage;
@@ -56,12 +54,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         ) {
         //  _hex          = hex;
             _backingStore = new LandmarkPopulatorFunctor(hexCoords, mapSizeHexes, queueFactory, tryDirectedCosts).Fill();
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        private void ObjectInvariant() {
-            //Contract.Invariant(_hex != null);
         }
 
         ///// <summary>Board coordinates for the landmark location.</summary>

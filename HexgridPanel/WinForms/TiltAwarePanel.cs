@@ -53,22 +53,6 @@ namespace PGNapoleonics.HexgridPanel {
                                            LineUp,   LineDown,   LineLeft, LineRight  };
     }
 
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
-      Contract.Invariant(Parent != null);
-      Contract.Invariant(HorizontalScroll != null);
-      Contract.Invariant(VerticalScroll   != null);
-      Contract.Invariant(HorizontalScroll.Value != int.MinValue);
-      Contract.Invariant(VerticalScroll.Value   != int.MinValue);
-      Contract.Invariant(AutoScrollPosition.X != int.MinValue);
-      Contract.Invariant(AutoScrollPosition.Y != int.MinValue);
-
-      Contract.Invariant(MouseWheelStep != int.MinValue);
-      Contract.Invariant(ScrollActions != null);
-      Contract.Invariant(ScrollActions.All(action => action != null));
-    }
-
     #region SelectablePanel implementation
     /// <inheritdoc/>
     protected override void OnMouseDown(MouseEventArgs e) {

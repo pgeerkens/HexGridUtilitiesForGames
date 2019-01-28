@@ -28,13 +28,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
-
-using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   using IDirectedPath = IDirectedPathCollection;
@@ -97,10 +91,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
         TraceFindPathDone(ClosedSet.Count);
       }
-    }
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod]  [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
     }
    
     #region Properties

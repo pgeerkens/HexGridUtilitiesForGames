@@ -28,7 +28,6 @@
 #endregion
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
 namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>A Maybe monad wrapping an instance of type<typeparam name="T">T</typeparam>.</summary>
@@ -42,11 +41,6 @@ namespace PGNapoleonics.HexUtilities.Common {
             Value    = value;
             HasValue = typeof(ValueType).IsAssignableFrom(typeof(T)) || value != null;
         }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        private void ObjectInvariant() => Contract.Invariant(! HasValue  ||  Value != null);
-       
 
         /// <summary>TODO</summary>
         public  bool HasValue { get; }

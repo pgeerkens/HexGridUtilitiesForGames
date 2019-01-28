@@ -27,7 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 
 using PGNapoleonics.HexUtilities.Common;

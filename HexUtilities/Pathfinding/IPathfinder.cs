@@ -26,22 +26,12 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-
-using PGNapoleonics.HexUtilities;
-using PGNapoleonics.HexUtilities.Common;
-
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   using IDirectedPath = IDirectedPathCollection;
 
   /// <summary>TODO</summary>
-  [ContractClass(typeof(IPathfinderContract))]
   public interface IPathfinder {
     /// <summary>The <see cref="ISet{HexCoords}"/> of all hexes expanded in finding the shortest-path.</summary>
     ISet<HexCoords> ClosedSet   { get; }
@@ -53,21 +43,5 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     IDirectedPath   PathForward { get; }
     /// <summary>The source hex for this shortest-path search.</summary>
     IDirectedPath   PathReverse { get; }
-  }
-
-  /// <summary>Contract class for IPathfinder{IHex}.</summary>
-  [ContractClassFor(typeof(IPathfinder))]
-  internal abstract class IPathfinderContract : IPathfinder {
-    private IPathfinderContract() {}
-
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
-    }
-
-    public abstract ISet<HexCoords> ClosedSet   { get; }
-    public abstract HexCoords       Source      { get; }
-    public abstract HexCoords       Target      { get; }
-    public abstract IDirectedPath   PathForward { get; }
-    public abstract IDirectedPath   PathReverse { get; }
   }
 }

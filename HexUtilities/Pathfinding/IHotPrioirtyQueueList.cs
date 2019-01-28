@@ -27,11 +27,8 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
-using System.Linq;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>TODO</summary>
@@ -39,32 +36,11 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <typeparam name="TValue"></typeparam>
   [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
     Justification="The suffix 'List' has an unambiguous meaning in the application domain.")]
-  [ContractClass(typeof(IHotPriorityQueueListContract<,>))]
   public interface IHotPriorityQueueList<TKey, TValue> : IEnumerable<HexKeyValuePair<TKey, TValue>>
     where TKey : struct, IEquatable<TKey>, IComparable<TKey>
 //    where TValue : class
   {
     /// <summary>TODO</summary>
     void Add(HexKeyValuePair<TKey,TValue> item);
-  }
-
-  /// <summary>ContractClass For <see cref="IHotPriorityQueueList{TKey, TValue}"/></summary>
-  [ContractClassFor(typeof(IHotPriorityQueueList<,>))]
-  internal abstract class IHotPriorityQueueListContract<TKey, TValue> : IHotPriorityQueueList<TKey, TValue>
-  where TKey : struct, IEquatable<TKey>, IComparable<TKey>
-//  where TValue : class
-  {
-    private IHotPriorityQueueListContract() { ; }
-
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
-    }
-
-    public abstract void Add(HexKeyValuePair<TKey, TValue> item);
-
-    public abstract IEnumerator<HexKeyValuePair<TKey,TValue>> GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() { return default(IEnumerator); }
   }
 }

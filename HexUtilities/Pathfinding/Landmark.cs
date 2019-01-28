@@ -29,9 +29,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
-using System.Linq;
 
 using PGNapoleonics.HexUtilities.Common;
 
@@ -100,11 +97,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         private Landmark(HexCoords coords, IList<DirectedLandmark> backingStore) {
             Coords        = coords;
             _backingStore = backingStore;
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        private void ObjectInvariant() {
         }
 
         /// <summary>Board coordinates for the landmark location.</summary>

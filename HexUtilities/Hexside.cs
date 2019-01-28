@@ -29,7 +29,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 
@@ -70,11 +69,6 @@ namespace PGNapoleonics.HexUtilities {
       _name     = name;
       _value    = value;
       _reversed = (_value + 3) % 6;
-    }
-
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
     }
     #endregion
 
@@ -130,7 +124,7 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>The <c>Hexsides</c> bit corresponding to this <c>Hexside</c>.</summary>
     public Hexsides AsHexsides { get { return _hexsides; } } private readonly Hexsides _hexsides;
     /// <summary>The name of this enumeration constant.</summary>
-    public string   Name       { get {Contract.Ensures(Contract.Result<string>() != null); return _name;     } } private readonly string _name;
+    public string   Name       { get { return _name;     } } private readonly string _name;
     /// <summary>Returns the reversed, or opposite, <see cref="Hexside"/> to this one.</summary>
     public Hexside  Reversed   { get {
       return _hexsideList[_reversed];

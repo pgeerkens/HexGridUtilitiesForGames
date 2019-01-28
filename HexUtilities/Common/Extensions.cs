@@ -27,7 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Diagnostics.Contracts;
 
 using HexSize     = System.Drawing.Size;
 namespace PGNapoleonics.HexUtilities.Common {

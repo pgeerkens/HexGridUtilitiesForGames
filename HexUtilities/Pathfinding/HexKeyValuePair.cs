@@ -27,8 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>Builder for <see cref="HexKeyValuePair{TKey,TValue}"/>.</summary>
@@ -57,10 +55,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     internal HexKeyValuePair(TKey key, TValue value) : this() {
       Key   = key;
       Value = value;
-    }
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
     }
 
     #region Properties

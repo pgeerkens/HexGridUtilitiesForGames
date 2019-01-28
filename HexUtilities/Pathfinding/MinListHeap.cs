@@ -27,11 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
@@ -50,12 +46,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     public MinListHeap(IEnumerable<HexKeyValuePair<TKey,TValue>> list) {
       _items = list.ToList();
       for(var start = (_items.Count-1) / 2; start >=0; start--) MinHeapifyDown(start);
-    }
-
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod]
-    [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
     }
     #endregion
 

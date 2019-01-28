@@ -27,8 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.FastLists;
@@ -51,11 +49,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       Func<IPriorityQueue<int, HexCoords>> queueFactory, 
       TryDirectedCost                      tryDirectedStepCost
     ) : base(hex, mapSizeHexes, queueFactory, tryDirectedStepCost) {
-    }
-
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
     }
 
     public override BoardStorage<short?> Fill() {
@@ -104,11 +97,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       _tryDirectedStepCost = tryDirectedStepCost;
 
       Enqueue(0,hexCoords,_store);
-    }
-
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
     }
 
     protected readonly IPriorityQueue<int,HexCoords> _queue;

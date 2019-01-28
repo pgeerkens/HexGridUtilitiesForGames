@@ -28,10 +28,7 @@
 #endregion
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
-using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.HexUtilities.FastLists;
 
 namespace PGNapoleonics.HexUtilities.Storage {
   using HexPointF    = System.Drawing.PointF;
@@ -42,7 +39,6 @@ namespace PGNapoleonics.HexUtilities.Storage {
 
   /// <summary>TODO</summary>
   /// <typeparam name="T">The <c>Type</c> being stored.</typeparam>
-  [ContractClass(typeof(IBoardStorageContract<>))]
   public interface IBoardStorage<out T> {
     /// <summary>Returns the <c>THex</c> instance at the specified coordinates.</summary>
     [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
@@ -59,26 +55,5 @@ namespace PGNapoleonics.HexUtilities.Storage {
     /// <param name="hexside"></param>
     /// <returns></returns>
     T Neighbour(HexCoords coords, Hexside hexside);
-  }
-
-  [ContractClassFor(typeof(IBoardStorage<>))]
-  internal abstract class IBoardStorageContract<T> : IBoardStorage<T> {
-    private IBoardStorageContract() { }
-
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() { }
-
-    public abstract HexSize MapSizeHexes  { get; }
-    
-    public T this[HexCoords coords]       { get { 
-      return default(T); 
-    } }
-
-    public void ForAllNeighbours(HexCoords coords, Action<T, Hexside> action) {
-    }
-    
-    public abstract T Neighbour(HexCoords coords, Hexside hexside);
-
-    public abstract void Dispose();
   }
 }

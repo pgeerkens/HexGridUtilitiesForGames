@@ -26,24 +26,13 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
-using System.Linq;
 
 namespace PGNapoleonics.HexUtilities.FastLists {
   public abstract partial class AbstractFastList<TItem> {
     /// <summary>Constructs a new instance from <paramref name="array"/>.</summary>
     protected AbstractFastList(TItem[] array) { 
       _array = array;
-      Contract.Assert(_array.Length == Count);
-    }
-
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
     }
 
     private sealed partial class ClassicEnumerable<TItem2> : IEnumerator<TItem2> {
@@ -52,10 +41,6 @@ namespace PGNapoleonics.HexUtilities.FastLists {
       internal ClassicEnumerable(TItem2[] array) {
         _array = array;
       }
-
-      [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-      private void ObjectInvariant() {
-      }
     }
 
     internal sealed partial class FastEnumerable<TItem2> {
@@ -63,10 +48,6 @@ namespace PGNapoleonics.HexUtilities.FastLists {
       /// <param name="array">The array of type <c>TItem</c> to make enumerable.</param>
       internal FastEnumerable(TItem2[] array) {
         _array = array;
-      }
-
-      [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-      private void ObjectInvariant() {
       }
     }
   }

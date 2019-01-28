@@ -28,7 +28,6 @@
 #endregion
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -91,11 +90,6 @@ namespace PGNapoleonics.HexUtilities {
                                     hexCoords => HexsideCosts.EntryCosts(boardHexes,hexCoords), 1);
             ExitCosts  = new BlockedBoardStorage32x32<Maybe<HexsideCosts>>(sizeHexes, 
                                     hexCoords => HexsideCosts.ExitCosts(boardHexes,hexCoords), 1);
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        private void ObjectInvariant() {
         }
 
         /// <summary>TODO</summary>

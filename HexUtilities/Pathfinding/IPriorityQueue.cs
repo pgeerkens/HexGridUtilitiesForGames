@@ -28,13 +28,11 @@
 #endregion
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>TODO</summary>
   [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
     Justification="The suffix has an unambiguous meaning in the application domain.")]
-  [ContractClass(typeof(IPriorityQueueContract<,>))]
   public interface IPriorityQueue<TPriority,TValue> 
     where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority>
 //    where TValue : class
@@ -61,42 +59,5 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <summary>Returns whether the top queue entry has been successfully stored in <c>result</c>.</summary>
     
     bool TryPeek(out HexKeyValuePair<TPriority,TValue> result);
-  }
-
-  /// <summary>ContractClass for <see cref="IPriorityQueue{TPriority,TValue}"/>.</summary>
-  /// <typeparam name="TPriority"></typeparam>
-  /// <typeparam name="TValue"></typeparam>
-  [ContractClassFor(typeof(IPriorityQueue<,>))]
-  internal abstract class IPriorityQueueContract<TPriority,TValue> : IPriorityQueue<TPriority,TValue> 
-    where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority>
-//    where TValue : class
-  {
-    private IPriorityQueueContract() : base() { }
-
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
-    }
-
-    abstract public bool Any();
-    abstract public int  Count { get; }
-
-    public void Enqueue(TPriority priority, TValue value) {
-    }
-    abstract public void Enqueue(HexKeyValuePair<TPriority, TValue> item);
-
-    [SuppressMessage("Microsoft.Contracts","CC1069", Justification="Can't see any non-Pure methods here.")]
-    public bool TryDequeue(out HexKeyValuePair<TPriority, TValue> result) {
-
-      result = default(HexKeyValuePair<TPriority, TValue>);
-      return default(bool);
-    }
-
-    
-    [SuppressMessage("Microsoft.Contracts","CC1069", Justification="Can't see any non-Pure methods here.")]
-    public bool TryPeek(out HexKeyValuePair<TPriority, TValue> result) {
-
-      result = default(HexKeyValuePair<TPriority, TValue>);
-      return default(bool);
-    }
   }
 }

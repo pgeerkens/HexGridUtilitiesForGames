@@ -66,15 +66,6 @@ namespace PGNapoleonics.HexgridPanel {
       InitializeComponent();
     }
 
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
-      Contract.Invariant(DataContext != null);
-      Contract.Invariant(RefreshCmd  != null);
-      Contract.Invariant(Scales != null);
-      Contract.Invariant(Scales.Count > 0);
-    }
-
     #region ISupportInitialize implementation
     /// <summary>Signals the object that initialization is starting.</summary>
     public virtual void BeginInit() { ; }

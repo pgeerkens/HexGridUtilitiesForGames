@@ -32,7 +32,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 
@@ -62,10 +61,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
             return Extensions.InitializeDisposable(() => new LandmarkCollection(query) );
         }
-
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        private void ObjectInvariant() => Contract.Invariant(_fastList != null);
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private LandmarkCollection(ILandmark[] array) =>

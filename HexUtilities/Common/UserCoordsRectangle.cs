@@ -28,8 +28,6 @@
 #endregion
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 
 namespace PGNapoleonics.HexUtilities.Common {
@@ -53,12 +51,6 @@ namespace PGNapoleonics.HexUtilities.Common {
     }
     /// <summary>TODO</summary>
     private CoordsRectangle(HexRectangle rectangle) : this() { Rectangle = rectangle; }
-
-
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
-    }
     #endregion
 
     #region Properties

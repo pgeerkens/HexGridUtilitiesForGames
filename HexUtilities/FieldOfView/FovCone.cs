@@ -28,8 +28,6 @@
 #endregion
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 
 using PGNapoleonics.HexUtilities.Common;
@@ -46,11 +44,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       this.RiseRun      = riseRun;
       this.VectorTop    = top;
       this.VectorBottom = bottom;
-    }
-
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
     }
     #endregion
 

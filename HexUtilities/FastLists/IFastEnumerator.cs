@@ -26,26 +26,14 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
 namespace PGNapoleonics.HexUtilities.FastLists {
   /// <summary>Returns the items of a list in order.</summary>
   /// <typeparam name="TItem"></typeparam>
-  [ContractClass(typeof(IFastEnumeratorContract<>))]
   public interface IFastEnumerator<TItem>{
     /// <summary>Return the next item in the enumeration.</summary>
     [SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "0#")]
     bool MoveNext(ref TItem item);
-  }
-
-  [ContractClassFor(typeof(IFastEnumerator<>))]
-  internal abstract class IFastEnumeratorContract<TItem> : IFastEnumerator<TItem> {
-    private IFastEnumeratorContract() { }
-
-    public bool MoveNext(ref TItem item) {
-      return default(bool);
-    }
   }
 }

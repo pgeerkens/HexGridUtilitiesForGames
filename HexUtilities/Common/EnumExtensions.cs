@@ -28,12 +28,8 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Reflection;
 
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
 namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>Type-safe extension methods for parsing Enums.</summary>

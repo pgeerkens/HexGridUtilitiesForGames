@@ -26,38 +26,14 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
 namespace PGNapoleonics.HexUtilities.FastLists {
   /// <summary>TODO</summary>
   [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
     Justification="The suffix has an unambiguous meaning in the application domain.")]
-  [ContractClass(typeof(IFastListXContract<>))]
   internal interface IFastListX<T> : IFastList<T>  {
     void SetItem(int index, T value);
   }
 
-  [ContractClassFor(typeof(IFastListX<>))]
-  internal abstract class IFastListXContract<T> : IFastListX<T> {
-    private IFastListXContract() { }
-
-    public void SetItem(int index, T value) {
-    }
-
-    public int Count { get { return default(int); } }
-
-    public abstract T   this[int index] { get; }
-    public abstract int IndexOf(T item);
-
-    public abstract void ForEach(Action<T> action);
-    public abstract void ForEach(FastIteratorFunctor<T> functor);
-    
-    public abstract IEnumerator<T>        GetEnumerator();
-    IEnumerator               IEnumerable.GetEnumerator() {return GetEnumerator(); }
-    IFastEnumerator<T> IFastEnumerable<T>.GetEnumerator() {return default(IFastEnumerator<T>);}
-  }
 }

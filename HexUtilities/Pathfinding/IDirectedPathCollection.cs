@@ -26,15 +26,11 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Diagnostics.CodeAnalysis;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>Structure returned by the A* Path Finding utility.</summary>
-  [ContractClass(typeof(IDirectedPathCollectionContract))]
   public interface IDirectedPathCollection : IEnumerable<IDirectedPathCollection>, IEnumerable { 
     /// <summary>The <see cref="Hexside"/> through which an agent must move in taking the first step of this path.</summary>
     Hexside                 HexsideExit     { get; }
@@ -62,37 +58,5 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     IDirectedPathCollection AddStep(HexCoords there, Hexside hexsideEntry, int cost);
     /// <summary>Returns a descriptive text suitable for the Status Bar.</summary>
     string StatusText { get; }
-  }
-
-  /// <summary>Contract class for <c>IDirectedPathCollection</c>.</summary>
-  [ContractClassFor(typeof(IDirectedPathCollection))]
-  internal abstract class IDirectedPathCollectionContract : IDirectedPathCollection {
-    private IDirectedPathCollectionContract() {}
-
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
-    }
-
-    #region Properties
-    public Hexside                  HexsideExit { get { return default(Hexside); } }
-    public IDirectedPathCollection  PathSoFar   { get { return default(IDirectedPathCollection); } }
-    public DirectedPathStepHex             PathStep    { get { return default(DirectedPathStepHex); } }
-    public string                   StatusText  { get { return String.Empty; } }
-    public HexCoords                StepCoords  { get { return default(HexCoords); } }
-    public int                      TotalCost   { get { return default(int); } }
-    public int                      TotalSteps  { get { return default(int); } }
-    #endregion
-
-    public IDirectedPathCollection AddStep(HexCoords coords, Hexside hexsideExit, int stepCost) {
-      return default(DirectedPathCollection);
-    }
-    public IDirectedPathCollection AddStep(DirectedPathStepHex neighbour, int stepCost) {
-      return default(DirectedPathCollection);
-    }
-
-    public abstract IEnumerator<IDirectedPathCollection> GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
   }
 }

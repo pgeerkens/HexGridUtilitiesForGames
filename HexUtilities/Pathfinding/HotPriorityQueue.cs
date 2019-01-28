@@ -32,7 +32,6 @@ using System.Linq;
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>Factory class for <see cref="HotPriorityQueue{TValue}"/></summary>
@@ -129,11 +128,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       _preferenceWidth = preferenceWidth; 
       _queue           = new MinListHeap<int,TValue>(initialSize);
       _lists           = factory();
-    }
-
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
     }
 
     /// <summary>Returns whether any elements exist in the heap.</summary>

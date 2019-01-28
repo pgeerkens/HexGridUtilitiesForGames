@@ -27,12 +27,8 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Threading.Tasks;
 
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.FastLists;
@@ -56,9 +52,6 @@ namespace PGNapoleonics.HexUtilities.Storage {
                                 : Enumerable.Range(0,sizeHexes.Height);
       _backingStore = InitializeStoreX(sizeHexes, factory, rowRange);
     }
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
-    }
     private static IFastList<IFastListX<T>> InitializeStoreX(HexSize sizeHexes, Func<HexCoords, T> tFactory, IEnumerable<int> rowRange) {
       return ( from y in rowRange
                select ( from x in Enumerable.Range(0, sizeHexes.Width)
@@ -74,25 +67,21 @@ namespace PGNapoleonics.HexUtilities.Storage {
 
     /// <inheritdoc/>>
     public override void ForEach(Action<T> action) {
-      Contract.Assert(action != null);
       BackingStore.AsParallel().WithMergeOptions(ParallelMergeOptions.FullyBuffered)
                   .ForAll(row => row.ForEach(action));
     }
     /// <inheritdoc/>>
     public override void ForEach(FastIteratorFunctor<T> functor) {
-      Contract.Assert(functor != null);
       BackingStore.AsParallel().WithMergeOptions(ParallelMergeOptions.FullyBuffered)
                   .ForAll(row => row.ForEach(functor));
     }
 
     /// <inheritdoc/>>
     public override void ForEachSerial(Action<T> action) {
-      Contract.Assert(action != null);
       BackingStore.ForEach(row => row.ForEach(action));
     }
     /// <inheritdoc/>>
     public override void ForEachSerial(FastIteratorFunctor<T> functor) {
-      Contract.Assert(functor != null);
       BackingStore.ForEach(row => row.ForEach(functor));
     }
 

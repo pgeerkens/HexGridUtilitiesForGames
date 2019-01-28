@@ -27,12 +27,10 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
 namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>Row-major order implementation of an immutable augmented 2D affine matrix.</summary>
@@ -88,11 +86,6 @@ namespace PGNapoleonics.HexUtilities.Common {
       _m11 = m11;  _m12 = m12;
       _m21 = m21;  _m22 = m22;
       _m31 = dx;   _m32 = dy;   _m33 = norm;
-    }
-
-    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-    private void ObjectInvariant() {
     }
     #endregion
 
