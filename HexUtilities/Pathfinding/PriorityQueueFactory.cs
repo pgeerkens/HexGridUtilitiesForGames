@@ -38,7 +38,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority>
 //    where TValue : class
     {
-    //  Contract.Ensures(Contract.Result<IPriorityQueue<TPriority,TValue>>() != null);
       return new DictionaryPriorityQueue<TPriority,TValue>();
     }
 
@@ -47,7 +46,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     internal static IPriorityQueue<int,TValue> NewHotPriorityQueue<TValue>()
 //    where TValue : class
     {
-    //  Contract.Ensures(Contract.Result<IPriorityQueue<int,TValue>>() != null);
       return NewHotPriorityQueue<TValue>(256);
     }
 
@@ -55,8 +53,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     internal static IPriorityQueue<int,TValue> NewHotPriorityQueue<TValue>(int initialSize)
 //    where TValue : class
     {
-    //  Contract.Requires(initialSize >= 32);
-    //  Contract.Ensures(Contract.Result<IPriorityQueue<int,TValue>>() != null);
       return HotPriorityQueue.New<TValue>(0,initialSize);
     }
   }

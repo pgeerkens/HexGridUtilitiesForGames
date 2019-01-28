@@ -37,16 +37,12 @@ namespace PGNapoleonics.HexUtilities.FastLists {
     /// <typeparam name="TItem">Type of the class/interface being indexed.</typeparam>
     /// <param name="array">An <c>T[]</c> to be indexed.</param>
     public static IFastList<TItem> New<TItem>(TItem[] array) { 
-      array.RequiredNotNull("array");
-    //  Contract.Ensures(Contract.Result<IFastList<TItem>>() != null);
       return new FastList<TItem>(array);
     }
     /// <summary>Contract-enforcing wrapper for FastList{T} constructor returning an IFastList{TItem}.</summary>
     /// <typeparam name="TItem">Type of the class/interface being indexed.</typeparam>
     /// <param name="array">An <c>T[]</c> to be indexed.</param>
     internal static IFastListX<TItem> NewX<TItem>(TItem[] array) { 
-      array.RequiredNotNull("array");
-    //  Contract.Ensures(Contract.Result<IFastListX<TItem>>() != null);
       return new FastList<TItem>(array);
     }
   }
@@ -57,7 +53,6 @@ namespace PGNapoleonics.HexUtilities.FastLists {
     /// <typeparam name="T">Type of the element in the supplied array and returned list.</typeparam>
     /// <param name="this">The T[] to be converted.</param>
     public static IFastList<T> ToFastList<T>(this T[] @this) {
-    //  Contract.Ensures(Contract.Result<IFastList<T>>() != null);
 
       return FastList.New(@this ?? new T[0]);
     }
@@ -65,7 +60,6 @@ namespace PGNapoleonics.HexUtilities.FastLists {
     ///// <typeparam name="T">Type of the element in the supplied array and returned list.</typeparam>
     ///// <param name="this">The T[] to be converted.</param>
     //public static IFastList<T> ToFastList<T>(this List<T> @this) {
-    ////  Contract.Ensures(Contract.Result<IFastList<T>>() != null);
 
     //  return ( @this ?? new List<T>()).ToArray().ToFastList();
     //}
@@ -74,7 +68,6 @@ namespace PGNapoleonics.HexUtilities.FastLists {
     /// <typeparam name="T">Type of the element in the supplied array and returned list.</typeparam>
     /// <param name="this">The T[] to be converted.</param>
     internal static IFastListX<T> ToFastListX<T>(this T[] @this) {
-    //  Contract.Ensures(Contract.Result<IFastListX<T>>() != null);
 
       return FastList.NewX(@this ?? new T[0]);
     }

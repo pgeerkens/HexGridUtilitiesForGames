@@ -107,19 +107,14 @@ namespace PGNapoleonics.HexUtilities.Common {
 
     /// <summary>TODO</summary>
     public static void ForEachKey(Action<string> action, Func<string,bool> predicate) {
-      action.RequiredNotNull("action"); // for Code Analysis
-      predicate.RequiredNotNull("predicate");
       foreach(var item in Tracing.Collection.Select(t => t.Key).Where(t => predicate(t))) action(item);
     }
     /// <summary>TODO</summary>
     public static void ForEachValue(Action<Tracing> action, Func<Tracing,bool> predicate) {
-      action.RequiredNotNull("action"); // for Code Analysis
-      predicate.RequiredNotNull("predicate");
       foreach(var item in Tracing.Collection.Select(t => t.Value).Where(t => predicate(t))) action(item);
     }
     /// <summary>TODO</summary>
     public static Tracing Item(string name) {
-      name.RequiredNotNull("name"); 
       return Collection[name];
     }
     /// <summary>TODO</summary>
@@ -141,8 +136,6 @@ namespace PGNapoleonics.HexUtilities.Common {
 #endif
     [Conditional("TRACE")]
     public  void Trace(string format, params object[] args) {
-      format.RequiredNotNull("format");
-      args.RequiredNotNull("args");
       Trace(false, string.Format(CultureInfo.CurrentCulture,format,args));
     }
     /// <summary>TODO</summary>
@@ -152,8 +145,6 @@ namespace PGNapoleonics.HexUtilities.Common {
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args")]
     [Conditional("TRACE")]
     public  void Trace(bool newLine, string format, params object[] args) {
-      format.RequiredNotNull("format");
-      args.RequiredNotNull("args");
       Trace(newLine, string.Format(CultureInfo.CurrentCulture,format,args));
     }
 
@@ -198,8 +189,6 @@ namespace PGNapoleonics.HexUtilities.Common {
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args")]
     [Conditional("TRACE")]
     public void LogTime(string format, params object[] args) {
-      format.RequiredNotNull("format");
-      args.RequiredNotNull("args");
       LogTime(false, string.Format(CultureInfo.CurrentCulture,format,args));
     }
     /// <summary>TODO</summary>
@@ -211,8 +200,6 @@ namespace PGNapoleonics.HexUtilities.Common {
 #endif
     [Conditional("TRACE")]
     public void LogTime(bool newLine, string format, params object[] args) {
-      format.RequiredNotNull("format");
-      args.RequiredNotNull("args");
       LogTime(newLine, string.Format(CultureInfo.CurrentCulture,format,args));
     }
     /// <summary>TODO</summary>

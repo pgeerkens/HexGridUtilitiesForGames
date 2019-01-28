@@ -38,33 +38,23 @@ namespace PGNapoleonics.HexUtilities.FastLists {
   public abstract partial class AbstractFastList<TItem> {
     /// <summary>Constructs a new instance from <paramref name="array"/>.</summary>
     protected AbstractFastList(TItem[] array) { 
-      array.RequiredNotNull("array"); 
-    //  Contract.Requires(array.All(item => item != null));
-    //  Contract.Ensures(array.All(item => item != null));
       _array = array;
       Contract.Assert(_array.Length == Count);
     }
 
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-    //  Contract.Invariant(_array.Length == Count);
-    //  Contract.Invariant(_array.All(item => item != null));
     }
 
     private sealed partial class ClassicEnumerable<TItem2> : IEnumerator<TItem2> {
       /// <summary>Construct a new instance from array <c>a</c>.</summary>
       /// <param name="array">The array of type <c>TItem</c> to make enumerable.</param>
       internal ClassicEnumerable(TItem2[] array) {
-        array.RequiredNotNull("array");
-      //  Contract.Requires(array.All(item => item != null));
-
         _array = array;
       }
 
       [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
       private void ObjectInvariant() {
-      //  Contract.Invariant(_array != null);
-      //  Contract.Invariant(_array.All(item => item != null));
       }
     }
 
@@ -72,17 +62,11 @@ namespace PGNapoleonics.HexUtilities.FastLists {
       /// <summary>Construct a new instance from array <c>a</c>.</summary>
       /// <param name="array">The array of type <c>TItem</c> to make enumerable.</param>
       internal FastEnumerable(TItem2[] array) {
-        array.RequiredNotNull("array");
-      //  Contract.Requires(array.All(item => item != null));
-
         _array = array;
       }
 
       [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
       private void ObjectInvariant() {
-      //  Contract.Invariant(_array != null);
-      //  Contract.Invariant(_array.All(item => item != null));
-      //  Contract.Invariant(-1 <= _index);
       }
     }
   }

@@ -77,8 +77,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <seealso cref="PGNapoleonics.HexUtilities.Pathfinding.StandardPathfinder"/>
     /// </remarks>
     public static IDirectedPath FindDirectedPathFwd(INavigableBoard board, HexCoords source, HexCoords target) {
-      board.RequiredNotNull("board");
-    //  Contract.Ensures(Contract.Result<IDirectedPath>() != null);
       return (new StandardPathfinder(board,source,target)).PathForward;
     }
     /// <summary>TODO</summary>
@@ -87,8 +85,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <param name="target"></param>
     /// <returns><see cref="StandardPathfinder"/>.</returns>
     public static StandardPathfinder New(INavigableBoard board, HexCoords source, HexCoords target) {
-      board.RequiredNotNull("board");
-    //  Contract.Ensures(Contract.Result<StandardPathfinder>() != null);
       return new StandardPathfinder(board,source,target);
     }
 
@@ -100,7 +96,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     internal StandardPathfinder(INavigableBoard board, HexCoords source, HexCoords target) 
     : base(source,target,new HashSet<HexCoords>()
     ) {
-      board.RequiredNotNull("board");
 
       _heuristic       = board.Heuristic;
       _openSet         = new HashSet<HexCoords>();
@@ -116,14 +111,11 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-    //  Contract.Invariant(_heuristic != null);
     }
 
-    [Pure]
+    
     private Maybe<int> Estimate(HexCoords start, HexCoords hex, int totalCost) {
       var vectorStart = start.Canon - hex.Canon;
-    //  Contract.Assume((_vectorGoal.X*vectorStart.Y - _vectorGoal.Y*vectorStart.X) != int.MinValue);
-
       //var preference = Preference(_vectorGoal, vectorStart);
       //var estimate   = _heuristic(start,hex) + totalCost;
       //return (estimate << 16) + preference;
@@ -133,9 +125,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
              select (estimate << 16) + preference;
     }
 
-    [Pure]
+    
     static int Preference(IntVector2D vectorGoal, IntVector2D vectorHex) {
-    //  Contract.Requires((vectorGoal.X*vectorHex.Y - vectorGoal.Y*vectorHex.X) != int.MinValue);
       return (0xFFFF & Math.Abs(vectorGoal ^ vectorHex));
     }
 

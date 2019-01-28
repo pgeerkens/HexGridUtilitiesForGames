@@ -16,7 +16,7 @@ namespace PGNapoleonics.HexUtilities.FastLists {
     Justification="The suffix has an unambiguous meaning in the application domain.")]
   internal sealed class FastList<TItem> : AbstractFastList<TItem> {
     /// <summary>Constructs a new instance from <paramref name="array"/>.</summary>
-    internal FastList(TItem[] array) : base(array) { array.RequiredNotNull("array"); }
+    internal FastList(TItem[] array) : base(array) { }
   }
 
   /// <summary>Adapted implementation of Joe Duffy's Simple (Fast) List enumerator.</summary>
@@ -35,15 +35,13 @@ namespace PGNapoleonics.HexUtilities.FastLists {
         new ClassicEnumerable<TItem>(_array) );
     }
     IEnumerator                       IEnumerable.GetEnumerator() { return GetEnumerator(); }
-    [Pure]
+    
     IFastEnumerator<TItem> IFastEnumerable<TItem>.GetEnumerator(){
       return new FastEnumerable<TItem>(_array);
     }
 
     /// <summary>IForEachable{TItem} implementation.</summary>
     public   void  ForEach(Action<TItem> action) {
-      action.RequiredNotNull("action"); // for Code Analysis
-
       TItem[] array = _array;
       for (int i = 0; i < array.Length; i++)    action(array[i]);
     }
@@ -52,8 +50,6 @@ namespace PGNapoleonics.HexUtilities.FastLists {
 
     /// <summary>IForEachable2{TItem} implementation</summary>
     public   void  ForEach(FastIteratorFunctor<TItem> functor) {
-      functor.RequiredNotNull("functor"); // for Code Analysis
-
       TItem[] array = _array;
       for (int i = 0; i < array.Length; i++)    functor.Invoke(array[i]);
     }
@@ -64,13 +60,10 @@ namespace PGNapoleonics.HexUtilities.FastLists {
     public   int   Count               { get {return _array.Length;} }
     /// <inheritdoc/>
     public   TItem this[int index]     { get {
-    //  Contract.Assume(_array[index] != null); // required even though provable
       return _array[index];
     } }
     /// <inheritdoc/>
     public   int   IndexOf(TItem item) {
-      _array.AssumeInvariant();
-    //  Contract.Assume(Contract.Result<int>() < Count);
       return Array.IndexOf(_array, item, 0, _array.Length);
     }
 

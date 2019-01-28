@@ -41,29 +41,23 @@ namespace PGNapoleonics.HexUtilities {
         /// <summary>TODO</summary>
         public static HexsideCosts ExitCosts<THex>(BoardStorage<Maybe<THex>> boardHexes, HexCoords hexCoords)
         where THex : IHex {
-            boardHexes.RequiredNotNull("boardHexes");
             return new HexsideCosts(hexside => DirectedCost(boardHexes, hexCoords, hexside) );
         }
         /// <summary>TODO</summary>
         public static HexsideCosts EntryCosts<THex>(BoardStorage<Maybe<THex>> boardHexes, HexCoords hexCoords)
         where THex : IHex {
-            boardHexes.RequiredNotNull("boardHexes");
             return new HexsideCosts(hexside => DirectedCost(boardHexes, hexCoords.GetNeighbour(hexside), hexside.Reversed) );
         }
 
         /// <summary>TODO</summary>
         public static short? DirectedCost<THex>(BoardStorage<Maybe<THex>> boardHexes, HexCoords hexCoords, Hexside hexside)
         where THex : IHex {
-            boardHexes.RequiredNotNull("boardHexes");
             return boardHexes[hexCoords].Bind(hex => hex.TryStepCost(hexside).ToMaybe()).ToNullable();
         }
 
-        private HexsideCosts(Func<Hexside,short?> directedCostToExit) : base(Generator(directedCostToExit)) =>
-            directedCostToExit.RequiredNotNull("directedCostToExit");
+        private HexsideCosts(Func<Hexside,short?> directedCostToExit) : base(Generator(directedCostToExit)) { }
 
         static List<short?> Generator(Func<Hexside,short?> directedCostToExit) {
-            directedCostToExit.RequiredNotNull("directedCostToExit");
-          //  Contract.Ensures(Contract.Result<List<short?>>() != null);
 
             return ( from hexsideExit in Hexside.HexsideList
                      select directedCostToExit(hexsideExit)

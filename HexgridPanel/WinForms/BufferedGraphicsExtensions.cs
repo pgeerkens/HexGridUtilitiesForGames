@@ -73,8 +73,6 @@ namespace PGNapoleonics.WinForms {
       Size         virtualSize,
       GdiRasterOps rasterOp
     ) {
-      source.RequiredNotNull("source");
-
       if (target != null) {
         var targetDC = target.GetHdc();
 
@@ -100,9 +98,6 @@ namespace PGNapoleonics.WinForms {
       Size         virtualSize,
       GdiRasterOps rasterOp
     ) {
-      source.RequiredNotNull("source");
-     // targetDC.RequiredNotNull("targetDC");
-
       var sourceDC = source.Graphics.GetHdc();
       try {
         NativeMethods.BitBlt(

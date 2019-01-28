@@ -66,9 +66,6 @@ namespace PGNapoleonics.HexUtilities {
     public static readonly Hexside Northwest = new Hexside(5, "Northwest", Hexsides.Northwest);
 
     private Hexside(int value, string name, Hexsides hexsides) {
-    //  Contract.Requires(0 <= value  &&  value < 6);
-      name.RequiredNotNull("name");
-
       _hexsides = hexsides;
       _name     = name;
       _value    = value;
@@ -78,33 +75,23 @@ namespace PGNapoleonics.HexUtilities {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-    //  Contract.Invariant(Name != null);
-    //  Contract.Invariant(0 <= Value  &&  Value < 6);
-    //  Contract.Invariant(0 <= (int)this  &&  (int)this < 6);
-
-    //  Contract.Invariant(Reversed != null);
-    //  Contract.Invariant(0 <= Reversed.Value  &&  Reversed.Value < 6);
-    //  Contract.Invariant(0 <= (int)Reversed  &&  (int)Reversed < 6);
     }
     #endregion
 
     #region Static members
     /// <summary><c>Static List {Hexside}</c> for enumerations.</summary>
     public static IFastList<Hexside> HexsideList { get {
-    //  Contract.Ensures(Contract.Result<IFastList<Hexside>>() != null);
       return _hexsideList;
     } }
 
     /// <summary>Performs <c>action</c> for each Enum value of <c>Hexside</c>.</summary>
     /// <param name="action"></param>
     public static void ForEach(Action<Hexside> action) {
-      action.RequiredNotNull("action");
       _hexsideList.ForEach(action);
     }
     /// <summary>Perform the Invoke() method of <c>functor</c> for each value of Enum <c>Hexside</c>.</summary>
     /// <param name="functor"></param>
     public static void ForEach(FastIteratorFunctor<Hexside> functor) {
-      functor.RequiredNotNull("functor");
       _hexsideList.ForEach(functor);
     }
 
@@ -112,9 +99,6 @@ namespace PGNapoleonics.HexUtilities {
     /// <param name="name">The <see cref="Hexside"/> string to be parsed and recognized.</param>
     /// <param name="ignoreCase">Specifies whether or not a case-insensitive parse is desired.</param>
     public static Hexside ParseEnum(string name, bool ignoreCase) {
-      name.RequiredNotNull("Hexside");
-    //  Contract.Ensures(Contract.Result<Hexside>() != null);
-    //  Contract.Assume(_hexsideList.All(item => item != null));
 
       var index = ignoreCase ? _namesUncased.IndexOf(name.ToUpper(CultureInfo.InvariantCulture))
                              : _namesCased.IndexOf(name);
@@ -125,18 +109,13 @@ namespace PGNapoleonics.HexUtilities {
 
     /// <summary>Returns the single <see cref="Hexsides"/> value corresponding to this <paramref name="hexside"/>.</summary>
     /// <param name="hexside">The supplied <see cref="Hexside"/>.</param>
-    [Pure]public static implicit operator Hexsides(Hexside hexside) {
-      hexside.RequiredNotNull("hexside");
-      hexside.AssumeInvariant();
+    public static implicit operator Hexsides(Hexside hexside) {
       return hexside._hexsides;
     }
 
     /// <summary>Enables implicit casting of a <see cref="Hexside"/> as a <see cref="System.Int32"/>.</summary>
     /// <param name="hexside">The supplied <see cref="Hexside"/>.</param>
-    [Pure]public static implicit operator int(Hexside hexside) {
-      hexside.RequiredNotNull("hexside");
-    //  Contract.Ensures(0 <= Contract.Result<int>()  &&  Contract.Result<int>() < HexsideList.Count);
-      hexside.AssumeInvariant();
+    public static implicit operator int(Hexside hexside) {
       return hexside.Value;
     }
 
@@ -154,7 +133,6 @@ namespace PGNapoleonics.HexUtilities {
     public string   Name       { get {Contract.Ensures(Contract.Result<string>() != null); return _name;     } } private readonly string _name;
     /// <summary>Returns the reversed, or opposite, <see cref="Hexside"/> to this one.</summary>
     public Hexside  Reversed   { get {
-    //  Contract.Ensures(Contract.Result<Hexside>() != null);
       return _hexsideList[_reversed];
     } } private readonly int _reversed;
     /// <summary>The integer value for this enumeration constant.</summary>

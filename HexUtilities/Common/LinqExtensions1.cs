@@ -35,8 +35,7 @@ namespace System.Linq {
   public static class LinqExtensions {
     /// <summary>Determines whether all elements of a bool sequence are true.</summary>
     /// <param name="this">A IEnumerable{bool} sequence to evaluate.</param>
-    [Pure]public static bool All(this IEnumerable<bool> @this) {
-      @this.RequiredNotNull("this");
+    public static bool All(this IEnumerable<bool> @this) {
       return @this.All(proposition => proposition);
     }
   }

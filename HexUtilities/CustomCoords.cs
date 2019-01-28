@@ -71,7 +71,6 @@ namespace PGNapoleonics.HexUtilities {
     [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames", MessageId = "0#",
       Justification="Agrees with interface specification.")]
     public string Format(string format, HexCoords coords, IFormatProvider formatProvider) {
-    //  Contract.Ensures(Contract.Result<System.String>() != null);
       if (format==null || format.Length==0) format = "U";
       switch(format[0]) {
         case 'U': return UserToCustom(coords).ToString(format.Substring(1), formatProvider);

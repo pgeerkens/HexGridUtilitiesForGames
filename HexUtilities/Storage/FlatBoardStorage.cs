@@ -52,32 +52,14 @@ namespace PGNapoleonics.HexUtilities.Storage {
     /// in parallel or serially.</param>
     public FlatBoardStorage(HexSize sizeHexes, Func<HexCoords,T> factory, bool inParallel) 
     : base (sizeHexes) {
-    //  Contract.Requires(sizeHexes.Width > 0);
-    //  Contract.Requires(sizeHexes.Height > 0);
-    //  Contract.Requires( ( from y in Enumerable.Range(0, sizeHexes.Height)
-                         //  from x in Enumerable.Range(0, sizeHexes.Width)
-                         //  select factory(HexCoords.NewUserCoords(x,y)) != null
-                         //).All() );
-
       var rowRange = inParallel ? ParallelEnumerable.Range(0,sizeHexes.Height).AsOrdered()
                                 : Enumerable.Range(0,sizeHexes.Height);
-    //  Contract.Assume(rowRange != null);
       _backingStore = InitializeStoreX(sizeHexes, factory, rowRange);
     }
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-    //  Contract.Invariant(BackingStore != null);
-    //  Contract.Invariant( BackingStore.All(row => row != null) );
-    //  Contract.Invariant( BackingStore.All(row => row.All(block => block != null) ) );
     }
     private static IFastList<IFastListX<T>> InitializeStoreX(HexSize sizeHexes, Func<HexCoords, T> tFactory, IEnumerable<int> rowRange) {
-      rowRange.RequiredNotNull("rowRange");
-    //  Contract.Requires( ( from y in Enumerable.Range(0, sizeHexes.Height)
-                         //  from x in Enumerable.Range(0, sizeHexes.Width)
-                         //  select tFactory(HexCoords.NewUserCoords(x,y)) != null
-                         //).All() );
-    //  Contract.Ensures(Contract.Result<IFastList<IFastListX<T>>>() != null);
-
       return ( from y in rowRange
                select ( from x in Enumerable.Range(0, sizeHexes.Width)
                         select tFactory(HexCoords.NewUserCoords(x,y))
@@ -86,8 +68,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
     }
 
     /// <inheritdoc/>>
-    [Pure]protected override T ItemInner(int x, int y) {
-    //  Contract.Ensures(Contract.Result<T>() != null);
+    protected override T ItemInner(int x, int y) {
       return BackingStore[y][x] ;
     }
 
@@ -118,9 +99,6 @@ namespace PGNapoleonics.HexUtilities.Storage {
     /// <summary>TODO</summary>
     /// <remarks>Use carefully - can interfere with iterators.</remarks>
     internal override void SetItem(HexCoords coords, T value) {
-    //  Contract.Assume(value != null); // Enforced by base class
-      coords.AssumeInvariant();
-
       var v = coords.User;
       BackingStore [v.Y].SetItem(v.X, value);
     }

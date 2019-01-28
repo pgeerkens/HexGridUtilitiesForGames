@@ -39,7 +39,6 @@ namespace PGNapoleonics.HexUtilities.Common {
 
         /// <summary>TODO</summary>
         public Maybe(T value) : this() {
-          //  Contract.Ensures( !HasValue  ||  Value != null);
             Value    = value;
             HasValue = typeof(ValueType).IsAssignableFrom(typeof(T)) || value != null;
         }
@@ -56,38 +55,28 @@ namespace PGNapoleonics.HexUtilities.Common {
 
         /// <summary>TODO</summary>
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        [Pure]
+        
         public Maybe<TOut> Bind<TOut>(Func<T, Maybe<TOut>> projection) {
-            projection.RequiredNotNull("projection");
             return HasValue ? projection(Value) : Maybe<TOut>.NoValue();
         }
 
         /// <summary>TODO</summary>
-        [Pure]
+        
         public TOut        Match<TOut>(Func<T,TOut> projection, Func<TOut> alternate) {
-            projection.RequiredNotNull("projection");
-            alternate.RequiredNotNull("alternate");
-          //  Contract.Ensures(Contract.Result<TOut>() != null || alternate() == null);
-
             return HasValue ? projection(Value) : alternate();
         }
 
         /// <summary>TODO</summary>
-        [Pure]
+        
         public bool        ValueContract(Func<T, bool> contract) {
-            contract.RequiredNotNull("contract");
-          //  Contract.Ensures(Contract.Result<bool>() == (! HasValue  ||  contract(Value)) );
             return ! HasValue  ||  contract(Value);
         }
-        [Pure]
+        
         private static  string PreferredName(T value) {
-            value.RequiredNotNull("value");
-          //  Contract.Ensures(Contract.Result<string>() != null);
             return value.ToString();
         }
-        [Pure]
+        
         private static  string AlternateName() {
-          //  Contract.Ensures(Contract.Result<string>() != null);
             return "NoValue<" + typeof(T).Name + ">";
         }
 
@@ -96,32 +85,31 @@ namespace PGNapoleonics.HexUtilities.Common {
 
         #region Value Equality with IEquatable<T>
         /// <summary>Tests value-equality.</summary>
-        [Pure]
+        
         public override bool Equals(object obj) => (obj as Maybe<T>?)?.Equals(this) ?? false;
 
         /// <inheritdoc/>
-        [Pure]
+        
         public bool Equals(Maybe<T> other) => 
                 ( HasValue  &&  other.HasValue  &&  (Value.Equals(other.Value)) )
              || (!HasValue  && !other.HasValue);
 
         /// <summary>Tests value-inequality.</summary>
-        [Pure]
+        
         public static bool operator != (Maybe<T> lhs, Maybe<T> rhs) => ! lhs.Equals(rhs);
 
         /// <summary>Tests value-equality.</summary>
-        [Pure]
+        
         public static bool operator == (Maybe<T> lhs, Maybe<T> rhs) => lhs.Equals(rhs);
 
         /// <summary>TODO</summary>
-        [Pure]
+        
         public override string ToString() {
-          //  Contract.Ensures(Contract.Result<string>() != null);
             return (HasValue && Value!=null) ? PreferredName(Value) : AlternateName();
         }
 
         /// <inheritdoc/>
-        [Pure]
+        
         public override int GetHashCode() => Value.GetHashCode();
         #endregion
 

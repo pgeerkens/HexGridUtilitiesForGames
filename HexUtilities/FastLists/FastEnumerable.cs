@@ -25,8 +25,6 @@ namespace PGNapoleonics.HexUtilities.FastLists {
       public bool MoveNext(ref TItem2 item) {
         var array = _array;
         int i;
-      //  Contract.Assume(Contract.Result<bool>() == (_index < array.Length));
-      //  Contract.Assume(!Contract.Result<bool>() || item != null);
 
         if ((i = ++_index) >= array.Length) return false;
 

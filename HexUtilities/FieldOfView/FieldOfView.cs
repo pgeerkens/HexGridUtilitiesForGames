@@ -40,11 +40,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     private readonly object _syncLock = new object();
 
     public ArrayFieldOfView(IFovBoard board) {
-      board.RequiredNotNull("board");
-    //  Contract.Requires(board.MapSizeHexes.Width >= 0);
-    //  Contract.Ensures(_fovBacking.All(item => item != null));
-
-      board.AssumeInvariant();
       _mapSizeHexes = board.MapSizeHexes;
       _fovBacking   = ( from i in Enumerable.Range(0,board.MapSizeHexes.Width)
                         select new BitArray(board.MapSizeHexes.Height)
@@ -54,7 +49,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-    //  Contract.Invariant(_fovBacking.All(item => item != null));
     }
 
     public bool this[HexCoords coords] {

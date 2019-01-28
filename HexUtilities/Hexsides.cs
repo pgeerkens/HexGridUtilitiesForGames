@@ -58,7 +58,6 @@ namespace PGNapoleonics.HexUtilities {
     /// <param name="this">The Hexsides value to test.</param>
     /// <param name="hexside">Specification of the eponymous bit in <c>this</c> to test.</param>
     public static bool IsSet(this Hexsides @this, Hexside hexside) {
-      hexside.RequiredNotNull("hexside");
       return (@this.GetValue() & ((int)hexside.AsHexsides)) != 0;
     }
     /// <summary>TODO</summary>
@@ -95,7 +94,6 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>Returns the count of of set bit-flags in the argument.</summary>
     /// <param name="this">The Hexsides instnace of interest.</param>
     public static int BitCount(this Hexsides @this) {
-    //  Contract.Requires(Hexsides.None <= @this  &&  @this <= Hexsides.All);
       return BitCountLookup[(int)@this];
     }
 

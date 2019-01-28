@@ -40,7 +40,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         public static async Task<Maybe<IDirectedPathCollection>> GetDirectedPathAsync(this HexCoords source, 
             HexCoords target, Func<HexCoords, HexCoords, Pathfinder> pathfinder
         ) {
-            pathfinder.RequiredNotNull("pathfinderFactory");
 
             return await Task.Run(() => source.GetDirectedPath(target, pathfinder));
         }
@@ -48,11 +47,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         public static Maybe<IDirectedPathCollection> GetDirectedPath(this HexCoords source, 
             HexCoords target, Func<HexCoords, HexCoords, Pathfinder> pathfinderFunc
         ) {
-            pathfinderFunc.RequiredNotNull("pathfinderFunc");
 
             var pathfinder = pathfinderFunc(source,target);
-          //  Contract.Assume(pathfinder != null);
-            pathfinder.AssumeInvariant();
             return pathfinder.PathForward.ToMaybe();
         }
 
@@ -66,9 +62,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// <param name="source"></param>
         /// <param name="target"></param>
         private static Pathfinder _getStandardPathfinder(this INavigableBoard @this, HexCoords source, HexCoords target) {
-            @this.RequiredNotNull("this");
-          //  Contract.Ensures(Contract.Result<Pathfinder>() != null);
-
             return StandardPathfinder.New(@this, source, target);
         }
 
@@ -84,11 +77,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// <param name="target"></param>
         private static Pathfinder _getLandmarkPathfinder<TBoard>(TBoard @this, HexCoords source, HexCoords target)
         where TBoard : class, INavigableBoard, ILandmarkBoard {
-            @this.RequiredNotNull("this");
-            @this.Landmarks.RequiredNotNull("this.Landmarks");
-          //  Contract.Ensures(Contract.Result<Pathfinder>() != null);
-            ((ILandmarkBoard)@this).AssumeInvariant();
-
             return LandmarkPathfinder.New(@this, @this.Landmarks, source, target);
         }
     }

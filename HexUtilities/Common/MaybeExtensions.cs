@@ -36,59 +36,50 @@ namespace PGNapoleonics.HexUtilities.Common {
         /// <summary>Returns the value of <paramref name="this">this</paramref> it it has one; otherwise returns <paramref name="alternate"/>().</summary>
         /// <param name="this">The <see cref="Maybe{T}"/> being operated upon.</param>
         /// <param name="alternate">The action to be perrofmed if <paramref name="this"/> has no value.</param>
-        [Pure]public static TOut        Else<TOut>(this Maybe<TOut> @this, Func<TOut> alternate) {
-            alternate.RequiredNotNull("alternate");
+        public static TOut        Else<TOut>(this Maybe<TOut> @this, Func<TOut> alternate) {
             return @this.Match(e => e, alternate); 
         }
         /// <summary>Returns the value of <paramref name="this">this</paramref> it it has one; otherwise returns default(<typeparamref name="TOut"/>).().</summary>
         /// <param name="this">The <see cref="Maybe{T}"/> being operated upon.</param>
-        [Pure]public static TOut        ElseDefault<TOut>(this Maybe<TOut> @this) =>
+        public static TOut        ElseDefault<TOut>(this Maybe<TOut> @this) =>
             @this.Match(e => e, ()=>default(TOut)); 
 
         /// <summary>Executes <paramref name="action"/> on <paramref name="this"/> exactly if it hasn't any value.</summary>
         /// <returns>Returns <paramref name="this"/>.</returns>
-        [Pure]public static Maybe<TOut> ElseDo<TOut>(this Maybe<TOut> @this, Action action) {
-            action.RequiredNotNull("action");
+        public static Maybe<TOut> ElseDo<TOut>(this Maybe<TOut> @this, Action action) {
             return @this.Match(value => @this, () => { action(); return @this; });
         }
 
         /// <summary>Returns the value of <paramref name="this"/> if it has one, otherwise throws an <see cref="InvalidOperationException"/>.</summary>
         /// <returns>Returns the value of <paramref name="this"/>.</returns>
         /// <exception cref="InvalidOperationException"></exception>
-        [Pure]public static TOut        ForceGetValue<TOut>(this Maybe<TOut> @this) {
-          //  Contract.Ensures(Contract.Result<TOut>() != null);
-          //  Contract.EnsuresOnThrow<InvalidOperationException>( ! @this.HasValue);
+        public static TOut        ForceGetValue<TOut>(this Maybe<TOut> @this) {
             return @this.Match(e => e, () => { throw new InvalidOperationException(@this.ToString()); } );
         }
 
         /// <summary>Executes <paramref name="action"/> on <paramref name="this"/> exactly if it has a value.</summary>
         /// <returns>Returns <paramref name="this"/>.</returns>
-        [Pure]public static Maybe<TOut> IfHasValueDo<TOut>(this Maybe<TOut> @this, Action<TOut> action) {
-            action.RequiredNotNull("action");
+        public static Maybe<TOut> IfHasValueDo<TOut>(this Maybe<TOut> @this, Action<TOut> action) {
             return @this.Match(value => { action(value); return @this; }, () => @this);
         }
 
         /// <summary>Projects the value of a <see cref="Maybe{T}"/> into a <see cref="Maybe{TOut}"/>.</summary>
-        [Pure]public static Maybe<TOut> Select<T,TOut>(this Maybe<T> @this, Func<T,TOut> projection) {
-            projection.RequiredNotNull("projection");
+        public static Maybe<TOut> Select<T,TOut>(this Maybe<T> @this, Func<T,TOut> projection) {
             return @this.Bind<TOut>(value => projection(value));
         }
 
         ///// <summary>Projects the value of a <see cref="Maybe{T}"/> into a <see cref="Maybe{TOut}"/>.</summary>
         //[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        //[Pure]public static Maybe<TOut> SelectMany<T, TOut>(this Maybe<T> @this, 
+        //public static Maybe<TOut> SelectMany<T, TOut>(this Maybe<T> @this, 
         //                                              Func<T,Maybe<TOut>>    projection) {
-        //  projection.RequiredNotNull("projection");
         //  return @this.Bind<TOut>(value => projection(value));
         //}
 
         /// <summary>Projects the value of a <see cref="Maybe{T}"/> into a <see cref="Maybe{TOut}"/>.</summary>
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        [Pure]public static Maybe<TOut> SelectMany<T, TMid, TOut>(this Maybe<T> @this, 
+        public static Maybe<TOut> SelectMany<T, TMid, TOut>(this Maybe<T> @this, 
                                                       Func<T, Maybe<TMid>> maybeProjection, 
                                                       Func<T,TMid,TOut>    resultProjection) {
-          maybeProjection.RequiredNotNull("maybeProjection");
-          resultProjection.RequiredNotNull("resultProjection");
           return @this.Bind<TOut>(              a =>
                  maybeProjection(a).Bind<TOut>( b =>
                  resultProjection(a,b)));
@@ -96,19 +87,18 @@ namespace PGNapoleonics.HexUtilities.Common {
 
         /// <summary>Returns a new <see cref="Maybe{T}"/> instance with value <paramref name="this"/>.</summary>
         /// <returns>Returns <see cref="Maybe{T}.NoValue"/>() if <paramref name="this"/> is null.</returns>
-        [Pure]public static Maybe<TOut> ToMaybe<TOut>(this TOut @this) => new Maybe<TOut>(@this);
+        public static Maybe<TOut> ToMaybe<TOut>(this TOut @this) => new Maybe<TOut>(@this);
 
         /// <summary>TODO</summary>
-        [Pure]public static Maybe<TOut> Where<TOut>(this Maybe<TOut> @this, Func<TOut, bool> predicate) {
-          predicate.RequiredNotNull("predicate");
+        public static Maybe<TOut> Where<TOut>(this Maybe<TOut> @this, Func<TOut, bool> predicate) {
           return @this.Bind(e => predicate(e) ? e.ToMaybe() : default(Maybe<TOut>) );
         }
 
         /// <summary>TODO</summary>
-        [Pure]public static int CompareTo<TOut>(this Maybe<TOut> @this, Maybe<TOut> other) where TOut : IComparable =>
+        public static int CompareTo<TOut>(this Maybe<TOut> @this, Maybe<TOut> other) where TOut : IComparable =>
             (from lhs in @this from rhs in other select lhs.CompareTo(rhs)).ElseDefault();
         /// <summary>TODO</summary>
-        [Pure]public static Maybe<TOut> Max<TOut>(this Maybe<TOut> @this, Maybe<TOut> other) where TOut : IComparable =>
+        public static Maybe<TOut> Max<TOut>(this Maybe<TOut> @this, Maybe<TOut> other) where TOut : IComparable =>
             ( from lhs in @this from rhs in other let comparison = lhs.CompareTo(rhs)
               select comparison < 0 ? lhs : rhs
             ).ToMaybe().Else(Maybe<TOut>.NoValue);

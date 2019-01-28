@@ -77,21 +77,17 @@ namespace PGNapoleonics.HexUtilities.Common {
       return (Func<TEnum,TEnum,bool>)method.CreateDelegate(typeof(Func<TEnum, TEnum, bool>));
     }
     private static Type EnumBaseType(Type enumType) {
-      enumType.RequiredNotNull("enumType");
       if ( ! enumType.IsEnum )        throw new MissingMethodException(typeof(TEnum).Name,HasFlag);
       var attributes = enumType.GetCustomAttributesData() ?? new List<CustomAttributeData>();
       if ( ! IsFlagsEnum(attributes)) throw new MissingMethodException(typeof(TEnum).Name,HasFlag);
       return Enum.GetUnderlyingType(enumType);
     }
     private static bool IsFlagsEnum(IList<CustomAttributeData> attributes) {
-      attributes.RequiredNotNull("attributes");
       return (from attribute in attributes select IsFlagsAttribute(attribute)
              ).FirstOrDefault(); //b => b);
     //  return attributes.Select(a => IsFlagsAttribute(a)).FirstOrDefault(b => b);
     }
     private static bool IsFlagsAttribute(CustomAttributeData attribute) {
-      attribute.RequiredNotNull("attribute");
-      attribute.AttributeType.RequiredNotNull("attribute.AttributeType");
       return attribute.AttributeType.FullName == "System.FlagsAttribute";
     }
   }

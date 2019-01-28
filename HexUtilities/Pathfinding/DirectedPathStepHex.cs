@@ -39,9 +39,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     #region Constructors
     /// <summary>Creates a new <see cref="DirectedPathStepHex"/> instance at <paramref name="coords"/> exiting through <paramref name="hexsideExit"/>.</summary>
     public DirectedPathStepHex(HexCoords coords, Hexside hexsideExit) : this() {
-      hexsideExit.RequiredNotNull("hexsideExit");
-
-     // hex.RequiredNotNull("hex");
      // Hex          = hex;
       _coords      = coords;
       _hexsideExit = hexsideExit;
@@ -50,8 +47,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-     // Contract.Invariant(Hex != null);
-    //  Contract.Invariant(HexsideExit != null);
     }
     #endregion
 
@@ -64,7 +59,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <summary>The hexside of the neighbour through which the agent enters from this hex.</summary>
     public Hexside    HexsideEntry { get {
-    //  Contract.Ensures(Contract.Result<Hexside>() != null);
       return HexsideExit.Reversed;
     } }
 
@@ -93,13 +87,11 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <summary>Tests value-inequality.</summary>
     public static bool operator != (DirectedPathStepHex lhs, DirectedPathStepHex rhs) {
-      lhs.AssumeInvariant(); rhs.AssumeInvariant();
       return ! (lhs == rhs);
     }
 
     /// <summary>Tests value-equality.</summary>
     public static bool operator == (DirectedPathStepHex lhs, DirectedPathStepHex rhs) {
-      lhs.AssumeInvariant(); rhs.AssumeInvariant();
       return lhs.Coords == rhs.Coords;
     }
     #endregion

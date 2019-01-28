@@ -52,7 +52,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
     void ForAllNeighbours(HexCoords coords, Action<T,Hexside> action);
 
     /// <summary>The rectangular extent of the board's hexagonal grid, in hexes.</summary>
-    [Pure]HexSize MapSizeHexes            { get; }
+    HexSize MapSizeHexes            { get; }
 
     /// <summary>TODO</summary>
     /// <param name="coords"></param>
@@ -69,16 +69,14 @@ namespace PGNapoleonics.HexUtilities.Storage {
     private void ObjectInvariant() { }
 
     public abstract HexSize MapSizeHexes  { get; }
-    [Pure]
+    
     public T this[HexCoords coords]       { get { 
-    //  Contract.Ensures( ! MapSizeHexes.IsOnboard(coords)  ||  Contract.Result<T>() != null );
       return default(T); 
     } }
 
     public void ForAllNeighbours(HexCoords coords, Action<T, Hexside> action) {
-      action.RequiredNotNull("action");
     }
-    [Pure]
+    
     public abstract T Neighbour(HexCoords coords, Hexside hexside);
 
     public abstract void Dispose();

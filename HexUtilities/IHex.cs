@@ -41,25 +41,25 @@ namespace PGNapoleonics.HexUtilities {
   [ContractClass(typeof(IHexContract))]
   public interface IHex {
     /// <summary>The <c>HexCoords</c> coordinates for this hex on <c>Board</c>.</summary>
-    [Pure]HexCoords Coords         { get; }
+    HexCoords Coords         { get; }
 
     /// <summary>Elevation of this hex in "steps" above the minimum elevation of the board.</summary>
-    [Pure]int       ElevationLevel { get; }
+    int       ElevationLevel { get; }
 
     /// <summary>Height ASL in <i>game units</i> of observer's eyes for FOV calculations.</summary>
-    [Pure]int       HeightObserver { get; }
+    int       HeightObserver { get; }
 
     /// <summary>Height ASL in <i>game units</i> of target above ground level to be spotted.</summary>
-    [Pure]int       HeightTarget   { get; }
+    int       HeightTarget   { get; }
 
     /// <summary>Height ASL in <i>game units</i> of any blocking terrian in this hex.</summary>
-    [Pure]int       HeightTerrain  { get; }
+    int       HeightTerrain  { get; }
 
     /// <summary>Returns the cost (> 0) to extend the path across <paramref name="hexsideExit"/>; or null.</summary>
-    [Pure]short?    TryStepCost(Hexside hexsideExit);
+    short?    TryStepCost(Hexside hexsideExit);
 
     /// <summary>Height ASL in <i>game units</i> of any blocking terrain in this hex and the specified Hexside.</summary>
-    [Pure]int       HeightHexside(Hexside hexside);
+    int       HeightHexside(Hexside hexside);
   }
 
     /// <summary>Internal contract class for <see cref="IHex"/></summary>
@@ -70,16 +70,10 @@ namespace PGNapoleonics.HexUtilities {
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         private void ObjectInvariant() {
-        //  Contract.Invariant(Coords.User.X >= 0);
-        //  Contract.Invariant(Coords.User.Y >= 0);
-        //  Contract.Invariant(ElevationLevel >= 0);
-
-        //  Contract.Invariant(Enumerable.Range(0,int.MaxValue).All(i => Coords.User.Y/i >= 0) );
         }
 
-        [Pure]
+        
         public short? TryStepCost(Hexside hexsideExit) {
-        //  Contract.Ensures(Contract.Result<Maybe<short>>().ValueContract(s => s > 0));
           return default(short?);
         }
 

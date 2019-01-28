@@ -44,7 +44,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <param name="target">Target hex for this shortest-path search.</param>
     /// <param name="closedSet">Injected implementation of <see cref="ISet{HexCoords}"/>.</param>
     protected internal Pathfinder(HexCoords source, HexCoords target, ISet<HexCoords> closedSet) {
-      closedSet.RequiredNotNull("closedSet");
 
       _closedSet = closedSet;
       _source    = source;
@@ -54,22 +53,18 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-    //  Contract.Invariant(ClosedSet != null);
     }
 
     /// <summary>The <see cref="ISet{HexCoords}"/> of all hexes expanded in finding the shortest-path.</summary>
     public ISet<HexCoords>       ClosedSet { get {
-      //Contract.Ensures(Contract.Result<ISet<HexCoords>>() != null);
       return _closedSet;
     } } readonly ISet<HexCoords> _closedSet;
     /// <inheritdoc/>
     public HexCoords             Source    { get {
-      //Contract.Ensures(Contract.Result<IHex>() != null);
       return _source;
     } } readonly HexCoords _source;
     /// <inheritdoc/>
     public HexCoords             Target    { get {
-      //Contract.Ensures(Contract.Result<IHex>() != null);
       return _target;
     } } readonly HexCoords _target;
 

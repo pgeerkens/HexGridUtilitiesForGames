@@ -38,12 +38,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     static IntVector2D LogAndEnqueue(Action<FovCone> enqueue, int range, IntVector2D top, 
             IntVector2D bottom, RiseRun riseRun, int code
     ) {
-      enqueue.RequiredNotNull("enqueue");
-    //  Contract.Requires(range >= 1);
-    //  Contract.Requires(top.Y != 0);
-      top.AssumeInvariant();
-      bottom.AssumeInvariant();
-
       if( top.GT(bottom)) {
         var cone = new FovCone(range+1, top, bottom, riseRun);
         FieldOfViewTrace(false, "  EQ: ({0}) code: {1}", cone, code);
@@ -55,9 +49,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     }
 
     static int XFromVector(int y, IntVector2D v) {
-    //  Contract.Requires(v.Y != 0);
-    //  Contract.Ensures(Contract.Result<int>() != int.MinValue);
-    //  Contract.Assume((-2 * v.Y + v.X * (3 * y + 1) + (3 * v.Y) - 1) / (3 * v.Y) != int.MinValue);
       return (-2 * v.Y + v.X * (3 * y + 1) + (3 * v.Y) - 1) / (3 * v.Y);
     }
     /// <summary>Helper IntMatrix2D for <c>VectorHexTop</c>.</summary>

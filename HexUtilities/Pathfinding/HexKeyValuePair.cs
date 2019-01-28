@@ -42,7 +42,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       where TKey : struct, IEquatable<TKey>, IComparable<TKey> 
 //      where TValue : class
     {
-      value.RequiredNotNull("value");
       return new HexKeyValuePair<TKey,TValue>(key, value);
     }
   }
@@ -56,14 +55,12 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
   {
     /// <summary>Constructs a new HexKeyValuePair instance.</summary>
     internal HexKeyValuePair(TKey key, TValue value) : this() {
-      value.RequiredNotNull("value");
       Key   = key;
       Value = value;
     }
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-    //  Contract.Invariant(Value!= null);
     }
 
     #region Properties

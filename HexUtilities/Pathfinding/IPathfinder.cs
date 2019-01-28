@@ -62,7 +62,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-    //  Contract.Invariant(ClosedSet != null);
     }
 
     public abstract ISet<HexCoords> ClosedSet   { get; }

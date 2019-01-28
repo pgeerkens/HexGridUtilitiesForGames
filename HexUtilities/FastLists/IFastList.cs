@@ -63,14 +63,10 @@ namespace PGNapoleonics.HexUtilities.FastLists {
 
     public int Count { get { return default(int); } }
 
-    [Pure]public TItem this[int index] { get {
-      //  Contract.Requires(0 <= index  &&  index < Count);
-      //  Contract.Ensures(Contract.Result<TItem>() != null);
+    public TItem this[int index] { get {
         return default(TItem);
     } }
-    [Pure]public int   IndexOf(TItem item) {
-    //  Contract.Ensures( ! this.Contains(item)  ||  Contract.Result<int>() >= 0);
-    //  Contract.Ensures(Contract.Result<int>() < Count);
+    public int   IndexOf(TItem item) {
       return default(int);
     }
 

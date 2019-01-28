@@ -272,7 +272,6 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <inheritdoc/>
     protected override void OnPaint(PaintEventArgs e) {
-      e.RequiredNotNull("e");
       if (DesignMode) { e.Graphics.FillRectangle(Brushes.Gray, ClientRectangle);  return; }
 
       if(IsHandleCreated) e.Graphics.PreserveState(PaintMe);
@@ -435,7 +434,6 @@ namespace PGNapoleonics.HexgridPanel {
 
     /// <summary>TODO</summary>
     public void SetScaleList (IList<float> scales) {
-      scales.RequiredNotNull("scales");
       Contract.Requires(scales.Count > 0);
       Scales = new ReadOnlyCollection<float>(scales);
     }

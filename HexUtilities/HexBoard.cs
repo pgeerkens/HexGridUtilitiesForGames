@@ -58,7 +58,6 @@ namespace PGNapoleonics.HexUtilities {
         /// though at the possible expense of longer path-finding times.</remarks>
         /// <param name="size"></param>
         protected static IFastList<HexCoords> DefaultLandmarks(HexSize size) {
-          //  Contract.Ensures(Contract.Result<IFastList<HexCoords>>() != null);
             return ( from point in new HexPoint[] { new HexPoint(           0,             0),  // top-left
                                                     new HexPoint(           0, size.Height/2),  // middle-left
                                                     new HexPoint(           0, size.Height-1),  // bottom-left
@@ -82,10 +81,6 @@ namespace PGNapoleonics.HexUtilities {
         /// <param name="boardHexes">TODO</param>
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         protected HexBoard(HexSize sizeHexes, HexSize gridSize, BoardStorage<Maybe<THex>> boardHexes) {
-            boardHexes.RequiredNotNull("boardHexes");
-          //  Contract.Requires(gridSize.Width  > 0);
-          //  Contract.Requires(gridSize.Height > 0);
-
             MapScale        = 1.00F;
             IsTransposed    = false;
             MapSizeHexes    = sizeHexes;
@@ -101,24 +96,18 @@ namespace PGNapoleonics.HexUtilities {
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         private void ObjectInvariant() {
-          //  Contract.Invariant(GridSize.Width  > 0);
-          //  Contract.Invariant(GridSize.Height > 0);
-          //  Contract.Invariant(BoardHexes      != null);
         }
 
         /// <summary>TODO</summary>
         /// <param name="landmarkCoords"><see cref="IFastList{HexCoords}"/> of the hexes to be used as Path-Finding landmarks.</param>
         /// <returns></returns>
         protected async   Task<bool> ResetLandmarksAsync(IFastList<HexCoords> landmarkCoords) {
-            landmarkCoords.RequiredNotNull("landmarkCoords");
             return await Task.Run(() => ResetLandmarks(landmarkCoords));
         }
         /// <summary>TODO</summary>
         /// <param name="landmarkCoords"><see cref="IFastList{HexCoords}"/> of the hexes to be used as Path-Finding landmarks.</param>
         /// <returns></returns>
         protected         bool       ResetLandmarks(IFastList<HexCoords> landmarkCoords) { 
-            landmarkCoords.RequiredNotNull("landmarkCoords");
-
             Landmarks = LandmarkCollection.New(NavigableBoard, landmarkCoords);
             OnLandmarksReady(new ValueEventArgs<ILandmarks>(Landmarks));
             return true;
@@ -142,7 +131,6 @@ namespace PGNapoleonics.HexUtilities {
         /// <inheritdoc/>
         public             IHexgrid   Hexgrid           { 
           get {
-          //  Contract.Ensures(Contract.Result<IHexgrid>() != null);
             return TransposableHexgrid.GetNewGrid(IsTransposed,GridSize,MapScale);
           }
         }
@@ -175,7 +163,6 @@ namespace PGNapoleonics.HexUtilities {
 
         #region Methods
         private          int  ElevationASL(IHex hex) {
-          hex.RequiredNotNull("hex");
           return ElevationBase + hex.ElevationLevel * ElevationStep;
         }
         /// <inheritdoc/>
@@ -199,7 +186,6 @@ namespace PGNapoleonics.HexUtilities {
         /// <param name="action"></param>
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public           void ForAllNeighbours(HexCoords coords, Action<Maybe<THex>,Hexside> action) {
-            action.RequiredNotNull("action");
             BoardHexes.ForAllNeighbours(coords,action);
         }
 
@@ -210,7 +196,6 @@ namespace PGNapoleonics.HexUtilities {
         /// <param name="action"></param>
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public           void ForEachHex(Action<Maybe<THex>> action) {
-            action.RequiredNotNull("action");
             BoardHexes.ForEachSerial(action);
         }
 

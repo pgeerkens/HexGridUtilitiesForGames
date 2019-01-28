@@ -50,9 +50,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
             INavigableBoard board, 
             IFastList<HexCoords> landmarkCoords
         ) {
-            landmarkCoords.RequiredNotNull("landmarks");
-          //  Contract.Ensures(Contract.Result<ILandmarkCollection>() != null);
-
             int degreeOfParallelism = Math.Max(1, Environment.ProcessorCount - 1);
             var query = from coords in landmarkCoords.AsParallel()
                                                      .WithDegreeOfParallelism(degreeOfParallelism)
@@ -86,7 +83,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
         /// <inheritdoc/>
         public int    IndexOf(ILandmark item) {
-          //  Contract.Ensures(0 <= Contract.Result<int>()  &&  Contract.Result<int>() < _fastList.Count);
             return _fastList.IndexOf(item);
         }
 
@@ -111,7 +107,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         #region IFastList implemenation
         /// <inheritdoc/>
         public IEnumerator<ILandmark>                         GetEnumerator(){
-          //  Contract.Ensures(Contract.Result<IEnumerator<ILandmark>>() != null);
             return ((IEnumerable<ILandmark>)this).GetEnumerator();;
         }
         IEnumerator                               IEnumerable.GetEnumerator() =>

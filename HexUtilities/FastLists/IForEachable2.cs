@@ -23,7 +23,6 @@ namespace PGNapoleonics.HexUtilities.FastLists {
   [ContractClassFor(typeof(IForEachable2<>))]
   internal abstract class IForEachable2Contract<TItem> : IForEachable2<TItem> {
     public   void  ForEach(FastIteratorFunctor<TItem> functor) {
-      functor.RequiredNotNull("functor"); // for Code Analysis
     }
   }
 }

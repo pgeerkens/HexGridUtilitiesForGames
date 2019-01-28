@@ -68,19 +68,19 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     Maybe<IHex>   this[HexCoords  coords] { get; }
 
     /// <summary>Elevation of the ground Above Sea Level</summary>
-    [Pure]int  ElevationGroundASL(HexCoords coords);
+    int  ElevationGroundASL(HexCoords coords);
     /// <summary>Elevation of the hexside Above Sea Level</summary>
-    [Pure]int  ElevationHexsideASL(HexCoords coords, Hexside hexside);
+    int  ElevationHexsideASL(HexCoords coords, Hexside hexside);
     /// <summary>Elevation of the observer Above Sea Level</summary>
-    [Pure]int  ElevationObserverASL(HexCoords coords);
+    int  ElevationObserverASL(HexCoords coords);
     /// <summary>Elevation of the target Above Sea Level</summary>
-    [Pure]int  ElevationTargetASL(HexCoords coords);
+    int  ElevationTargetASL(HexCoords coords);
     /// <summary>Elevation of the terrain Above Sea Level</summary>
-    [Pure]int  ElevationTerrainASL(HexCoords coords);
+    int  ElevationTerrainASL(HexCoords coords);
 
     /// <summary>Returns whether the hex at location <paramref name="coords"/> is passable.</summary>
     /// <param name="coords">The coordinates of the hex being tested.</param>
-    [Pure]bool IsOverseeable(HexCoords coords);
+    bool IsOverseeable(HexCoords coords);
   }
 
   [ContractClassFor(typeof(IFovBoard))]
@@ -90,12 +90,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-    //  Contract.Invariant(MapSizeHexes.Width  > 0);
-    //  Contract.Invariant(MapSizeHexes.Height > 0);
-
-      // Redundant - but added to help static checker
-    //  Contract.Invariant(MapSizeHexes.Width  >= 0);
-    //  Contract.Invariant(MapSizeHexes.Height >= 0);
     }
 
     public HexSize MapSizeHexes        { get { return default(HexSize); } }

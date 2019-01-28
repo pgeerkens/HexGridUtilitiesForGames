@@ -59,7 +59,6 @@ namespace PGNapoleonics.HexgridPanel.WinForms {
     }
     /// <inheritdoc/>
     protected override void OnPaint(PaintEventArgs e) {
-      e.RequiredNotNull("e");
       base.OnPaint(e);
       if (this.Focused  &&  this.ShowFocusCues) {
         var rc = this.ClientRectangle;

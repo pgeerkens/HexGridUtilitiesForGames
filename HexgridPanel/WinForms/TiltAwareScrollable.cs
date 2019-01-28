@@ -91,7 +91,6 @@ namespace PGNapoleonics.HexgridPanel {
     protected override void OnMouseLeave(EventArgs e) { Parent.Focus(); base.OnMouseLeave(e); }
     /// <inheritdoc/>
     protected override void OnPaint(PaintEventArgs e) {
-      e.RequiredNotNull("e");
       base.OnPaint(e);
       if (this.Focused  &&  this.ShowFocusCues) {
         var rc = this.ClientRectangle;

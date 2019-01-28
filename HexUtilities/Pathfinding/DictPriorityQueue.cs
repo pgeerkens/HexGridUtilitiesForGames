@@ -51,9 +51,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-    //  Contract.Invariant(_dictionary != null);
-    //  Contract.Invariant(_dictionary.All(queue => queue.Value != null));
-    //  Contract.Invariant(_dictionary.All(queue => queue.Value.All(item => item != null) ) );
     }
 
     IDictionary<TPriority,Queue<TValue>> _dictionary = new SortedDictionary<TPriority,Queue<TValue>>();
@@ -73,8 +70,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     }
     /// <inheritdoc/>
     public void Enqueue(HexKeyValuePair<TPriority,TValue> item) {
-      item.AssumeInvariant();
-
       Queue<TValue> queue;
       if( ! _dictionary.TryGetValue(item.Key, out queue) ) {
         queue = new Queue<TValue>();
@@ -86,8 +81,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <inheritdoc/>
     public bool TryDequeue(out HexKeyValuePair<TPriority,TValue> result) {
       if (_dictionary.Count > 0)  {
-        var list = _dictionary.First();    //  Contract.Assume(list.Value != null  &&  list.Value.Count > 0);
-        var v    = list.Value.Dequeue();   //  Contract.Assume(v != null);
+        var list = _dictionary.First();    
+        var v    = list.Value.Dequeue();   
         result   = HexKeyValuePair.New(list.Key,v);
         if( list.Value.Count == 0)  _dictionary.Remove(list.Key);
         return true;
@@ -99,8 +94,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <inheritdoc/>
     public bool TryPeek(out HexKeyValuePair<TPriority,TValue> result) {
       if (_dictionary.Count > 0)  {
-        var list = _dictionary.First();    //  Contract.Assume(list.Value != null  &&  list.Value.Count > 0);
-        var v    = list.Value.Peek();      //  Contract.Assume(v != null);
+        var list = _dictionary.First();   
+        var v    = list.Value.Peek();      
         result   = HexKeyValuePair.New(list.Key,v);
         return true;
       }
@@ -139,7 +134,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <summary>TODO</summary>
     public HexKeyValuePair<TPriority,TValue>[] ToArray() {
-    //  Contract.Ensures(Contract.Result<HexKeyValuePair<TPriority,TValue>[]>() != null);
       return Enumerable().ToArray(); }
 
     IEnumerable<HexKeyValuePair<TPriority,TValue>> Enumerable() {

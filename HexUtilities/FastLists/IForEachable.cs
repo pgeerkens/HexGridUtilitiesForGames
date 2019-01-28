@@ -26,7 +26,6 @@ namespace PGNapoleonics.HexUtilities.FastLists {
   [ContractClassFor(typeof(IForEachable<>))]
   internal abstract class IForEachableContract<TItem> : IForEachable<TItem> {
     public   void  ForEach(Action<TItem> action) {
-      action.RequiredNotNull("action"); // for Code Analysis
     }
   }
 }

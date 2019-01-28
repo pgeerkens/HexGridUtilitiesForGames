@@ -60,7 +60,6 @@ namespace PGNapoleonics.HexUtilities.Storage {
         [Pure, SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
         public virtual  T    this[IntVector2D userCoords] {
             get { 
-              //  Contract.Ensures( ! MapSizeHexes.IsOnboard(userCoords)  ||  Contract.Result<T>() != null);
                 return MapSizeHexes.IsOnboard(userCoords) ? ItemInner (userCoords.X,userCoords.Y) : default(T);
             }
         }
@@ -69,14 +68,12 @@ namespace PGNapoleonics.HexUtilities.Storage {
         /// <summary>TODO</summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        [Pure]
+        
         protected abstract T ItemInner(int x, int y);
         #pragma warning restore 3008
 
         /// <inheritdoc/>
         public          void ForAllNeighbours(HexCoords coords, Action<T,Hexside> action) {
-            action.RequiredNotNull("action");
-
             Hexside.ForEach( hexside =>
                 action(this[coords.GetNeighbour(hexside)], hexside)
             );
@@ -130,19 +127,15 @@ namespace PGNapoleonics.HexUtilities.Storage {
     internal abstract class BoardStorageContract<T> : BoardStorage<T> {
         private BoardStorageContract(HexSize sizeHexes) : base(sizeHexes) { }
 
-        [Pure]protected override T ItemInner(int x, int y) {
-        //  Contract.Requires(MapSizeHexes.IsOnboard(x,y));
-        //  Contract.Ensures(Contract.Result<T>() != null);
+        protected override T ItemInner(int x, int y) {
 
           return default(T);
         }
 
-        public override void ForEachSerial(Action<T> action) =>
-            action.RequiredNotNull("action");
+        public override void ForEachSerial(Action<T> action) { }
 
         /// <summary>TOTO</summary>
-        public override void ForEachSerial(FastIteratorFunctor<T> functor) =>
-            functor.RequiredNotNull("functor");
+        public override void ForEachSerial(FastIteratorFunctor<T> functor) { }
 
     }
 }

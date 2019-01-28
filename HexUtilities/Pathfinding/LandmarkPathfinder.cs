@@ -56,10 +56,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     public static LandmarkPathfinder New(INavigableBoard board, ILandmarkCollection landmarks,
       HexCoords source, HexCoords target
     ) {
-      board.RequiredNotNull("board");
-      landmarks.RequiredNotNull("landmarks");
-    //  Contract.Ensures(Contract.Result<LandmarkPathfinder>() != null);
-
       return new LandmarkPathfinder(board, landmarks, source, target);
     }
     /// <summary>Asynchronously calculates an <see cref="IDirectedPath"/> for the optimal path from coordinates .</summary>
@@ -71,9 +67,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     public static async Task<LandmarkPathfinder> NewAsync(INavigableBoard board, ILandmarkCollection landmarks,
       HexCoords source, HexCoords target
     ) {
-      board.RequiredNotNull("board");
-      landmarks.RequiredNotNull("landmarks");
-
       return await Task.Run<LandmarkPathfinder>( () => New(board, landmarks, source, target) );
     }
 
@@ -86,7 +79,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       HexCoords source, HexCoords target) 
     : base(source, target, new HashSet<HexCoords>()
     ) {
-      board.RequiredNotNull("board");
       if (landmarks == null) {
         _pathFwd = _pathRev = null;
       } else {
@@ -109,7 +101,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod]  [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-    //  Contract.Invariant( (_bestSoFar!=int.MaxValue).Implies(() => (_pathFwd!= null  &&  _pathRev != null)) );
     }
    
     #region Properties

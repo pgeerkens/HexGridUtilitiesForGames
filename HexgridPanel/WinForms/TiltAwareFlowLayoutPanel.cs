@@ -83,7 +83,6 @@ namespace PGNapoleonics.HexgridPanel {
     /// <inheritdoc/>
     protected override void OnPaint(PaintEventArgs e) {
       //if (e == null) throw new ArgumentNullException("e");
-      e.RequiredNotNull("e");
       if (this.Focused  &&  this.ShowFocusCues) {
         var rc = this.ClientRectangle;
         rc.Inflate(-2, -2);

@@ -67,8 +67,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       FovTargetMode     targetMode, 
       Action<HexCoords> setFieldOfView
     ) {
-      board.RequiredNotNull("board");
-      setFieldOfView.RequiredNotNull("setFieldOfView");
       ComputeFieldOfView(board, coordsObserver, fovRadius, targetMode, setFieldOfView, 1, 0);
     }
     /// <summary>Calculate Field-of-View from a specified TargetMode, assuming a flat earth.</summary>
@@ -86,8 +84,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       Action<HexCoords> setFieldOfView,
       int               defaultHeight
     ) {
-      board.RequiredNotNull("board");
-      setFieldOfView.RequiredNotNull("setFieldOfView");
       ComputeFieldOfView(board, coordsObserver, fovRadius, targetMode, setFieldOfView, defaultHeight, 0);
     }
 
@@ -114,8 +110,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       int               defaultHeight, 
       int               hexesPerMile
     ) {
-      board.RequiredNotNull("board");
-      setFieldOfView.RequiredNotNull("setFieldOfView");
       if (fovRadius > Int32.MinValue) fovRadius = fovRadius - 1;
       int CalculationHeightUnits = UseMetric ?   5  // convert metres to  cm  for greater precision
                                              :  12; // convert feet to inches for greater precision
@@ -186,7 +180,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       Func<HexCoords,Hexside,int> heightTerrain,
       Action<HexCoords>           setFieldOfView
     ) {
-      setFieldOfView.RequiredNotNull("setFieldOfView");
       FieldOfViewTrace(true, " - Coords = " + coordsObserver.User.ToString());
       var matrixOrigin = new IntMatrix2D(coordsObserver.Canon);
 
@@ -230,9 +223,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       Func<HexCoords,Hexside,int> heightTerrain,
       Action<HexCoords>           setFieldOfView
     ) {
-      isOnboard.RequiredNotNull("isOnboard");
-      heightTerrain.RequiredNotNull("heightTerrain");
-
       var currentCoords = HexCoords.NewCanonCoords(0,1);
       if ( ! isOnboard(currentCoords) ) return;
 
@@ -284,11 +274,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       FovConeQueue                queue, 
       FovCone                     cone
     ) {
-      heightTerrain.RequiredNotNull("heightTerrain");
-      isOnboard.RequiredNotNull("isOnboard");
-      queue.RequiredNotNull("queue");
-      cone.AssumeInvariant();
-
       Action<FovCone> enqueue = queue.Enqueue;
 
       var range         = cone.Range;
@@ -340,7 +325,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
 
           overlapVector = VectorMax(hexVectorBottom, bottomVector); 
           if (hexVectorBottom.GT(bottomVector))      -- hexX;
-        //  Contract.Assume( hexX != int.MinValue);
         }
 
         #region Dequeue next cone
@@ -388,16 +372,10 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     static partial void FieldOfViewTrace(bool newline, string format, params object[] paramArgs);
     [Conditional("TRACE")]
     static partial void FieldOfViewTrace(string format, params object[] paramArgs) {
-      format.RequiredNotNull("format");
-      paramArgs.RequiredNotNull("paramArgs");
-
       Tracing.FieldOfView.Trace(format, paramArgs);
     }
     [Conditional("TRACE")]
     static partial void FieldOfViewTrace(bool newline, string format, params object[] paramArgs) {
-      format.RequiredNotNull("format");
-      paramArgs.RequiredNotNull("paramArgs");
-
       Tracing.FieldOfView.Trace(newline, format, paramArgs);
     }
     #endregion

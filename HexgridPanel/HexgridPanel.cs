@@ -208,8 +208,6 @@ namespace PGNapoleonics.HexgridPanel {
         protected override void OnPaintBackground(PaintEventArgs e) { ; }
         /// <inheritdoc/>
         protected override void OnPaint(PaintEventArgs e) {
-            e.RequiredNotNull("e");
-
             if(IsHandleCreated)  e.Graphics.PreserveState(PaintMe);
             base.OnPaint(e);
         }

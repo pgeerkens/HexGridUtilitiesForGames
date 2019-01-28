@@ -55,7 +55,6 @@ namespace  PGNapoleonics.WinForms {
     /// <summary>Handles the thread exception.</summary> 
     [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
     public void ApplicationThreadException(object sender, ThreadExceptionEventArgs e) {
-      e.RequiredNotNull("e");
       try {
         var senderType = sender==null ? StringManager.GetString("NullSender",Culture) : sender.ToString();
         var aggregateException = e.Exception as AggregateException;

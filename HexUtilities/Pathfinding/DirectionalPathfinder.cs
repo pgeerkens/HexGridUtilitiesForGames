@@ -54,9 +54,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     protected DirectionalPathfinder(INavigableBoard board, ILandmarkCollection landmarks,
                                     HexCoords start, HexCoords goal, IPathHalves pathHalves)
     : base(start, goal, pathHalves.ClosedSet) {
-      board.RequiredNotNull("board");
-      landmarks.RequiredNotNull("landmarks");
-      pathHalves.RequiredNotNull("pathHalves");
 
       _landmarks  = landmarks;
       _pathHalves = pathHalves;
@@ -71,10 +68,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-    //  Contract.Invariant(Landmarks != null);
-    //  Contract.Invariant(PathHalves != null);
-    //  Contract.Invariant(OpenSet != null);
-    //  Contract.Invariant(Queue != null);
     }
 
     #region Properties
@@ -94,10 +87,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     #region Methods
     private             void          ExpandHex(IDirectedPath path, Hexside hexside) {
-      hexside.RequiredNotNull("hexside");
-      path.RequiredNotNull("path");
-      hexside.AssumeInvariant();
-
       var here  = path.PathStep.Coords;
       var there = here.GetNeighbour(hexside);
       if ( ! ClosedSet.Contains(there) ) {
@@ -130,9 +119,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       return (Queue.TryPeek(out item) ? item.Key : int.MaxValue); 
     }
     private             IDirectedPath GetPartnerPath(HexCoords coords) {
-      Partner.RequiredNotNull("partner");
-      Partner.AssumeInvariant();
-
       IDirectedPath path;
       Partner.OpenSet.TryGetValue(coords,out path);
       return path;
@@ -172,7 +158,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       return true;
     }
     private             short?  LandmarkHeuristic(ILandmark landmark, HexCoords here){
-      landmark.RequiredNotNull("landmark");
       return ( from current in LandmarkPotential(landmark,here)
                from goal in LandmarkPotential(landmark,GoalCoords)
                select (short)(current - goal)
@@ -200,11 +185,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     public static DirectionalPathfinder NewForward(INavigableBoard board, ILandmarkCollection landmarks,
         HexCoords source, HexCoords target, IPathHalves pathHalves
     ) {
-      board.RequiredNotNull("board");
-      landmarks.RequiredNotNull("landmarks");
-      pathHalves.RequiredNotNull("pathHalves");
-    //  Contract.Ensures(Contract.Result<DirectionalPathfinder>() != null);
-
       return new PathfinderForward(board, landmarks, source, target, pathHalves);
     }
     /// <summary>Create a new instance of <see cref="PathfinderReverse"/>, a backward-searching <see cref="DirectionalPathfinder"/>.</summary>
@@ -217,11 +197,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     public static DirectionalPathfinder NewReverse(INavigableBoard board, ILandmarkCollection landmarks,
         HexCoords source, HexCoords target, IPathHalves pathHalves
     ) {
-      board.RequiredNotNull("board");
-      landmarks.RequiredNotNull("landmarks");
-      pathHalves.RequiredNotNull("pathHalves");
-    //  Contract.Ensures(Contract.Result<DirectionalPathfinder>() != null);
-
       return new PathfinderReverse(board, landmarks, source, target, pathHalves);
     }
 
@@ -243,9 +218,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       internal PathfinderForward(INavigableBoard board, ILandmarkCollection landmarks,
         HexCoords source, HexCoords target, IPathHalves pathHalves)
       : base (board,landmarks,source,target,pathHalves) {
-        board.RequiredNotNull("board");
-        landmarks.RequiredNotNull("landmarks");
-        pathHalves.RequiredNotNull("pathHalves");
         TraceFindPathDetailDirection("Fwd", GoalCoords - StartCoords);
 
         _tryStepCost = board.TryExitCost;
@@ -288,9 +260,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       internal PathfinderReverse(INavigableBoard board, ILandmarkCollection landmarks,
         HexCoords source, HexCoords target, IPathHalves pathHalves)
       : base (board,landmarks,source,target,pathHalves)  {
-        board.RequiredNotNull("board");
-        landmarks.RequiredNotNull("landmarks");
-        pathHalves.RequiredNotNull("pathHalves");
         TraceFindPathDetailDirection("Fwd", GoalCoords - StartCoords);
 
         _tryStepCost = board.TryEntryCost;
@@ -322,21 +291,14 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     private DirectionalPathfinderContract() : base(null,null, HexCoords.EmptyUser, HexCoords.EmptyUser, null){ }
 
     protected override Hexside      HexsideDirection(Hexside hexside) {
-      hexside.RequiredNotNull("hexside");
-    //  Contract.Ensures(Contract.Result<Hexside>() != null);
-    //  Contract.Ensures(Contract.Result<Hexside>().Value >= 0);
       return default(Hexside);
     }
     protected override short? LandmarkPotential(ILandmark landmark, HexCoords coords) {
-      landmark.RequiredNotNull("landmark");
       return default(int);
     }
     protected override void         SetBestSoFar(IDirectedPath selfPath, IDirectedPath partnerPath) {
-      selfPath.RequiredNotNull("selfPath");
     }
     protected override short? TryStepCost(HexCoords here, Hexside hexside) {
-      hexside.RequiredNotNull("hexside");
-      //Contract.Ensures(Contract.Result<short?>().ValueContract(v => v > 0));
       return default(short?);
     }
   }

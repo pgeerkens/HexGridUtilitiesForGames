@@ -100,7 +100,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <summary>Returns a DirectedPath composed by extending this DirectedPath by one hex.</summary>
     internal DirectedPathCollection(IDirectedPathCollection pathSoFar, DirectedPathStepHex pathStep, int totalCost) {
-    //  Contract.Requires(totalCost >= 0,"totalCost");
 
       _pathStep    = pathStep;
       _pathSoFar   = pathSoFar;

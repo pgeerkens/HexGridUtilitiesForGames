@@ -81,8 +81,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     }
 
     public Dodecant(Dodecant dodecant, IntMatrix2D matrixOrigin) {
-      dodecant.RequiredNotNull("dodecant");
-
       HexsideMap = dodecant.HexsideMap;
       Matrix     = dodecant.Matrix * matrixOrigin;
     }

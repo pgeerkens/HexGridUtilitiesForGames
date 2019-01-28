@@ -38,11 +38,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
         /// <summary>Returns the field-of-view on <c>board</c> from the hex specified by coordinates <c>coords</c>.</summary>
         [Obsolete("Use GetFieldOfView(HexCoords origin, int fovRadius) instead.")]
         public static IFov GetFov(this IFovBoard @this, HexCoords origin, int fovRadius) {
-            @this.RequiredNotNull("this");
-          //  Contract.Requires(@this.MapSizeHexes.Width >= 0);
-          //  Contract.Ensures(Contract.Result<IFov>() != null);
-            @this.AssumeInvariant();
-
             return @this.GetFieldOfView(origin, fovRadius, FovTargetMode.EqualHeights, 1, 0);
         }
 
@@ -71,20 +66,11 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
 
         /// <summary>Gets a Field-of-View for this board synchronously, assuming a flat earth.</summary>
         public static IFov GetFieldOfView(this IFovBoard @this, HexCoords origin, int fovRadius) {
-            @this.RequiredNotNull("this");
-          //  Contract.Requires(@this.MapSizeHexes.Width >= 0);
-          //  Contract.Ensures(Contract.Result<IFov>() != null);
-            @this.AssumeInvariant();
 
             return @this.GetFieldOfView(origin, fovRadius, FovTargetMode.EqualHeights, 1, 0);
         }
         /// <summary>Gets a Field-of-View for this board synchronously.</summary>
         public static IFov GetFieldOfView(this IFovBoard @this, HexCoords origin, int fovRadius, FovTargetMode targetMode, int heightOfMan, int hexesPerMile) {
-            @this.RequiredNotNull("this");
-          //  Contract.Requires(@this.MapSizeHexes.Width >= 0);
-          //  Contract.Ensures(Contract.Result<IFov>() != null);
-            @this.AssumeInvariant();
-
             Tracing.FieldOfView.Trace("GetFieldOfView");
             var fov = new ArrayFieldOfView(@this);
             if (@this.IsOverseeable(origin))

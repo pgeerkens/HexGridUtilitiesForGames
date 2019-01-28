@@ -47,8 +47,6 @@ namespace PGNapoleonics.HexUtilities.Common {
     static IntMatrix2D TransposeMatrix = new IntMatrix2D(0,1, 1,0);
     /// <summary>Returns the transpose of the supplied matrix.</summary>
     public static IntMatrix2D Transpose(IntMatrix2D matrix) {
-    //  Contract.Ensures(Contract.Result<IntMatrix2D>().M33 != 0);
-      matrix.AssumeInvariant();
       return matrix * TransposeMatrix;
     }
 
@@ -87,7 +85,6 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <param name="dy">Y-translate component</param>
     /// <param name="norm">Normalization component</param>
     public IntMatrix2D(int m11, int m12, int m21, int m22, int dx, int dy, int norm) : this() {
-    //  Contract.Requires(norm != 0);
       _m11 = m11;  _m12 = m12;
       _m21 = m21;  _m22 = m22;
       _m31 = dx;   _m32 = dy;   _m33 = norm;
@@ -96,7 +93,6 @@ namespace PGNapoleonics.HexUtilities.Common {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-    //  Contract.Invariant(M33 != 0);
     }
     #endregion
 
@@ -126,11 +122,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <param name="v">IntVector2D to be transformed.</param>
     /// <param name="m">IntMatrix2D to be applied.</param>
     /// <returns>New IntVector2D resulting from application of vector <c>v</c> to matrix <c>m</c>.</returns>
-    [Pure]public static IntVector2D operator * (IntVector2D v, IntMatrix2D m) {
-    //  Contract.Ensures(Contract.Result<IntVector2D>().W != 0);
-      v.AssumeInvariant();   m.AssumeInvariant();
-    //  Contract.Assume(v.X * m.M11 + v.Y * m.M21 + m.M31 != int.MinValue);
-    //  Contract.Assume(v.X * m.M12 + v.Y * m.M22 + m.M32 != int.MinValue);
+    public static IntVector2D operator * (IntVector2D v, IntMatrix2D m) {
       return new IntVector2D (
         v.X * m.M11 + v.Y * m.M21 + m.M31,   v.X * m.M12 + v.Y * m.M22 + m.M32,  v.W * m.M33
       ).Normalize();
@@ -140,11 +132,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <param name="v">IntVector2D to be transformed.</param>
     /// <returns>New IntVector2D resulting from application of matrix<c>m</c> to vector <c>v</c>.</returns>
     [Obsolete("The standard in PGNapoleonics is to use Contravariant (ie column) vectors.")]
-    [Pure]public static IntVector2D operator * (IntMatrix2D m, IntVector2D v) {
-    //  Contract.Ensures(Contract.Result<IntVector2D>().W != 0);
-      m.AssumeInvariant();  v.AssumeInvariant();
-    //  Contract.Assume(v.X * m.M11 + v.Y * m.M12 + m.M31 != int.MinValue);
-    //  Contract.Assume(v.X * m.M21 + v.Y * m.M22 + m.M32 != int.MinValue);
+    public static IntVector2D operator * (IntMatrix2D m, IntVector2D v) {
       return new IntVector2D (
         v.X * m.M11 + v.Y * m.M12 + m.M31,   v.X * m.M21 + v.Y * m.M22 + m.M32,  v.W * m.M33
       ).Normalize();
@@ -153,9 +141,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <param name="m1">Prepended transformation.</param>
     /// <param name="m2">Appended transformation.</param>
     /// <returns></returns>
-    [Pure]public static IntMatrix2D operator * (IntMatrix2D m1, IntMatrix2D m2) {
-    //  Contract.Ensures(Contract.Result<IntMatrix2D>().M33 != 0);
-      m1.AssumeInvariant();  m2.AssumeInvariant();
+    public static IntMatrix2D operator * (IntMatrix2D m1, IntMatrix2D m2) {
       return new IntMatrix2D (
         m1.M11*m2.M11 + m1.M12*m2.M21,           m1.M11*m2.M12 + m1.M12*m2.M22,
         m1.M21*m2.M11 + m1.M22*m2.M21,           m1.M21*m2.M12 + m1.M22*m2.M22,
@@ -163,39 +149,37 @@ namespace PGNapoleonics.HexUtilities.Common {
       );
     }
     /// <summary>Returns the result of applying the (row) vector <c>vector</c> to the @this <c>m</c>.</summary>
-    [Pure]public static IntVector2D Multiply(IntVector2D v, IntMatrix2D m) {
-      v.AssumeInvariant();  m.AssumeInvariant();
+    public static IntVector2D Multiply(IntVector2D v, IntMatrix2D m) {
       return v * m;
     }
     /// <summary>Returns the <c>IntMatrix2D</c> representing the transformation <c>m1</c> composed with <c>m2</c>.</summary>
-    [Pure]public static IntMatrix2D Multiply(IntMatrix2D m1, IntMatrix2D m2) {
-      m1.AssumeInvariant();  m2.AssumeInvariant();
+    public static IntMatrix2D Multiply(IntMatrix2D m1, IntMatrix2D m2) {
       return m1 * m2;
     }
     #endregion
 
     /// <summary>Returns the rotation/shear component of this matrix, without any translation.</summary>
-    [Pure]public IntMatrix2D ExtractRotation()    { return new IntMatrix2D(M11,M12,M21,M22); }
+    public IntMatrix2D ExtractRotation()    { return new IntMatrix2D(M11,M12,M21,M22); }
     /// <summary>Returns the translation component of this matrix, without any rotation/shear.</summary>
-    [Pure]public IntMatrix2D ExtractTranslation() { return new IntMatrix2D(  1,  0,  0,  1, M31,M32); }
+    public IntMatrix2D ExtractTranslation() { return new IntMatrix2D(  1,  0,  0,  1, M31,M32); }
 
     #region Value Equality
     /// <inheritdoc/>
-    [Pure]public override bool Equals(object obj) { 
+    public override bool Equals(object obj) { 
       return (obj is IntMatrix2D) && this.Equals((IntMatrix2D)obj); 
     }
     /// <inheritdoc/>
-    [Pure]public bool          Equals(IntMatrix2D other)              { return this == other; }
+    public bool          Equals(IntMatrix2D other)              { return this == other; }
     /// <inheritdoc/>
-    [Pure]public static bool operator != (IntMatrix2D lhs, IntMatrix2D rhs) { return ! (lhs == rhs); }
+    public static bool operator != (IntMatrix2D lhs, IntMatrix2D rhs) { return ! (lhs == rhs); }
     /// <inheritdoc/>
-    [Pure]public static bool operator == (IntMatrix2D lhs, IntMatrix2D rhs) {
+    public static bool operator == (IntMatrix2D lhs, IntMatrix2D rhs) {
       return lhs.M11== rhs.M11 && lhs.M12 == rhs.M12
           && lhs.M21== rhs.M21 && lhs.M22 == rhs.M22
           && lhs.M31== rhs.M31 && lhs.M32 == rhs.M32 && lhs.M33 == rhs.M33;
     }
     /// <inheritdoc/>
-    [Pure]public override int GetHashCode() { return M11 ^ M12 ^ M21 ^ M22 ^ M31 ^ M32 ^ M33; }
+    public override int GetHashCode() { return M11 ^ M12 ^ M21 ^ M22 ^ M31 ^ M32 ^ M33; }
     #endregion
 
     /// <summary>Returns a string representation of this <see cref="IntMatrix2D"/> in the Invariant Culture.</summary>

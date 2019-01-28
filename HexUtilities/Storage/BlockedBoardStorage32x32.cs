@@ -47,7 +47,6 @@ namespace PGNapoleonics.HexUtilities.Storage {
 
     /// <summary>TODO</summary>
     public static BoardStorage<T> New32x32<T>(HexSize sizeHexes, Func<HexCoords, T> factory) {//where T : struct {
-    //  Contract.Ensures(Contract.Result<BoardStorage<T>>() != null);
       return Extensions.InitializeDisposable( () =>
         new BlockedBoardStorage32x32<T>(sizeHexes, factory, DefaultProcessorsToUse) );
     }
@@ -72,27 +71,19 @@ namespace PGNapoleonics.HexUtilities.Storage {
     /// initialized using <paramref name="tFactory"/>.</summary>
     internal BlockedBoardStorage32x32(HexSize sizeHexes, Func<HexCoords,T> tFactory, int threadCount) 
     : base (sizeHexes, tFactory, threadCount) {
-    //  Contract.Requires(threadCount > 0,"threadCount");
     }
 
     /// <inheritdoc/>>
-    [Pure]protected override T ItemInner(int x, int y) {
-      //Contract.Ensures(Contract.Result<T>() != null);
+    protected override T ItemInner(int x, int y) {
 
 #if DIVIDE
-    //  Contract.Assume(y/_blockSide < BackingStore.Count);
-    //  Contract.Assume(x/_blockSide < BackingStore[y/_blockSide].Count);
       var index = (y & _blockMask) * _blockSide  +  (x & _blockMask);
       var block = BackingStore[y/_blockSide][x/_blockSide];
 
-    //  Contract.Assume(index < block.Count);
 #else
-    //  Contract.Assume(y >> _blockExponent < BackingStore.Count);
-    //  Contract.Assume(x >> _blockExponent < BackingStore[y >> _blockExponent].Count);
       var index = (y & _blockMask) * _blockSide  +  (x & _blockMask);
       var block = BackingStore[y >> _blockExponent][x >> _blockExponent];
 
-    //  Contract.Assume(index < block.Count);
 #endif
       return block[index];
     }
@@ -102,9 +93,6 @@ namespace PGNapoleonics.HexUtilities.Storage {
     /// <param name="value">The new value.</param>
     /// <remarks>Use carefully - can interfere with iterators.</remarks>
     internal override void SetItem(HexCoords coords, T value) {
-      //value.RequiredNotNull("value");
-      coords.AssumeInvariant();
-
       var v = coords.User;
       BackingStore [v.Y / BlockSide]
                    [v.X / BlockSide]

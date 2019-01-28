@@ -41,11 +41,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
             Func<IPriorityQueue<int,HexCoords>> queueFactory,
             TryDirectedCost tryDirectedCosts
         ) {
-            queueFactory.RequiredNotNull("queue");
-            tryDirectedCosts.RequiredNotNull("directedCosts");
-          //  Contract.Requires(queueFactory() != null);
-          //  Contract.Ensures(Contract.Result<DirectedLandmark>() != null);
-
             return Extensions.InitializeDisposable( () =>
                 new DirectedLandmark(hexCoords, mapSizeHexes, queueFactory, tryDirectedCosts) );
         }
@@ -59,10 +54,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
             Func<IPriorityQueue<int,HexCoords>> queueFactory,
             TryDirectedCost tryDirectedCosts
         ) {
-            queueFactory.RequiredNotNull("queue");
-            tryDirectedCosts.RequiredNotNull("directedCosts");
-          //  Contract.Requires(queueFactory() != null);
-
         //  _hex          = hex;
             _backingStore = new LandmarkPopulatorFunctor(hexCoords, mapSizeHexes, queueFactory, tryDirectedCosts).Fill();
         }

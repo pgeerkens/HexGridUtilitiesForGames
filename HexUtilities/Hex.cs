@@ -87,9 +87,6 @@ namespace PGNapoleonics.HexUtilities {
   public static partial class HexExtensions {
     /// <summary>The <i>Manhattan</i> distance from this hex to that at <c>coords</c>.</summary>
     public static int Range(this IHex @this, IHex target) { 
-      @this.RequiredNotNull("this");
-      target.RequiredNotNull("target");
-
       return @this.Coords.Range(target.Coords); 
     }
   }

@@ -87,24 +87,19 @@ namespace PGNapoleonics.HexUtilities {
 
         #region Public static members
         /// <summary>Create a new instance located at the specified i and j offsets as interpreted in the Canon(ical) frame.</summary>
-        [Pure]public static HexCoords NewCanonCoords (int x, int y) {
-          //  Contract.Requires(x != int.MinValue);
-          //  Contract.Requires(y != int.MinValue);
+        public static HexCoords NewCanonCoords (int x, int y) {
             return NewCanonCoords(IntVector2D.New(x,y));
         }
         /// <summary>Create a new instance located at the specified i and j offsets as interpreted in the ectangular (User) frame.</summary>
-        [Pure]public static HexCoords NewUserCoords  (int x, int y) {
-          //  Contract.Requires(x != int.MinValue);
-          //  Contract.Requires(y != int.MinValue);
+        public static HexCoords NewUserCoords  (int x, int y) {
             return NewUserCoords(IntVector2D.New(x,y));
         }
         /// <summary>Create a new instance located at the specified vector offset as interpreted in the Canon(ical) frame.</summary>
-        [Pure]public static HexCoords NewCanonCoords (IntVector2D vector){
-            vector.AssumeInvariant();
+        public static HexCoords NewCanonCoords (IntVector2D vector){
             return new HexCoords(vector, vector * _matrixCanonToUser);
         }
         /// <summary>Create a new instance located at the specified vector offset as interpreted in the Rectangular (User) frame.</summary>
-        [Pure]public static HexCoords NewUserCoords  (IntVector2D vector) =>
+        public static HexCoords NewUserCoords  (IntVector2D vector) =>
             new HexCoords(vector * _matrixUserToCanon, vector);
 
         /// <summary>Origin of the Canon(ical) coordinate frame.</summary>
@@ -120,9 +115,8 @@ namespace PGNapoleonics.HexUtilities {
         #endregion
 
         #region Constructors
-        [Pure]
+        
         private HexCoords(IntVector2D canon, IntVector2D user) :this() {
-            canon.AssumeInvariant();
             Canon = canon;
             User  = user;
         }
@@ -130,11 +124,6 @@ namespace PGNapoleonics.HexUtilities {
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         private void ObjectInvariant() {
-          //  Contract.Invariant(0 <= (User.X & 1)  &&  (User.X & 1) < _hexsideVectorsUser.Count);
-          //  Contract.Invariant(Canon.X != int.MinValue);
-          //  Contract.Invariant(Canon.Y != int.MinValue);
-          //  Contract.Invariant(_hexsideVectorsUser.All(list => list != null));
-          //  Contract.Invariant(_hexsideVectorsUser.All(list => list.All(item => item != null) ) );
         }
         #endregion
 
@@ -146,31 +135,26 @@ namespace PGNapoleonics.HexUtilities {
         public  IntVector2D User  { get; }
 
         /// <summary>Modified <i>Manhattan</i> distance of supplied coordinate from the origin.</summary>
-        public  int         RangeFromOrigin { get { this.AssumeInvariant(); return EmptyCanon.Range(this);} }
+        public  int         RangeFromOrigin { get { return EmptyCanon.Range(this);} }
         #endregion
 
         #region Methods
         /// <summary>Returns an <c>HexCoords</c> for the hex in direction <c>hexside</c> from this one.</summary>
-        [Pure]
+        
         public HexCoords GetNeighbour(Hexside hexside) {
-            hexside.RequiredNotNull("hexside");
-          //  Contract.Requires(hexside.Value >= 0);
-            hexside.AssumeInvariant();
-
-            var i = User.X & 1; //  Contract.Assume(_hexsideVectorsUser[i] != null);
+            var i = User.X & 1; 
             return new HexCoords(Canon + _hexsideVectorsCanon  [hexside]
                                 ,User  + _hexsideVectorsUser[i][hexside] );
         }
 
         /// <summary>Returns the drawing origin (upper-left) for the specified hex.</summary>
-        [Pure]
+        
         public HexPoint HexOrigin(HexSize gridSize) =>
             HexOrigin(gridSize, User.X, User.Y); 
 
         /// <summary>Modified <i>Manhattan</i> distance of supplied coordinate from this one.</summary>
-        [Pure]
+        
         public short     Range(HexCoords coords) {
-            coords.AssumeInvariant();
             var deltaX = coords.Canon.X - Canon.X;
             var deltaY = coords.Canon.Y - Canon.Y;
             return (short) ( ( Math.Abs(deltaX) + Math.Abs(deltaY) + Math.Abs(deltaX-deltaY) ) / 2 );
@@ -205,7 +189,6 @@ namespace PGNapoleonics.HexUtilities {
         /// "User: ", "Custom: ", or "Range: " respectivelly), while the upper-case commands do not.
         /// </remarks>
         public string ToString(string format, IFormatProvider formatProvider) {
-          //  Contract.Ensures(Contract.Result<string>() != null);
 
             if (format==null || format.Length==0) format = "G";
             if (formatProvider == null) formatProvider = CultureInfo.CurrentUICulture;

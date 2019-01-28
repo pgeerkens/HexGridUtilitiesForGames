@@ -41,8 +41,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     #region Constructors
     /// <summary>Construct a new FovCone instance.</summary>
     internal FovCone(int range, IntVector2D top, IntVector2D bottom, RiseRun riseRun) : this() {
-    //  Contract.Requires(top.Y != 0);
-    //  Contract.Requires(range > 0);
 
       this.Range        = range;
       this.RiseRun      = riseRun;
@@ -53,8 +51,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-    //  Contract.Invariant(VectorTop.Y != 0);
-    //  Contract.Invariant(Range > 0);
     }
     #endregion
 

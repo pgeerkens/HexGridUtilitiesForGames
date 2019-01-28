@@ -41,7 +41,6 @@ namespace PGNapoleonics.HexUtilities.Common {
       #region Enum Parsing utilities
       /// <summary>Typesafe wrapper for <c>Enum.GetValues(typeof(TEnum).</c></summary>
       public static IList<TEnum> EnumGetValues<TEnum>() {
-      //  Contract.Ensures(Contract.Result<IList<TEnum>>() != null) ;
         return new List<TEnum>((TEnum[])(Enum.GetValues(typeof(TEnum)))).AsReadOnly();
       }
 
@@ -49,7 +48,6 @@ namespace PGNapoleonics.HexUtilities.Common {
       [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
       [Obsolete("Less useful or convenient than originally thought - just use Enum.GetNames({TEnum}).")]
       public static IList<string> EnumGetNames<TEnum>() where TEnum : struct {
-      //  Contract.Ensures(Contract.Result<IList<string>>() != null) ;
         return new List<string>((string[])(Enum.GetNames(typeof(TEnum)))).AsReadOnly();
       }
 
@@ -80,7 +78,6 @@ namespace PGNapoleonics.HexUtilities.Common {
       /// <summary>Typesafe wrapper for <c>Enum.ToObject()</c>.</summary>
       /// <typeparam name="TEnum"></typeparam>
       public static TEnum EnumParse<TEnum>(char c, string lookup) {
-        lookup.RequiredNotNull("lookup");
         var index = lookup.IndexOf(c);
         if (index == -1) throw new ArgumentOutOfRangeException("c",c,"Enum Type: " + typeof(TEnum).Name);
 
