@@ -193,13 +193,13 @@ namespace PGNapoleonics.HexUtilities {
             BoardHexes.ForEachSerial(action);
         }
 
-        /// <summary>Returns the location and extent in hexes, as a <see cref="CoordsRectangle"/>, of the current clipping region.</summary>
+        /// <summary>Returns the location and extent in hexes, as a <see cref="CoordsRect"/>, of the current clipping region.</summary>
         protected  CoordsRect GetClipInHexes(RectangleF visibleClipBounds, HexSize boardSizeHexes) {
             var left   = Math.Max((int)visibleClipBounds.Left   / GridSize.Width  - 1, 0);
             var top    = Math.Max((int)visibleClipBounds.Top    / GridSize.Height - 1, 0);
             var right  = Math.Min((int)visibleClipBounds.Right  / GridSize.Width  + 1, boardSizeHexes.Width);
             var bottom = Math.Min((int)visibleClipBounds.Bottom / GridSize.Height + 1, boardSizeHexes.Height); 
-            return CoordsRectangle.New(left, top, right-left, bottom-top);
+            return CoordsRect.New(left, top, right-left, bottom-top);
         }
     
         /// <inheritdoc/>

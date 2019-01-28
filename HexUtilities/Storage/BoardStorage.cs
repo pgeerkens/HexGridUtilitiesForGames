@@ -56,11 +56,8 @@ namespace PGNapoleonics.HexUtilities.Storage {
 
         /// <summary>Returns the <c>THex</c> instance at the specified user coordinates.</summary>
         [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
-        public virtual  T    this[IntVector2D userCoords] {
-            get { 
-                return MapSizeHexes.IsOnboard(userCoords) ? ItemInner (userCoords.X,userCoords.Y) : default(T);
-            }
-        }
+        public virtual  T    this[IntVector2D userCoords] =>
+            MapSizeHexes.IsOnboard(userCoords) ? ItemInner (userCoords.X,userCoords.Y) : default(T);
 
         #pragma warning disable 3008
         /// <summary>TODO</summary>

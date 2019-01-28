@@ -32,97 +32,81 @@ using System.Diagnostics.CodeAnalysis;
 namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>TODO</summary>
     public static partial class NullableExtensions {
-        /// <summary>TODO</summary>
-        public static TResult? Bind<TValue,TResult>(this TValue? @this, Func<TValue, TResult?> projection)
-            where TValue:struct where TResult:struct =>
-            @this.HasValue ? projection(@this.Value) : null;
-
-        /// <summary>TODO</summary>
-        public static Maybe<T> ToMaybe<T>(this Maybe<T?> maybe) where T:struct =>
-            Maybe<T>.ToMaybe(maybe);
-
-        /// <summary>TODO</summary>
-        public static T? ToNullable<T>(this Maybe<T?> maybe) where T:struct =>
-            Maybe<T>.ToNullable(maybe);
-
-        /// <summary>TODO</summary>
-        public static TOut  Match<T,TOut>(this T? @this, Func<T,TOut> projection, Func<TOut> alternate) where T:struct {
-            return @this.HasValue ? projection(@this.Value) : alternate();
-        }
-
         /// <summary>Returns the value of <paramref name="this">this</paramref> it it has one; otherwise returns <paramref name="alternate"/>().</summary>
         /// <param name="this">The <see cref="{TOut}?"/> being operated upon.</param>
         /// <param name="alternate">The action to be perrofmed if <paramref name="this"/> has no value.</param>
-        public static TOut  Else<TOut>(this TOut? @this, Func<TOut> alternate) where TOut:struct {
-            return @this.Match(e => e, alternate); 
-        }
-        /// <summary>Returns the value of <paramref name="this">this</paramref> it it has one; otherwise returns default(<typeparamref name="TOut"/>).().</summary>
+        public static TOut? Else<TOut>(this TOut? @this, Func<TOut> alternate) where TOut:struct
+        => @this.Match(e => e, alternate); 
+
+        /// <summary>Returns the value of <paramref name="this">this</paramref> it it has one; otherwise returns default(<typeparamref name="TOut"/>).</summary>
         /// <param name="this">The <see cref="Maybe{T}"/> being operated upon.</param>
-        public static TOut  ElseDefault<TOut>(this TOut? @this) where TOut:struct =>
-            @this.Match(e => e, ()=>default(TOut)); 
+        public static TOut  ElseDefault<TOut>(this TOut? @this) where TOut:struct
+        => @this.Match(e => e, ()=>default(TOut)); 
 
         /// <summary>Executes <paramref name="action"/> on <paramref name="this"/> exactly if it hasn't any value.</summary>
         /// <returns>Returns <paramref name="this"/>.</returns>
-        public static TOut? ElseDo<TOut>(this TOut? @this, Action action) where TOut:struct {
-            return @this.Match(value => @this, () => { action(); return @this; });
-        }
+        public static TOut? ElseDo<TOut>(this TOut? @this, Action action) where TOut:struct
+        => @this.Match(value => @this, () => { action(); return @this; });
 
         /// <summary>Returns the value of <paramref name="this"/> if it has one, otherwise throws an <see cref="InvalidOperationException"/>.</summary>
         /// <returns>Returns the value of <paramref name="this"/>.</returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public static TOut  ForceGetValue<TOut>(this TOut? @this) where TOut:struct {
-            return @this.Match(e => e, () => { throw new InvalidOperationException(@this.ToString()); } );
-        }
+        public static TOut  ForceGetValue<TOut>(this TOut? @this) where TOut:struct
+        => @this.Match(e => e, () => { throw new InvalidOperationException(@this.ToString()); } );
 
         /// <summary>Executes <paramref name="action"/> on <paramref name="this"/> exactly if it has a value.</summary>
         /// <returns>Returns <paramref name="this"/>.</returns>
-        public static TOut? IfHasValueDo<TOut>(this TOut? @this, Action<TOut> action) where TOut:struct {
-            return @this.HasValue ? @this.Match(value => { action(value); return @this.Value; }, () => @this.Value)
-                                  : null as TOut?;
-        }
+        public static TOut? IfHasValueDo<TOut>(this TOut? @this, Action<TOut> action)
+        where TOut:struct
+        => @this.HasValue ? @this.Match(value => { action(value); return @this.Value; }, () => @this.Value)
+                          : null as TOut?;
 
-        /// <summary>Projects the value of a <see cref="{T}?"/> into a <see cref="{TOut}?"/>.</summary>
-        public static TOut? Select<T,TOut>(this T? @this, Func<T,TOut> projection) where T:struct where TOut:struct {
-            return @this.Bind<T,TOut>(value => projection(value));
-        }
+        /// <summary>Projects the value of a <see cref="Nullable{T}"/> into a <see cref="Nullable{TOut}"/>.</summary>
+        public static TOut? Select<T,TOut>(this T? @this, Func<T,TOut> projection)
+        where T:struct where TOut:struct
+        => @this.Bind<T,TOut>(value => projection(value));
 
-        ///// <summary>Projects the value of a <see cref="Maybe{T}"/> into a <see cref="Maybe{TOut}"/>.</summary>
-        //[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        //public static Maybe<TOut> SelectMany<T, TOut>(this Maybe<T> @this, 
-        //                                              Func<T,Maybe<TOut>>    projection) {
-        //  return @this.Bind<TOut>(value => projection(value));
-        //}
+        /// <summary>Projects the value of a <see cref="Nullable{T}"/> into a <see cref="Nullable{TOut}"/>.</summary>
+        [SuppressMessage( "Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures" )]
+        public static TOut? SelectMany<T, TOut>(this T? @this,
+                                                Func<T, TOut?> projection)
+        where T:struct where TOut:struct
+        => @this.Bind(value => projection(value));
 
-        /// <summary>Projects the value of a <see cref="Maybe{T}"/> into a <see cref="Maybe{TOut}"/>.</summary>
+        /// <summary>Projects the value of a <see cref="Nullable{T}"/> into a <see cref="Nullable{TOut}"/>.</summary>
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        public static TOut? SelectMany<T, TMid, TOut>(this T? @this, 
-                                                Func<T,TMid?> maybeProjection, 
-                                                Func<T,TMid,TOut>    resultProjection)
-        where T:struct where TMid:struct where TOut:struct {
-              return @this.Bind(              a =>
-                    maybeProjection(a).Bind<TMid,TOut>( b =>
-                    resultProjection(a,b)));
-        }
-
-#if false
-        /// <summary>Returns a new <see cref="Maybe{T}"/> instance with value <paramref name="this"/>.</summary>
-        /// <returns>Returns <see cref="Maybe{T}.NoValue"/>() if <paramref name="this"/> is null.</returns>
-        public static TOut? ToMaybe<TOut>(this TOut @this) where TOut:struct => (TOut?)(@this);
-
-#endif
-        /// <summary>TODO</summary>
-        public static TOut? Where<TOut>(this TOut? @this, Func<TOut, bool> predicate) where TOut:struct {
-          return @this.Bind(e => predicate(e) ? e : default(TOut?) );
-        }
+        public static TOut? SelectMany<T,TMid,TOut>(this T? @this, 
+                                                    Func<T,TMid?> maybeProjection, 
+                                                    Func<T,TMid,TOut> resultProjection)
+        where T:struct where TMid:struct where TOut:struct
+        => @this.Bind(                         a =>
+           maybeProjection(a).Bind<TMid,TOut>( b =>
+           resultProjection(a,b)));
 
         /// <summary>TODO</summary>
-        public static int CompareTo<TOut>(this TOut? @this, TOut? other) where TOut : struct,IComparable =>
-            (from lhs in @this from rhs in other select lhs.CompareTo(rhs)).ElseDefault();
-        ///// <summary>TODO</summary>
-        //public static Maybe<TOut> Max<TOut>(this TOut? @this, TOut? other) where TOut : struct,IComparable =>
-        //    ( from lhs in @this from rhs in other let comparison = lhs.CompareTo(rhs)
-        //      select comparison < 0 ? lhs : rhs
-        //    ).ToMaybe().Else(default(TOut?));
+        public static TOut? Where<TOut>(this TOut? @this, Func<TOut, bool> predicate) where TOut:struct
+        => @this.Bind(e => predicate(e) ? e : default(TOut?) );
+
+        /// <summary>TODO</summary>
+        public static int? CompareTo<TOut>(this TOut? @this, TOut? other) where TOut : struct,IComparable
+        => (from lhs in @this from rhs in other select lhs.CompareTo(rhs)).ElseDefault();
+
+        /// <summary>TODO</summary>
+        public static TOut? Max<TOut>(this TOut? @this, TOut? other) where TOut:struct, IComparable
+        => from lhs in @this from rhs in other select lhs.CompareTo(rhs) < 0 ? lhs : rhs;
+
+        /// <summary>TODO</summary>
+        public static Maybe<T> ToMaybe<T>(this Maybe<T?> maybe) where T:struct
+        => Maybe<T>.ToMaybe(maybe);
+
+        /// <summary>TODO</summary>
+        public static TResult? Bind<TValue,TResult>(this TValue? @this, Func<TValue, TResult?> projection)
+        where TValue:struct where TResult:struct
+        => @this.HasValue ? projection(@this.Value) : null;
+
+        /// <summary>TODO</summary>
+        public static TOut  Match<T,TOut>(this T? @this, Func<T,TOut> projection, Func<TOut> alternate) where T:struct
+        => @this.HasValue ? projection(@this.Value) : alternate();
     }
 }
  

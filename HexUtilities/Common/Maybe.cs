@@ -44,75 +44,57 @@ namespace PGNapoleonics.HexUtilities.Common {
 
         /// <summary>TODO</summary>
         public  bool HasValue { get; }
-        /// <summary>TODO</summary>
         private T    Value    { get;}
 
         /// <summary>TODO</summary>
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         
-        public Maybe<TOut> Bind<TOut>(Func<T, Maybe<TOut>> projection) {
-            return HasValue ? projection(Value) : Maybe<TOut>.NoValue();
-        }
+        public Maybe<TOut> Bind<TOut>(Func<T, Maybe<TOut>> projection)
+        => HasValue ? projection(Value) : Maybe<TOut>.NoValue();
 
         /// <summary>TODO</summary>
-        
-        public TOut        Match<TOut>(Func<T,TOut> projection, Func<TOut> alternate) {
-            return HasValue ? projection(Value) : alternate();
-        }
+        public TOut        Match<TOut>(Func<T,TOut> projection, Func<TOut> alternate)
+        => HasValue ? projection(Value) : alternate();
 
         /// <summary>TODO</summary>
+        public bool        ValueContract(Func<T, bool> contract) => ! HasValue || contract(Value);
         
-        public bool        ValueContract(Func<T, bool> contract) {
-            return ! HasValue  ||  contract(Value);
-        }
+        private static string PreferredName(T value) => value.ToString();
         
-        private static  string PreferredName(T value) {
-            return value.ToString();
-        }
-        
-        private static  string AlternateName() {
-            return "NoValue<" + typeof(T).Name + ">";
-        }
+        private static string AlternateName() => "NoValue<" + typeof(T).Name + ">";
 
         /// <summary>TODO</summary>
         public static implicit operator Maybe<T>(T value) => new Maybe<T>(value);
 
         #region Value Equality with IEquatable<T>
         /// <summary>Tests value-equality.</summary>
-        
         public override bool Equals(object obj) => (obj as Maybe<T>?)?.Equals(this) ?? false;
 
         /// <inheritdoc/>
-        
-        public bool Equals(Maybe<T> other) => 
-                ( HasValue  &&  other.HasValue  &&  (Value.Equals(other.Value)) )
-             || (!HasValue  && !other.HasValue);
+        public bool Equals(Maybe<T> other)
+        => ( HasValue  &&  other.HasValue  &&  (Value.Equals(other.Value)) )
+        || (!HasValue  && !other.HasValue);
 
         /// <summary>Tests value-inequality.</summary>
-        
         public static bool operator != (Maybe<T> lhs, Maybe<T> rhs) => ! lhs.Equals(rhs);
 
         /// <summary>Tests value-equality.</summary>
-        
         public static bool operator == (Maybe<T> lhs, Maybe<T> rhs) => lhs.Equals(rhs);
 
         /// <summary>TODO</summary>
-        
-        public override string ToString() {
-            return (HasValue && Value!=null) ? PreferredName(Value) : AlternateName();
-        }
+        public override string ToString()
+        => (HasValue && Value!=null) ? PreferredName(Value) : AlternateName();
 
         /// <inheritdoc/>
-        
         public override int GetHashCode() => Value.GetHashCode();
         #endregion
 
         /// <summary>TODO</summary>
-        public static Maybe<V> ToMaybe<V>(Maybe<V?> maybe) where V : struct =>
-            ! maybe.HasValue || ! maybe.Value.HasValue ? Maybe<V>.NoValue() : maybe.Value.Value;
+        public static Maybe<V> ToMaybe<V>(Maybe<V?> maybe) where V:struct
+        => ! maybe.HasValue || ! maybe.Value.HasValue ? Maybe<V>.NoValue() : maybe.Value.Value;
 
         /// <summary>TODO</summary>
-        public static V? ToNullable<V>(Maybe<V?> maybe) where V : struct =>
-            ! maybe.HasValue || ! maybe.Value.HasValue ? (V?)null : maybe.Value.Value;
+        public static V? ToNullable<V>(Maybe<V?> maybe) where V:struct
+        => ! maybe.HasValue || ! maybe.Value.HasValue ? (V?)null : maybe.Value.Value;
     }
 }
