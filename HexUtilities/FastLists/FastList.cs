@@ -64,13 +64,13 @@ namespace PGNapoleonics.HexUtilities.FastLists {
     public   int   Count               { get {return _array.Length;} }
     /// <inheritdoc/>
     public   TItem this[int index]     { get {
-      Contract.Assume(_array[index] != null); // required even though provable
+    //  Contract.Assume(_array[index] != null); // required even though provable
       return _array[index];
     } }
     /// <inheritdoc/>
     public   int   IndexOf(TItem item) {
       _array.AssumeInvariant();
-      Contract.Assume(Contract.Result<int>() < Count);
+    //  Contract.Assume(Contract.Result<int>() < Count);
       return Array.IndexOf(_array, item, 0, _array.Length);
     }
 

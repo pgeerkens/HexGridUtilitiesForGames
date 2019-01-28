@@ -72,9 +72,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-      Contract.Invariant(TotalCost   >= 0, "TotalCost found to be < 0");
-      Contract.Invariant(TotalSteps  >= 0, "TotalSteps found to be < 0");
-      Contract.Invariant(StatusText != null);
+    //  Contract.Invariant(TotalCost   >= 0, "TotalCost found to be < 0");
+    //  Contract.Invariant(TotalSteps  >= 0, "TotalSteps found to be < 0");
+    //  Contract.Invariant(StatusText != null);
     }
 
     #region Properties
@@ -88,11 +88,11 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     #endregion
 
     public IDirectedPathCollection AddStep(HexCoords coords, Hexside hexsideExit, int stepCost) {
-      Contract.Ensures(Contract.Result<IDirectedPathCollection>() != null);
+    //  Contract.Ensures(Contract.Result<IDirectedPathCollection>() != null);
       return default(DirectedPathCollection);
     }
     public IDirectedPathCollection AddStep(DirectedPathStepHex neighbour, int stepCost) {
-      Contract.Ensures(Contract.Result<IDirectedPathCollection>() != null);
+    //  Contract.Ensures(Contract.Result<IDirectedPathCollection>() != null);
       return default(DirectedPathCollection);
     }
 

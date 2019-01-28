@@ -49,7 +49,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
       Justification="This is safe because all sub-classes are SEALED INTERNAL and both properties (BlockMask & BlockSide) are just aliases for constants.")]
     internal BlockedBoardStorage(HexSize sizeHexes, Func<HexCoords,T> tFactory, int threadCount) 
     : base (sizeHexes) {
-      Contract.Requires(threadCount > 0,"threadCount");
+    //  Contract.Requires(threadCount > 0,"threadCount");
 
       var rangeY    = ( MapSizeHexes.Height + BlockMask ) / BlockSide;
       var rangeX    = ( MapSizeHexes.Width + BlockMask  ) / BlockSide;
@@ -57,9 +57,9 @@ namespace PGNapoleonics.HexUtilities.Storage {
     }
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-      Contract.Invariant(BlockMask >= 0);
-      Contract.Invariant(BlockSide >= 0);
-      Contract.Invariant(BackingStore != null);
+    //  Contract.Invariant(BlockMask >= 0);
+    //  Contract.Invariant(BlockSide >= 0);
+    //  Contract.Invariant(BackingStore != null);
     }
 
     /// <summary>TODO</summary>

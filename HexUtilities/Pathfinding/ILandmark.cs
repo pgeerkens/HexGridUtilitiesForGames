@@ -40,9 +40,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     HexCoords Coords { get; }
 
     /// <summary>Returns the shortest-path directed-distance from the specified hex to the landmark.</summary>
-    Maybe<short> DistanceFrom(HexCoords coords);
+    short? DistanceFrom(HexCoords coords);
     /// <summary>Returns the shortest-path directed-distance to the specified hex from the landmark.</summary>
-    Maybe<short> DistanceTo  (HexCoords coords);
+    short? DistanceTo  (HexCoords coords);
 }
 
   /// <summary>An <see cref="IList"/> of defined <see cref="ILandmark"/> locations.</summary>
@@ -66,6 +66,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     //HexCoords Coords    { get; }
 
     /// <summary>Returns the shortest-path directed-distance from the specified hex to the landmark.</summary>
-    Maybe<short> Distance(HexCoords coords);
+    short? Distance(HexCoords coords);
   }
 }

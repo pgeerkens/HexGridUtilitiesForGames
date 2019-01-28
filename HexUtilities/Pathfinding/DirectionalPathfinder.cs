@@ -71,10 +71,10 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-      Contract.Invariant(Landmarks != null);
-      Contract.Invariant(PathHalves != null);
-      Contract.Invariant(OpenSet != null);
-      Contract.Invariant(Queue != null);
+    //  Contract.Invariant(Landmarks != null);
+    //  Contract.Invariant(PathHalves != null);
+    //  Contract.Invariant(OpenSet != null);
+    //  Contract.Invariant(Queue != null);
     }
 
     #region Properties
@@ -137,8 +137,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       Partner.OpenSet.TryGetValue(coords,out path);
       return path;
     }
-    private             Maybe<short>  Heuristic(HexCoords coords) { 
-      var max = Maybe<short>.NoValue();
+    private             short?  Heuristic(HexCoords coords) { 
+      var max = null as short?;
       Landmarks.ForEach( landmark => {
         max = from heuristic in LandmarkHeuristic(landmark,coords)
               select max.Match(m => Math.Max(m,heuristic), ()=>heuristic); 
@@ -171,14 +171,14 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       }
       return true;
     }
-    private             Maybe<short>  LandmarkHeuristic(ILandmark landmark, HexCoords here){
+    private             short?  LandmarkHeuristic(ILandmark landmark, HexCoords here){
       landmark.RequiredNotNull("landmark");
       return ( from current in LandmarkPotential(landmark,here)
                from goal in LandmarkPotential(landmark,GoalCoords)
                select (short)(current - goal)
              );
     }
-    protected abstract  Maybe<short>  LandmarkPotential(ILandmark landmark, HexCoords coords);
+    protected abstract  short?  LandmarkPotential(ILandmark landmark, HexCoords coords);
     protected abstract  void          SetBestSoFar(IDirectedPath fwdPath, IDirectedPath revPath);
     protected           void          StartPath(HexCoords startCoords) {
       var path            = new DirectedPath(startCoords);
@@ -187,7 +187,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       if(Landmarks.Where(l => l.DistanceTo(path.PathStep.Coords).HasValue).Any())
         Queue.Enqueue (0, path);
     }
-    protected abstract  Maybe<short>  TryStepCost(HexCoords here, Hexside hexside);
+    protected abstract  short?  TryStepCost(HexCoords here, Hexside hexside);
     #endregion
 
     /// <summary>Create a new instance of <see cref="PathfinderForward"/>, a forward-searching <see cref="DirectionalPathfinder"/>.</summary>
@@ -203,7 +203,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       board.RequiredNotNull("board");
       landmarks.RequiredNotNull("landmarks");
       pathHalves.RequiredNotNull("pathHalves");
-      Contract.Ensures(Contract.Result<DirectionalPathfinder>() != null);
+    //  Contract.Ensures(Contract.Result<DirectionalPathfinder>() != null);
 
       return new PathfinderForward(board, landmarks, source, target, pathHalves);
     }
@@ -220,7 +220,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       board.RequiredNotNull("board");
       landmarks.RequiredNotNull("landmarks");
       pathHalves.RequiredNotNull("pathHalves");
-      Contract.Ensures(Contract.Result<DirectionalPathfinder>() != null);
+    //  Contract.Ensures(Contract.Result<DirectionalPathfinder>() != null);
 
       return new PathfinderReverse(board, landmarks, source, target, pathHalves);
     }
@@ -256,16 +256,16 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       protected override HexCoords     GoalCoords  { get {return Target;} }
 
       protected override Hexside       HexsideDirection(Hexside hexside) { return hexside; }
-      protected override Maybe<short>  LandmarkPotential(ILandmark landmark, HexCoords coords) {
+      protected override short?  LandmarkPotential(ILandmark landmark, HexCoords coords) {
         return landmark.DistanceFrom(coords);
       }
       protected override void          SetBestSoFar(IDirectedPath selfPath, IDirectedPath partnerPath) {
         if (partnerPath != null)
           PathHalves.SetBestSoFar(partnerPath, selfPath);
       }
-      protected override Maybe<short>  TryStepCost(HexCoords here, Hexside hexside) {
+      protected override short?  TryStepCost(HexCoords here, Hexside hexside) {
         return _tryStepCost(here,hexside);
-      } readonly Func<HexCoords,Hexside,Maybe<short>> _tryStepCost;
+      } readonly Func<HexCoords,Hexside,short?> _tryStepCost;
       public    override IDirectedPath PathForward { get { throw new NotImplementedException(); } }
       public    override IDirectedPath PathReverse { get { throw new NotImplementedException(); } }
     }
@@ -301,16 +301,16 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
       protected override HexCoords     GoalCoords  { get {return Source;} }
 
       protected override Hexside       HexsideDirection(Hexside hexside) { return hexside.Reversed; }
-      protected override Maybe<short>  LandmarkPotential(ILandmark landmark, HexCoords coords) {
+      protected override short?  LandmarkPotential(ILandmark landmark, HexCoords coords) {
         return landmark.DistanceTo(coords);
       }
       protected override void          SetBestSoFar(IDirectedPath selfPath, IDirectedPath partnerPath) {
         if (partnerPath != null)
           PathHalves.SetBestSoFar(selfPath, partnerPath);
       }
-      protected override Maybe<short>  TryStepCost(HexCoords here, Hexside hexside) {
+      protected override short?  TryStepCost(HexCoords here, Hexside hexside) {
         return _tryStepCost(here,hexside);
-      } readonly Func<HexCoords,Hexside,Maybe<short>> _tryStepCost;
+      } readonly Func<HexCoords,Hexside,short?> _tryStepCost;
       public    override IDirectedPath PathForward { get { throw new NotImplementedException(); } }
       public    override IDirectedPath PathReverse { get { throw new NotImplementedException(); } }
    }
@@ -323,21 +323,21 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     protected override Hexside      HexsideDirection(Hexside hexside) {
       hexside.RequiredNotNull("hexside");
-      Contract.Ensures(Contract.Result<Hexside>() != null);
-      Contract.Ensures(Contract.Result<Hexside>().Value >= 0);
+    //  Contract.Ensures(Contract.Result<Hexside>() != null);
+    //  Contract.Ensures(Contract.Result<Hexside>().Value >= 0);
       return default(Hexside);
     }
-    protected override Maybe<short> LandmarkPotential(ILandmark landmark, HexCoords coords) {
+    protected override short? LandmarkPotential(ILandmark landmark, HexCoords coords) {
       landmark.RequiredNotNull("landmark");
       return default(int);
     }
     protected override void         SetBestSoFar(IDirectedPath selfPath, IDirectedPath partnerPath) {
       selfPath.RequiredNotNull("selfPath");
     }
-    protected override Maybe<short> TryStepCost(HexCoords here, Hexside hexside) {
+    protected override short? TryStepCost(HexCoords here, Hexside hexside) {
       hexside.RequiredNotNull("hexside");
-      Contract.Ensures(Contract.Result<Maybe<short>>().ValueContract(v => v > 0));
-      return default(Maybe<short>);
+      //Contract.Ensures(Contract.Result<short?>().ValueContract(v => v > 0));
+      return default(short?);
     }
   }
 }

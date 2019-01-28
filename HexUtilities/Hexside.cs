@@ -66,7 +66,7 @@ namespace PGNapoleonics.HexUtilities {
     public static readonly Hexside Northwest = new Hexside(5, "Northwest", Hexsides.Northwest);
 
     private Hexside(int value, string name, Hexsides hexsides) {
-      Contract.Requires(0 <= value  &&  value < 6);
+    //  Contract.Requires(0 <= value  &&  value < 6);
       name.RequiredNotNull("name");
 
       _hexsides = hexsides;
@@ -78,20 +78,20 @@ namespace PGNapoleonics.HexUtilities {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-      Contract.Invariant(Name != null);
-      Contract.Invariant(0 <= Value  &&  Value < 6);
-      Contract.Invariant(0 <= (int)this  &&  (int)this < 6);
+    //  Contract.Invariant(Name != null);
+    //  Contract.Invariant(0 <= Value  &&  Value < 6);
+    //  Contract.Invariant(0 <= (int)this  &&  (int)this < 6);
 
-      Contract.Invariant(Reversed != null);
-      Contract.Invariant(0 <= Reversed.Value  &&  Reversed.Value < 6);
-      Contract.Invariant(0 <= (int)Reversed  &&  (int)Reversed < 6);
+    //  Contract.Invariant(Reversed != null);
+    //  Contract.Invariant(0 <= Reversed.Value  &&  Reversed.Value < 6);
+    //  Contract.Invariant(0 <= (int)Reversed  &&  (int)Reversed < 6);
     }
     #endregion
 
     #region Static members
     /// <summary><c>Static List {Hexside}</c> for enumerations.</summary>
     public static IFastList<Hexside> HexsideList { get {
-      Contract.Ensures(Contract.Result<IFastList<Hexside>>() != null);
+    //  Contract.Ensures(Contract.Result<IFastList<Hexside>>() != null);
       return _hexsideList;
     } }
 
@@ -113,8 +113,8 @@ namespace PGNapoleonics.HexUtilities {
     /// <param name="ignoreCase">Specifies whether or not a case-insensitive parse is desired.</param>
     public static Hexside ParseEnum(string name, bool ignoreCase) {
       name.RequiredNotNull("Hexside");
-      Contract.Ensures(Contract.Result<Hexside>() != null);
-      Contract.Assume(_hexsideList.All(item => item != null));
+    //  Contract.Ensures(Contract.Result<Hexside>() != null);
+    //  Contract.Assume(_hexsideList.All(item => item != null));
 
       var index = ignoreCase ? _namesUncased.IndexOf(name.ToUpper(CultureInfo.InvariantCulture))
                              : _namesCased.IndexOf(name);
@@ -135,7 +135,7 @@ namespace PGNapoleonics.HexUtilities {
     /// <param name="hexside">The supplied <see cref="Hexside"/>.</param>
     [Pure]public static implicit operator int(Hexside hexside) {
       hexside.RequiredNotNull("hexside");
-      Contract.Ensures(0 <= Contract.Result<int>()  &&  Contract.Result<int>() < HexsideList.Count);
+    //  Contract.Ensures(0 <= Contract.Result<int>()  &&  Contract.Result<int>() < HexsideList.Count);
       hexside.AssumeInvariant();
       return hexside.Value;
     }
@@ -154,7 +154,7 @@ namespace PGNapoleonics.HexUtilities {
     public string   Name       { get {Contract.Ensures(Contract.Result<string>() != null); return _name;     } } private readonly string _name;
     /// <summary>Returns the reversed, or opposite, <see cref="Hexside"/> to this one.</summary>
     public Hexside  Reversed   { get {
-      Contract.Ensures(Contract.Result<Hexside>() != null);
+    //  Contract.Ensures(Contract.Result<Hexside>() != null);
       return _hexsideList[_reversed];
     } } private readonly int _reversed;
     /// <summary>The integer value for this enumeration constant.</summary>

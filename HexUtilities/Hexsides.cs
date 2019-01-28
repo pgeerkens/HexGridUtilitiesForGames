@@ -95,7 +95,7 @@ namespace PGNapoleonics.HexUtilities {
     /// <summary>Returns the count of of set bit-flags in the argument.</summary>
     /// <param name="this">The Hexsides instnace of interest.</param>
     public static int BitCount(this Hexsides @this) {
-      Contract.Requires(Hexsides.None <= @this  &&  @this <= Hexsides.All);
+    //  Contract.Requires(Hexsides.None <= @this  &&  @this <= Hexsides.All);
       return BitCountLookup[(int)@this];
     }
 

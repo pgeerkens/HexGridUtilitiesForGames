@@ -288,6 +288,7 @@
     <Compile Include="Common\LinqExtensions1.cs" />
     <Compile Include="Common\Maybe.cs" />
     <Compile Include="Common\MaybeExtensions.cs" />
+    <Compile Include="Common\NullableExtensions.cs" />
     <Compile Include="Common\ValurEventArgs.cs" />
     <Compile Include="IMapDisplay.cs">
       <SubType>Code</SubType>

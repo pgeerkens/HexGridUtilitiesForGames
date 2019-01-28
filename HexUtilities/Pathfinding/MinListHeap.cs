@@ -43,7 +43,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     #region Constructors
     /// <summary>Construct a new heap with the specified capacity.</summary>
     public MinListHeap(int capacity) { 
-      Contract.Requires(capacity >= 0);
+    //  Contract.Requires(capacity >= 0);
       _items = new List<HexKeyValuePair<TKey,TValue>>(capacity); 
     }
 
@@ -59,7 +59,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [ContractInvariantMethod]
     [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-      Contract.Invariant(_items != null);
+    //  Contract.Invariant(_items != null);
     }
     #endregion
 
@@ -130,7 +130,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <summary>Min-Heapify by sifting-down from last parent in heap.</summary>
     private void MinHeapifyDown(int currentIndex) {
-      Contract.Requires(currentIndex >= 0);
+    //  Contract.Requires(currentIndex >= 0);
 
       int leftChildIndex;
       while ( (leftChildIndex = 2*currentIndex + 1) < _items.Count) {

@@ -340,7 +340,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
 
           overlapVector = VectorMax(hexVectorBottom, bottomVector); 
           if (hexVectorBottom.GT(bottomVector))      -- hexX;
-          Contract.Assume( hexX != int.MinValue);
+        //  Contract.Assume( hexX != int.MinValue);
         }
 
         #region Dequeue next cone

@@ -239,3 +239,166 @@ namespace PGNapoleonics.HexgridScrollableExample {
         #endregion
     }
 }
+namespace PGNapoleonics.HexgridScrollableExample {
+    using MapGridHex    = Hex<Graphics,GraphicsPath>;
+
+    using HexPoint      = System.Drawing.Point;
+    using HexPointF     = System.Drawing.PointF;
+    using HexSize       = System.Drawing.Size;
+    using HexSizeF      = System.Drawing.SizeF;
+    using RectangleF    = System.Drawing.RectangleF;
+    using Graphics      = System.Drawing.Graphics;
+    using Color         = System.Drawing.Color;
+    using GraphicsPath  = System.Drawing.Drawing2D.GraphicsPath;
+    using Matrix        = System.Drawing.Drawing2D.Matrix;
+
+    public interface IMapView {
+        event EventHandler<HexEventArgs> GoalHexChanged;
+        event EventHandler<HexEventArgs> StartHexChanged;
+        event EventHandler<HexEventArgs> HotSpotHexChanged;
+
+        event EventHandler<bool> TransposeMapToggled;
+        event EventHandler<bool> ShowRangeLineToggled;
+        event EventHandler<bool> ShowPathArrowToggled;
+        event EventHandler<bool> ShowFieldOfViewToggled;
+
+        event EventHandler<int> LandmarkSelected;
+
+        event EventHandler<MouseEventArgs> MouseMoved;
+
+        event EventHandler ResizeBegin;
+        event EventHandler Resize;
+        event EventHandler ResizeEnd;
+
+        void SetLandmarkMenu(ILandmarkCollection landmarks);
+
+        bool IsTransposed { get; set; }
+
+        void Refresh();
+
+    }
+
+    public interface IMapViewModel {
+        event EventHandler<HexEventArgs> GoalHexChanged;
+        event EventHandler<HexEventArgs> StartHexChanged;
+        event EventHandler<HexEventArgs> HotSpotHexChanged;
+
+        //event EventHandler<bool> TransposeMapToggled;
+        event EventHandler<bool> ShowRangeLineToggled;
+        event EventHandler<bool> ShowPathArrowToggled;
+        event EventHandler<bool> ShowFieldOfViewToggled;
+
+        event EventHandler<int> LandmarkSelected;
+
+        event EventHandler<MouseEventArgs> MouseMoved;
+
+        //event EventHandler ResizeBegin;
+        //event EventHandler Resize;
+        //event EventHandler ResizeEnd;
+
+        void SetLandmarkMenu(ILandmarkCollection landmarks);
+
+        bool IsTransposed { get; set; }
+
+        void Refresh();
+
+    }
+
+    public class MapViewModel : IMapViewModel {
+        public MapViewModel(IMapView view) {
+            View = view;
+            AttachView();
+        }
+
+        public event EventHandler<HexEventArgs> GoalHexChanged;
+        public event EventHandler<HexEventArgs> StartHexChanged;
+        public event EventHandler<HexEventArgs> HotSpotHexChanged;
+
+        public event EventHandler<bool> TransposeMapToggled;
+        public event EventHandler<bool> ShowRangeLineToggled;
+        public event EventHandler<bool> ShowPathArrowToggled;
+        public event EventHandler<bool> ShowFieldOfViewToggled;
+
+        public event EventHandler<int> LandmarkSelected;
+
+        public event EventHandler<MouseEventArgs> MouseMoved;
+
+        public void SetLandmarkMenu(ILandmarkCollection landmarks){ }
+
+        public bool IsTransposed { get; set; }
+
+        public void Refresh()=> View.Refresh();
+
+        IMapView View { get; }
+
+        void AttachView() {
+            View.GoalHexChanged             += OnGoalHexChanged;
+            View.StartHexChanged            += OnStartHexChanged;
+            View.HotSpotHexChanged          += OnHotSpotHexChanged;
+
+            View.TransposeMapToggled       += OnTransposeMapToggled;
+            View.ShowRangeLineToggled      += OnShowRangeLineToggled;
+            View.ShowPathArrowToggled      += OnShowPathArrowToggled;
+            View.ShowFieldOfViewToggled    += OnShowFieldOfViewToggled;
+
+            View.LandmarkSelected          += OnLandmarkSelected;
+
+            View.MouseMoved                += OnMouseMoved;
+        }
+
+        void OnGoalHexChanged(object sender, HexEventArgs e)    => RefreshAfter(()=>{GoalHexChanged?.Invoke(sender,e);});
+        void OnStartHexChanged(object sender, HexEventArgs e)   => RefreshAfter(()=>{StartHexChanged?.Invoke(sender,e);});
+        void OnHotSpotHexChanged(object sender, HexEventArgs e) => RefreshAfter(()=>{HotSpotHexChanged?.Invoke(sender,e);});
+
+        void OnTransposeMapToggled(object sender, bool isChecked)  => View.IsTransposed = isChecked;
+        void OnShowRangeLineToggled(object sender, bool isChecked) { }
+        void OnShowPathArrowToggled(object sender, bool isChecked) { }
+        void OnShowFieldOfViewToggled(object sender, bool isChecked) { }
+
+        void OnLandmarkSelected(object sender, int value) { }
+
+        void OnMouseMoved(object sender, MouseEventArgs value) { }
+
+        void RefreshAfter(Action action) { action?.Invoke(); View.Refresh(); }
+    }
+
+    public abstract class MapModel : MapDisplay<MapGridHex> {
+        protected MapModel( HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex, IMapViewModel viewModel)
+        : base(sizeHexes, gridSize, initializeHex){
+            ViewModel = ViewModel;
+            AttachViewModel();
+        }
+
+        IMapViewModel ViewModel { get; }
+
+        void AttachViewModel() {
+            ViewModel.GoalHexChanged            += GoalHexChanged;
+            ViewModel.StartHexChanged           += StartHexChange;
+            ViewModel.HotSpotHexChanged         += HotSpotHexChange;
+
+            //ViewModel.TransposeMapToggled       += TransposeMapToggled;
+            ViewModel.ShowRangeLineToggled      += ShowRangeLineToggled;
+            ViewModel.ShowPathArrowToggled      += ShowPathArrowToggled;
+            ViewModel.ShowFieldOfViewToggled    += ShowFieldOfViewToggled;
+
+            ViewModel.LandmarkSelected          += LandmarkSelected;
+
+            ViewModel.MouseMoved                += MouseMoved;
+        }
+
+        void GoalHexChanged(object sender, HexEventArgs e)   => RefreshAfter(()=>{GoalHex = e.Coords;});
+        void StartHexChange(object sender, HexEventArgs e)   => RefreshAfter(()=>{StartHex = e.Coords;});
+        void HotSpotHexChange(object sender, HexEventArgs e) => RefreshAfter(()=>{HotspotHex = e.Coords;});
+
+        //void TransposeMapToggled(object sender, bool isChecked)  => ViewModel.IsTransposed = isChecked;
+        void ShowRangeLineToggled(object sender, bool isChecked) { }
+        void ShowPathArrowToggled(object sender, bool isChecked) { }
+        void ShowFieldOfViewToggled(object sender, bool isChecked) { }
+
+        void LandmarkSelected(object sender, int value) { }
+
+        void MouseMoved(object sender, MouseEventArgs value) { }
+
+        void RefreshAfter(Action action) { action?.Invoke(); ViewModel.Refresh(); }
+    }
+}

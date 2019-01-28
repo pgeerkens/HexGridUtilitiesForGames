@@ -39,7 +39,7 @@ namespace PGNapoleonics.HexUtilities.Common {
 
         /// <summary>TODO</summary>
         public Maybe(T value) : this() {
-            Contract.Ensures( !HasValue  ||  Value != null);
+          //  Contract.Ensures( !HasValue  ||  Value != null);
             Value    = value;
             HasValue = typeof(ValueType).IsAssignableFrom(typeof(T)) || value != null;
         }
@@ -67,7 +67,7 @@ namespace PGNapoleonics.HexUtilities.Common {
         public TOut        Match<TOut>(Func<T,TOut> projection, Func<TOut> alternate) {
             projection.RequiredNotNull("projection");
             alternate.RequiredNotNull("alternate");
-            Contract.Ensures(Contract.Result<TOut>() != null || alternate() == null);
+          //  Contract.Ensures(Contract.Result<TOut>() != null || alternate() == null);
 
             return HasValue ? projection(Value) : alternate();
         }
@@ -76,18 +76,18 @@ namespace PGNapoleonics.HexUtilities.Common {
         [Pure]
         public bool        ValueContract(Func<T, bool> contract) {
             contract.RequiredNotNull("contract");
-            Contract.Ensures(Contract.Result<bool>() == (! HasValue  ||  contract(Value)) );
+          //  Contract.Ensures(Contract.Result<bool>() == (! HasValue  ||  contract(Value)) );
             return ! HasValue  ||  contract(Value);
         }
         [Pure]
         private static  string PreferredName(T value) {
             value.RequiredNotNull("value");
-            Contract.Ensures(Contract.Result<string>() != null);
+          //  Contract.Ensures(Contract.Result<string>() != null);
             return value.ToString();
         }
         [Pure]
         private static  string AlternateName() {
-            Contract.Ensures(Contract.Result<string>() != null);
+          //  Contract.Ensures(Contract.Result<string>() != null);
             return "NoValue<" + typeof(T).Name + ">";
         }
 
@@ -116,7 +116,7 @@ namespace PGNapoleonics.HexUtilities.Common {
         /// <summary>TODO</summary>
         [Pure]
         public override string ToString() {
-            Contract.Ensures(Contract.Result<string>() != null);
+          //  Contract.Ensures(Contract.Result<string>() != null);
             return (HasValue && Value!=null) ? PreferredName(Value) : AlternateName();
         }
 
@@ -132,21 +132,5 @@ namespace PGNapoleonics.HexUtilities.Common {
         /// <summary>TODO</summary>
         public static V? ToNullable<V>(Maybe<V?> maybe) where V : struct =>
             ! maybe.HasValue || ! maybe.Value.HasValue ? (V?)null : maybe.Value.Value;
-    }
-
-        /// <summary>TODO</summary>
-    public static class NullableExtensions {
-        /// <summary>TODO</summary>
-        public static TResult? Bind<TValue,TResult>(this TValue? @this, Func<TValue, TResult?> projection)
-            where TValue:struct where TResult:struct =>
-            @this.HasValue ? projection(@this.Value) : null;
-
-        /// <summary>TODO</summary>
-        public static Maybe<T> ToMaybe<T>(this Maybe<T?> maybe) where T:struct =>
-            Maybe<T>.ToMaybe(maybe);
-
-        /// <summary>TODO</summary>
-        public static T? ToNullable<T>(this Maybe<T?> maybe) where T:struct =>
-            Maybe<T>.ToNullable(maybe);
     }
 }

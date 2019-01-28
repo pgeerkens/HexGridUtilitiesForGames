@@ -60,7 +60,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
         [Pure, SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
         public virtual  T    this[IntVector2D userCoords] {
             get { 
-                Contract.Ensures( ! MapSizeHexes.IsOnboard(userCoords)  ||  Contract.Result<T>() != null);
+              //  Contract.Ensures( ! MapSizeHexes.IsOnboard(userCoords)  ||  Contract.Result<T>() != null);
                 return MapSizeHexes.IsOnboard(userCoords) ? ItemInner (userCoords.X,userCoords.Y) : default(T);
             }
         }
@@ -131,8 +131,8 @@ namespace PGNapoleonics.HexUtilities.Storage {
         private BoardStorageContract(HexSize sizeHexes) : base(sizeHexes) { }
 
         [Pure]protected override T ItemInner(int x, int y) {
-          Contract.Requires(MapSizeHexes.IsOnboard(x,y));
-          Contract.Ensures(Contract.Result<T>() != null);
+        //  Contract.Requires(MapSizeHexes.IsOnboard(x,y));
+        //  Contract.Ensures(Contract.Result<T>() != null);
 
           return default(T);
         }

@@ -43,7 +43,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     public ImmutableStackCollection<T> Remainder    { get; private set; }
     /// <summary>Returns a new ImmutableStack by adding <paramref name="item"/> to this stack.</summary>
     public ImmutableStackCollection<T> Push(T item) {
-      Contract.Ensures(Contract.Result<ImmutableStackCollection<T>>() != null);
+    //  Contract.Ensures(Contract.Result<ImmutableStackCollection<T>>() != null);
       return new ImmutableStackCollection<T>(item, this);
     }
 

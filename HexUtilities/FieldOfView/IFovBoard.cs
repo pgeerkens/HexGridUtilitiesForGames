@@ -90,12 +90,12 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-      Contract.Invariant(MapSizeHexes.Width  > 0);
-      Contract.Invariant(MapSizeHexes.Height > 0);
+    //  Contract.Invariant(MapSizeHexes.Width  > 0);
+    //  Contract.Invariant(MapSizeHexes.Height > 0);
 
       // Redundant - but added to help static checker
-      Contract.Invariant(MapSizeHexes.Width  >= 0);
-      Contract.Invariant(MapSizeHexes.Height >= 0);
+    //  Contract.Invariant(MapSizeHexes.Width  >= 0);
+    //  Contract.Invariant(MapSizeHexes.Height >= 0);
     }
 
     public HexSize MapSizeHexes        { get { return default(HexSize); } }

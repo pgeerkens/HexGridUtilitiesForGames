@@ -58,7 +58,7 @@ namespace PGNapoleonics.HexUtilities {
         /// though at the possible expense of longer path-finding times.</remarks>
         /// <param name="size"></param>
         protected static IFastList<HexCoords> DefaultLandmarks(HexSize size) {
-            Contract.Ensures(Contract.Result<IFastList<HexCoords>>() != null);
+          //  Contract.Ensures(Contract.Result<IFastList<HexCoords>>() != null);
             return ( from point in new HexPoint[] { new HexPoint(           0,             0),  // top-left
                                                     new HexPoint(           0, size.Height/2),  // middle-left
                                                     new HexPoint(           0, size.Height-1),  // bottom-left
@@ -83,8 +83,8 @@ namespace PGNapoleonics.HexUtilities {
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         protected HexBoard(HexSize sizeHexes, HexSize gridSize, BoardStorage<Maybe<THex>> boardHexes) {
             boardHexes.RequiredNotNull("boardHexes");
-            Contract.Requires(gridSize.Width  > 0);
-            Contract.Requires(gridSize.Height > 0);
+          //  Contract.Requires(gridSize.Width  > 0);
+          //  Contract.Requires(gridSize.Height > 0);
 
             MapScale        = 1.00F;
             IsTransposed    = false;
@@ -101,9 +101,9 @@ namespace PGNapoleonics.HexUtilities {
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         private void ObjectInvariant() {
-            Contract.Invariant(GridSize.Width  > 0);
-            Contract.Invariant(GridSize.Height > 0);
-            Contract.Invariant(BoardHexes      != null);
+          //  Contract.Invariant(GridSize.Width  > 0);
+          //  Contract.Invariant(GridSize.Height > 0);
+          //  Contract.Invariant(BoardHexes      != null);
         }
 
         /// <summary>TODO</summary>
@@ -142,7 +142,7 @@ namespace PGNapoleonics.HexUtilities {
         /// <inheritdoc/>
         public             IHexgrid   Hexgrid           { 
           get {
-            Contract.Ensures(Contract.Result<IHexgrid>() != null);
+          //  Contract.Ensures(Contract.Result<IHexgrid>() != null);
             return TransposableHexgrid.GetNewGrid(IsTransposed,GridSize,MapScale);
           }
         }

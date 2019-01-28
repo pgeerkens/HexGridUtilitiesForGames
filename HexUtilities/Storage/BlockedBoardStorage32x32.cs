@@ -46,8 +46,8 @@ namespace PGNapoleonics.HexUtilities.Storage {
     } }
 
     /// <summary>TODO</summary>
-    public static BoardStorage<T> New32x32<T>(HexSize sizeHexes, Func<HexCoords, T> factory) where T : struct {
-      Contract.Ensures(Contract.Result<BoardStorage<T>>() != null);
+    public static BoardStorage<T> New32x32<T>(HexSize sizeHexes, Func<HexCoords, T> factory) {//where T : struct {
+    //  Contract.Ensures(Contract.Result<BoardStorage<T>>() != null);
       return Extensions.InitializeDisposable( () =>
         new BlockedBoardStorage32x32<T>(sizeHexes, factory, DefaultProcessorsToUse) );
     }
@@ -58,7 +58,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
   /// <remarks>This <c>BoardStorage</c> implementation stores the board cells in blocks
   /// that are 32 i 32 cells to provide better localization for the Path-Finding and
   /// Field-of-View algorithms.</remarks>
-  internal sealed class BlockedBoardStorage32x32<T> : BlockedBoardStorage<T> where T : struct {
+  internal sealed class BlockedBoardStorage32x32<T> : BlockedBoardStorage<T> {//where T : struct {
     const int _blockExponent = 5;
     const int _blockSide     = 1 << _blockExponent;
     const int _blockMask     = _blockSide - 1;
@@ -72,7 +72,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
     /// initialized using <paramref name="tFactory"/>.</summary>
     internal BlockedBoardStorage32x32(HexSize sizeHexes, Func<HexCoords,T> tFactory, int threadCount) 
     : base (sizeHexes, tFactory, threadCount) {
-      Contract.Requires(threadCount > 0,"threadCount");
+    //  Contract.Requires(threadCount > 0,"threadCount");
     }
 
     /// <inheritdoc/>>
@@ -80,19 +80,19 @@ namespace PGNapoleonics.HexUtilities.Storage {
       //Contract.Ensures(Contract.Result<T>() != null);
 
 #if DIVIDE
-      Contract.Assume(y/_blockSide < BackingStore.Count);
-      Contract.Assume(x/_blockSide < BackingStore[y/_blockSide].Count);
+    //  Contract.Assume(y/_blockSide < BackingStore.Count);
+    //  Contract.Assume(x/_blockSide < BackingStore[y/_blockSide].Count);
       var index = (y & _blockMask) * _blockSide  +  (x & _blockMask);
       var block = BackingStore[y/_blockSide][x/_blockSide];
 
-      Contract.Assume(index < block.Count);
+    //  Contract.Assume(index < block.Count);
 #else
-      Contract.Assume(y >> _blockExponent < BackingStore.Count);
-      Contract.Assume(x >> _blockExponent < BackingStore[y >> _blockExponent].Count);
+    //  Contract.Assume(y >> _blockExponent < BackingStore.Count);
+    //  Contract.Assume(x >> _blockExponent < BackingStore[y >> _blockExponent].Count);
       var index = (y & _blockMask) * _blockSide  +  (x & _blockMask);
       var block = BackingStore[y >> _blockExponent][x >> _blockExponent];
 
-      Contract.Assume(index < block.Count);
+    //  Contract.Assume(index < block.Count);
 #endif
       return block[index];
     }

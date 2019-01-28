@@ -34,20 +34,21 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     using ILandmarks  = ILandmarkCollection;
 
     /// <summary>Interface required to make use of A* Path Finding utility with Landmark heuristic.</summary>
-    [ContractClass(typeof(ILandmarkBoardContract))]
+    //[ContractClass(typeof(ILandmarkBoardContract))]
+    //public interface ILandmarkBoard : INavigableBoard {
     public interface ILandmarkBoard {
         /// <summary>TODO</summary>
         ILandmarks Landmarks { get; }
     }
 
-    [ContractClassFor(typeof(ILandmarkBoard))]
-    internal abstract class ILandmarkBoardContract : ILandmarkBoard {
-        private ILandmarkBoardContract() { }
+    //[ContractClassFor(typeof(ILandmarkBoard))]
+    //internal abstract class ILandmarkBoardContract : ILandmarkBoard {
+    //    private ILandmarkBoardContract() { }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        private void ObjectInvariant() => Contract.Invariant(Landmarks != null);
+    //    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+    //    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+    //    private void ObjectInvariant() => Contract.Invariant(Landmarks != null);
 
-        public abstract ILandmarks Landmarks { get; }
-    }
+    //    public abstract ILandmarks Landmarks { get; }
+    //}
 }

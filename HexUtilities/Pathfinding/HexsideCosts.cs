@@ -63,7 +63,7 @@ namespace PGNapoleonics.HexUtilities {
 
         static List<short?> Generator(Func<Hexside,short?> directedCostToExit) {
             directedCostToExit.RequiredNotNull("directedCostToExit");
-            Contract.Ensures(Contract.Result<List<short?>>() != null);
+          //  Contract.Ensures(Contract.Result<List<short?>>() != null);
 
             return ( from hexsideExit in Hexside.HexsideList
                      select directedCostToExit(hexsideExit)

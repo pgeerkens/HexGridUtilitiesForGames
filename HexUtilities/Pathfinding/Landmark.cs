@@ -51,7 +51,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <param name="here"></param>
     /// <param name="hexside"></param>
     /// <returns></returns>
-    public delegate Maybe<short> TryDirectedCost(HexCoords here, Hexside hexside);
+    public delegate short? TryDirectedCost(HexCoords here, Hexside hexside);
 #endif
 
     /// <summary>TODO</summary>
@@ -75,7 +75,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// <summary>TODO</summary>
         public static ILandmark DictionaryPriorityQueueLandmark(HexCoords coords, INavigableBoard board) {
             board.RequiredNotNull("board");
-            Contract.Ensures(Contract.Result<ILandmark>() != null);
+          //  Contract.Ensures(Contract.Result<ILandmark>() != null);
 
             var backingStore = BackingStore(coords, board, ()=>PriorityQueueFactory.NewDictionaryQueue<int,HexCoords>());
             return Extensions.InitializeDisposable( () => new Landmark(coords, backingStore) );
@@ -84,7 +84,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// <summary>TODO</summary>
         public static ILandmark HotPriorityQueueLandmark(HexCoords coords, INavigableBoard board) {
             board.RequiredNotNull("board");
-            Contract.Ensures(Contract.Result<ILandmark>() != null);
+          //  Contract.Ensures(Contract.Result<ILandmark>() != null);
 
             var backingStore = BackingStore(coords, board, ()=>PriorityQueueFactory.NewHotPriorityQueue<HexCoords>(1024));
             return Extensions.InitializeDisposable( () => new Landmark(coords, backingStore ) );
@@ -96,9 +96,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         private static IList<DirectedLandmark> BackingStore(HexCoords coords, INavigableBoard board, Func<IPriorityQueue<int,HexCoords>> queueFactory) {
             board.RequiredNotNull("board");
             queueFactory.RequiredNotNull("queueFactory");
-            Contract.Requires(queueFactory() != null);
-            Contract.Ensures(Contract.Result<IList<DirectedLandmark>>().All(item => item != null));
-            Contract.Ensures(Contract.Result<IList<DirectedLandmark>>().Count == 2);
+          //  Contract.Requires(queueFactory() != null);
+          //  Contract.Ensures(Contract.Result<IList<DirectedLandmark>>().All(item => item != null));
+          //  Contract.Ensures(Contract.Result<IList<DirectedLandmark>>().Count == 2);
 
             return new List<DirectedLandmark> {
                 DirectedLandmark.New(coords, board.MapSizeHexes, queueFactory, board.TryEntryCost),
@@ -111,30 +111,30 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// <param name="backingStore">TODO</param>
         private Landmark(HexCoords coords, IList<DirectedLandmark> backingStore) {
             backingStore.RequiredNotNull("backingStore");
-            Contract.Requires(backingStore[(int)Direction.ToHex]   != null);
-            Contract.Requires(backingStore[(int)Direction.FromHex] != null);
-            Contract.Ensures(_backingStore.Count == 2);
+          //  Contract.Requires(backingStore[(int)Direction.ToHex]   != null);
+          //  Contract.Requires(backingStore[(int)Direction.FromHex] != null);
+          //  Contract.Ensures(_backingStore.Count == 2);
 
             Coords        = coords;
             _backingStore = backingStore;
-            Contract.Assume(_backingStore.Count == 2); // since each DirectedLandmark is not-null
+          //  Contract.Assume(_backingStore.Count == 2); // since each DirectedLandmark is not-null
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         private void ObjectInvariant() {
-            Contract.Invariant(_backingStore.Count == 2);
-            Contract.Invariant(_backingStore[(int)Direction.ToHex]   != null);
-            Contract.Invariant(_backingStore[(int)Direction.FromHex] != null);
+          //  Contract.Invariant(_backingStore.Count == 2);
+          //  Contract.Invariant(_backingStore[(int)Direction.ToHex]   != null);
+          //  Contract.Invariant(_backingStore[(int)Direction.FromHex] != null);
         }
 
         /// <summary>Board coordinates for the landmark location.</summary>
         public  HexCoords Coords      { get; }
         /// <inheritdoc/>
-        public  Maybe<short> DistanceTo  (HexCoords coords) =>
+        public  short? DistanceTo  (HexCoords coords) =>
             _backingStore[(int)Direction.ToHex].Distance(coords);
         /// <inheritdoc/>
-        public  Maybe<short> DistanceFrom(HexCoords coords) =>
+        public  short? DistanceFrom(HexCoords coords) =>
             _backingStore[(int)Direction.FromHex].Distance(coords);
 
         private IList<DirectedLandmark> _backingStore { get; }

@@ -50,8 +50,8 @@ namespace System.Diagnostics.Contracts {
         [ContractAbbreviator] // Requires Assemble Mode = Standard Contract Requires
         public static void RequiredNotNull<T>([ValidatedNotNull]this T value, string name) {
         #if DEBUG
-            // if (! (value is ValueType))  Contract.Requires(value != null,name);
-            Contract.Requires(value != null, name);
+            // if (! (value is ValueType))//  Contract.Requires(value != null,name);
+          //  Contract.Requires(value != null, name);
         #endif
         }
     #endif
@@ -64,7 +64,7 @@ namespace System.Diagnostics.Contracts {
         [Pure]public static bool Implies(this bool condition, Func<bool> contract) {
         #if DEBUG
             contract.RequiredNotNull("contract");
-            Contract.Ensures(Contract.Result<bool>() == (! condition || contract()) );
+          //  Contract.Ensures(Contract.Result<bool>() == (! condition || contract()) );
             return ! condition || contract();
         #else
             return true;
@@ -76,7 +76,7 @@ namespace System.Diagnostics.Contracts {
         /// <param name="lower">Inclusive lower bound for the range.</param>
         /// <param name="height">Height of the range.</param>
         [Pure]public static bool InRange(this int value, int lower, int height) {
-            Contract.Ensures( (lower <= value && value < lower+height) == Contract.Result<bool>() );
+          //  Contract.Ensures( (lower <= value && value < lower+height) == Contract.Result<bool>() );
             return lower <= value && value < lower+height;
         }
     }

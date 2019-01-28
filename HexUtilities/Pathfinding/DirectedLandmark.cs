@@ -43,8 +43,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         ) {
             queueFactory.RequiredNotNull("queue");
             tryDirectedCosts.RequiredNotNull("directedCosts");
-            Contract.Requires(queueFactory() != null);
-            Contract.Ensures(Contract.Result<DirectedLandmark>() != null);
+          //  Contract.Requires(queueFactory() != null);
+          //  Contract.Ensures(Contract.Result<DirectedLandmark>() != null);
 
             return Extensions.InitializeDisposable( () =>
                 new DirectedLandmark(hexCoords, mapSizeHexes, queueFactory, tryDirectedCosts) );
@@ -61,7 +61,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         ) {
             queueFactory.RequiredNotNull("queue");
             tryDirectedCosts.RequiredNotNull("directedCosts");
-            Contract.Requires(queueFactory() != null);
+          //  Contract.Requires(queueFactory() != null);
 
         //  _hex          = hex;
             _backingStore = new LandmarkPopulatorFunctor(hexCoords, mapSizeHexes, queueFactory, tryDirectedCosts).Fill();
@@ -78,9 +78,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         ///// <summary>Board coordinates for the landmark location.</summary>
         //public  IHex      Hex         { get {return _hex;} } readonly IHex _hex;
         /// <inheritdoc/>
-        public  Maybe<short> Distance(HexCoords coords)     { return _backingStore[coords]; }
+        public  short? Distance(HexCoords coords)     { return _backingStore[coords]; }
 
-        internal readonly BoardStorage<Maybe<short>>     _backingStore;
+        internal readonly BoardStorage<short?>     _backingStore;
 
         #region IDisposable implementation w/o finalizer; as no unmanageed resources used by sealed class.
         /// <summary>Clean up any resources being used.</summary>

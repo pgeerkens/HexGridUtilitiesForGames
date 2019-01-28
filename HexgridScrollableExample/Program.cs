@@ -38,24 +38,24 @@ using PGNapoleonics.WinForms;
 #pragma warning restore 1587
 [assembly:CLSCompliant(true)]
 namespace PGNapoleonics.HexgridScrollableExample {
-  static class Program {
-    volatile static int i = 1;
+    static class Program {
+        volatile static int i = 1;
 
-    /// <summary>The main entry point for the application.</summary>
-    [STAThread]
-    static void Main()      {
-      Application.EnableVisualStyles();
-      Application.SetCompatibleTextRenderingDefault(false);
-      Application.ThreadException += 
-        new ThreadExceptionEventHandler(
-          (new ThreadExceptionHandler()).ApplicationThreadException);
-      switch (i) {
-        default:
-        case 0:  Application.Run(new MdiParent()); break;
-        case 1:  Application.Run(new ExampleHexgridPanel()); break;
-        case 2:  Application.Run(new ExampleHexgridScrollable()); break;
-        case 3:  Application.Run(new ExampleBufferedHexgridScrollable()); break;
-      }
+        /// <summary>The main entry point for the application.</summary>
+        [STAThread]
+        static void Main()      {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.ThreadException +=  new ThreadExceptionEventHandler(
+                    new ThreadExceptionHandler().ApplicationThreadException
+            );
+            switch (i) {
+                default:
+                case 0:  Application.Run(new MdiParent()); break;
+                case 1:  Application.Run(new ExampleHexgridPanel()); break;
+                case 2:  Application.Run(new ExampleHexgridScrollable()); break;
+                case 3:  Application.Run(new ExampleBufferedHexgridScrollable()); break;
+            }
+        }
     }
-  }
 }

@@ -37,7 +37,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     using HexSize = System.Drawing.Size;
 
     /// <summary>Interface required to make use of A* Path Finding utility.</summary>
-    [ContractClass(typeof(INavigableBoardContract))]
+    //[ContractClass(typeof(INavigableBoardContract))]
     public interface INavigableBoard {
         /// <summary>The rectangular extent of the board's hexagonal grid, in hexes.</summary>
         HexSize MapSizeHexes           { get; }
@@ -51,38 +51,38 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         [Pure]Maybe<short>  Heuristic(HexCoords source, HexCoords target);
 
         /// <summary>TODO</summary>
-        Maybe<short> TryExitCost(HexCoords hexCoords, Hexside hexside);
+        short? TryExitCost(HexCoords hexCoords, Hexside hexside);
         /// <summary>TODO</summary>
-        Maybe<short> TryEntryCost(HexCoords hexCoords, Hexside hexside);
+        short? TryEntryCost(HexCoords hexCoords, Hexside hexside);
     }
 
-    [ContractClassFor(typeof(INavigableBoard))]
-    internal abstract class INavigableBoardContract : INavigableBoard {
-        private INavigableBoardContract() { }
+    //[ContractClassFor(typeof(INavigableBoard))]
+    //internal abstract class INavigableBoardContract : INavigableBoard {
+    //    private INavigableBoardContract() { }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        private void ObjectInvariant() {
-            Contract.Invariant(MapSizeHexes.Width  > 0);
-            Contract.Invariant(MapSizeHexes.Height > 0);
-        }
+    //    [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+    //    [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+    //    private void ObjectInvariant() {
+    //      //  Contract.Invariant(MapSizeHexes.Width  > 0);
+    //      //  Contract.Invariant(MapSizeHexes.Height > 0);
+    //    }
 
-        public abstract HexSize       MapSizeHexes           { get; }
+    //    public abstract HexSize       MapSizeHexes           { get; }
 
-        [Pure]public           Maybe<short>  Heuristic(HexCoords source, HexCoords target) {
-            Contract.Ensures(Contract.Result<int>() >= 0);
-            // Contract.Ensures((range > 0).Implies(() => Contract.Result<int>() > 0));
-            return default(int);
-        }
-        [Pure]public   Maybe<short> TryEntryCost(HexCoords hexCoords, Hexside hexside) {
-            Contract.Ensures(Contract.Result<Maybe<short>>().ValueContract(v => v>0));
-            return default(Maybe<short>);
-        }
-        [Pure]public   Maybe<short> TryExitCost(HexCoords hexCoords, Hexside hexside) {
-            Contract.Ensures(Contract.Result<Maybe<short>>().ValueContract(v => v>0));
-            return default(Maybe<short>);
-        }
-    }
+    //    [Pure]public           Maybe<short>  Heuristic(HexCoords source, HexCoords target) {
+    //      //  Contract.Ensures(Contract.Result<int>() >= 0);
+    //        // Contract.Ensures((range > 0).Implies(() => Contract.Result<int>() > 0));
+    //        return default(int);
+    //    }
+    //    [Pure]public   Maybe<short> TryEntryCost(HexCoords hexCoords, Hexside hexside) {
+    //      //  Contract.Ensures(Contract.Result<Maybe<short>>().ValueContract(v => v>0));
+    //        return default(Maybe<short>);
+    //    }
+    //    [Pure]public   Maybe<short> TryExitCost(HexCoords hexCoords, Hexside hexside) {
+    //      //  Contract.Ensures(Contract.Result<Maybe<short>>().ValueContract(v => v>0));
+    //        return default(Maybe<short>);
+    //    }
+    //}
 }
 namespace PGNapoleonics.HexUtilities.Pathfinding {
     using HexSize   = System.Drawing.Size;
@@ -113,12 +113,12 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
                 : Maybe<short>.NoValue();
 
         /// <summary>TODO</summary>
-        public Maybe<short> TryExitCost(HexCoords hexCoords, Hexside hexside) =>
-            (from x in _exitCosts[hexCoords] from c in x[hexside].ToMaybe() select c).ToMaybe();
+        public short? TryExitCost(HexCoords hexCoords, Hexside hexside) =>
+            (from x in _exitCosts[hexCoords] from c in x[hexside].ToMaybe() select c).ToNullable();
 
         /// <summary>TODO</summary>
-        public Maybe<short> TryEntryCost(HexCoords hexCoords, Hexside hexside) =>
-            (from x in _entryCosts[hexCoords] from c in x[hexside].ToMaybe() select c).ToMaybe();
+        public short? TryEntryCost(HexCoords hexCoords, Hexside hexside) =>
+            (from x in _entryCosts[hexCoords] from c in x[hexside].ToMaybe() select c).ToNullable();
 
         readonly StepCosts _entryCosts;
         readonly StepCosts _exitCosts;

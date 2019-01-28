@@ -59,12 +59,12 @@ namespace PGNapoleonics.HexUtilities.Common {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-      Contract.Invariant(Left   != int.MinValue);
-      Contract.Invariant(Top    != int.MinValue);
-      Contract.Invariant(Right  != int.MinValue);
-      Contract.Invariant(Bottom != int.MinValue);
-      Contract.Invariant(Width  != int.MinValue);
-      Contract.Invariant(Height != int.MinValue);
+    //  Contract.Invariant(Left   != int.MinValue);
+    //  Contract.Invariant(Top    != int.MinValue);
+    //  Contract.Invariant(Right  != int.MinValue);
+    //  Contract.Invariant(Bottom != int.MinValue);
+    //  Contract.Invariant(Width  != int.MinValue);
+    //  Contract.Invariant(Height != int.MinValue);
     }
     #endregion
 

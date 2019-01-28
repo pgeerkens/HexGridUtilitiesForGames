@@ -46,10 +46,10 @@ namespace PGNapoleonics.HexUtilities.FastLists {
     private IFastListXContract() { }
 
     public void SetItem(int index, T value) {
-      Contract.Requires(0 <= index  &&  index < Count);
-      Contract.Requires(value != null);
+    //  Contract.Requires(0 <= index  &&  index < Count);
+    //  Contract.Requires(value != null);
 
-      Contract.Ensures(this[index] != null);
+    //  Contract.Ensures(this[index] != null);
     }
 
     public int Count { get { return default(int); } }

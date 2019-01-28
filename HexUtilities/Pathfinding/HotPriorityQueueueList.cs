@@ -53,14 +53,14 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <summary>Create a new instance with the specified capacity.</summary>
     public HotPriorityQueueList(int capacity) {
-      Contract.Requires(capacity > 0);
+    //  Contract.Requires(capacity > 0);
       _list = new List<HexKeyValuePair<TKey,TValue>>(capacity);
     }
 
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-      Contract.Invariant(_list != null);
+    //  Contract.Invariant(_list != null);
     }
 
     /// <inheritdoc/>

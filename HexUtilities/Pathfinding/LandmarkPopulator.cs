@@ -40,7 +40,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
   /// <summary>TODO</summary>
   public interface ILandmarkPopulator {
     /// <summary>TODO</summary>
-    BoardStorage<Maybe<short>> Fill();
+    BoardStorage<short?> Fill();
   }
 
   /// <summary>The default implementation of <see cref="ILandmarkPopulator"/>.</summary>
@@ -53,19 +53,19 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     ) : base(hex, mapSizeHexes, queueFactory, tryDirectedStepCost) {
       queueFactory.RequiredNotNull("queue");
       tryDirectedStepCost.RequiredNotNull("tryDirectedStepCost");
-      Contract.Requires(queueFactory() != null);
+    //  Contract.Requires(queueFactory() != null);
     }
 
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-      Contract.Invariant(_queue != null);
-      Contract.Invariant(_store != null);
-      Contract.Invariant(_tryDirectedStepCost != null);
+    //  Contract.Invariant(_queue != null);
+    //  Contract.Invariant(_store != null);
+    //  Contract.Invariant(_tryDirectedStepCost != null);
     }
 
-    public override BoardStorage<Maybe<short>> Fill() {
-      Contract.Ensures(Contract.Result<BoardStorage<Maybe<short>>>() != null);
+    public override BoardStorage<short?> Fill() {
+    //  Contract.Ensures(Contract.Result<BoardStorage<short?>>() != null);
 
       // Reduce field references by keeping all these on stack.
       var queue = _queue;
@@ -87,12 +87,12 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     private void Action(
       IPriorityQueue<int,HexCoords> queue, 
-      BoardStorage<Maybe<short>>    store,
+      BoardStorage<short?>    store,
       TryDirectedCost               tryDirectedStepCost,
       HexCoords here, int key, Hexside hexside
     ) {
       hexside.RequiredNotNull("hexside");
-      Contract.Requires(hexside.Value >= 0);
+    //  Contract.Requires(hexside.Value >= 0);
       hexside.AssumeInvariant();
 
       var neighbour = here.GetNeighbour(hexside);
@@ -112,12 +112,12 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     ) {
       queueFactory.RequiredNotNull("queue");
       tryDirectedStepCost.RequiredNotNull("tryDirectedStepCost");
-      Contract.Requires(queueFactory() != null);
+    //  Contract.Requires(queueFactory() != null);
 
       Tracing.FindPathDetail.Trace("Find distances from {0}", hexCoords);
 
       _queue               = queueFactory();
-      _store               = BlockedBoardStorage.New32x32<Maybe<short>>(mapSizeHexes, c=>Maybe<short>.NoValue());
+      _store               = BlockedBoardStorage.New32x32(mapSizeHexes, c=>default(short?));
       _tryDirectedStepCost = tryDirectedStepCost;
 
       Enqueue(0,hexCoords,_store);
@@ -126,19 +126,19 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-      Contract.Invariant(_queue != null);
-      Contract.Invariant(_store != null);
-      Contract.Invariant(_tryDirectedStepCost != null);
+    //  Contract.Invariant(_queue != null);
+    //  Contract.Invariant(_store != null);
+    //  Contract.Invariant(_tryDirectedStepCost != null);
     }
 
     protected readonly IPriorityQueue<int,HexCoords> _queue;
-    protected readonly BoardStorage<Maybe<short>>    _store;
+    protected readonly BoardStorage<short?>          _store;
     protected readonly TryDirectedCost               _tryDirectedStepCost;
     private            HexCoords                     _here;
     private            short                         _key;
 
-    public virtual BoardStorage<Maybe<short>> Fill() {
-      Contract.Ensures(Contract.Result<BoardStorage<Maybe<short>>>() != null);
+    public virtual BoardStorage<short?> Fill() {
+    //  Contract.Ensures(Contract.Result<BoardStorage<short?>>() != null);
       HexKeyValuePair<int,HexCoords> item;
 
       var queue = _queue; //!< Reduce field references by keeping on stack.
@@ -169,7 +169,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         store[neighbour].ElseDo(() => Enqueue(cost,neighbour,store));
     }
 
-    protected void Enqueue(short cost, HexCoords neighbour, BoardStorage<Maybe<short>> store) {
+    protected void Enqueue(short cost, HexCoords neighbour, BoardStorage<short?> store) {
       store.RequiredNotNull("store");
       Tracing.FindPathDetail.Trace("   Enqueue {0}: {1,4}", neighbour, cost);
       store.SetItem(neighbour, cost);

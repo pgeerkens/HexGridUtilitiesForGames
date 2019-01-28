@@ -88,14 +88,14 @@ namespace PGNapoleonics.HexUtilities {
         #region Public static members
         /// <summary>Create a new instance located at the specified i and j offsets as interpreted in the Canon(ical) frame.</summary>
         [Pure]public static HexCoords NewCanonCoords (int x, int y) {
-            Contract.Requires(x != int.MinValue);
-            Contract.Requires(y != int.MinValue);
+          //  Contract.Requires(x != int.MinValue);
+          //  Contract.Requires(y != int.MinValue);
             return NewCanonCoords(IntVector2D.New(x,y));
         }
         /// <summary>Create a new instance located at the specified i and j offsets as interpreted in the ectangular (User) frame.</summary>
         [Pure]public static HexCoords NewUserCoords  (int x, int y) {
-            Contract.Requires(x != int.MinValue);
-            Contract.Requires(y != int.MinValue);
+          //  Contract.Requires(x != int.MinValue);
+          //  Contract.Requires(y != int.MinValue);
             return NewUserCoords(IntVector2D.New(x,y));
         }
         /// <summary>Create a new instance located at the specified vector offset as interpreted in the Canon(ical) frame.</summary>
@@ -130,11 +130,11 @@ namespace PGNapoleonics.HexUtilities {
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         private void ObjectInvariant() {
-            Contract.Invariant(0 <= (User.X & 1)  &&  (User.X & 1) < _hexsideVectorsUser.Count);
-            Contract.Invariant(Canon.X != int.MinValue);
-            Contract.Invariant(Canon.Y != int.MinValue);
-            Contract.Invariant(_hexsideVectorsUser.All(list => list != null));
-            Contract.Invariant(_hexsideVectorsUser.All(list => list.All(item => item != null) ) );
+          //  Contract.Invariant(0 <= (User.X & 1)  &&  (User.X & 1) < _hexsideVectorsUser.Count);
+          //  Contract.Invariant(Canon.X != int.MinValue);
+          //  Contract.Invariant(Canon.Y != int.MinValue);
+          //  Contract.Invariant(_hexsideVectorsUser.All(list => list != null));
+          //  Contract.Invariant(_hexsideVectorsUser.All(list => list.All(item => item != null) ) );
         }
         #endregion
 
@@ -154,10 +154,10 @@ namespace PGNapoleonics.HexUtilities {
         [Pure]
         public HexCoords GetNeighbour(Hexside hexside) {
             hexside.RequiredNotNull("hexside");
-            Contract.Requires(hexside.Value >= 0);
+          //  Contract.Requires(hexside.Value >= 0);
             hexside.AssumeInvariant();
 
-            var i = User.X & 1;   Contract.Assume(_hexsideVectorsUser[i] != null);
+            var i = User.X & 1; //  Contract.Assume(_hexsideVectorsUser[i] != null);
             return new HexCoords(Canon + _hexsideVectorsCanon  [hexside]
                                 ,User  + _hexsideVectorsUser[i][hexside] );
         }
@@ -205,7 +205,7 @@ namespace PGNapoleonics.HexUtilities {
         /// "User: ", "Custom: ", or "Range: " respectivelly), while the upper-case commands do not.
         /// </remarks>
         public string ToString(string format, IFormatProvider formatProvider) {
-            Contract.Ensures(Contract.Result<string>() != null);
+          //  Contract.Ensures(Contract.Result<string>() != null);
 
             if (format==null || format.Length==0) format = "G";
             if (formatProvider == null) formatProvider = CultureInfo.CurrentUICulture;

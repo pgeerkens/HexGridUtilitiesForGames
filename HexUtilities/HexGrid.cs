@@ -49,12 +49,12 @@ namespace PGNapoleonics.HexUtilities {
   public abstract class TransposableHexgrid : IHexgrid {
     /// <summary>Return a new instance of either <see cref="RightWayHexgrid"/> or <see cref="TransposedHexgrid"/> as appropriate.</summary>
     public static   IHexgrid  GetNewGrid(bool isTransposed, HexSize gridSize, float scale) {
-      Contract.Ensures(Contract.Result<IHexgrid>() != null);
+    //  Contract.Ensures(Contract.Result<IHexgrid>() != null);
       return GetNewGrid(isTransposed,gridSize,scale,HexSize.Empty);
     }
     /// <summary>Return a new instance of either <see cref="RightWayHexgrid"/> or <see cref="TransposedHexgrid"/> as appropriate.</summary>
     public static   IHexgrid  GetNewGrid(bool isTransposed, HexSize gridSize, float scale, HexSize margin) {
-      Contract.Ensures(Contract.Result<IHexgrid>() != null);
+    //  Contract.Ensures(Contract.Result<IHexgrid>() != null);
       return isTransposed ? (IHexgrid) new TransposedHexgrid(gridSize, scale, margin)
                           : (IHexgrid) new RightWayHexgrid(gridSize, scale, margin);
     }
@@ -162,12 +162,12 @@ namespace PGNapoleonics.HexUtilities {
     /// <returns>A (canonical X or Y) grid coordinate of the 'picked' hex.</returns>
 	  static int GetCoordinate (HexMatrix matrix, HexPoint point){
       matrix.RequiredNotNull("matrix");
-      Contract.Ensures(Contract.Result<int>() != int.MinValue);
+    //  Contract.Ensures(Contract.Result<int>() != int.MinValue);
 
       var points = new HexPoint[] {point};
       matrix.TransformPoints(points);
 
-      Contract.Assume( (int) Math.Floor( (points[0].X + points[0].Y + 2F) / 3F) != int.MinValue);
+    //  Contract.Assume( (int) Math.Floor( (points[0].X + points[0].Y + 2F) / 3F) != int.MinValue);
 		  return (int) Math.Floor( (points[0].X + points[0].Y + 2F) / 3F );
 	  }
     /// <summary>Calculates a (canonical X or Y) grid-coordinate for a point, from the supplied 'picking' matrix.</summary>
@@ -176,12 +176,12 @@ namespace PGNapoleonics.HexUtilities {
     /// <returns>A (canonical X or Y) grid coordinate of the 'picked' hex.</returns>
 	  static int GetCoordinate (HexMatrix matrix, HexPointF point){
       matrix.RequiredNotNull("matrix");
-      Contract.Ensures(Contract.Result<int>() != int.MinValue);
+    //  Contract.Ensures(Contract.Result<int>() != int.MinValue);
 
       var points = new HexPointF[] {point};
       matrix.TransformPoints(points);
 
-      Contract.Assume(Contract.Result<int>() != int.MinValue);
+    //  Contract.Assume(Contract.Result<int>() != int.MinValue);
 		  return (int) Math.Floor( (points[0].X + points[0].Y + 2F) / 3F );
 	  }
     #endregion

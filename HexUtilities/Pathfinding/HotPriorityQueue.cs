@@ -51,7 +51,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     public static IPriorityQueue<int, TValue> New<TValue>()
 //    where TValue : class
     {
-      Contract.Ensures(Contract.Result<IPriorityQueue<int, TValue>>() != null);
+    //  Contract.Ensures(Contract.Result<IPriorityQueue<int, TValue>>() != null);
       return New<TValue>(0, 32);
     }
     /// <summary>returns a new instance with a preferenceWidth of 0 bits and initialSize as specified.</summary>
@@ -61,8 +61,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     public static IPriorityQueue<int, TValue> New<TValue>(int initialSize)
 //    where TValue : class
     {
-      Contract.Requires(initialSize >= 32);
-      Contract.Ensures(Contract.Result<IPriorityQueue<int, TValue>>() != null);
+    //  Contract.Requires(initialSize >= 32);
+    //  Contract.Ensures(Contract.Result<IPriorityQueue<int, TValue>>() != null);
       return New<TValue>(0, initialSize);
     }
     /// <summary>returns a new instance with a preferenceWidth of shift bits.</summary>
@@ -75,9 +75,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     public static IPriorityQueue<int, TValue> New<TValue>(int preferenceWidth, int initialSize)
 //    where TValue : class
     {
-      Contract.Requires(preferenceWidth >= 0);
-      Contract.Requires(initialSize >= 32);
-      Contract.Ensures(Contract.Result<IPriorityQueue<int, TValue>>() != null);
+    //  Contract.Requires(preferenceWidth >= 0);
+    //  Contract.Requires(initialSize >= 32);
+    //  Contract.Ensures(Contract.Result<IPriorityQueue<int, TValue>>() != null);
       return New<TValue>(preferenceWidth, initialSize, _factory<TValue>);
     }
     /// <summary>returns a new instance with a preferenceWidth of shift bits.</summary>
@@ -97,12 +97,12 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         Func<IDictionary<int, IHotPriorityQueueList<int, TValue>>> factory)
 //    where TValue : class
     {
-      Contract.Requires(preferenceWidth >= 0);
-      Contract.Requires(initialSize >= 32);
+    //  Contract.Requires(preferenceWidth >= 0);
+    //  Contract.Requires(initialSize >= 32);
       factory.RequiredNotNull("factory");
-      Contract.Requires(factory() != null);
-      Contract.Requires(factory().Count == 0);
-      Contract.Ensures(Contract.Result<IPriorityQueue<int, TValue>>() != null);
+    //  Contract.Requires(factory() != null);
+    //  Contract.Requires(factory().Count == 0);
+    //  Contract.Ensures(Contract.Result<IPriorityQueue<int, TValue>>() != null);
       return new HotPriorityQueue<TValue>(preferenceWidth, initialSize, factory);
     }
   }
@@ -136,26 +136,26 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     public HotPriorityQueue(int preferenceWidth, int initialSize,
         Func<IDictionary<int, IHotPriorityQueueList<int, TValue>>> factory
     ) {
-      Contract.Requires(preferenceWidth >= 0);
-      Contract.Requires(initialSize >= 32);
+    //  Contract.Requires(preferenceWidth >= 0);
+    //  Contract.Requires(initialSize >= 32);
       factory.RequiredNotNull("factory");
-      Contract.Requires(factory() != null);
-      Contract.Requires(factory().Count == 0);
+    //  Contract.Requires(factory() != null);
+    //  Contract.Requires(factory().Count == 0);
 
       PoolSize         = initialSize * 7 / 8;
       _baseIndex       = 0;
       _preferenceWidth = preferenceWidth; 
       _queue           = new MinListHeap<int,TValue>(initialSize);
       _lists           = factory();
-      Contract.Assume(_lists.All(item => item.Value != null));
+    //  Contract.Assume(_lists.All(item => item.Value != null));
     }
 
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-      Contract.Invariant(_queue != null);
-      Contract.Invariant(_lists != null);
-      Contract.Invariant(_lists.All(item => item.Value != null));
+    //  Contract.Invariant(_queue != null);
+    //  Contract.Invariant(_lists != null);
+    //  Contract.Invariant(_lists.All(item => item.Value != null));
     }
 
     /// <summary>Returns whether any elements exist in the heap.</summary>
@@ -212,13 +212,13 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <summary>TODO</summary>
     private IPriorityQueue<int,TValue> GetNextQueue() {
-      Contract.Requires(_lists.Count > 0);
+    //  Contract.Requires(_lists.Count > 0);
       _lists.AssumeInvariant();
-      var list   = _lists.First();        Contract.Assume(list.Value != null);
+      var list   = _lists.First();      //  Contract.Assume(list.Value != null);
 
       _lists.Remove(list.Key);
       _baseIndex = list.Key;
-      Contract.Assume(_lists.All(item => item.Value != null));
+    //  Contract.Assume(_lists.All(item => item.Value != null));
       return new MinListHeap<int,TValue>(list.Value.ToList());
     }
   }

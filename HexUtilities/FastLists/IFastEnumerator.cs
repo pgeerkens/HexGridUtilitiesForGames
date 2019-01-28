@@ -45,7 +45,7 @@ namespace PGNapoleonics.HexUtilities.FastLists {
     private IFastEnumeratorContract() { }
 
     public bool MoveNext(ref TItem item) {
-      Contract.Ensures(!Contract.Result<bool>()  ||  (Contract.ValueAtReturn<TItem>(out item) != null));
+    //  Contract.Ensures(!Contract.Result<bool>()  ||  (Contract.ValueAtReturn<TItem>(out item) != null));
       return default(bool);
     }
   }

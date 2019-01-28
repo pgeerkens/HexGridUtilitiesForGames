@@ -71,7 +71,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
     public abstract HexSize MapSizeHexes  { get; }
     [Pure]
     public T this[HexCoords coords]       { get { 
-      Contract.Ensures( ! MapSizeHexes.IsOnboard(coords)  ||  Contract.Result<T>() != null );
+    //  Contract.Ensures( ! MapSizeHexes.IsOnboard(coords)  ||  Contract.Result<T>() != null );
       return default(T); 
     } }
 

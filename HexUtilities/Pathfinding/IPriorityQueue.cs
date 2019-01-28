@@ -75,22 +75,22 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-      Contract.Invariant(Count >= 0 );
-      Contract.Invariant(Any() == (Count != 0) );
+    //  Contract.Invariant(Count >= 0 );
+    //  Contract.Invariant(Any() == (Count != 0) );
     }
 
     [Pure]abstract public bool Any();
     abstract public int  Count { get; }
 
     public void Enqueue(TPriority priority, TValue value) {
-      Contract.Requires(value != null);
+    //  Contract.Requires(value != null);
     }
     abstract public void Enqueue(HexKeyValuePair<TPriority, TValue> item);
 
     [SuppressMessage("Microsoft.Contracts","CC1069", Justification="Can't see any non-Pure methods here.")]
     public bool TryDequeue(out HexKeyValuePair<TPriority, TValue> result) {
-      Contract.Ensures(!Contract.Result<bool>()
-          ||  (Contract.ValueAtReturn<HexKeyValuePair<TPriority, TValue>>(out result) != null) );
+    //  Contract.Ensures(!Contract.Result<bool>()
+    //      ||  (Contract.ValueAtReturn<HexKeyValuePair<TPriority, TValue>>(out result) != null) );
 
       result = default(HexKeyValuePair<TPriority, TValue>);
       return default(bool);
@@ -99,8 +99,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [Pure]
     [SuppressMessage("Microsoft.Contracts","CC1069", Justification="Can't see any non-Pure methods here.")]
     public bool TryPeek(out HexKeyValuePair<TPriority, TValue> result) {
-      Contract.Ensures(!Contract.Result<bool>()
-          ||  (Contract.ValueAtReturn<HexKeyValuePair<TPriority, TValue>>(out result) != null) );
+    //  Contract.Ensures(!Contract.Result<bool>()
+    //      ||  (Contract.ValueAtReturn<HexKeyValuePair<TPriority, TValue>>(out result) != null) );
 
       result = default(HexKeyValuePair<TPriority, TValue>);
       return default(bool);

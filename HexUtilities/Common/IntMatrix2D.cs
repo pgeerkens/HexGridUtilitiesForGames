@@ -47,7 +47,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     static IntMatrix2D TransposeMatrix = new IntMatrix2D(0,1, 1,0);
     /// <summary>Returns the transpose of the supplied matrix.</summary>
     public static IntMatrix2D Transpose(IntMatrix2D matrix) {
-      Contract.Ensures(Contract.Result<IntMatrix2D>().M33 != 0);
+    //  Contract.Ensures(Contract.Result<IntMatrix2D>().M33 != 0);
       matrix.AssumeInvariant();
       return matrix * TransposeMatrix;
     }
@@ -87,7 +87,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <param name="dy">Y-translate component</param>
     /// <param name="norm">Normalization component</param>
     public IntMatrix2D(int m11, int m12, int m21, int m22, int dx, int dy, int norm) : this() {
-      Contract.Requires(norm != 0);
+    //  Contract.Requires(norm != 0);
       _m11 = m11;  _m12 = m12;
       _m21 = m21;  _m22 = m22;
       _m31 = dx;   _m32 = dy;   _m33 = norm;
@@ -96,7 +96,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-      Contract.Invariant(M33 != 0);
+    //  Contract.Invariant(M33 != 0);
     }
     #endregion
 
@@ -127,10 +127,10 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <param name="m">IntMatrix2D to be applied.</param>
     /// <returns>New IntVector2D resulting from application of vector <c>v</c> to matrix <c>m</c>.</returns>
     [Pure]public static IntVector2D operator * (IntVector2D v, IntMatrix2D m) {
-      Contract.Ensures(Contract.Result<IntVector2D>().W != 0);
+    //  Contract.Ensures(Contract.Result<IntVector2D>().W != 0);
       v.AssumeInvariant();   m.AssumeInvariant();
-      Contract.Assume(v.X * m.M11 + v.Y * m.M21 + m.M31 != int.MinValue);
-      Contract.Assume(v.X * m.M12 + v.Y * m.M22 + m.M32 != int.MinValue);
+    //  Contract.Assume(v.X * m.M11 + v.Y * m.M21 + m.M31 != int.MinValue);
+    //  Contract.Assume(v.X * m.M12 + v.Y * m.M22 + m.M32 != int.MinValue);
       return new IntVector2D (
         v.X * m.M11 + v.Y * m.M21 + m.M31,   v.X * m.M12 + v.Y * m.M22 + m.M32,  v.W * m.M33
       ).Normalize();
@@ -141,10 +141,10 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <returns>New IntVector2D resulting from application of matrix<c>m</c> to vector <c>v</c>.</returns>
     [Obsolete("The standard in PGNapoleonics is to use Contravariant (ie column) vectors.")]
     [Pure]public static IntVector2D operator * (IntMatrix2D m, IntVector2D v) {
-      Contract.Ensures(Contract.Result<IntVector2D>().W != 0);
+    //  Contract.Ensures(Contract.Result<IntVector2D>().W != 0);
       m.AssumeInvariant();  v.AssumeInvariant();
-      Contract.Assume(v.X * m.M11 + v.Y * m.M12 + m.M31 != int.MinValue);
-      Contract.Assume(v.X * m.M21 + v.Y * m.M22 + m.M32 != int.MinValue);
+    //  Contract.Assume(v.X * m.M11 + v.Y * m.M12 + m.M31 != int.MinValue);
+    //  Contract.Assume(v.X * m.M21 + v.Y * m.M22 + m.M32 != int.MinValue);
       return new IntVector2D (
         v.X * m.M11 + v.Y * m.M12 + m.M31,   v.X * m.M21 + v.Y * m.M22 + m.M32,  v.W * m.M33
       ).Normalize();
@@ -154,7 +154,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <param name="m2">Appended transformation.</param>
     /// <returns></returns>
     [Pure]public static IntMatrix2D operator * (IntMatrix2D m1, IntMatrix2D m2) {
-      Contract.Ensures(Contract.Result<IntMatrix2D>().M33 != 0);
+    //  Contract.Ensures(Contract.Result<IntMatrix2D>().M33 != 0);
       m1.AssumeInvariant();  m2.AssumeInvariant();
       return new IntMatrix2D (
         m1.M11*m2.M11 + m1.M12*m2.M21,           m1.M11*m2.M12 + m1.M12*m2.M22,

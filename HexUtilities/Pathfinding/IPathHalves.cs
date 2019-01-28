@@ -49,7 +49,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-      Contract.Invariant(ClosedSet != null);
+    //  Contract.Invariant(ClosedSet != null);
     }
 
     private IPathHalvesContract() {
@@ -58,7 +58,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     public int             BestSoFar { get { return default(int); } }
     public ISet<HexCoords> ClosedSet { get { 
-      Contract.Ensures(Contract.Result<ISet<HexCoords>>() != null);
+    //  Contract.Ensures(Contract.Result<ISet<HexCoords>>() != null);
       return _closedSet; 
     } } ISet<HexCoords> _closedSet;
 

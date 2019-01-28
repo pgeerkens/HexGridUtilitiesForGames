@@ -59,7 +59,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <param name="mapSizeHexes">The hex dimensions of the board.</param>
     /// <param name="userCoords">The User coordinates of the hex of interest.</param>
     [Pure]public static bool IsOnboard(this HexSize mapSizeHexes, IntVector2D userCoords) {
-      Contract.Ensures( mapSizeHexes.IsOnboard(userCoords.X,userCoords.Y) == Contract.Result<bool>() );
+    //  Contract.Ensures( mapSizeHexes.IsOnboard(userCoords.X,userCoords.Y) == Contract.Result<bool>() );
       return mapSizeHexes.IsOnboard(userCoords.X,userCoords.Y);
     }
 
@@ -68,8 +68,8 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <param name="x">The horizontal hex index of the hex of interest.</param>
     /// <param name="y">The vertical hex index of the hex of interest.</param>
     [Pure]public static bool IsOnboard(this HexSize mapSizeHexes, int x, int y) {
-      Contract.Ensures( (x.InRange(0,mapSizeHexes.Width)
-                      && y.InRange(0,mapSizeHexes.Height) ) == Contract.Result<bool>() );
+    //  Contract.Ensures( (x.InRange(0,mapSizeHexes.Width)
+    //                  && y.InRange(0,mapSizeHexes.Height) ) == Contract.Result<bool>() );
       return x.InRange(0, mapSizeHexes.Width)  &&  y.InRange(0, mapSizeHexes.Height);
     }
 
@@ -83,8 +83,8 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// </remarks>
     public static T InitializeDisposable<T>(Func<T> initializer) where T : class, IDisposable {
       initializer.RequiredNotNull("initializer");
-      Contract.Requires(initializer() != null);   //!< **must** be done this way to not double up calls!
-      Contract.Ensures(Contract.Result<T>() != null);
+    //  Contract.Requires(initializer() != null);   //!< **must** be done this way to not double up calls!
+    //  Contract.Ensures(Contract.Result<T>() != null);
 
       T item     = null;
       T tempItem = null;

@@ -44,8 +44,8 @@ namespace PGNapoleonics.HexUtilities.Common {
 
         /// <summary>Construct a new instance at offset (x,y) from the origin.</summary>
         public static IntVector2D New(int x, int y) {
-            Contract.Requires(x != int.MinValue);
-            Contract.Requires(y != int.MinValue);
+          //  Contract.Requires(x != int.MinValue);
+          //  Contract.Requires(y != int.MinValue);
             return new IntVector2D(x, y, 1);
         }
 
@@ -55,9 +55,9 @@ namespace PGNapoleonics.HexUtilities.Common {
         /// <param name="y">The vertical coordinate of the offset for this displacement.</param>
         /// <param name="norm">The 'norm' of this augmented affine vector.</param>
         internal IntVector2D(int x, int y, int norm) : this() {
-            Contract.Requires(x != int.MinValue);
-            Contract.Requires(y != int.MinValue);
-            Contract.Requires(norm != 0);
+          //  Contract.Requires(x != int.MinValue);
+          //  Contract.Requires(y != int.MinValue);
+          //  Contract.Requires(norm != 0);
             X = x;
             Y = y;
             W = norm;
@@ -66,9 +66,9 @@ namespace PGNapoleonics.HexUtilities.Common {
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         private void ObjectInvariant() {
-            Contract.Invariant(X != int.MinValue);
-            Contract.Invariant(Y != int.MinValue);
-            Contract.Invariant(W != 0);
+          //  Contract.Invariant(X != int.MinValue);
+          //  Contract.Invariant(Y != int.MinValue);
+          //  Contract.Invariant(W != 0);
         }
         #endregion
 
@@ -83,8 +83,8 @@ namespace PGNapoleonics.HexUtilities.Common {
 
         /// <summary>Returns a new instance with coordinates normalized using integer arithmetic.</summary>
         [Pure]public IntVector2D Normalize() {
-            Contract.Assume(Contract.Result<IntVector2D>().X != int.MinValue);
-            Contract.Assume(Contract.Result<IntVector2D>().Y != int.MinValue);
+          //  Contract.Assume(Contract.Result<IntVector2D>().X != int.MinValue);
+          //  Contract.Assume(Contract.Result<IntVector2D>().Y != int.MinValue);
             switch (W) {
                 case 1:   return this;
                 case 2:   return New(X / 2, Y / 2);
@@ -92,8 +92,8 @@ namespace PGNapoleonics.HexUtilities.Common {
                 case 8:   return New(X / 8, Y / 8);
 
                     // Wow! All this because integer division wasn't defined to be a field operator.
-                default:  Contract.Assume(Math.Sign(X)*Math.Sign(W)*Math.Abs(X)/Math.Abs(W) != int.MinValue);
-                          Contract.Assume(Math.Sign(Y)*Math.Sign(W)*Math.Abs(Y)/Math.Abs(W) != int.MinValue);
+                default://  Contract.Assume(Math.Sign(X)*Math.Sign(W)*Math.Abs(X)/Math.Abs(W) != int.MinValue);
+                        //  Contract.Assume(Math.Sign(Y)*Math.Sign(W)*Math.Abs(Y)/Math.Abs(W) != int.MinValue);
                           return New(Math.Sign(X)*Math.Sign(W)*Math.Abs(X)/Math.Abs(W),
                                      Math.Sign(Y)*Math.Sign(W)*Math.Abs(Y)/Math.Abs(W));
             }
@@ -102,48 +102,48 @@ namespace PGNapoleonics.HexUtilities.Common {
         #region Scalar operators
         /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
         [Pure]public static IntVector2D operator * (int s, IntVector2D v) {
-            Contract.Assume(v.X * s != int.MinValue);
-            Contract.Assume(v.Y * s != int.MinValue);
+          //  Contract.Assume(v.X * s != int.MinValue);
+          //  Contract.Assume(v.Y * s != int.MinValue);
             return v * s;
         }
         /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
         [Pure]public static IntVector2D operator * (IntVector2D v, int s) {
-            Contract.Assume(v.X * s != int.MinValue);
-            Contract.Assume(v.Y * s != int.MinValue);
+          //  Contract.Assume(v.X * s != int.MinValue);
+          //  Contract.Assume(v.Y * s != int.MinValue);
             return New(v.X*s, v.Y*s);
         }
         /// <summary>Scalar Division into a new IntegerVector2D.</summary>
         [Pure]public static IntVector2D operator / (IntVector2D v, int s) {
-            Contract.Requires(s != 0);
-            Contract.Assume(v.X / s != int.MinValue);
-            Contract.Assume(v.Y / s != int.MinValue);
+          //  Contract.Requires(s != 0);
+          //  Contract.Assume(v.X / s != int.MinValue);
+          //  Contract.Assume(v.Y / s != int.MinValue);
             return DivideInner(v,s);;
         }
         /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
         [Pure]public static IntVector2D Multiply (int s, IntVector2D v) {
-            Contract.Assume(v.X * s != int.MinValue);
-            Contract.Assume(v.Y * s != int.MinValue);
+          //  Contract.Assume(v.X * s != int.MinValue);
+          //  Contract.Assume(v.Y * s != int.MinValue);
             return v * s;
         }
         /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
         [Pure]public static IntVector2D Multiply (IntVector2D v, int s) {
-            Contract.Assume(v.X * s != int.MinValue);
-            Contract.Assume(v.Y * s != int.MinValue);
+          //  Contract.Assume(v.X * s != int.MinValue);
+          //  Contract.Assume(v.Y * s != int.MinValue);
             return v * s;
         }
         /// <summary>Scalar Division into a new IntegerVector2D.</summary>
         [Pure]public static IntVector2D Divide (IntVector2D v, int s)   {
-            Contract.Requires(s != 0);
-            Contract.Assume(v.X / s != int.MinValue);
-            Contract.Assume(v.Y / s != int.MinValue);
+          //  Contract.Requires(s != 0);
+          //  Contract.Assume(v.X / s != int.MinValue);
+          //  Contract.Assume(v.Y / s != int.MinValue);
             return DivideInner(v,s);
         }
 
         [Pure]private static IntVector2D DivideInner(IntVector2D v, int s) {
-            Contract.Requires(s != 0);
+          //  Contract.Requires(s != 0);
             v.AssumeInvariant();
-            Contract.Assume(v.X / s != int.MinValue);
-            Contract.Assume(v.Y / s != int.MinValue);
+          //  Contract.Assume(v.X / s != int.MinValue);
+          //  Contract.Assume(v.Y / s != int.MinValue);
             return New(v.X/s, v.Y/s);
         }
         #endregion
@@ -154,39 +154,39 @@ namespace PGNapoleonics.HexUtilities.Common {
         /// <summary>Z component of the 'Vector'- or Cross-Product of two <code>IntVector2D</code>s</summary>
         /// <returns>A pseudo-scalar (it reverses sign on exchange of its arguments).</returns>
         [Pure]public static int operator ^ (IntVector2D v1, IntVector2D v2) {
-            Contract.Requires(v1.X * v2.Y - v1.Y * v2.X != int.MinValue);
-            Contract.Ensures(Contract.Result<int>() != int.MinValue);
+          //  Contract.Requires(v1.X * v2.Y - v1.Y * v2.X != int.MinValue);
+          //  Contract.Ensures(Contract.Result<int>() != int.MinValue);
             return v1.X*v2.Y - v1.Y*v2.X;
         }
         /// <summary>Vector Addition of two <code>IntVector2D</code> as a new <code>IntVector2D</code>.</summary>
         [Pure]public static IntVector2D operator + (IntVector2D v1, IntVector2D v2) {
-            Contract.Assume(v1.X + v2.X != int.MinValue);
-            Contract.Assume(v1.Y + v2.Y != int.MinValue);
+          //  Contract.Assume(v1.X + v2.X != int.MinValue);
+          //  Contract.Assume(v1.Y + v2.Y != int.MinValue);
             return New(v1.X+v2.X, v1.Y+v2.Y);
         }
         /// <summary>Vector Subtraction of two <code>IntVector2D</code> as a new <code>IntVector2D</code></summary>
         [Pure]public static IntVector2D operator - (IntVector2D v1, IntVector2D v2) {
-            Contract.Assume(v1.X - v2.X != int.MinValue);
-            Contract.Assume(v1.Y - v2.Y != int.MinValue);
+          //  Contract.Assume(v1.X - v2.X != int.MinValue);
+          //  Contract.Assume(v1.Y - v2.Y != int.MinValue);
             return New(v1.X-v2.X, v1.Y-v2.Y);
         }
         /// <summary>Vector Addition of two <code>IntVector2D</code> as a new <code>IntVector2D</code>.</summary>
         [Pure]public static IntVector2D Add  (IntVector2D v1, IntVector2D v2) {
-            Contract.Assume(Contract.Result<IntVector2D>().X != int.MinValue);
-            Contract.Assume(Contract.Result<IntVector2D>().Y != int.MinValue);
+          //  Contract.Assume(Contract.Result<IntVector2D>().X != int.MinValue);
+          //  Contract.Assume(Contract.Result<IntVector2D>().Y != int.MinValue);
             return v1 + v2;
         }
         /// <summary>Vector Subtraction of two <code>IntVector2D</code> as a new <code>IntVector2D</code></summary>
         [Pure]public static IntVector2D Subtract (IntVector2D v1, IntVector2D v2) {
-            Contract.Assume(Contract.Result<IntVector2D>().X != int.MinValue);
-            Contract.Assume(Contract.Result<IntVector2D>().Y != int.MinValue);
+          //  Contract.Assume(Contract.Result<IntVector2D>().X != int.MinValue);
+          //  Contract.Assume(Contract.Result<IntVector2D>().Y != int.MinValue);
             return v1 - v2;
         }
 
         /// <summary>Returns the vector cross-product of v1 and v2.</summary>
         [Pure]public static int CrossProduct (IntVector2D v1, IntVector2D v2) {
-            Contract.Requires(v1.X*v2.Y - v1.Y*v2.X != int.MinValue);
-            Contract.Ensures(Contract.Result<int>() != int.MinValue);
+          //  Contract.Requires(v1.X*v2.Y - v1.Y*v2.X != int.MinValue);
+          //  Contract.Ensures(Contract.Result<int>() != int.MinValue);
             return v1 ^ v2;
         }
         /// <summary>Returns the inner- / scalar / dot-product of v1 and v2.</summary>
@@ -200,14 +200,14 @@ namespace PGNapoleonics.HexUtilities.Common {
         #region Casts
         /// <summary>Returns a new instance initialized from point.</summary>
         [Pure]public static implicit operator IntVector2D (HexPoint point)  {
-            Contract.Assume(point.X != int.MinValue);
-            Contract.Assume(point.Y != int.MinValue);
+          //  Contract.Assume(point.X != int.MinValue);
+          //  Contract.Assume(point.Y != int.MinValue);
             return New(point.X, point.Y);
         }
         /// <summary>Returns a new instance initialized from size.</summary>
         [Pure]public static implicit operator IntVector2D (HexSize size)    { 
-            Contract.Assume(size.Width  != int.MinValue);
-            Contract.Assume(size.Height != int.MinValue);
+          //  Contract.Assume(size.Width  != int.MinValue);
+          //  Contract.Assume(size.Height != int.MinValue);
             return New(size.Width, size.Height);
         }
         /// <summary>Returns a new Point instance initialized from vector.</summary>

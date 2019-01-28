@@ -51,7 +51,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
      // Contract.Invariant(Hex != null);
-      Contract.Invariant(HexsideExit != null);
+    //  Contract.Invariant(HexsideExit != null);
     }
     #endregion
 
@@ -64,7 +64,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <summary>The hexside of the neighbour through which the agent enters from this hex.</summary>
     public Hexside    HexsideEntry { get {
-      Contract.Ensures(Contract.Result<Hexside>() != null);
+    //  Contract.Ensures(Contract.Result<Hexside>() != null);
       return HexsideExit.Reversed;
     } }
 

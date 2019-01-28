@@ -70,16 +70,16 @@ namespace PGNapoleonics.HexUtilities {
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         private void ObjectInvariant() {
-          Contract.Invariant(Coords.User.X >= 0);
-          Contract.Invariant(Coords.User.Y >= 0);
-          Contract.Invariant(ElevationLevel >= 0);
+        //  Contract.Invariant(Coords.User.X >= 0);
+        //  Contract.Invariant(Coords.User.Y >= 0);
+        //  Contract.Invariant(ElevationLevel >= 0);
 
-          Contract.Invariant(Enumerable.Range(0,int.MaxValue).All(i => Coords.User.Y/i >= 0) );
+        //  Contract.Invariant(Enumerable.Range(0,int.MaxValue).All(i => Coords.User.Y/i >= 0) );
         }
 
         [Pure]
         public short? TryStepCost(Hexside hexsideExit) {
-          Contract.Ensures(Contract.Result<Maybe<short>>().ValueContract(s => s > 0));
+        //  Contract.Ensures(Contract.Result<Maybe<short>>().ValueContract(s => s > 0));
           return default(short?);
         }
 

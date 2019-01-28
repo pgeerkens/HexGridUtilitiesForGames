@@ -41,8 +41,8 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
 
     public ArrayFieldOfView(IFovBoard board) {
       board.RequiredNotNull("board");
-      Contract.Requires(board.MapSizeHexes.Width >= 0);
-      Contract.Ensures(_fovBacking.All(item => item != null));
+    //  Contract.Requires(board.MapSizeHexes.Width >= 0);
+    //  Contract.Ensures(_fovBacking.All(item => item != null));
 
       board.AssumeInvariant();
       _mapSizeHexes = board.MapSizeHexes;
@@ -54,7 +54,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
     [ContractInvariantMethod] [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     private void ObjectInvariant() {
-      Contract.Invariant(_fovBacking.All(item => item != null));
+    //  Contract.Invariant(_fovBacking.All(item => item != null));
     }
 
     public bool this[HexCoords coords] {
