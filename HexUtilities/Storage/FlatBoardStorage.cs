@@ -34,64 +34,59 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.FastLists;
 
 namespace PGNapoleonics.HexUtilities.Storage {
-  using HexSize     = System.Drawing.Size;
+    using HexSize     = System.Drawing.Size;
 
-  /// <summary>A row-major <c>BoardStorage</c> implementation optimized for small maps, 
-  /// providing both serial and parallel initialization.</summary>
-  public sealed class FlatBoardStorage<T> : BoardStorage<T> {
-    /// <summary>Construct a new instance of extent <paramref name="sizeHexes"/> and 
-    /// initialized using <paramref name="factory"/>.</summary>
-    /// <param name="sizeHexes"><c>Size</c> structure speccifying the Width and Height of 
-    /// the desired board storage.</param>
-    /// <param name="factory"></param>
-    /// <param name="inParallel">Boolean indicating how the board should be initialized: 
-    /// in parallel or serially.</param>
-    public FlatBoardStorage(HexSize sizeHexes, Func<HexCoords,T> factory, bool inParallel) 
-    : base (sizeHexes) {
-      var rowRange = inParallel ? ParallelEnumerable.Range(0,sizeHexes.Height).AsOrdered()
-                                : Enumerable.Range(0,sizeHexes.Height);
-      _backingStore = InitializeStoreX(sizeHexes, factory, rowRange);
-    }
-    private static IFastList<IFastListX<T>> InitializeStoreX(HexSize sizeHexes, Func<HexCoords, T> tFactory, IEnumerable<int> rowRange) {
-      return ( from y in rowRange
-               select ( from x in Enumerable.Range(0, sizeHexes.Width)
-                        select tFactory(HexCoords.NewUserCoords(x,y))
-                      ).ToArray().ToFastListX()
-             ).ToArray().ToFastList();
-    }
+    /// <summary>A row-major <c>BoardStorage</c> implementation optimized for small maps, 
+    /// providing both serial and parallel initialization.</summary>
+    public sealed class FlatBoardStorage<T> : BoardStorage<T> {
+        /// <summary>Construct a new instance of extent <paramref name="sizeHexes"/> and 
+        /// initialized using <paramref name="factory"/>.</summary>
+        /// <param name="sizeHexes"><c>Size</c> structure speccifying the Width and Height of 
+        /// the desired board storage.</param>
+        /// <param name="factory"></param>
+        /// <param name="inParallel">Boolean indicating how the board should be initialized: 
+        /// in parallel or serially.</param>
+        public FlatBoardStorage(HexSize sizeHexes, Func<HexCoords,T> factory, bool inParallel) 
+        : base (sizeHexes) {
+          var rowRange = inParallel ? ParallelEnumerable.Range(0,sizeHexes.Height).AsOrdered()
+                                    : Enumerable.Range(0,sizeHexes.Height);
+          BackingStore = InitializeStoreX(sizeHexes, factory, rowRange);
+        }
+        private static IFastList<IFastListX<T>> InitializeStoreX(HexSize sizeHexes, Func<HexCoords, T> tFactory, IEnumerable<int> rowRange) {
+          return ( from y in rowRange
+                   select ( from x in Enumerable.Range(0, sizeHexes.Width)
+                            select tFactory(HexCoords.NewUserCoords(x,y))
+                          ).ToArray().ToFastListX()
+                 ).ToArray().ToFastList();
+        }
 
-    /// <inheritdoc/>>
-    protected override T ItemInner(int x, int y) {
-      return BackingStore[y][x] ;
-    }
+        /// <inheritdoc/>>
+        protected override T ItemInner(int x, int y) => BackingStore[y][x];
 
-    /// <inheritdoc/>>
-    public override void ForEach(Action<T> action) {
-      BackingStore.AsParallel().WithMergeOptions(ParallelMergeOptions.FullyBuffered)
-                  .ForAll(row => row.ForEach(action));
-    }
-    /// <inheritdoc/>>
-    public override void ForEach(FastIteratorFunctor<T> functor) {
-      BackingStore.AsParallel().WithMergeOptions(ParallelMergeOptions.FullyBuffered)
-                  .ForAll(row => row.ForEach(functor));
-    }
+        /// <inheritdoc/>>
+        public override void ForEach(Action<T> action)
+        =>  BackingStore.AsParallel().WithMergeOptions(ParallelMergeOptions.FullyBuffered)
+                        .ForAll(row => row.ForEach(action));
+        
+        /// <inheritdoc/>>
+        public override void ForEach(FastIteratorFunctor<T> functor) 
+        =>  BackingStore.AsParallel().WithMergeOptions(ParallelMergeOptions.FullyBuffered)
+                        .ForAll(row => row.ForEach(functor));
 
-    /// <inheritdoc/>>
-    public override void ForEachSerial(Action<T> action) {
-      BackingStore.ForEach(row => row.ForEach(action));
-    }
-    /// <inheritdoc/>>
-    public override void ForEachSerial(FastIteratorFunctor<T> functor) {
-      BackingStore.ForEach(row => row.ForEach(functor));
-    }
+        /// <inheritdoc/>>
+        public override void ForEachSerial(Action<T> action)
+        =>  BackingStore.ForEach(row => row.ForEach(action));
+       
+        /// <inheritdoc/>>
+        public override void ForEachSerial(FastIteratorFunctor<T> functor)
+        =>  BackingStore.ForEach(row => row.ForEach(functor));
 
-    /// <summary>TODO</summary>
-    /// <remarks>Use carefully - can interfere with iterators.</remarks>
-    internal override void SetItem(HexCoords coords, T value) {
-      var v = coords.User;
-      BackingStore [v.Y].SetItem(v.X, value);
+        /// <summary>TODO</summary>
+        /// <remarks>Use carefully - can interfere with iterators.</remarks>
+        internal override void SetItem(HexCoords coords, T value) 
+        //=>  BackingStore[coords.User.Y].SetItem(coords.User.X, value);
+        =>  BackingStore[coords.User.Y].SetItem(coords.User.X, value);
+        
+        private IFastList<IFastListX<T>> BackingStore { get; }
     }
-    private IFastList<IFastListX<T>> BackingStore { get { return _backingStore; } }
-    private readonly IFastList<IFastListX<T>> _backingStore;
-  }
 }

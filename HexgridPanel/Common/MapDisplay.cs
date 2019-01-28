@@ -52,10 +52,26 @@ namespace PGNapoleonics.HexgridPanel {
     using Int32ValueEventArgs = ValueEventArgs<int>;
     using IDirectedPath       = IDirectedPathCollection;
 
+    public abstract class MapDisplayFlat<THex>:MapDisplay<THex>
+    where THex : MapGridHex {
+        /// <summary>Creates a new instance of the MapDisplay class.</summary>
+        protected MapDisplayFlat(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex)
+        : base(sizeHexes, gridSize, initializeHex, DefaultLandmarks(sizeHexes),
+              new FlatBoardStorage<Maybe<THex>>(sizeHexes, coords => initializeHex(coords), false)) { }
+    }
+
+    public abstract class MapDisplayBlocked<THex> : MapDisplay<THex>
+    where THex : MapGridHex {
+        /// <summary>Creates a new instance of the MapDisplay class.</summary>
+        protected MapDisplayBlocked(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex)
+        : base(sizeHexes, gridSize, initializeHex, DefaultLandmarks(sizeHexes),
+              BlockedBoardStorage.New32x32<Maybe<THex>>(sizeHexes, coords => initializeHex(coords))) { }
+    }
+
     /// <summary>Abstract class representing the basic game board.</summary>
     /// <typeparam name="THex">Type of the hex for which a game board is desired.</typeparam>
     public abstract class MapDisplay<THex> : HexBoard<THex,GraphicsPath>, IMapDisplayWinForms
-        where THex : MapGridHex {
+    where THex : MapGridHex {
 
         /// <summary>TODO</summary>
         protected delegate THex InitializeHex(HexCoords coords);
@@ -69,40 +85,20 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Returns an array of six <see cref="HexPoint"/>s describing the corners of a hex on this <see cref="HexBoard{THex,TPath}"/>.</summary>
         /// <param name="gridSize">Dimensions of a hex on this <see cref="HexBoard{THex,TPath}"/> in pixels.</param>
         private static HexPoint[] HexgridPathPoints(HexSize gridSize)
-        => new HexPoint[] { new HexPoint(gridSize.Width*1/3,              0  ),
-                            new HexPoint(gridSize.Width*3/3,              0  ),
-                            new HexPoint(gridSize.Width*4/3,gridSize.Height/2),
-                            new HexPoint(gridSize.Width*3/3,gridSize.Height  ),
-                            new HexPoint(gridSize.Width*1/3,gridSize.Height  ),
-                            new HexPoint(             0,    gridSize.Height/2)
+        => new HexPoint[] { new HexPoint(gridSize.Width*1/3,               0  ),
+                            new HexPoint(gridSize.Width*3/3,               0  ),
+                            new HexPoint(gridSize.Width*4/3, gridSize.Height/2),
+                            new HexPoint(gridSize.Width*3/3, gridSize.Height  ),
+                            new HexPoint(gridSize.Width*1/3, gridSize.Height  ),
+                            new HexPoint(             0,     gridSize.Height/2)
                           };
 
-        #region Constructors
         /// <summary>Creates a new instance of the MapDisplay class.</summary>
-        protected MapDisplay(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex)
-        : this(sizeHexes, gridSize, initializeHex, DefaultLandmarks(sizeHexes)) { }
-
-        /// <summary>Creates a new instance of the MapDisplay class.</summary>
-        private MapDisplay(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex, IFastList<HexCoords> landmarkCoords)
-        : this(sizeHexes, gridSize, initializeHex, landmarkCoords,
-        #if FlatBoardStorage
-              new FlatBoardStorage<THex>(sizeHexes, coords => initializeHex(board,coords)) ) {}
-        #else
-              BlockedBoardStorage.New32x32<Maybe<THex>>(sizeHexes, coords => initializeHex(coords)) ) {}
-        #endif
-
-        /// <summary>Creates a new instance of the MapDisplay class.</summary>
-        private MapDisplay(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex,
+        protected MapDisplay(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex,
                 IFastList<HexCoords> landmarkCoords, BoardStorage<Maybe<THex>> storage)
         : base(sizeHexes, gridSize, storage) {
             ResetLandmarksAsync(landmarkCoords);
 
-            InitializeProperties();
-            HexgridPath = Extensions.InitializeDisposable(() =>
-                    new GraphicsPath(HexgridPathPoints(gridSize), _hexgridPathPointTypes));
-        }
-
-        void InitializeProperties() {
             GoalHex         =
             HotspotHex      =
             StartHex        = HexCoords.EmptyUser;
@@ -112,8 +108,9 @@ namespace PGNapoleonics.HexgridPanel {
             ShowHexgrid     = true;
             ShowPath        = true;
             ShowPathArrow   = true;
+            HexgridPath     = Extensions.InitializeDisposable(() =>
+                     new GraphicsPath(HexgridPathPoints(gridSize), _hexgridPathPointTypes));
         }
-        #endregion
 
         #region Properties
         /// <summary>Gets or sets the Field-of-View for the current <see cref="HotspotHex"/>, as an <see cref="IFov"/> object.</summary>
@@ -215,7 +212,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Returns pixel coordinates of centre of specified hex.</summary>
         /// <param name="coords"></param>
         /// <returns>A Point structure containing pixel coordinates for the (centre of the) specified hex.</returns>
-        public HexPoint CentreOfHex(HexCoords coords) => UpperLeftOfHex(coords) + CentreOfHexOffset;
+        public HexPoint CentreOfHex(HexCoords coords) => UpperLeftOfHex(coords) + HexCentreOffset;
         #endregion
 
         /// <inheritdoc/>

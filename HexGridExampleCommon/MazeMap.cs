@@ -38,7 +38,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
 
     /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexgridPanel"/> to implement
     /// a maze map.</summary>
-    public sealed class MazeMap : MapDisplay<MapGridHex> {
+    public sealed class MazeMap : MapDisplayBlocked<MapGridHex> {
         /// <summary>TODO</summary>
         public MazeMap() : base(_sizeHexes, new Size(26,30), InitializeHex) {}
 

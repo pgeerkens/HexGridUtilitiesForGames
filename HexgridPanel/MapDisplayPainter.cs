@@ -117,7 +117,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <param name="paintAction">Type: Action {HexCoords} - 
         /// The paint action to be performed for each hex.</param>
         public static void PaintForEachHex<THex>(this MapDisplay<THex> @this, Graphics graphics, 
-                            CoordsRectangle clipHexes, Action<HexCoords> paintAction) 
+                                    CoordsRectangle clipHexes, Action<HexCoords> paintAction) 
         where THex : MapGridHex
         =>  @this.ForEachHex(maybe => {
                 maybe.IfHasValueDo(hex => {
@@ -163,7 +163,7 @@ namespace PGNapoleonics.HexgridPanel {
             if (graphics==null) throw new ArgumentNullException("graphics");
             if (path==null) throw new ArgumentNullException("path");
 
-            graphics.TranslateTransform(@this.CentreOfHexOffset.Width, @this.CentreOfHexOffset.Height);
+            graphics.TranslateTransform(@this.HexCentreOffset.Width, @this.HexCentreOffset.Height);
             if (path.PathSoFar == null) @this.PaintPathDestination(graphics);
             else                        @this.PaintPathArrow(graphics, path.PathStep.HexsideExit);
         }
@@ -204,6 +204,7 @@ namespace PGNapoleonics.HexgridPanel {
         public static void PaintUnits<THex>(this MapDisplay<THex> @this, Graphics graphics) where THex : MapGridHex {
             if (@this    == null) throw new ArgumentNullException("this");
             if (graphics == null) throw new ArgumentNullException("graphics");
+
             /* NO-OP - Not implemented in examples. */
         }
     }

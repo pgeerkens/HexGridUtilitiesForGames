@@ -39,7 +39,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
     using MapGridHex      = Hex<Graphics,GraphicsPath>;
 
     /// <summary>TODO</summary>
-    public sealed class AStarBugMap : MapDisplay<MapGridHex> {
+    public sealed class AStarBugMap : MapDisplayBlocked<MapGridHex> {
          /// <summary>TODO</summary>
          public AStarBugMap() : base(_sizeHexes, new Size(26,30), TerrainMap.InitializeHex) { }
 

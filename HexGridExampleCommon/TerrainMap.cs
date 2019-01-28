@@ -46,7 +46,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
 
     /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexgridPanel"/> to implement
     /// a terrain map.</summary>
-    public sealed class TerrainMap : MapDisplay<MapGridHex> {
+    public sealed class TerrainMap : MapDisplayBlocked<MapGridHex> {
         /// <summary>TODO</summary>
         public TerrainMap() : base(_sizeHexes, new HexSize(26,30), InitializeHex) {}
 

@@ -362,7 +362,7 @@ namespace PGNapoleonics.HexgridScrollableExample {
         void RefreshAfter(Action action) { action?.Invoke(); View.Refresh(); }
     }
 
-    public abstract class MapModel : MapDisplay<MapGridHex> {
+    public abstract class MapModel : MapDisplayBlocked<MapGridHex> {
         protected MapModel( HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex, IMapViewModel viewModel)
         : base(sizeHexes, gridSize, initializeHex){
             ViewModel = ViewModel;

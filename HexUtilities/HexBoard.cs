@@ -38,12 +38,13 @@ using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexUtilities {
-    using HexPoint   = System.Drawing.Point;
-    using HexSize    = System.Drawing.Size;
-    using RectangleF = System.Drawing.RectangleF;
+    using HexPoint     = System.Drawing.Point;
+    using HexSize      = System.Drawing.Size;
+    using RectangleF   = System.Drawing.RectangleF;
 
-    using ILandmarks  = ILandmarkCollection;
-    using CoordsRect  = CoordsRectangle;
+    using ILandmarks   = ILandmarkCollection;
+    using CoordsRect   = CoordsRectangle;
+    using BoardStorage = IBoardStorage<Maybe<HexsideCosts>>;
 
     /// <summary>Abstract implementation of a hexgrid map-board.</summary>
     /// <typeparam name="THex">TODO</typeparam>
@@ -78,11 +79,15 @@ namespace PGNapoleonics.HexUtilities {
         /// <param name="boardHexes">TODO</param>
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         protected HexBoard(HexSize sizeHexes, HexSize gridSize, BoardStorage<Maybe<THex>> boardHexes) {
-            MapScale     = 1.00F;
-            IsTransposed = false;
-            MapSizeHexes = sizeHexes;
-            GridSize     = gridSize;
-            BoardHexes   = boardHexes;
+            BoardHexes      = boardHexes;
+            MapScale        = 1.00F;
+            IsTransposed    = false;
+            MapSizeHexes    = sizeHexes;
+            GridSize        = gridSize;
+            HexCentreOffset = new HexSize(GridSize.Width * 2/3, GridSize.Height /2);
+            GridSizePixels  = new IntMatrix2D(GridSize.Width,                0, 
+                                                           0,   GridSize.Height, 
+                                            GridSize.Width/3, GridSize.Height/2);
 
             EntryCosts = new BlockedBoardStorage32x32<Maybe<HexsideCosts>>(sizeHexes, 
                                     hexCoords => HexsideCosts.EntryCosts(boardHexes,hexCoords), 1);
@@ -93,9 +98,9 @@ namespace PGNapoleonics.HexUtilities {
         /// <summary>TODO</summary>
         /// <param name="landmarkCoords"><see cref="IFastList{HexCoords}"/> of the hexes to be used as Path-Finding landmarks.</param>
         /// <returns></returns>
-        protected async   Task<bool> ResetLandmarksAsync(IFastList<HexCoords> landmarkCoords) {
-            return await Task.Run(() => ResetLandmarks(landmarkCoords));
-        }
+        protected async   Task<bool> ResetLandmarksAsync(IFastList<HexCoords> landmarkCoords)
+        => await Task.Run(() => ResetLandmarks(landmarkCoords));
+
         /// <summary>TODO</summary>
         /// <param name="landmarkCoords"><see cref="IFastList{HexCoords}"/> of the hexes to be used as Path-Finding landmarks.</param>
         /// <returns></returns>
@@ -110,64 +115,71 @@ namespace PGNapoleonics.HexUtilities {
         #endregion
 
         #region Properties & Fields
-        /// <summary>Offset of hex centre from upper-left corner, as a <see cref="HexSize"/> struct.</summary>
-        public             HexSize    CentreOfHexOffset => new HexSize(GridSize.Width * 2/3, GridSize.Height /2);
+        /// <summary>TODO</summary>
+        protected  BoardStorage<Maybe<THex>> BoardHexes { get; }
         /// <summary>TODO </summary>
-        protected abstract int        ElevationBase     { get; } //!< Height in units of elevation level 0 (zero).
+        protected abstract int         ElevationBase   { get; } //!< Height in units of elevation level 0 (zero).
         /// <summary>TODO </summary>
-        protected abstract int        ElevationStep     { get; } //!< Height increase in units of each elevation level.
+        protected abstract int         ElevationStep   { get; } //!< Height increase in units of each elevation level.
         /// <inheritdoc/>
-        public    virtual  int        FovRadius         { get; set; }
+        public    virtual  int         FovRadius       { get; set; }
         /// <summary>TODO </summary>
-        public    virtual  int        HeightOfMan       => 1;   //!< Height in metres.
+        public    virtual  int         HeightOfMan     => 1;   //!< Height in metres.
         /// <inheritdoc/>
-        public             IHexgrid   Hexgrid           => TransposableHexgrid.GetNewGrid(IsTransposed,GridSize,MapScale);
+        public             IHexgrid    Hexgrid         => TransposableHexgrid.GetNewGrid(IsTransposed,GridSize,MapScale);
         /// <summary>Gets the extent in pixels of the grid on which hexes are to be laid out. </summary>
-        public             HexSize    GridSize          { get; }
+        public             HexSize     GridSize        { get; }
+        private            IntMatrix2D GridSizePixels  { get; }
+        /// <summary>Offset of hex centre from upper-left corner, as a <see cref="HexSize"/> struct.</summary>
+        public             HexSize     HexCentreOffset { get; }
          ///  <inheritdoc/>
-        public             bool       IsTransposed      { get; set; }
+        public             bool        IsTransposed    { get; set; }
         /// <inheritdoc/>
-        public             ILandmarks Landmarks         { get; private set; }
+        public             ILandmarks  Landmarks       { get; private set; }
         ///  <inheritdoc/>
-        public             float      MapScale          { get; set; }
+        public             float       MapScale        { get; set; }
         /// <summary>The dimensions of the board as a <see cref="System.Drawing.Size"/></summary>
-        public             HexSize    MapSizeHexes      { get; }
+        public             HexSize     MapSizeHexes    { get; }
         ///  <inheritdoc/>
-        public             HexSize    MapSizePixels => MapSizeHexes
-                                                     * new IntMatrix2D(GridSize.Width,                0, 
-                                                                                    0,   GridSize.Height, 
-                                                                     GridSize.Width/3, GridSize.Height/2);
+        public             HexSize     MapSizePixels   => MapSizeHexes * GridSizePixels;
         
         /// <summary>Range beyond which Fast PathFinding is used instead of Stable PathFinding.</summary>
-        public             int        RangeCutoff       { get; set; }
+        public             int         RangeCutoff     { get; set; }
+
+        /// <summary>TODO</summary>
+        protected virtual  int         MinimumStepCost => 2;
+        /// <summary>TODO</summary>
+        protected BoardStorage EntryCosts { get; }
+        /// <summary>TODO</summary>
+        protected BoardStorage ExitCosts  { get; }
+
         /// <summary>Returns the <c>IHex</c> at location <c>coords</c>.</summary>
         [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
         public             Maybe<THex> this[HexCoords coords] => BoardHexes[coords];
 
         Maybe<IHex> IFovBoard.this[HexCoords coords] => this[coords].Bind(v => new Maybe<IHex>(v));
-        /// <summary>TODO</summary>
-        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        protected  BoardStorage<Maybe<THex>> BoardHexes { get; }
         #endregion
 
         #region Methods
+        private readonly Func<int> MaxValue32 = () => int.MaxValue;
+
         private int  ElevationASL(IHex hex)
         => ElevationBase + hex.ElevationLevel * ElevationStep;
         /// <inheritdoc/>
         public  int  ElevationGroundASL(HexCoords coords)
-        => this[coords].Match(hex => ElevationASL(hex), () => int.MaxValue);
+        => this[coords].Match(hex => ElevationASL(hex), MaxValue32);
         /// <inheritdoc/>
         public  int  ElevationHexsideASL(HexCoords coords, Hexside hexside)
-        => this[coords].Match(hex => ElevationASL(hex) + hex.HeightHexside(hexside), () => int.MaxValue);
+        => this[coords].Match(hex => ElevationASL(hex) + hex.HeightHexside(hexside), MaxValue32);
         /// <inheritdoc/>
         public  int  ElevationTargetASL(HexCoords coords)
-        => this[coords].Match(hex => ElevationASL(hex) + HeightOfMan, () => int.MaxValue);
+        => this[coords].Match(hex => ElevationASL(hex) + HeightOfMan, MaxValue32);
         /// <inheritdoc/>
         public  int  ElevationObserverASL(HexCoords coords)
-        => this[coords].Match(hex => ElevationASL(hex) + HeightOfMan, () => int.MaxValue);
+        => this[coords].Match(hex => ElevationASL(hex) + HeightOfMan, MaxValue32);
         /// <inheritdoc/>
         public  int  ElevationTerrainASL(HexCoords coords)
-        => this[coords].Match(hex => ElevationASL(hex) + hex.HeightTerrain, () => int.MaxValue);
+        => this[coords].Match(hex => ElevationASL(hex) + hex.HeightTerrain, MaxValue32);
 
         /// <summary>Perform <paramref name="action"/> for all neighbours of <paramref name="coords"/>.</summary>
         /// <param name="coords"></param>
@@ -181,7 +193,6 @@ namespace PGNapoleonics.HexUtilities {
 
         /// <summary>TODO</summary>
         /// <param name="action"></param>
-        //[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public  void ForEachHex(Action<Maybe<THex>> action) => BoardHexes.ForEachSerial(action);
 
         /// <summary>Returns the location and extent in hexes, as a <see cref="CoordsRect"/>, of the current clipping region.</summary>
@@ -200,9 +211,8 @@ namespace PGNapoleonics.HexUtilities {
         public virtual   bool   IsOverseeable(HexCoords coords) => MapSizeHexes.IsOnboard(coords);
 
         /// <inheritdoc/>
-        public           Maybe<THex> Neighbour(HexCoords coords, Hexside hexside) =>
-            BoardHexes.Neighbour(coords,hexside);
-        #endregion
+        public           Maybe<THex> Neighbour(HexCoords coords, Hexside hexside)
+        =>  BoardHexes.Neighbour(coords,hexside);
 
         /// <summary>TODO</summary>
         public short? TryExitCost(HexCoords hexCoords, Hexside hexside)
@@ -211,16 +221,9 @@ namespace PGNapoleonics.HexUtilities {
         /// <summary>TODO</summary>
         public short? TryEntryCost(HexCoords hexCoords, Hexside hexside)
         => (from x in EntryCosts[hexCoords] from c in x[hexside].ToMaybe() select c).ToNullable();
+        #endregion
 
-        /// <summary>TODO</summary>
-        protected IBoardStorage<Maybe<HexsideCosts>> EntryCosts { get; }
-        /// <summary>TODO</summary>
-        protected IBoardStorage<Maybe<HexsideCosts>> ExitCosts  { get; }
-
-        /// <summary>TODO</summary>
-        protected virtual int MinimumStepCost => 2;
-
-        #region IDisposable implementation (w/o Finalizer as the class possesses no unmanaged resources.)
+        #region IDisposable implementation (w/ Finalizer as the class possesses unmanaged resources.)
         /// <summary>Clean up any resources being used, and suppress finalization.</summary>
         public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
 

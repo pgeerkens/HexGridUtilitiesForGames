@@ -36,7 +36,7 @@ namespace PGNapoleonics.HexgridPanel {
     using MapGridHex = Hex<Graphics,GraphicsPath>;
 
     /// <summary>TODO</summary>
-    public sealed class EmptyBoard : MapDisplay<MapGridHex> {
+    public sealed class EmptyBoard : MapDisplayBlocked<MapGridHex> {
         public static EmptyBoard TheOne { get; } = new EmptyBoard();
 
         /// <summary>TODO</summary>
