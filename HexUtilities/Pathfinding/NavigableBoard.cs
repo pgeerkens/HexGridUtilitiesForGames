@@ -33,29 +33,6 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
-    using HexSize = System.Drawing.Size;
-
-    /// <summary>Interface required to make use of A* Path Finding utility.</summary>
-    //[ContractClass(typeof(INavigableBoardContract))]
-    public interface INavigableBoard {
-        /// <summary>The rectangular extent of the board's hexagonal grid, in hexes.</summary>
-        HexSize MapSizeHexes           { get; }
-
-        /// <summary>Returns an A* heuristic value from the supplied hexagonal Manhattan distance <c>range</c>.</summary>
-        /// <remarks>
-        /// Returning the supplied range multiplied by the cheapest movement cost for a single hex
-        /// is usually suffficient. Note that <c>heuristic</c> <b>must</b> be monotonic in order 
-        /// for the algorithm to perform properly and reliably return an optimum path.
-        /// </remarks>
-        short?  Heuristic(HexCoords source, HexCoords target);
-
-        /// <summary>TODO</summary>
-        short? TryExitCost(HexCoords hexCoords, Hexside hexside);
-        /// <summary>TODO</summary>
-        short? TryEntryCost(HexCoords hexCoords, Hexside hexside);
-    }
-}
-namespace PGNapoleonics.HexUtilities.Pathfinding {
     using HexSize   = System.Drawing.Size;
     using StepCosts = IBoardStorage<Maybe<HexsideCosts>>;
 

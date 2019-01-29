@@ -34,7 +34,6 @@ using PGNapoleonics.HexUtilities.Common;
 namespace PGNapoleonics.HexUtilities.Pathfinding {
     using DirectedPath   = DirectedPathCollection;
     using IDirectedPath  = IDirectedPathCollection;
-    using IPriorityQueue = IPriorityQueue<int,IDirectedPathCollection>;
     using Heuristic      = Func<HexCoords,HexCoords,short?>;
 
     /// <summary>(Adapted) C# implementation of A* path-finding algorithm by Eric Lippert.</summary>
@@ -61,89 +60,52 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// behaviour on a hexgrid.
     /// </para><para>
     /// See also: <a href="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html">Notes - A-star Algorithm</a>
-    /// <seealso cref="PGNapoleonics.HexUtilities.Pathfinding.LandmarkPathfinder"/>
+    /// <seealso cref="PGNapoleonics.HexUtilities.Pathfinding.BidirectionalAltPathfinder"/>
     /// </para>
     /// </remarks>
-    /// <see cref="LandmarkPathfinder"/>
-    public sealed class StandardPathfinder : Pathfinder {
-        /// <summary>Returns an <c>IDirectedPath</c> for the optimal path from coordinates <c>start</c> to <c>goal</c>.</summary>
+    /// <see cref="BidirectionalAltPathfinder"/>
+    public sealed class StandardPathfinder : IPathfinder {
+        /// <summary>Creates a new <see cref="IPathfinder"/> instance implementing a unidirectional A*.</summary>
         /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
-        /// <param name="source">Coordinates for the <c>first</c> step on the desired path.</param>
-        /// <param name="target">Coordinates for the <c>last</c> step on the desired path.</param>
-        /// <returns>A <c>IDirectedPathCollection</c>  for the shortest path found, or null if no path was found.</returns>
         /// <remarks>
-        /// <para>Note that the Heuristic provided by <paramref name="board"/> <b>must</b> be monotonic in order for the algorithm to perform properly.</para>
-        /// <seealso cref="PGNapoleonics.HexUtilities.Pathfinding.StandardPathfinder"/>
+        /// <para>Note that the Heuristic provided by <paramref name="board"/> <b>must</b> be monotonic 
+        /// in order for the algorithm to perform properly.</para>
         /// </remarks>
-        public static IDirectedPath FindDirectedPathFwd(INavigableBoard board, HexCoords source, HexCoords target) {
-          return (new StandardPathfinder(board,source,target)).PathForward;
-        }
-        /// <summary>TODO</summary>
-        /// <param name="board"></param>
-        /// <param name="source"></param>
-        /// <param name="target"></param>
-        /// <returns><see cref="StandardPathfinder"/>.</returns>
-        public static StandardPathfinder New(INavigableBoard board, HexCoords source, HexCoords target) {
-          return new StandardPathfinder(board,source,target);
-        }
+        public StandardPathfinder(INavigableBoard board) => Board = board;
 
-        /// <summary>Creates a new <see cref="Pathfinder"/> instance implementing a unidirectional A* from 
-        /// <paramref name="source"/> to <paramref name="target"/>.</summary>
-        /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
-        /// <param name="source">Coordinates for the <c>first</c> step on the desired path.</param>
-        /// <param name="target">Coordinates for the <c>last</c> step on the desired path.</param>
-        internal StandardPathfinder(INavigableBoard board, HexCoords source, HexCoords target) 
-        : base(source,target,new HashSet<HexCoords>()
-        ) {
-            _heuristic       = board.Heuristic;
-            _openSet         = new HashSet<HexCoords>();
-            _queue           = new DictionaryPriorityQueue<int, IDirectedPath>();
-            _tryDirectedCost = board.TryExitCost;
-            _vectorGoal      = Target.Canon - Source.Canon;
+        private INavigableBoard Board { get; }
 
-            PathForward      = GetPath();
-
-            TraceFindPathDone(ClosedSet.Count);
-        }
-    
-        private int? Estimate(HexCoords start, HexCoords hex, int totalCost)
-        => from heuristic in _heuristic(start,hex)
-           select ((heuristic + totalCost) << 16)
-                + Preference(_vectorGoal, start.Canon - hex.Canon);
-    
-        static int Preference(IntVector2D vectorGoal, IntVector2D vectorHex)
-        => (0xFFFF & Math.Abs(vectorGoal ^ vectorHex));
-
-        private IDirectedPath GetPath() {
-            TraceFindPathDetailInit(Source, Target);
+        /// <inheritdoc/>
+        public Maybe<IDirectedPath> GetPath(HexCoords source, HexCoords target) {
+            PathfinderExtensions.TraceFindPathDetailInit(source, target);
 
             // Minimize field references by putting these on the stack now
-            var openSet         = _openSet;
-            var queue           = _queue;
-            var tryDirectedCost = _tryDirectedCost;
+            var vectorGoal   = target.Canon - source.Canon;
+            var openSet      = new HashSet<HexCoords>();
+            var closedSet    = new HashSet<HexCoords>();
+            var queue        = new DictionaryPriorityQueue<int, IDirectedPath>();;
 
-            queue.Enqueue (0, new DirectedPath(Target));
+            queue.Enqueue (0, new DirectedPath(target));
 
             while (queue.TryDequeue(out var item)) {
                 var path = item.Value;
                 var step = path.PathStep.Coords;
 
                 openSet.Add(step);
-                if (ClosedSet.Contains(step)) continue;
+                if (closedSet.Contains(step)) continue;
 
-                TraceFindPathDequeue("Rev",step, path.TotalCost, path.HexsideExit,
-                                     item.Key>>16,  (int)(item.Key & 0xFFFFu) - 0x7FFF);
+                PathfinderExtensions.TraceFindPathDequeue("Rev",step, path, item.Key>>16, (int)(item.Key & 0xFFFFu) - 0x7FFF);
 
-                if(step == Source)     return path;
+                if(step == source)     return path.ToMaybe();
 
-                ClosedSet.Add(step);
+                closedSet.Add(step);
 
                 Hexside.HexsideList.ForEach(hexside => {
                     var neighbourCoords = step.GetNeighbour(hexside);
-                    tryDirectedCost(step, hexside).IfHasValueDo( cost => {
+                    TryDirectedCost(step, hexside).IfHasValueDo( cost => {
                         var newPath = path.AddStep(neighbourCoords, hexside, cost);
-                        Estimate(Source, neighbourCoords, newPath.TotalCost).IfHasValueDo(key => {
-                            TraceFindPathEnqueue(neighbourCoords, key>>16, (int)(key & 0xFFFFu));
+                        Estimate(vectorGoal, source, neighbourCoords, newPath.TotalCost).IfHasValueDo(key => {
+                            PathfinderExtensions.TraceFindPathEnqueue(neighbourCoords, key>>16, (int)(key & 0xFFFFu));
 
                             queue.Enqueue(key, newPath);
                         } );
@@ -153,16 +115,17 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
             return null;
         }
+    
+        private int?   Estimate(IntVector2D vectorGoal, HexCoords start, HexCoords hex, int totalCost)
+        => from heuristic in Heuristic(start,hex)
+           select ((heuristic + totalCost) << 16)
+                + Preference(vectorGoal, start.Canon - hex.Canon);
 
-        /// <inheritdoc/>
-        public  override IDirectedPath  PathForward { get; }
-        /// <inheritdoc/>
-        public  override IDirectedPath  PathReverse => MergePaths(new DirectedPath(Source), PathForward.PathSoFar);
+        private short? Heuristic(HexCoords source, HexCoords target) => Board.Heuristic(source,target);
 
-        readonly Heuristic       _heuristic;
-        readonly ISet<HexCoords> _openSet;
-        readonly IPriorityQueue  _queue;
-        readonly IntVector2D     _vectorGoal;
-        readonly TryDirectedCost _tryDirectedCost;
+        private short? TryDirectedCost(HexCoords coords, Hexside hexside) => Board.TryExitCost(coords, hexside);
+    
+        static int Preference(IntVector2D vectorGoal, IntVector2D vectorHex)
+        => (0xFFFF & Math.Abs(vectorGoal ^ vectorHex));
     }
 }

@@ -166,8 +166,8 @@ namespace PGNapoleonics.HexgridPanel {
         public void PathSet() =>
             _path = this[StartHex].Bind(source =>
                     this[GoalHex].Bind(target => source.Range(target) <= RangeCutoff
-                         ? source.Coords.GetDirectedPath(target.Coords, this.GetStandardPathfinder())
-                         : target.Coords.GetDirectedPath(source.Coords, this.GetLandmarkPathfinder())
+                         ? new StandardPathfinder(this).GetPath(source,target)
+                         : new BidirectionalAltPathfinder(this).GetPath(source,target)
                     ));
         /// <summary>TODO</summary>
         public void PathClear() => _path = Maybe<IDirectedPath>.NoValue();

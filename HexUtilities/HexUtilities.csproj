@@ -292,11 +292,11 @@
     <Compile Include="IMapDisplay.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Pathfinding\BidirectionalPathfinder.cs" />
+    <Compile Include="Pathfinding\AltPathfinder.cs" />
     <Compile Include="Pathfinding\DirectedLandmark.cs" />
     <Compile Include="Pathfinding\HexsideCosts.cs" />
-    <Compile Include="Pathfinding\ILandmarkBoard.cs" />
     <Compile Include="Pathfinding\LandmarkPopulator.cs" />
+    <Compile Include="Pathfinding\PathHalves.cs" />
     <Compile Include="Pathfinding\PriorityQueueFactory.cs" />
     <Compile Include="Storage\BlockedBoardStorage.cs" />
     <Compile Include="Storage\BlockedBoardStorage32x32.cs" />
@@ -336,28 +336,24 @@
     <Compile Include="Namespaces.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Pathfinding\DirectedPathStepHex.cs" />
-    <Compile Include="Pathfinding\LandmarkPathfinder.cs" />
+    <Compile Include="Pathfinding\BidirectionalAltPathfinder.cs" />
     <Compile Include="Pathfinding\DictPriorityQueue.cs" />
     <Compile Include="HexGrid.cs" />
     <Compile Include="Hex.cs" />
     <Compile Include="HexBoard.cs" />
-    <Compile Include="Pathfinding\DirectionalPathfinder.cs" />
-    <Compile Include="Pathfinding\HexBoardPathfindingExtensions.cs" />
     <Compile Include="Pathfinding\HexKeyValuePair.cs" />
     <Compile Include="Pathfinding\HotPriorityQueue.cs" />
     <Compile Include="Pathfinding\HotPriorityQueueueList.cs" />
     <Compile Include="Pathfinding\IDirectedPathCollection.cs" />
     <Compile Include="Pathfinding\IHotPrioirtyQueueList.cs" />
-    <Compile Include="Pathfinding\ILandmark.cs" />
-    <Compile Include="Pathfinding\INavigableBoard.cs" />
-    <Compile Include="Pathfinding\IPathfinder.cs" />
-    <Compile Include="Pathfinding\IPathHalves.cs" />
+    <Compile Include="Pathfinding\NavigableBoard.cs" />
+    <Compile Include="Pathfinding\PathfinderInterfaces.cs" />
     <Compile Include="Pathfinding\IPriorityQueue.cs" />
     <Compile Include="Pathfinding\Landmark.cs" />
     <Compile Include="Pathfinding\DirectedPathCollection.cs" />
     <Compile Include="Pathfinding\LandmarkCollection.cs" />
     <Compile Include="Pathfinding\MinListHeap.cs" />
-    <Compile Include="Pathfinding\Pathfinder.cs" />
+    <Compile Include="Pathfinding\PathfinderExtensions.cs" />
     <Compile Include="Pathfinding\StandardPathfinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FieldOfView\FieldOfView.cs" />

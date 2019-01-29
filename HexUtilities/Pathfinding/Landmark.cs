@@ -36,20 +36,11 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <summary>Function that returns a new IPriorityQueue&lt;int,IHex>.</summary>
     public delegate IPriorityQueue<int,IHex> QueueFactory();
 
-#if false
-    /// <summary>TODO</summary>
-    /// <param name="here"></param>
-    /// <param name="hexside"></param>
-    /// <param name="there"></param>
-    /// <returns></returns>
-    public delegate Maybe<short> TryDirectedCost(IHex here, Hexside hexside, IHex there);
-#else
     /// <summary>TODO</summary>
     /// <param name="here"></param>
     /// <param name="hexside"></param>
     /// <returns></returns>
     public delegate short? TryDirectedCost(HexCoords here, Hexside hexside);
-#endif
 
     /// <summary>TODO</summary>
     public enum Direction {

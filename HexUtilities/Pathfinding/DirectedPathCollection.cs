@@ -35,7 +35,19 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <summary>A directed sequence of <see cref="Hex{TDrawingSurface,TPath}"/>steps comprising a travel path.</summary>
     [DebuggerDisplay("TotalCost={TotalCost} / TotalSteps={TotalSteps}")]
-    internal sealed class DirectedPathCollection : IDirectedPathCollection {
+    internal class DirectedPathCollection : IDirectedPathCollection {
+        /// <summary>Returns a DirectedPath composed by extending this DirectedPath by one hex.</summary>
+        internal DirectedPathCollection(HexCoords start)
+        : this(null, new DirectedPathStepHex(start, Hexside.North), 0) { }
+
+        /// <summary>Returns a DirectedPath composed by extending this DirectedPath by one hex.</summary>
+        internal DirectedPathCollection(IDirectedPathCollection pathSoFar, DirectedPathStepHex pathStep, int totalCost) {
+            PathStep    = pathStep;
+            PathSoFar   = pathSoFar;
+            TotalCost   = totalCost;
+            TotalSteps  = pathSoFar==null ? 0 : pathSoFar.TotalSteps+1;
+        }
+
         #region Properties
         /// <inheritdoc/>
         public Hexside                  HexsideExit => PathStep.HexsideExit;
@@ -75,18 +87,11 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
 
-        /////////////////////////////  Internals  //////////////////////////////////
-        /// <summary>Returns a DirectedPath composed by extending this DirectedPath by one hex.</summary>
-        internal DirectedPathCollection(HexCoords start) : this(null, new DirectedPathStepHex(start, Hexside.North), 0) {
-        }
+    internal sealed class FinalPath : DirectedPathCollection {
+        internal FinalPath(HexCoords starth) : base(starth) {
 
-        /// <summary>Returns a DirectedPath composed by extending this DirectedPath by one hex.</summary>
-        internal DirectedPathCollection(IDirectedPathCollection pathSoFar, DirectedPathStepHex pathStep, int totalCost) {
-            PathStep    = pathStep;
-            PathSoFar   = pathSoFar;
-            TotalCost   = totalCost;
-            TotalSteps  = pathSoFar==null ? 0 : pathSoFar.TotalSteps+1;
         }
     }
 }
