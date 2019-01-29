@@ -67,8 +67,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// <param name="target">Coordinates for the <c>last</c> step on the desired path.</param>
         internal LandmarkPathfinder(INavigableBoard board, ILandmarkCollection landmarks,
                 HexCoords source, HexCoords target) 
-        : base(source, target, new HashSet<HexCoords>()
-        ) {
+        : base(source, target, new HashSet<HexCoords>()) {
             if (landmarks == null) {
                 _pathFwd = _pathRev = null;
             } else {

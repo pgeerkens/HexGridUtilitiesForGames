@@ -152,10 +152,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
             }
         }
         private int   FrontierMinimum() => (Queue.TryPeek(out var item) ? item.Key : int.MaxValue);
-        private IDirectedPath GetPartnerPath(HexCoords coords) {
-            Partner.OpenSet.TryGetValue(coords, out var path);
-            return path;
-        }
+        private IDirectedPath GetPartnerPath(HexCoords coords)
+        => Partner.OpenSet.TryGetValue(coords, out var path) ? path : null;
         private short? Heuristic(HexCoords coords) { 
             var max = null as short?;
             Landmarks.ForEach( landmark => {
@@ -170,6 +168,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
              select (short)(current - target)
            );
         #endregion
+
+        public override IDirectedPath PathForward => throw new NotImplementedException();
+        public override IDirectedPath PathReverse => throw new NotImplementedException();
 
         /// <summary>Create a new instance of <see cref="PathfinderForward"/>, a forward-searching <see cref="DirectionalPathfinder"/>.</summary>
         /// <param name="board">Board on which this path search is taking place.</param>
@@ -220,9 +221,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
             protected override void      SetBestSoFar(IDirectedPath selfPath, IDirectedPath partnerPath) {
                 if (partnerPath != null) PathHalves.SetBestSoFar(partnerPath, selfPath);
             }
-
-            public    override IDirectedPath PathForward => throw new NotImplementedException();
-            public    override IDirectedPath PathReverse => throw new NotImplementedException();
         }
 
         /// <summary>A <see cref="DirectedPath"/> from join-point to goal obtained by searching backwards from goal.</summary>
@@ -251,9 +249,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
             protected override void      SetBestSoFar(IDirectedPath selfPath, IDirectedPath partnerPath) {
                 if (partnerPath != null) PathHalves.SetBestSoFar(selfPath, partnerPath);
             }
-
-            public    override IDirectedPath PathForward => throw new NotImplementedException();
-            public    override IDirectedPath PathReverse => throw new NotImplementedException();
         }
     }
 }
