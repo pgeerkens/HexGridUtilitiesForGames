@@ -98,12 +98,12 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
             _heuristic       = board.Heuristic;
             _openSet         = new HashSet<HexCoords>();
             _queue           = new DictionaryPriorityQueue<int, IDirectedPath>();
-            _tryDirectedCost = board.TryEntryCost;
+            _tryDirectedCost = board.TryExitCost;
             _vectorGoal      = Target.Canon - Source.Canon;
 
             PathForward      = GetPath();
 
-         //   TraceFindPathDone(ClosedSet.Count);
+            TraceFindPathDone(ClosedSet.Count);
         }
     
         private int? Estimate(HexCoords start, HexCoords hex, int totalCost)
@@ -129,10 +129,10 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
                 var step = path.PathStep.Coords;
 
                 openSet.Add(step);
-                if( ClosedSet.Contains(step) ) continue;
+                if (ClosedSet.Contains(step)) continue;
 
-                TraceFindPathDequeue("Rev",step, path.TotalCost, path.HexsideExit, item.Key>>16, 
-                                                (int)(item.Key & 0xFFFFu) - 0x7FFF);
+                TraceFindPathDequeue("Rev",step, path.TotalCost, path.HexsideExit,
+                                     item.Key>>16,  (int)(item.Key & 0xFFFFu) - 0x7FFF);
 
                 if(step == Source)     return path;
 
