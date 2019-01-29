@@ -292,6 +292,7 @@
     <Compile Include="IMapDisplay.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Pathfinding\BidirectionalPathfinder.cs" />
     <Compile Include="Pathfinding\DirectedLandmark.cs" />
     <Compile Include="Pathfinding\HexsideCosts.cs" />
     <Compile Include="Pathfinding\ILandmarkBoard.cs" />
