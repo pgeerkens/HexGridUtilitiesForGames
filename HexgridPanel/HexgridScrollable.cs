@@ -139,16 +139,16 @@ namespace PGNapoleonics.HexgridPanel {
           get; set; }
     #endif
         /// <inheritdoc/>
-        public         Size            MapSizePixels     { get { return DataContext.Model.MapSizePixels; } } // + MapMargin.Scale(2);} }
+        public         Size            MapSizePixels     => DataContext.Model.MapSizePixels(); // + MapMargin.Scale(2);} }
         /// <summary>Current scaling factor for map display.</summary>
         [Browsable(false)]
-        public         float           MapScale          { get { return DataContext.MapScale; } }
+        public         float           MapScale          => DataContext.MapScale;
         /// <summary>Returns <code>HexCoords</code> of the hex closest to the center of the current viewport.</summary>
         public         HexCoords       PanelCenterHex    { 
           get { return GetHexCoords( Location + Size.Round(ClientSize.Scale(0.50F)) ); }
         }
         /// <summary>TODO</summary>
-        public WpfInput.ICommand       RefreshCmd        { get { return _refreshCmd;} } private readonly WpfInput.ICommand _refreshCmd;
+        public WpfInput.ICommand       RefreshCmd        => _refreshCmd; private readonly WpfInput.ICommand _refreshCmd;
         /// <summary>Index into <code>Scales</code> of current map scale.</summary>
         [Browsable(false)]
         public virtual int             ScaleIndex        { 

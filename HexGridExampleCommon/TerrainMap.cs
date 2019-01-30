@@ -55,9 +55,9 @@ namespace PGNapoleonics.HexgridExampleCommon {
         public    override short?   Heuristic(HexCoords source, HexCoords target) => (short)(2 * source.Range(target));
 
         /// <inheritdoc/>
-        protected override int      ElevationBase     { get {return  0;} }
+        public override int      ElevationBase     { get {return  0;} }
         /// <inheritdoc/>
-        protected override int      ElevationStep     { get {return 10;} }
+        public override int      ElevationStep     { get {return 10;} }
 
         /// <summary>Wrapper for MapDisplayPainter.PaintHighlight.</summary>
         public override void PaintHighlight(Graphics graphics)

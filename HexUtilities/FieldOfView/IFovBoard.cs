@@ -53,26 +53,20 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
 
     /// <summary>Interface required to make use of ShadowCasting Field-of-View calculation.</summary>
     public interface IFovBoard {
+        /// <summary>Height in units of elevation level 0 (zero).</summary>
+        int     ElevationBase { get; }
+
+        /// <summary>Height increase in units of each elevation level.</summary>
+        int     ElevationStep { get; }
+
+        /// <summary>Height in metres.</summary>
+        int     HeightOfMan   { get; }
+
         /// <summary>The rectangular extent of the board's hexagonal grid, in hexes.</summary>
-        HexSize       MapSizeHexes            { get; }
+        HexSize MapSizeHexes  { get; }
 
         /// <summary>Returns the <c>IHex</c> at location <c>coords</c>.</summary>
         [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
-        Maybe<IHex>   this[HexCoords  coords] { get; }
-
-        /// <summary>Elevation of the ground Above Sea Level</summary>
-        int  ElevationGroundASL(HexCoords coords);
-        /// <summary>Elevation of the hexside Above Sea Level</summary>
-        int  ElevationHexsideASL(HexCoords coords, Hexside hexside);
-        /// <summary>Elevation of the observer Above Sea Level</summary>
-        int  ElevationObserverASL(HexCoords coords);
-        /// <summary>Elevation of the target Above Sea Level</summary>
-        int  ElevationTargetASL(HexCoords coords);
-        /// <summary>Elevation of the terrain Above Sea Level</summary>
-        int  ElevationTerrainASL(HexCoords coords);
-
-        /// <summary>Returns whether the hex at location <paramref name="coords"/> is passable.</summary>
-        /// <param name="coords">The coordinates of the hex being tested.</param>
-        bool IsOverseeable(HexCoords coords);
+        Maybe<IHex> this[HexCoords coords] { get; }
     }
 }

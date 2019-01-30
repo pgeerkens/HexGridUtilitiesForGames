@@ -30,35 +30,56 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
 
 namespace PGNapoleonics.HexUtilities {
-  using HexSize = System.Drawing.Size;
-  using IDirectedPath = IDirectedPathCollection;
+    using HexSize = System.Drawing.Size;
+    using IDirectedPath = IDirectedPathCollection;
 
-  /// <summary>(Technology-independent portion of) interface contract required of a map board to be displayed by the Hexgrid control.</summary>
-  public interface IMapDisplay {
-    /// <summary>TODO</summary>
-    int       FovRadius       { get; set; }
-    /// <summary>Gets or sets the <see cref="HexCoords"/> of the goal hex for path-fnding.</summary>
-    HexCoords GoalHex         { get; set; }
-    /// <summary>Gets the extent in pixels of the grid upon whch hexes are to be laid out.</summary>
-    /// <remarks>>Width is 3/4 of the point-to-point width of each hex, and Height is the full height.
-    /// Hexes should be defined assumed flat-topped and pointy-sided, and the entire board transposed 
-    /// if necessary.</remarks>
-    HexSize   GridSize        { get; }
-    /// <summary>Gets or sets the <see cref="HexCoords"/> of the hex currently under the mouse.</summary>
-    HexCoords HotspotHex      { get; set; }
-    /// <summary>Gets or sets whether the board is transposed from flat-topped hexes to pointy-topped hexes.</summary>
-    bool      IsTransposed    { get; set; }
-    /// <summary>Gets or sets the index (-1 for none) of the path-finding <see cref="ILandmark"/> to show.</summary>
-    int       LandmarkToShow  { get; set; }
-    /// <summary>Current scaling factor for map display.</summary>
-    float     MapScale        { get; set; } 
-    /// <summary>Rectangular extent in pixels of the defined mapboard.</summary>
-    HexSize   MapSizePixels   { get; }
-    /// <summary>Gets the display name for this HexgridPanel host.</summary>
-    string    Name            { get; }
-    /// <summary>Gets the shortest path from <see cref="StartHex"/> to <see cref="GoalHex"/>.</summary>
-    Maybe<IDirectedPath> Path { get; }
-    /// <summary>Gets or sets the <see cref="HexCoords"/> of the start hex for path-finding.</summary>
-    HexCoords StartHex        { get; set; }
-  }
+    /// <summary>(Technology-independent portion of) interface contract required of a map board to be displayed by the Hexgrid control.</summary>
+    public interface IMapDisplay {
+        /// <summary>TODO</summary>
+        int       FovRadius       { get; set; }
+
+        /// <summary>Gets or sets the <see cref="HexCoords"/> of the goal hex for path-fnding.</summary>
+        HexCoords GoalHex         { get; set; }
+
+        /// <summary>Gets the extent in pixels of the grid upon whch hexes are to be laid out.</summary>
+        /// <remarks>>Width is 3/4 of the point-to-point width of each hex, and Height is the full height.
+        /// Hexes should be defined assumed flat-topped and pointy-sided, and the entire board transposed 
+        /// if necessary.</remarks>
+        HexSize   GridSize        { get; }
+
+        /// <summary>Gets or sets the <see cref="HexCoords"/> of the hex currently under the mouse.</summary>
+        HexCoords HotspotHex      { get; set; }
+
+        /// <summary>Gets or sets whether the board is transposed from flat-topped hexes to pointy-topped hexes.</summary>
+        bool      IsTransposed    { get; set; }
+
+        /// <summary>Gets or sets the index (-1 for none) of the path-finding <see cref="ILandmark"/> to show.</summary>
+        int       LandmarkToShow  { get; set; }
+
+        /// <summary>Current scaling factor for map display.</summary>
+        float     MapScale        { get; set; }
+
+        /// <summary>TODO</summary>
+        IntMatrix2D GridSizePixels  { get; }
+
+        /// <summary>The dimensions of the board as a <see cref="System.Drawing.Size"/></summary>
+        HexSize     MapSizeHexes    { get; }
+
+        /// <summary>Gets the display name for this HexgridPanel host.</summary>
+        string    Name            { get; }
+
+        /// <summary>Gets the shortest path from <see cref="StartHex"/> to <see cref="GoalHex"/>.</summary>
+        Maybe<IDirectedPath> Path { get; }
+
+        /// <summary>Gets or sets the <see cref="HexCoords"/> of the start hex for path-finding.</summary>
+        HexCoords StartHex        { get; set; }
+    }
+
+    /// <summary>.</summary>
+    public static class MapDisplayExtensions {
+        /// <summary>Rectangular extent in pixels of the defined mapboard.</summary>
+        /// <param name="this">The current <see cref="IMapDisplay"/>.</param>
+        public static HexSize MapSizePixels(this IMapDisplay @this)
+        => @this.MapSizeHexes * @this.GridSizePixels;
+    }
 }

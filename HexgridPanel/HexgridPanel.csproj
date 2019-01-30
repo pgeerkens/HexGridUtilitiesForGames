@@ -201,6 +201,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BitmapExtensions.cs" />
+    <Compile Include="Common\MapDisplaydExtensions.cs" />
     <Compile Include="MapPanel.cs">
       <SubType>Component</SubType>
     </Compile>

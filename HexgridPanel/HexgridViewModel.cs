@@ -121,7 +121,7 @@ namespace PGNapoleonics.HexgridPanel {
     } bool _isTransposed;
 
     /// <inheritdoc/>
-    public Size        MapSizePixels   { get {return Model.MapSizePixels;} } // + MapMargin.Scale(2);} }
+    public Size        MapSizePixels   => Model.MapSizePixels(); // + MapMargin.Scale(2);} }
 
     /// <summary>Current scaling factor for map display.</summary>
     public float       MapScale        { 

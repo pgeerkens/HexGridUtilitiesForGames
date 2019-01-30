@@ -27,7 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
@@ -39,6 +38,7 @@ using PGNapoleonics.HexgridExampleCommon;
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.FieldOfView;
 using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridScrollableExample {

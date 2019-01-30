@@ -38,19 +38,16 @@ using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexUtilities {
-    using HexPoint      = System.Drawing.Point;
-    using HexSize       = System.Drawing.Size;
-    using RectangleF    = System.Drawing.RectangleF;
+    using HexPoint = System.Drawing.Point;
+    using HexSize = System.Drawing.Size;
 
-    using ILandmarks    = ILandmarkCollection;
-    using CoordsRect    = CoordsRectangle;
+    using ILandmarks = ILandmarkCollection;
     using IBoardStorage = IBoardStorage<Maybe<HexsideCosts>>;
 
     /// <summary>Abstract implementation of a hexgrid map-board.</summary>
     /// <typeparam name="THex">TODO</typeparam>
-    /// <typeparam name="TPath">TODO</typeparam>
     /// <remarks>No Finalizer is implemented as the class possesses no unmanaged resources.</remarks>
-    public abstract class HexBoard<THex,TPath> : ILandmarkBoard, IFovBoard, IForEachable<Maybe<THex>>, IDisposable
+    public abstract class HexBoard<THex> : ILandmarkBoard, IFovBoard, IDisposable//, IForEachable<Maybe<THex>>
     where THex:IHex {
         /// <summary>By default, landmark all four corners and midpoints of all 4 sides.</summary>
         /// <remarks>Pre-processing time on start-up can be reduced by decreasing the number of landmarks,
@@ -118,9 +115,9 @@ namespace PGNapoleonics.HexUtilities {
         /// <summary>TODO</summary>
         public BoardStorage<Maybe<THex>> BoardHexes { get; }
         /// <summary>TODO </summary>
-        protected abstract int         ElevationBase   { get; } //!< Height in units of elevation level 0 (zero).
+        public    abstract int         ElevationBase   { get; } //!< Height in units of elevation level 0 (zero).
         /// <summary>TODO </summary>
-        protected abstract int         ElevationStep   { get; } //!< Height increase in units of each elevation level.
+        public    abstract int         ElevationStep   { get; } //!< Height increase in units of each elevation level.
         /// <inheritdoc/>
         public    virtual  int         FovRadius       { get; set; }
         /// <summary>TODO </summary>
@@ -129,7 +126,8 @@ namespace PGNapoleonics.HexUtilities {
         public             IHexgrid    Hexgrid         => TransposableHexgrid.GetNewGrid(IsTransposed,GridSize,MapScale);
         /// <summary>Gets the extent in pixels of the grid on which hexes are to be laid out. </summary>
         public             HexSize     GridSize        { get; }
-        private            IntMatrix2D GridSizePixels  { get; }
+        /// <summary>TODO</summary>
+        public             IntMatrix2D GridSizePixels  { get; }
         /// <summary>Offset of hex centre from upper-left corner, as a <see cref="HexSize"/> struct.</summary>
         public             HexSize     HexCentreOffset { get; }
          ///  <inheritdoc/>
@@ -140,8 +138,6 @@ namespace PGNapoleonics.HexUtilities {
         public             float       MapScale        { get; set; }
         /// <summary>The dimensions of the board as a <see cref="System.Drawing.Size"/></summary>
         public             HexSize     MapSizeHexes    { get; }
-        ///  <inheritdoc/>
-        public             HexSize     MapSizePixels   => MapSizeHexes * GridSizePixels;
         
         /// <summary>Range beyond which Fast PathFinding is used instead of Stable PathFinding.</summary>
         public             int         RangeCutoff     { get; set; }
@@ -161,26 +157,6 @@ namespace PGNapoleonics.HexUtilities {
         #endregion
 
         #region Methods
-        private readonly Func<int> MaxValue32 = () => int.MaxValue;
-
-        private int  ElevationASL(IHex hex)
-        => ElevationBase + hex.ElevationLevel * ElevationStep;
-        /// <inheritdoc/>
-        public  int  ElevationGroundASL(HexCoords coords)
-        => this[coords].Match(hex => ElevationASL(hex), MaxValue32);
-        /// <inheritdoc/>
-        public  int  ElevationHexsideASL(HexCoords coords, Hexside hexside)
-        => this[coords].Match(hex => ElevationASL(hex) + hex.HeightHexside(hexside), MaxValue32);
-        /// <inheritdoc/>
-        public  int  ElevationTargetASL(HexCoords coords)
-        => this[coords].Match(hex => ElevationASL(hex) + HeightOfMan, MaxValue32);
-        /// <inheritdoc/>
-        public  int  ElevationObserverASL(HexCoords coords)
-        => this[coords].Match(hex => ElevationASL(hex) + HeightOfMan, MaxValue32);
-        /// <inheritdoc/>
-        public  int  ElevationTerrainASL(HexCoords coords)
-        => this[coords].Match(hex => ElevationASL(hex) + hex.HeightTerrain, MaxValue32);
-
         /// <summary>Perform <paramref name="action"/> for all neighbours of <paramref name="coords"/>.</summary>
         /// <param name="coords"></param>
         /// <param name="action"></param>
@@ -188,27 +164,13 @@ namespace PGNapoleonics.HexUtilities {
         public  void ForAllNeighbours(HexCoords coords, Action<Maybe<THex>,Hexside> action)
         => BoardHexes.ForAllNeighbours(coords,action);
 
-        /// <inheritdoc/>
-        public  void ForEach(Action<Maybe<THex>> action) => BoardHexes.ForEach(action);
-
-        /// <summary>TODO</summary>
-        /// <param name="action"></param>
-        public  void ForEachHex(Action<Maybe<THex>> action) => BoardHexes.ForEachSerial(action);
-
-        /// <summary>Returns the location and extent in hexes, as a <see cref="CoordsRect"/>, of the current clipping region.</summary>
-        protected  CoordsRect GetClipInHexes(RectangleF visibleClipBounds, HexSize boardSizeHexes) {
-            var left   = Math.Max((int)visibleClipBounds.Left   / GridSize.Width  - 1, 0);
-            var top    = Math.Max((int)visibleClipBounds.Top    / GridSize.Height - 1, 0);
-            var right  = Math.Min((int)visibleClipBounds.Right  / GridSize.Width  + 1, boardSizeHexes.Width);
-            var bottom = Math.Min((int)visibleClipBounds.Bottom / GridSize.Height + 1, boardSizeHexes.Height); 
-            return CoordsRect.New(left, top, right-left, bottom-top);
-        }
+#if false
+        ///  <inheritdoc/>
+        public             HexSize     MapSizePixels   => MapSizeHexes * GridSizePixels;
+#endif
     
         /// <inheritdoc/>
         public abstract  short? Heuristic(HexCoords source, HexCoords target);
-
-        /// <inheritdoc/>
-        public virtual   bool   IsOverseeable(HexCoords coords) => MapSizeHexes.IsOnboard(coords);
 
         /// <inheritdoc/>
         public           Maybe<THex> Neighbour(HexCoords coords, Hexside hexside)

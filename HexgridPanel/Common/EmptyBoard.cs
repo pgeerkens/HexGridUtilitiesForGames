@@ -43,9 +43,9 @@ namespace PGNapoleonics.HexgridPanel {
         private EmptyBoard()
         : base(new HexSize(1,1), new HexSize(26,30), c => new EmptyGridHex(c)) => FovRadius = 20;
         /// <inheritdoc/>
-        protected override int      ElevationBase     => 0;
+        public override int      ElevationBase     => 0;
         /// <inheritdoc/>
-        protected override int      ElevationStep     => 10;
+        public override int      ElevationStep     => 10;
 
         /// <summary>Wrapper for MapDisplayPainter.PaintHighlight.</summary>
         public override void PaintHighlight(Graphics graphics) {}

@@ -49,9 +49,9 @@ namespace PGNapoleonics.HexgridExampleCommon {
         protected override int  MinimumStepCost => 1;
 
         /// <inheritdoc/>
-        protected override int  ElevationBase   =>  0;
+        public override int  ElevationBase   =>  0;
         /// <inheritdoc/>
-        protected override int  ElevationStep   => 10;
+        public override int  ElevationStep   => 10;
 
         /// <summary>Wrapper for MapDisplayPainter.PaintHighlight.</summary>
         public override void PaintHighlight(Graphics graphics)

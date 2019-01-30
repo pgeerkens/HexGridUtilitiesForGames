@@ -45,13 +45,12 @@ namespace PGNapoleonics.HexgridPanel {
     using Graphics      = System.Drawing.Graphics;
     using Color         = System.Drawing.Color;
     using GraphicsPath  = System.Drawing.Drawing2D.GraphicsPath;
-    using Matrix        = System.Drawing.Drawing2D.Matrix;
     using MapGridHex    = Hex<System.Drawing.Graphics, System.Drawing.Drawing2D.GraphicsPath>;
 
     using static System.Drawing.Drawing2D.PathPointType;
 
     using Int32ValueEventArgs = ValueEventArgs<int>;
-    using IDirectedPath       = IDirectedPathCollection;
+    using IDirectedPath = IDirectedPathCollection;
 
     /// <summary>.</summary>
     /// <typeparam name="THex"></typeparam>
@@ -105,7 +104,7 @@ namespace PGNapoleonics.HexgridPanel {
     ///     public abstract void PaintShading(Graphics graphics);
     ///     public abstract void PaintUnits(Graphics graphics);
     /// </remarks>
-    public abstract class MapDisplay<THex> : HexBoard<THex,GraphicsPath>, IMapDisplayWinForms
+    public abstract class MapDisplay<THex> : HexBoard<THex>, IMapDisplayWinForms, IFovBoard
     where THex:MapGridHex {
 
         /// <summary>TODO</summary>
@@ -117,8 +116,8 @@ namespace PGNapoleonics.HexgridPanel {
                 (byte)Line,  (byte)Line, (byte)Line|(byte)CloseSubpath
             };
 
-        /// <summary>Returns an array of six <see cref="HexPoint"/>s describing the corners of a hex on this <see cref="HexBoard{THex,TPath}"/>.</summary>
-        /// <param name="gridSize">Dimensions of a hex on this <see cref="HexBoard{THex,TPath}"/> in pixels.</param>
+        /// <summary>Returns an array of six <see cref="HexPoint"/>s describing the corners of a hex on this <see cref="HexBoard{THex}"/>.</summary>
+        /// <param name="gridSize">Dimensions of a hex on this <see cref="HexBoard{THex}"/> in pixels.</param>
         private static HexPoint[] HexgridPathPoints(HexSize gridSize)
         => new HexPoint[] { new HexPoint(gridSize.Width*1/3,               0  ),
                             new HexPoint(gridSize.Width*3/3,               0  ),
@@ -210,11 +209,11 @@ namespace PGNapoleonics.HexgridPanel {
         #region Painting
         /// <inheritdoc/>
         public CoordsRectangle GetClipInHexes(HexPointF point, HexSizeF size)
-        => GetClipInHexes(new RectangleF(point, size), MapSizeHexes);
+        => this.GetClipInHexes(new RectangleF(point, size), MapSizeHexes);
 
         /// <inheritdoc/>
         public CoordsRectangle GetClipInHexes(RectangleF visibleClipBounds)
-        => GetClipInHexes(visibleClipBounds, MapSizeHexes);
+        => this.GetClipInHexes(visibleClipBounds, MapSizeHexes);
 
         /// <inheritdoc/>
         public abstract void PaintHighlight(Graphics graphics);
@@ -228,33 +227,9 @@ namespace PGNapoleonics.HexgridPanel {
         /// <inheritdoc/>
         public abstract void PaintUnits(Graphics graphics);
 
-#if false
-        /// <summary>Returns the translation transform-@this for the upper-left corner of the specified hex.</summary>
-        /// <param name="coords">Type: HexCoords - 
-        /// Coordinates of the hex to be painted next.</param>
-        public Matrix TranslateToHex(HexCoords coords) {
-            var offset  = UpperLeftOfHex(coords);
-            return new Matrix(1, 0, 0, 1, offset.X, offset.Y);
-        }
-
-        /// <summary>Returns pixel coordinates of upper-left corner of specified hex.</summary>
-        /// <param name="coords"></param>
-        /// <returns>A Point structure containing pixel coordinates for the (upper-left corner of the) specified hex.</returns>
-        public HexPoint UpperLeftOfHex(HexCoords coords)
-        => new HexPoint(
-            coords.User.X * GridSize.Width,
-            coords.User.Y * GridSize.Height + (coords.User.X + 1) % 2 * GridSize.Height / 2
-        );
-
-        /// <summary>Returns pixel coordinates of centre of specified hex.</summary>
-        /// <param name="coords"></param>
-        /// <returns>A Point structure containing pixel coordinates for the (centre of the) specified hex.</returns>
-        public HexPoint CentreOfHex(HexCoords coords) => this.UpperLeftOfHex(coords) + HexCentreOffset;
-#endif
-
         /// <inheritdoc/>
         void IMapDisplayWinForms.ForEachHex(Action<Maybe<IHex>> action)
-        => ForEachHex(hex => action(from h in hex select h as IHex));
+        => this.ForEachHex(hex => action(from h in hex select h as IHex));
         #endregion
 
         /// <inheritdoc/>
@@ -290,68 +265,5 @@ namespace PGNapoleonics.HexgridPanel {
             base.Dispose(disposing);
         }
         #endregion
-    }
-
-    public static partial class HexBoardExtensions {
-        /// <summary>Returns the translation transform-@this for the upper-left corner of the specified hex.</summary>
-        /// <param name="coords">Type: HexCoords - 
-        /// Coordinates of the hex to be painted next.</param>
-        public static Matrix TranslateToHex<THex,TPath>(this HexBoard<THex,TPath> @this, HexCoords coords)
-        where THex:IHex {
-            var offset  = @this.UpperLeftOfHex(coords);
-            return new Matrix(1, 0, 0, 1, offset.X, offset.Y);
-        }
-
-        /// <summary>Returns pixel coordinates of upper-left corner of specified hex.</summary>
-        /// <param name="coords"></param>
-        /// <returns>A Point structure containing pixel coordinates for the (upper-left corner of the) specified hex.</returns>
-        public static HexPoint UpperLeftOfHex<THex,TPath>(this HexBoard<THex,TPath> @this, HexCoords coords)
-        where THex:IHex
-        => new HexPoint(
-            coords.User.X * @this.GridSize.Width,
-            coords.User.Y * @this.GridSize.Height + (coords.User.X + 1) % 2 * @this.GridSize.Height / 2
-        );
-
-        /// <summary>Returns pixel coordinates of centre of specified hex.</summary>
-        /// <param name="coords"></param>
-        /// <returns>A Point structure containing pixel coordinates for the (centre of the) specified hex.</returns>
-        public static HexPoint CentreOfHex<THex,TPath>(this HexBoard<THex,TPath> @this, HexCoords coords)
-        where THex:IHex
-        => @this.UpperLeftOfHex(coords) + @this.HexCentreOffset;
-
-        /// <summary>Perform the supplied <paramref name="action"/> for every item in the enumeration.</summary>
-        public static void ForEachHex<THex,TPath>(this HexBoard<THex,TPath> @this, Action<Maybe<IHex>> action)
-        where THex:IHex
-        => @this.BoardHexes.ForEachSerial(hex => action(from h in hex select h as IHex));
-    }
-
-    public static partial class MapDisplaydExtensions {
-        public static Matrix TranslateToHex<THex,TPath>(this IMapDisplayWinForms @this, HexCoords coords)
-        where THex:IHex {
-            var offset  = @this.UpperLeftOfHex<THex,TPath>(coords);
-            return new Matrix(1, 0, 0, 1, offset.X, offset.Y);
-        }
-
-        /// <summary>Returns pixel coordinates of upper-left corner of specified hex.</summary>
-        /// <param name="coords"></param>
-        /// <returns>A Point structure containing pixel coordinates for the (upper-left corner of the) specified hex.</returns>
-        public static HexPoint UpperLeftOfHex<THex,TPath>(this IMapDisplayWinForms @this, HexCoords coords)
-        where THex:IHex
-        => new HexPoint(
-            coords.User.X * @this.GridSize.Width,
-            coords.User.Y * @this.GridSize.Height + (coords.User.X + 1) % 2 * @this.GridSize.Height / 2
-        );
-
-        /// <summary>Returns pixel coordinates of centre of specified hex.</summary>
-        /// <param name="coords"></param>
-        /// <returns>A Point structure containing pixel coordinates for the (centre of the) specified hex.</returns>
-        public static HexPoint CentreOfHex<THex,TPath>(this IMapDisplayWinForms @this, HexCoords coords)
-        where THex:IHex
-        => @this.UpperLeftOfHex<THex,TPath>(coords) + @this.HexCentreOffset;
-
-        ///// <summary>Perform the supplied <paramref name="action"/> for every item in the enumeration.</summary>
-        //public static void ForEachHex<THex,TPath>(this IMapDisplayWinForms @this, Action<Maybe<IHex>> action)
-        //where THex:IHex
-        //=> @this.BoardHexes.ForEachSerial(hex => action(from h in hex select h as IHex));
     }
 }

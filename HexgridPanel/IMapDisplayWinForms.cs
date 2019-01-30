@@ -75,17 +75,5 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>TODO</summary>
         /// <param name="action"></param>
         void ForEachHex(Action<Maybe<IHex>> action);
-
-    #if false
-        /// <summary>Returns pixel coordinates of centre of specified hex.</summary>
-        /// <param name="coords"></param>
-        /// <returns>A Point structure containing pixel coordinates for the (centre of the) specified hex.</returns>
-        HexPoint CentreOfHex(HexCoords coords);
-
-        /// <summary>Returns the translation transform-@this for the upper-left corner of the specified hex.</summary>
-        /// <param name="coords">Type: HexCoords - 
-        /// Coordinates of the hex to be painted next.</param>
-        Matrix TranslateToHex(HexCoords coords);
-    #endif
     }
 }

@@ -74,7 +74,7 @@ namespace PGNapoleonics.HexgridPanel {
         public static void PaintHighlight<THex>(this IMapDisplayWinForms @this, Graphics graphics, bool showRangeLine)
         where THex : MapGridHex {
             graphics.Contain(g => {
-                g.Transform = @this.TranslateToHex<THex,GraphicsPath>(@this.StartHex);
+                g.Transform = @this.TranslateToHex<THex>(@this.StartHex);
                 g.DrawPath(Pens.Red, @this.HexgridPath);
             });
 
@@ -84,8 +84,8 @@ namespace PGNapoleonics.HexgridPanel {
 
             if (showRangeLine) {
                 graphics.Contain(g => {
-                    var target = @this.CentreOfHex<THex,GraphicsPath>(@this.HotspotHex);
-                    graphics.DrawLine(Pens.Red, @this.CentreOfHex<THex,GraphicsPath>(@this.StartHex), target);
+                    var target = @this.CentreOfHex<THex>(@this.HotspotHex);
+                    graphics.DrawLine(Pens.Red, @this.CentreOfHex<THex>(@this.StartHex), target);
                     graphics.DrawLine(Pens.Red, target.X-8,target.Y-8, target.X+8,target.Y+8);
                     graphics.DrawLine(Pens.Red, target.X-8,target.Y+8, target.X+8,target.Y-8);
                 });
@@ -126,7 +126,7 @@ namespace PGNapoleonics.HexgridPanel {
                 maybe.IfHasValueDo(hex => {
                     if( (uint)(hex.Coords.User.X - clipHexes.Left) <= clipHexes.Right
                     &&  (uint)(hex.Coords.User.Y - clipHexes.Top)  <= clipHexes.Bottom) {
-                        graphics.Transform = @this.TranslateToHex<THex,GraphicsPath>(hex.Coords);
+                        graphics.Transform = @this.TranslateToHex<THex>(hex.Coords);
                         paintAction(hex.Coords);
                     }
                 } );
@@ -146,7 +146,7 @@ namespace PGNapoleonics.HexgridPanel {
             using(var brush = new SolidBrush(Color.FromArgb(78, Color.PaleGoldenrod))) {
                 while (path != null) {
                     var coords = path.PathStep.Coords;
-                    graphics.Transform = @this.TranslateToHex<THex,GraphicsPath>(coords);
+                    graphics.Transform = @this.TranslateToHex<THex>(coords);
                     graphics.FillPath(brush, @this.HexgridPath);
 
                     if (@this.ShowPathArrow) @this.PaintPathArrow<THex>(graphics, path);

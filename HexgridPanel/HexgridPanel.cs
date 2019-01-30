@@ -28,7 +28,6 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -109,7 +108,7 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <inheritdoc/>
-        public     Size         MapSizePixels  => Model.MapSizePixels; // + MapMargin.Scale(2);} }
+        public     Size         MapSizePixels  => HexBoardExtensions.MapSizePixels(Model); // + MapMargin.Scale(2);} }
 
         /// <summary>Current scaling factor for map display.</summary>
         public     float        MapScale       { 
