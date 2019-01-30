@@ -38,13 +38,13 @@ using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexUtilities {
-    using HexPoint     = System.Drawing.Point;
-    using HexSize      = System.Drawing.Size;
-    using RectangleF   = System.Drawing.RectangleF;
+    using HexPoint      = System.Drawing.Point;
+    using HexSize       = System.Drawing.Size;
+    using RectangleF    = System.Drawing.RectangleF;
 
-    using ILandmarks   = ILandmarkCollection;
-    using CoordsRect   = CoordsRectangle;
-    using BoardStorage = IBoardStorage<Maybe<HexsideCosts>>;
+    using ILandmarks    = ILandmarkCollection;
+    using CoordsRect    = CoordsRectangle;
+    using IBoardStorage = IBoardStorage<Maybe<HexsideCosts>>;
 
     /// <summary>Abstract implementation of a hexgrid map-board.</summary>
     /// <typeparam name="THex">TODO</typeparam>
@@ -149,9 +149,9 @@ namespace PGNapoleonics.HexUtilities {
         /// <summary>TODO</summary>
         protected virtual  int         MinimumStepCost => 2;
         /// <summary>TODO</summary>
-        protected BoardStorage EntryCosts { get; }
+        protected        IBoardStorage EntryCosts      { get; }
         /// <summary>TODO</summary>
-        protected BoardStorage ExitCosts  { get; }
+        protected        IBoardStorage ExitCosts       { get; }
 
         /// <summary>Returns the <c>IHex</c> at location <c>coords</c>.</summary>
         [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
@@ -212,7 +212,7 @@ namespace PGNapoleonics.HexUtilities {
 
         /// <inheritdoc/>
         public           Maybe<THex> Neighbour(HexCoords coords, Hexside hexside)
-        =>  BoardHexes.Neighbour(coords,hexside);
+        => BoardHexes.Neighbour(coords,hexside);
 
         /// <summary>TODO</summary>
         public short? TryExitCost(HexCoords hexCoords, Hexside hexside)

@@ -41,7 +41,7 @@ namespace PGNapoleonics.HexgridPanel {
     using Hexes      = Func<HexCoords,Maybe<IHex>>;
 
     public static class MapDisplayPainter {
-        public static Hexes Hexes<THex>(this MapDisplay<THex> @this) where THex : MapGridHex
+        public static Hexes Hexes<THex>(this MapDisplay<THex> @this) where THex:MapGridHex
         => c => (from h in @this[c] select h as IHex);
 
         /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
@@ -74,7 +74,7 @@ namespace PGNapoleonics.HexgridPanel {
         public static void PaintHighlight<THex>(this IMapDisplayWinForms @this, Graphics graphics, bool showRangeLine)
         where THex : MapGridHex {
             graphics.Contain(g => {
-                g.Transform = @this.TranslateToHex(@this.StartHex);
+                g.Transform = @this.TranslateToHex<THex,GraphicsPath>(@this.StartHex);
                 g.DrawPath(Pens.Red, @this.HexgridPath);
             });
 
@@ -84,8 +84,8 @@ namespace PGNapoleonics.HexgridPanel {
 
             if (showRangeLine) {
                 graphics.Contain(g => {
-                    var target = @this.CentreOfHex(@this.HotspotHex);
-                    graphics.DrawLine(Pens.Red, @this.CentreOfHex(@this.StartHex), target);
+                    var target = @this.CentreOfHex<THex,GraphicsPath>(@this.HotspotHex);
+                    graphics.DrawLine(Pens.Red, @this.CentreOfHex<THex,GraphicsPath>(@this.StartHex), target);
                     graphics.DrawLine(Pens.Red, target.X-8,target.Y-8, target.X+8,target.Y+8);
                     graphics.DrawLine(Pens.Red, target.X-8,target.Y+8, target.X+8,target.Y-8);
                 });
@@ -126,7 +126,7 @@ namespace PGNapoleonics.HexgridPanel {
                 maybe.IfHasValueDo(hex => {
                     if( (uint)(hex.Coords.User.X - clipHexes.Left) <= clipHexes.Right
                     &&  (uint)(hex.Coords.User.Y - clipHexes.Top)  <= clipHexes.Bottom) {
-                        graphics.Transform = @this.TranslateToHex(hex.Coords);
+                        graphics.Transform = @this.TranslateToHex<THex,GraphicsPath>(hex.Coords);
                         paintAction(hex.Coords);
                     }
                 } );
@@ -146,7 +146,7 @@ namespace PGNapoleonics.HexgridPanel {
             using(var brush = new SolidBrush(Color.FromArgb(78, Color.PaleGoldenrod))) {
                 while (path != null) {
                     var coords = path.PathStep.Coords;
-                    graphics.Transform = @this.TranslateToHex(coords);
+                    graphics.Transform = @this.TranslateToHex<THex,GraphicsPath>(coords);
                     graphics.FillPath(brush, @this.HexgridPath);
 
                     if (@this.ShowPathArrow) @this.PaintPathArrow<THex>(graphics, path);
