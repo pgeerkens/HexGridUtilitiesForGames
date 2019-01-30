@@ -67,11 +67,10 @@ namespace PGNapoleonics.HexUtilities {
         /// <param name="this"></param>
         /// <param name="point">Screen point specifying hex to be identified.</param>
         /// <param name="autoScroll">AutoScrollPosition for game-display Panel.</param>
-        public static HexCoords GetHexCoords(this IHexgrid @this, HexPoint point, HexSize autoScroll) {
-            return @this.IsTransposed ? @this.GetHexCoordsInner(TransposePoint(point), TransposeSize(autoScroll))
-                                      : @this.GetHexCoordsInner(point,autoScroll);
-        }
-
+        public static HexCoords GetHexCoords(this IHexgrid @this, HexPoint point, HexSize autoScroll)
+        => @this.IsTransposed ? @this.GetHexCoordsInner(TransposePoint(point), TransposeSize(autoScroll))
+                              : @this.GetHexCoordsInner(point, autoScroll);
+    
         /// <summary><c>HexCoords</c> for the hex at the screen point, with the given AutoScroll position.</summary>
         /// <param name="this"></param>
         /// <param name="point">Screen point specifying hex to be identified.</param>
@@ -123,6 +122,7 @@ namespace PGNapoleonics.HexUtilities {
 
 		      return (int) Math.Floor( (points[0].X + points[0].Y + 2F) / 3F );
 	    }
+
         /// <summary>Calculates a (canonical X or Y) grid-coordinate for a point, from the supplied 'picking' matrix.</summary>
         /// <param name="this"></param>
         /// <param name="matrix">The 'picking-matrix' matrix</param>
