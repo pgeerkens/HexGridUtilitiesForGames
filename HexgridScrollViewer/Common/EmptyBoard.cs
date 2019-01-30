@@ -32,22 +32,23 @@ using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridScrollViewer {
     using HexSize         = System.Drawing.Size;
-    using MapGridHex      = Hex<DrawingContext,StreamGeometry>;
 
     /// <summary>TODO</summary>
-    public sealed class EmptyBoard : MapDisplay<MapGridHex> {
+    public sealed class EmptyBoard : MapDisplay<Hex> {
         /// <summary>TODO</summary>
-        public EmptyBoard() : base(new HexSize(1,1), new HexSize(26,30), (c) => new EmptyGridHex(c)) {
-          FovRadius = 20;
-        }
+        public EmptyBoard()
+        : base(new HexSize(1,1), new HexSize(26,30), (c) => new EmptyGridHex(c)) => FovRadius = 20;
         /// <inheritdoc/>
         protected override int        ElevationBase => 0;
         /// <inheritdoc/>
         protected override int        ElevationStep => 10;
+
+        /// <inheritdoc/>
+        public    override short?   Heuristic(HexCoords source, HexCoords target) => source.Range(target);
     }
 
     /// <summary>TODO</summary>
-    public sealed class EmptyGridHex : MapGridHex, IHex {
+    public sealed class EmptyGridHex : Hex, IHex {
         /// <summary>TODO</summary>
         public EmptyGridHex(HexCoords coords) : base(coords,0) {}
 
