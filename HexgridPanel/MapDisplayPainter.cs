@@ -32,80 +32,83 @@ using System.Drawing.Drawing2D;
 
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.FieldOfView;
 using PGNapoleonics.HexUtilities.Pathfinding;
 
 namespace PGNapoleonics.HexgridPanel {
-    using MapGridHex      = Hex<Graphics,GraphicsPath>;
+    using MapGridHex = Hex<Graphics,GraphicsPath>;
+    using ILandmarks = ILandmarkCollection;
+    using Hexes      = Func<HexCoords,Maybe<IHex>>;
 
-    internal static class MapDisplayPainter {
+    public static class MapDisplayPainter {
+        public static Hexes Hexes<THex>(this MapDisplay<THex> @this) where THex : MapGridHex
+        => c => (from h in @this[c] select h as IHex);
+
         /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
         /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
         /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
         /// <remarks>For each visible hex: perform <c>paintAction</c> and then draw its hexgrid outline.</remarks>
-        public static void PaintMap<THex>(this MapDisplay<THex> @this, Graphics graphics)
+        public static void PaintMap<THex>(this IMapDisplayWinForms @this, Graphics graphics,
+                bool showHexgrid, Hexes boardHexes, ILandmarks landmarks)
         where THex : MapGridHex { 
-            if (graphics==null) throw new ArgumentNullException("graphics");
-
-            var container  = graphics.BeginContainer(); // Set all transformations relative to current origin!
-            var clipHexes  = @this.GetClipInHexes(graphics.VisibleClipBounds);
-            graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            var font       = SystemFonts.MenuFont;
-            var brush      = Brushes.Black;
-            var textOffset = new Point((@this.GridSize.Scale(0.50F)
-                           - new SizeF(font.Size,font.Size).Scale(0.8F)).ToSize());
-            @this.PaintForEachHex(graphics, clipHexes, coords => {
-                @this[coords].IfHasValueDo(hex => hex.Paint(graphics, @this.HexgridPath));
-                if (@this.ShowHexgrid) graphics.DrawPath(Pens.Black, @this.HexgridPath);
-                if (@this.LandmarkToShow > 0) {
-                    graphics.DrawString(@this.Landmarks.DistanceFrom(coords,@this.LandmarkToShow-1), font, brush, textOffset);
-                }
-            } );
-            graphics.EndContainer(container); 
+            graphics.Contain( g => {
+                var clipHexes  = @this.GetClipInHexes(graphics.VisibleClipBounds);
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                var font       = SystemFonts.MenuFont;
+                var brush      = Brushes.Black;
+                var textOffset = new Point((@this.GridSize.Scale(0.50F)
+                               - new SizeF(font.Size,font.Size).Scale(0.8F)).ToSize());
+                @this.PaintForEachHex<THex>(graphics, clipHexes, coords => {
+                    boardHexes(coords).IfHasValueDo(h => { if(h is MapGridHex hex) hex.Paint(graphics, @this.HexgridPath); });
+                    if (showHexgrid) graphics.DrawPath(Pens.Black, @this.HexgridPath);
+                    if (@this.LandmarkToShow > 0) {
+                        graphics.DrawString(landmarks.DistanceFrom(coords,@this.LandmarkToShow-1), font, brush, textOffset);
+                    }
+                } );
+            });
         }
 
         /// <summary>Paint the top layer of the display, graphics that changes frequently between refreshes.</summary>
         /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
         /// <param name="graphics">Graphics object for the canvas being painted.</param>
-        public static void PaintHighlight<THex>(this MapDisplay<THex> @this, Graphics graphics) 
+        public static void PaintHighlight<THex>(this IMapDisplayWinForms @this, Graphics graphics, bool showRangeLine)
         where THex : MapGridHex {
-            if (graphics==null) throw new ArgumentNullException("graphics");
+            graphics.Contain(g => {
+                g.Transform = @this.TranslateToHex(@this.StartHex);
+                g.DrawPath(Pens.Red, @this.HexgridPath);
+            });
 
-            var container = graphics.BeginContainer();
-            graphics.Transform = @this.TranslateToHex(@this.StartHex);
-            graphics.DrawPath(Pens.Red, @this.HexgridPath);
-
-            if (@this.ShowPath) {
-                graphics.EndContainer(container); container = graphics.BeginContainer();
-                @this.PaintPath(graphics,@this.Path);
+            if (@this.Path != null) {
+                graphics.Contain(g => { @this.PaintPath<THex>(g, @this.Path); });
             }
 
-            if (@this.ShowRangeLine) {
-                graphics.EndContainer(container); container = graphics.BeginContainer();
-                var target = @this.CentreOfHex(@this.HotspotHex);
-                graphics.DrawLine(Pens.Red, @this.CentreOfHex(@this.StartHex), target);
-                graphics.DrawLine(Pens.Red, target.X-8,target.Y-8, target.X+8,target.Y+8);
-                graphics.DrawLine(Pens.Red, target.X-8,target.Y+8, target.X+8,target.Y-8);
+            if (showRangeLine) {
+                graphics.Contain(g => {
+                    var target = @this.CentreOfHex(@this.HotspotHex);
+                    graphics.DrawLine(Pens.Red, @this.CentreOfHex(@this.StartHex), target);
+                    graphics.DrawLine(Pens.Red, target.X-8,target.Y-8, target.X+8,target.Y+8);
+                    graphics.DrawLine(Pens.Red, target.X-8,target.Y+8, target.X+8,target.Y-8);
+                });
             }
-            graphics.EndContainer(container); 
         }
 
-        public static void PaintShading<THex>(this MapDisplay<THex> @this, Graphics graphics) 
+        /// <summary>.</summary>
+        /// <typeparam name="THex"></typeparam>
+        /// <param name="this"></param>
+        /// <param name="graphics"></param>
+        public static void PaintShading<THex>(this IMapDisplayWinForms @this, Graphics graphics,
+                IFov fov, byte shadeBrushAlpha, Color shadeBrushColor)
         where THex : MapGridHex {
-            if (graphics==null) throw new ArgumentNullException("graphics");
-
-            var container = graphics.BeginContainer();
-            if (@this.ShowFov) {
-                var clipHexes  = @this.GetClipInHexes(graphics.VisibleClipBounds);
-                using(var shadeBrush = new SolidBrush(Color.FromArgb(@this.ShadeBrushAlpha, @this.ShadeBrushColor))) {
-                    @this.PaintForEachHex(graphics, clipHexes, coords => {
-                        if (@this.Fov!=null && ! @this.Fov[coords]) {
-                            graphics.FillPath(shadeBrush, @this.HexgridPath);
-                        }
-                    } );
+            graphics.Contain(g => {
+                if (fov != null) {
+                    var clipHexes  = @this.GetClipInHexes(graphics.VisibleClipBounds);
+                    using(var shadeBrush = new SolidBrush(Color.FromArgb(shadeBrushAlpha, shadeBrushColor))) {
+                        @this.PaintForEachHex<THex>(graphics, clipHexes, coords => {
+                            if ( ! fov[coords]) { graphics.FillPath(shadeBrush, @this.HexgridPath); }
+                        } );
+                    }
                 }
-            }
-
-            graphics.EndContainer(container); 
+            });
         }
 
         /// <summary>Paints all the hexes in <paramref name="clipHexes"/> by executing <paramref name="paintAction"/>
@@ -116,7 +119,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// The rectangular extent of hexes to be painted.</param>
         /// <param name="paintAction">Type: Action {HexCoords} - 
         /// The paint action to be performed for each hex.</param>
-        public static void PaintForEachHex<THex>(this MapDisplay<THex> @this, Graphics graphics, 
+        public static void PaintForEachHex<THex>(this IMapDisplayWinForms @this, Graphics graphics, 
                                     CoordsRectangle clipHexes, Action<HexCoords> paintAction) 
         where THex : MapGridHex
         =>  @this.ForEachHex(maybe => {
@@ -134,7 +137,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
         /// <param name="maybePath">Type: <see cref="IDirectedPathCollection"/> - 
         /// A directed path (ie linked-list> of hexes to be painted.</param>
-        public static void PaintPath<THex>(this MapDisplay<THex> @this, Graphics graphics, 
+        public static void PaintPath<THex>(this IMapDisplayWinForms @this, Graphics graphics, 
                                            Maybe<IDirectedPathCollection> maybePath) 
         where THex : MapGridHex {
             if (graphics==null) throw new ArgumentNullException("graphics");
@@ -146,7 +149,7 @@ namespace PGNapoleonics.HexgridPanel {
                     graphics.Transform = @this.TranslateToHex(coords);
                     graphics.FillPath(brush, @this.HexgridPath);
 
-                    if (@this.ShowPathArrow) @this.PaintPathArrow(graphics, path);
+                    if (@this.ShowPathArrow) @this.PaintPathArrow<THex>(graphics, path);
 
                     path = path.PathSoFar;
                 }
@@ -158,14 +161,14 @@ namespace PGNapoleonics.HexgridPanel {
         /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
         /// <param name="path">Type: <see cref="IDirectedPathCollection"/> - 
         /// A directed path (ie linked-list> of hexes to be highlighted with a direction arrow.</param>
-        static void PaintPathArrow<THex>(this MapDisplay<THex> @this, Graphics graphics, IDirectedPathCollection path)
+        static void PaintPathArrow<THex>(this IMapDisplayWinForms @this, Graphics graphics, IDirectedPathCollection path)
         where THex : MapGridHex {
             if (graphics==null) throw new ArgumentNullException("graphics");
             if (path==null) throw new ArgumentNullException("path");
 
             graphics.TranslateTransform(@this.HexCentreOffset.Width, @this.HexCentreOffset.Height);
-            if (path.PathSoFar == null) @this.PaintPathDestination(graphics);
-            else                        @this.PaintPathArrow(graphics, path.PathStep.HexsideExit);
+            if (path.PathSoFar == null) @this.PaintPathDestination<THex>(graphics);
+            else                        @this.PaintPathArrow<THex>(graphics, path.PathStep.HexsideExit);
         }
 
         /// <summary>Paint the direction arrow for each hex of the current shortest path.</summary>
@@ -174,7 +177,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <param name="hexside">Type: <see cref="Hexside"/> - 
         /// Direction from this hex in which the next step is made.</param>
         /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
-        static void PaintPathArrow<THex>(this MapDisplay<THex> @this, Graphics graphics, Hexside hexside) 
+        static void PaintPathArrow<THex>(this IMapDisplayWinForms @this, Graphics graphics, Hexside hexside) 
         where THex : MapGridHex {
             if (graphics==null) throw new ArgumentNullException("graphics");
 
@@ -189,7 +192,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
         /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
         /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
-        static void PaintPathDestination<THex>(this MapDisplay<THex> @this, Graphics graphics) 
+        static void PaintPathDestination<THex>(this IMapDisplayWinForms @this, Graphics graphics) 
         where THex : MapGridHex {
             if (graphics==null) throw new ArgumentNullException("graphics");
 
@@ -198,10 +201,8 @@ namespace PGNapoleonics.HexgridPanel {
             graphics.DrawLine(Pens.Black, -unit*2, unit*2, unit*2,-unit*2);
         }
 
-        /// <summary>Paint the intermediate layer of the display, graphics that changes infrequently between refreshes.</summary>
-        /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
-        /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
-        public static void PaintUnits<THex>(this MapDisplay<THex> @this, Graphics graphics) where THex : MapGridHex {
+        public static void PaintUnits<THex>(this IMapDisplayWinForms @this, Graphics graphics)
+        where THex : MapGridHex {
             if (@this    == null) throw new ArgumentNullException("this");
             if (graphics == null) throw new ArgumentNullException("graphics");
 
@@ -212,12 +213,12 @@ namespace PGNapoleonics.HexgridPanel {
     /// <summary>TODO</summary>
     public static partial class GraphicsExtensions {
         /// <summary>TODO</summary>
-        public static void PreserveState(this Graphics @this, Action<Graphics> drawingCommands) {
-            if (@this != null  &&  drawingCommands != null) {
-                var state = @this.Save();
-                drawingCommands(@this);
-                @this.Restore(state);
-            }
+        public static void Contain(this Graphics graphics, Action<Graphics> drawingCommands) {
+            if (graphics==null) throw new ArgumentNullException("graphics");
+
+            var container = graphics.BeginContainer();
+            drawingCommands?.Invoke(graphics);
+            graphics.EndContainer(container); 
         }
-    }
+   }
 }

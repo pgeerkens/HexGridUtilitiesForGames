@@ -26,38 +26,64 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System.Drawing;
-
+using System;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.FieldOfView;
+using PGNapoleonics.HexUtilities.Pathfinding;
 
 namespace PGNapoleonics.HexgridPanel {
+    using HexPoint     = System.Drawing.Point;
+    using HexPointF    = System.Drawing.PointF;
+    using HexSize      = System.Drawing.Size;
+    using HexSizeF     = System.Drawing.SizeF;
+    using ILandmarks   = ILandmarkCollection;
+    using RectangleF   = System.Drawing.RectangleF;
+    using Color        = System.Drawing.Color;
+    using GraphicsPath = System.Drawing.Drawing2D.GraphicsPath;
+    using Matrix       = System.Drawing.Drawing2D.Matrix;
+
     /// <summary>(Technology-dependent portion of) interface contract required of a map board to be displayed by the Hexgrid control.</summary>
-    public interface IMapDisplayWinForms : IMapDisplay{
+    public interface IMapDisplayWinForms : IMapDisplay {
+        /// <summary>Gets or sets the Field-of-View for the current <see cref="HotspotHex"/>, as an <see cref="IFov"/> object.</summary>
+        IFov         Fov             { get; }
+        /// <summary>.</summary>/>
+        GraphicsPath HexgridPath     { get; }
+        /// <summary>Offset of hex centre from upper-left corner, as a <see cref="HexSize"/> struct.</summary>
+        HexSize      HexCentreOffset { get; }
+        /// <summary>.</summary>
+        ILandmarks   Landmarks       { get;}
+        /// <summary>Gets or sets the alpha component for the shading brush used by Field-of-View display to indicate non-visible hexes.</summary>
+        byte         ShadeBrushAlpha { get; }
+        /// <summary>Gets or sets the base color for the shading brush used by Field-of-View display to indicate non-visible hexes.</summary>
+        Color        ShadeBrushColor { get; }
+        /// <summary>Gets or sets whether to display direction indicators for the current path.</summary>
+        bool         ShowPathArrow   { get; }
+
+        /// <summary>Returns the "{Maybe<IHex>}" at location <c>coords</c>.</summary>
+        Maybe<IHex> this[HexCoords coords] { get; }
+
         /// <summary>Gets the CoordsRectangle description of the clipping region.</summary>
         /// <param name="point">Upper-left corner in pixels of the clipping region.</param>
         /// <param name="size">Width and height of the clipping region in pixels.</param>
-        CoordsRectangle GetClipInHexes(PointF point, SizeF size);
+        CoordsRectangle GetClipInHexes(HexPointF point, HexSizeF size);
 
         /// <summary>Gets the CoordsRectangle description of the clipping region.</summary>
         /// <param name="visibleClipBounds">Rectangular extent in pixels of the clipping region.</param>
         CoordsRectangle GetClipInHexes(RectangleF visibleClipBounds);
 
-        /// <summary>Paint the top layer of the display, graphics that changes frequently between refreshes.</summary>
-        /// <param name="graphics">Graphics object for the canvas being painted.</param>
-        void  PaintHighlight(Graphics graphics);
+        /// <summary>Returns pixel coordinates of centre of specified hex.</summary>
+        /// <param name="coords"></param>
+        /// <returns>A Point structure containing pixel coordinates for the (centre of the) specified hex.</returns>
+        HexPoint CentreOfHex(HexCoords coords);
 
         /// <summary>TODO</summary>
-        /// <param name="graphics"></param>
-        void  PaintShading(Graphics graphics);
+        /// <param name="action"></param>
+        void ForEachHex(Action<Maybe<IHex>> action);
 
-        /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
-        /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
-        /// <remarks>For each visible hex: perform <c>paintAction</c> and then draw its hexgrid outline.</remarks>
-        void  PaintMap(Graphics graphics);
-
-        /// <summary>Paint the intermediate layer of the display, graphics that changes infrequently between refreshes.</summary>
-        /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
-        void  PaintUnits(Graphics graphics);
+        /// <summary>Returns the translation transform-@this for the upper-left corner of the specified hex.</summary>
+        /// <param name="coords">Type: HexCoords - 
+        /// Coordinates of the hex to be painted next.</param>
+        Matrix TranslateToHex(HexCoords coords);
     }
 }

@@ -52,8 +52,18 @@ namespace PGNapoleonics.HexgridExampleCommon {
         protected override int  ElevationBase   =>  0;
         /// <inheritdoc/>
         protected override int  ElevationStep   => 10;
-        /// <inheritdoc/>
-        public override    void PaintUnits(Graphics graphics) { ; }
+
+        /// <summary>Wrapper for MapDisplayPainter.PaintHighlight.</summary>
+        public override void PaintHighlight(Graphics graphics)
+        => this.PaintHighlight<MapGridHex>(graphics, ShowRangeLine);
+        /// <summary>Wrapper for MapDisplayPainter.PaintMap.</summary>
+        public override void PaintMap(Graphics graphics)
+        => this.PaintMap<MapGridHex>(graphics,ShowHexgrid, this.Hexes(), Landmarks);
+        /// <summary>Wrapper for MapDisplayPainter.PaintShading.</summary>
+        public override void PaintShading(Graphics graphics)
+        => this.PaintShading<MapGridHex>(graphics, Fov, ShadeBrushAlpha, ShadeBrushColor);
+        /// <summary>Wrapper for MapDisplayPainter.PaintUnits.</summary>
+        public override void PaintUnits(Graphics graphics) {}
 
         #region static Board definition
         static IReadOnlyList<string> _board     = MapDefinitions.MazeMapDefinition;

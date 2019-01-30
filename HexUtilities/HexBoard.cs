@@ -51,7 +51,7 @@ namespace PGNapoleonics.HexUtilities {
     /// <typeparam name="TPath">TODO</typeparam>
     /// <remarks>No Finalizer is implemented as the class possesses no unmanaged resources.</remarks>
     public abstract class HexBoard<THex,TPath> : ILandmarkBoard, IFovBoard, IForEachable<Maybe<THex>>, IDisposable
-    where THex : IHex {
+    where THex:IHex {
         /// <summary>By default, landmark all four corners and midpoints of all 4 sides.</summary>
         /// <remarks>Pre-processing time on start-up can be reduced by decreasing the number of landmarks,
         /// though at the possible expense of longer path-finding times.</remarks>
@@ -116,7 +116,7 @@ namespace PGNapoleonics.HexUtilities {
 
         #region Properties & Fields
         /// <summary>TODO</summary>
-        protected  BoardStorage<Maybe<THex>> BoardHexes { get; }
+        public BoardStorage<Maybe<THex>> BoardHexes { get; }
         /// <summary>TODO </summary>
         protected abstract int         ElevationBase   { get; } //!< Height in units of elevation level 0 (zero).
         /// <summary>TODO </summary>

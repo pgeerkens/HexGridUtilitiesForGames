@@ -47,6 +47,19 @@ namespace PGNapoleonics.HexgridPanel {
         /// <inheritdoc/>
         protected override int      ElevationStep     => 10;
 
+        /// <summary>Wrapper for MapDisplayPainter.PaintHighlight.</summary>
+        public override void PaintHighlight(Graphics graphics) {}
+
+        /// <summary>Wrapper for MapDisplayPainter.PaintMap.</summary>
+        public override void PaintMap(Graphics graphics)
+        => this.PaintMap<MapGridHex>(graphics, ShowHexgrid, this.Hexes(), Landmarks);
+
+        /// <summary>Wrapper for MapDisplayPainter.PaintShading.</summary>
+        public override void PaintShading(Graphics graphics) {}
+
+        /// <summary>Wrapper for MapDisplayPainter.PaintUnits.</summary>
+        public override void PaintUnits(Graphics graphics) {}
+
         /// <inheritdoc/>
         public    override short?   Heuristic(HexCoords source, HexCoords target) => source.Range(target);
     }

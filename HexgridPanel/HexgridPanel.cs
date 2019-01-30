@@ -210,7 +210,7 @@ namespace PGNapoleonics.HexgridPanel {
         protected override void OnPaintBackground(PaintEventArgs e) { ; }
         /// <inheritdoc/>
         protected override void OnPaint(PaintEventArgs e) {
-            if(IsHandleCreated)  e.Graphics.PreserveState(PaintMe);
+            if(IsHandleCreated)  e.Graphics.Contain(PaintMe);
             base.OnPaint(e);
         }
 
@@ -225,10 +225,10 @@ namespace PGNapoleonics.HexgridPanel {
             graphics.TranslateTransform(scroll.X, scroll.Y);
             graphics.ScaleTransform(MapScale,MapScale);
 
-            graphics.PreserveState(PaintMap);
-            graphics.PreserveState(Model.PaintUnits);
-            graphics.PreserveState(Model.PaintShading);
-            graphics.PreserveState(Model.PaintHighlight);
+            graphics.Contain(PaintMap);
+            graphics.Contain(Model.PaintUnits);
+            graphics.Contain(Model.PaintShading);
+            graphics.Contain(Model.PaintHighlight);
         }
 
         private void PaintMap(Graphics graphics) =>

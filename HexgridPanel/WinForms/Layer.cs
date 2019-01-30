@@ -75,7 +75,7 @@ namespace PGNapoleonics.HexgridPanel {
         public Size             Size            { get; private set; }
 
         /// <summary>TODO</summary>
-        public void Refresh() { if (IsOn) Buffer.Graphics.PreserveState(Refresh); }
+        public void Refresh() { if (IsOn) Buffer.Graphics.Contain(Refresh); }
 
         private void Refresh(Graphics graphics) {
             graphics.Clear(Background);

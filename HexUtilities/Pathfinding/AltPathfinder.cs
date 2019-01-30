@@ -183,4 +183,3 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         #endregion
     }
 }
-

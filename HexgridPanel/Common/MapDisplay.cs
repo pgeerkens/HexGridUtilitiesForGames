@@ -26,6 +26,7 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 using PGNapoleonics.HexUtilities;
@@ -71,7 +72,7 @@ namespace PGNapoleonics.HexgridPanel {
     /// <summary>Abstract class representing the basic game board.</summary>
     /// <typeparam name="THex">Type of the hex for which a game board is desired.</typeparam>
     public abstract class MapDisplay<THex> : HexBoard<THex,GraphicsPath>, IMapDisplayWinForms
-    where THex : MapGridHex {
+    where THex:MapGridHex {
 
         /// <summary>TODO</summary>
         protected delegate THex InitializeHex(HexCoords coords);
@@ -181,17 +182,17 @@ namespace PGNapoleonics.HexgridPanel {
         public CoordsRectangle GetClipInHexes(RectangleF visibleClipBounds) =>
                  GetClipInHexes(visibleClipBounds, MapSizeHexes);
 
-        /// <summary>Wrapper for MapDisplayPainter.PaintHighlight.</summary>
-        public virtual void PaintHighlight(Graphics graphics) => MapDisplayPainter.PaintHighlight(this, graphics);
+        /// <inheritdoc/>
+        public abstract void PaintHighlight(Graphics graphics);
 
-        /// <summary>Wrapper for MapDisplayPainter.PaintMap.</summary>
-        public virtual void PaintMap(Graphics graphics) => MapDisplayPainter.PaintMap(this, graphics);
+        /// <inheritdoc/>
+        public abstract void PaintMap(Graphics graphics);
 
-        /// <summary>Wrapper for MapDisplayPainter.PaintShading.</summary>
-        public virtual void PaintShading(Graphics graphics) => MapDisplayPainter.PaintShading(this, graphics);
+        /// <inheritdoc/>
+        public abstract void PaintShading(Graphics graphics);
 
-        /// <summary>Wrapper for MapDisplayPainter.PaintUnits.</summary>
-        public virtual void PaintUnits(Graphics graphics) => MapDisplayPainter.PaintUnits(this, graphics);
+        /// <inheritdoc/>
+        public abstract void PaintUnits(Graphics graphics);
 
         /// <summary>Returns the translation transform-@this for the upper-left corner of the specified hex.</summary>
         /// <param name="coords">Type: HexCoords - 
@@ -242,5 +243,14 @@ namespace PGNapoleonics.HexgridPanel {
             base.Dispose(disposing);
         }
         #endregion
+
+        /// <inheritdoc/>
+        void IMapDisplayWinForms.ForEachHex(Action<Maybe<IHex>> action)
+        => ForEachHex(hex => action(from h in hex select h as IHex));
+
+        /// <inheritdoc/>
+        [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
+        Maybe<IHex> IMapDisplayWinForms.this[HexCoords coords]
+        => from hex in BoardHexes[coords] select hex as IHex;
     }
 }
