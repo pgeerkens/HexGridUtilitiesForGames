@@ -14,7 +14,6 @@ using System.Windows.Forms;
 
 using System.Diagnostics.CodeAnalysis;
 
-using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 using PGNapoleonics.HexUtilities;

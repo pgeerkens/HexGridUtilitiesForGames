@@ -27,20 +27,19 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System.Collections.Generic;
-
 using System.Diagnostics.CodeAnalysis;
 
 using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
-#pragma warning disable 1587
-/// <summary>TODO</summary>
-#pragma warning restore 1587
 using HexSize       = System.Drawing.Size;
 using Graphics      = System.Drawing.Graphics;
 using Brushes       = System.Drawing.Brushes;
 using GraphicsPath  = System.Drawing.Drawing2D.GraphicsPath;
 
+#pragma warning disable 1587
+/// <summary>TODO</summary>
+#pragma warning restore 1587
 namespace PGNapoleonics.HexgridExampleCommon {
     using MapGridHex    = Hex<Graphics,GraphicsPath>;
 

@@ -34,7 +34,6 @@ using PGNapoleonics.HexUtilities.Common;
 namespace PGNapoleonics.HexUtilities.Pathfinding {
     using DirectedPath   = DirectedPathCollection;
     using IDirectedPath  = IDirectedPathCollection;
-    using Heuristic      = Func<HexCoords,HexCoords,short?>;
 
     /// <summary>(Adapted) C# implementation of A* path-finding algorithm by Eric Lippert.</summary>
     /// <remarks>
