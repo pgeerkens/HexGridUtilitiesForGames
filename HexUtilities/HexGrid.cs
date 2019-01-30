@@ -46,7 +46,7 @@ namespace PGNapoleonics.HexUtilities {
 
         /// <summary>Return a new instance of <c>Hexgrid</c>.</summary>
         public Hexgrid(bool isTransposed, HexSize gridSize, float scale, HexSize margin) {
-            IsTransposed = IsTransposed;
+            IsTransposed = isTransposed;
             GridSize     = gridSize;
             Scale        = scale;
             Margin       = margin;
