@@ -40,7 +40,6 @@ using PGNapoleonics.WinForms;
 using WpfInput = System.Windows.Input;
 
 namespace PGNapoleonics.HexgridPanel {
-    using MapGridHex   = Hex<Graphics,GraphicsPath>;
 
     /// <summary>Map orientation settings in 90 degree increments, CCW.</summary>
     public enum MapOrientation {
@@ -192,7 +191,7 @@ namespace PGNapoleonics.HexgridPanel {
         public virtual void SetMapDirty() { Invalidate(ClientRectangle); }
 
         /// <summary>TODO</summary>
-        public         void SetModel(IMapDisplayWinForms model) {
+        public         void SetModel(IMapDisplayWinForms<Hex> model) {
           SetScrollLimits(DataContext.Model);   
           DataContext.Model = model;
           SetMapDirty();
@@ -216,7 +215,7 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <summary>Set ScrollBar increments and bounds from map dimensions.</summary>
-        public virtual void SetScrollLimits(IMapDisplayWinForms model) {
+        public virtual void SetScrollLimits(IMapDisplayWinForms<Hex> model) {
           if (model == null  ||  !AutoScroll) return;
           var smallChange              = Size.Ceiling(model.GridSize.Scale(MapScale));
           HorizontalScroll.SmallChange = smallChange.Width;
@@ -288,25 +287,25 @@ namespace PGNapoleonics.HexgridPanel {
         /// <inheritdoc/>
         protected virtual void RenderHighlight(Graphics graphics) {
             if (graphics == null) throw new ArgumentNullException("graphics");
-            DataContext.Model.PaintHighlight<MapGridHex>(graphics, true);
+            DataContext.Model.PaintHighlight(graphics, true);
         }
         /// <inheritdoc/>
         protected virtual void RenderMap(Graphics graphics) {
             if (graphics == null) throw new ArgumentNullException("graphics");
             using(var brush = new SolidBrush(BackColor)) graphics.FillRectangle(brush, graphics.VisibleClipBounds);
             var model = DataContext.Model;
-            model.PaintMap<MapGridHex>(graphics, true, c => model[c], model.Landmarks);
+            model.PaintMap(graphics, true, c => from h in model[c] select h as IHex, model.Landmarks);
         }
         /// <inheritdoc/>
         protected virtual void RenderShading(Graphics graphics) {
             if (graphics == null) throw new ArgumentNullException("graphics");
             var model = DataContext.Model;
-            model.PaintShading<MapGridHex>(graphics, model.Fov, model.ShadeBrushAlpha, model.ShadeBrushColor);
+            model.PaintShading(graphics, model.Fov, model.ShadeBrushAlpha, model.ShadeBrushColor);
         }
         /// <inheritdoc/>
         protected virtual void RenderUnits(Graphics graphics) {
             if (graphics == null) throw new ArgumentNullException("graphics");
-            DataContext.Model.PaintUnits<MapGridHex>(graphics);
+            DataContext.Model.PaintUnits(graphics);
         }
 
         /// <summary>TODO</summary>

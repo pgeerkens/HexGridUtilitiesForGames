@@ -28,13 +28,17 @@
 #endregion
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
+using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexUtilities {
     using HexSize = System.Drawing.Size;
     using IDirectedPath = IDirectedPathCollection;
 
     /// <summary>(Technology-independent portion of) interface contract required of a map board to be displayed by the Hexgrid control.</summary>
-    public interface IMapDisplay {
+    public interface IMapDisplay<THex> where THex:IHex {
+        /// <summary>TODO</summary>
+        BoardStorage<Maybe<THex>> BoardHexes { get; }
+
         /// <summary>TODO</summary>
         int       FovRadius       { get; set; }
 
@@ -79,7 +83,8 @@ namespace PGNapoleonics.HexUtilities {
     public static class MapDisplayExtensions {
         /// <summary>Rectangular extent in pixels of the defined mapboard.</summary>
         /// <param name="this">The current <see cref="IMapDisplay"/>.</param>
-        public static HexSize MapSizePixels(this IMapDisplay @this)
+        public static HexSize MapSizePixels<THex>(this IMapDisplay<THex> @this)
+        where THex:IHex
         => @this.MapSizeHexes * @this.GridSizePixels;
     }
 }

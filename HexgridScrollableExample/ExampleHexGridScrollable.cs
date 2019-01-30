@@ -28,20 +28,19 @@
 #endregion
 using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using System.Security.Permissions;
 
-using PGNapoleonics.HexgridExampleCommon;
-using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexgridExampleCommon;
+using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridScrollableExample {
-    using MapGridDisplay = MapDisplay<Hex<Graphics, GraphicsPath>>;
+    using MapGridDisplay = MapDisplay<Hex>;
 
     internal sealed partial class ExampleHexgridScrollable : Form, IMessageFilter {
         private bool           _isPanelResizeSuppressed = false;

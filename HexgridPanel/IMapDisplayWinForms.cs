@@ -44,7 +44,7 @@ namespace PGNapoleonics.HexgridPanel {
     using Matrix       = System.Drawing.Drawing2D.Matrix;
 
     /// <summary>(Technology-dependent portion of) interface contract required of a map board to be displayed by the Hexgrid control.</summary>
-    public interface IMapDisplayWinForms : IMapDisplay {
+    public interface IMapDisplayWinForms<THex> : IMapDisplay<THex> where THex:IHex {
         /// <summary>Gets or sets the Field-of-View for the current <see cref="HotspotHex"/>, as an <see cref="IFov"/> object.</summary>
         IFov         Fov             { get; }
         /// <summary>.</summary>/>
@@ -61,7 +61,7 @@ namespace PGNapoleonics.HexgridPanel {
         bool         ShowPathArrow   { get; }
 
         /// <summary>Returns the "{Maybe<IHex>}" at location <c>coords</c>.</summary>
-        Maybe<IHex> this[HexCoords coords] { get; }
+        Maybe<THex> this[HexCoords coords] { get; }
 
         /// <summary>Gets the CoordsRectangle description of the clipping region.</summary>
         /// <param name="point">Upper-left corner in pixels of the clipping region.</param>
@@ -72,8 +72,8 @@ namespace PGNapoleonics.HexgridPanel {
         /// <param name="visibleClipBounds">Rectangular extent in pixels of the clipping region.</param>
         CoordsRectangle GetClipInHexes(RectangleF visibleClipBounds);
 
-        /// <summary>TODO</summary>
-        /// <param name="action"></param>
-        void ForEachHex(Action<Maybe<IHex>> action);
+        ///// <summary>TODO</summary>
+        ///// <param name="action"></param>
+        //void ForEachHex(Action<Maybe<IHex>> action);
     }
 }

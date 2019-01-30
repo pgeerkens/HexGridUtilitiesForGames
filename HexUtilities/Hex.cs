@@ -28,60 +28,61 @@
 #endregion
 using System;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 
 namespace PGNapoleonics.HexUtilities {
-  /// <summary>Abstract implementation of the interface <see Cref="IHex"/>.</summary>
-  [DebuggerDisplay("Coords: {Coords} / ElevLevel: {ElevationLevel}")]
-  public abstract class Hex<TDrawingSurface,TPath> : IHex, IEquatable<Hex<TDrawingSurface,TPath>>  {
-    /// <summary>Construct a new Hex instance at location <paramref name="coords"/>.</summary>
-    protected Hex(HexCoords coords) : this(coords,0) { }
-    /// <summary>Construct a new Hex instance at location <paramref name="coords"/>.</summary>
-    protected Hex(HexCoords coords, int elevationLevel) {
-      Coords         = coords; 
-      ElevationLevel = elevationLevel;
+    /// <summary>Abstract implementation of the interface <see Cref="IHex"/>.</summary>
+    [DebuggerDisplay("Coords: {Coords} / ElevLevel: {ElevationLevel}")]
+    public abstract class Hex : IHex, IEquatable<Hex>  {
+        /// <summary>Construct a new Hex instance at location <paramref name="coords"/>.</summary>
+        protected Hex(HexCoords coords) : this(coords,0) { }
+        /// <summary>Construct a new Hex instance at location <paramref name="coords"/>.</summary>
+        protected Hex(HexCoords coords, int elevationLevel) {
+            Coords         = coords; 
+            ElevationLevel = elevationLevel;
+        }
+
+        /// <inheritdoc/>
+        public          HexCoords   Coords         { get; }
+
+        /// <inheritdoc/>
+        public          int         ElevationLevel { get; }
+
+        /// <inheritdoc/>
+        public virtual  int         HeightObserver => 1;
+
+        /// <inheritdoc/>
+        public virtual  int         HeightTarget   => 1;
+
+        /// <inheritdoc/>
+        public abstract int         HeightTerrain  { get; }
+
+        /// <inheritdoc/>
+        public abstract short?      TryStepCost(Hexside hexsideExit);
+
+        /// <summary>Default implementation, assuming no blocking hexside terrain.</summary>
+        public virtual  int         HeightHexside(Hexside hexside) { return HeightTerrain; }
+
+        /// <summary>TODO</summary>
+        public abstract void Paint(Graphics graphics, GraphicsPath graphicsPath);
+
+        #region Value Equality
+        /// <inheritdoc/>
+        public override bool  Equals(object obj) => this.Equals(obj as Hex);
+
+        /// <inheritdoc/>
+        public override int   GetHashCode()      => Coords.GetHashCode();
+
+        /// <inheritdoc/>
+        public bool           Equals(Hex other)  => other!=null  &&  Coords.Equals(other.Coords);
+        #endregion
     }
 
-    /// <inheritdoc/>
-    public          HexCoords   Coords         { get; }
-
-    /// <inheritdoc/>
-    public          int         ElevationLevel { get; }
-
-    /// <inheritdoc/>
-    public virtual  int         HeightObserver => 1;
-
-    /// <inheritdoc/>
-    public virtual  int         HeightTarget   => 1;
-
-    /// <inheritdoc/>
-    public abstract int         HeightTerrain  { get; }
-
-    /// <inheritdoc/>
-    public abstract short?      TryStepCost(Hexside hexsideExit);
-
-    /// <summary>Default implementation, assuming no blocking hexside terrain.</summary>
-    public virtual  int         HeightHexside(Hexside hexside) { return HeightTerrain; }
-
-    /// <summary>TODO</summary>
-    public abstract void        Paint(TDrawingSurface graphics, TPath graphicsPath);
-
-    #region Value Equality
-    /// <inheritdoc/>
-    public override bool  Equals(object obj) { return this.Equals(obj as Hex<TDrawingSurface,TPath>); }
-
-    /// <inheritdoc/>
-    public override int   GetHashCode()      { return Coords.GetHashCode(); }
-
-    /// <inheritdoc/>
-    public bool Equals(Hex<TDrawingSurface,TPath> other) { return other!=null  &&  Coords.Equals(other.Coords); }
-    #endregion
-  }
-
-  /// <summary>Extension methods for <see Cref="Hex"/>.</summary>
-  public static partial class HexExtensions {
-    /// <summary>The <i>Manhattan</i> distance from this hex to that at <c>coords</c>.</summary>
-    public static int Range(this IHex @this, IHex target) { 
-      return @this.Coords.Range(target.Coords); 
+    /// <summary>Extension methods for <see Cref="Hex"/>.</summary>
+    public static partial class HexExtensions {
+        /// <summary>The <i>Manhattan</i> distance from this hex to that at <c>coords</c>.</summary>
+        public static int Range(this IHex @this, IHex target)
+        => @this.Coords.Range(target.Coords); 
     }
-  }
 }

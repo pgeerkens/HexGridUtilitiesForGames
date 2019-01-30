@@ -34,11 +34,11 @@ using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridExampleCommon {
-    using MapGridHex   = Hex<Graphics,GraphicsPath>;
+//    using MapGridHex   = IHex;
 
     /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexgridPanel"/> to implement
     /// a maze map.</summary>
-    public sealed class MazeMap : MapDisplayBlocked<MapGridHex> {
+    public sealed class MazeMap : MapDisplayBlocked<Hex> {
         /// <summary>TODO</summary>
         public MazeMap() : base(_sizeHexes, new Size(26,30), InitializeHex) {}
 
@@ -55,13 +55,13 @@ namespace PGNapoleonics.HexgridExampleCommon {
 
         /// <summary>Wrapper for MapDisplayPainter.PaintHighlight.</summary>
         public override void PaintHighlight(Graphics graphics)
-        => this.PaintHighlight<MapGridHex>(graphics, ShowRangeLine);
+        => this.PaintHighlight(graphics, ShowRangeLine);
         /// <summary>Wrapper for MapDisplayPainter.PaintMap.</summary>
         public override void PaintMap(Graphics graphics)
-        => this.PaintMap<MapGridHex>(graphics,ShowHexgrid, this.Hexes(), Landmarks);
+        => this.PaintMap(graphics,ShowHexgrid, this.Hexes(), Landmarks);
         /// <summary>Wrapper for MapDisplayPainter.PaintShading.</summary>
         public override void PaintShading(Graphics graphics)
-        => this.PaintShading<MapGridHex>(graphics, Fov, ShadeBrushAlpha, ShadeBrushColor);
+        => this.PaintShading(graphics, Fov, ShadeBrushAlpha, ShadeBrushColor);
         /// <summary>Wrapper for MapDisplayPainter.PaintUnits.</summary>
         public override void PaintUnits(Graphics graphics) {}
 
@@ -70,7 +70,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
         static Size                  _sizeHexes = new Size(_board[0].Length, _board.Count);
         #endregion
 
-        private new static MapGridHex InitializeHex(HexCoords coords) {
+        private new static Hex InitializeHex(HexCoords coords) {
             switch (_board[coords.User.Y][coords.User.X]) {
                 case '.': return new PassableTerrainGridHex   (coords,0, 0,1,Brushes.White);     // Path
                 default:  return new ImpassableTerrainGridHex (coords,1,10,  Brushes.DarkGray);  // Wall

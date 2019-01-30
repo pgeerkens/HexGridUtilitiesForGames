@@ -41,7 +41,7 @@ using GraphicsPath  = System.Drawing.Drawing2D.GraphicsPath;
 /// <summary>TODO</summary>
 #pragma warning restore 1587
 namespace PGNapoleonics.HexgridExampleCommon {
-    using MapGridHex    = Hex<Graphics,GraphicsPath>;
+    using MapGridHex    = Hex;
 
     /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexgridPanel"/> to implement
     /// a terrain map.</summary>
@@ -61,14 +61,14 @@ namespace PGNapoleonics.HexgridExampleCommon {
 
         /// <summary>Wrapper for MapDisplayPainter.PaintHighlight.</summary>
         public override void PaintHighlight(Graphics graphics)
-        => this.PaintHighlight<MapGridHex>(graphics, ShowRangeLine);
+        => this.PaintHighlight(graphics, ShowRangeLine);
         /// <summary>Wrapper for MapDisplayPainter.PaintMap.</summary>
         public override void PaintMap(Graphics graphics)
-        => this.PaintMap<MapGridHex>(graphics, ShowHexgrid, this.Hexes(), Landmarks);
+        => this.PaintMap(graphics, ShowHexgrid, this.Hexes(), Landmarks);
 
         /// <summary>Wrapper for MapDisplayPainter.PaintShading.</summary>
         public override void PaintShading(Graphics graphics)
-        => this.PaintShading<MapGridHex>(graphics, Fov, ShadeBrushAlpha, ShadeBrushColor);
+        => this.PaintShading(graphics, Fov, ShadeBrushAlpha, ShadeBrushColor);
 
         /// <summary>Wrapper for MapDisplayPainter.PaintUnits.</summary>
         public override void PaintUnits(Graphics graphics) {}

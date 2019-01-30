@@ -38,7 +38,7 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
-    using MapGridHex  = Hex<Graphics,System.Drawing.Drawing2D.GraphicsPath>;
+  //  using MapGridHex  = IHex;
 
     /// <summary>TODO</summary>
     public partial class BufferedHexgridScrollableOld : HexgridScrollable {
@@ -240,7 +240,7 @@ namespace PGNapoleonics.HexgridPanel {
             using(var brush = new SolidBrush(BackColor)) graphics.FillRectangle(brush, graphics.VisibleClipBounds);
             graphics.Paint(Point.Empty, 1.0F, g => {
                         var model = DataContext.Model;
-                        model.PaintMap<MapGridHex>(g, true, c => model[c], model.Landmarks);
+                        model.PaintMap(g, true, c => from h in model[c] select h as IHex, model.Landmarks);
                 });
         }
 

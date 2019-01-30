@@ -42,12 +42,10 @@ using PGNapoleonics.HexUtilities.FieldOfView;
 using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridScrollableExample {
-    using MapGridHex      = Hex<Graphics,System.Drawing.Drawing2D.GraphicsPath>;
-
     internal sealed partial class ExampleBufferedHexgridScrollable : Form, IMessageFilter {
-        private bool           _isPanelResizeSuppressed = false;
-        private MapDisplay<MapGridHex> _mapBoard;
-        private CustomCoords   _customCoords;
+        private bool            _isPanelResizeSuppressed = false;
+        private MapDisplay<Hex> _mapBoard;
+        private CustomCoords    _customCoords;
 
         public ExampleBufferedHexgridScrollable() {
             InitializeComponent();
@@ -160,10 +158,10 @@ namespace PGNapoleonics.HexgridScrollableExample {
         private void comboBoxMapSelection_SelectionChanged(object sender, EventArgs e) {
             SetMapBoard(ParseMapName(((ToolStripItem)sender).Text));
         }
-        private static MapDisplay<MapGridHex> ParseMapName(string mapName) =>
+        private static MapDisplay<Hex> ParseMapName(string mapName) =>
             Map.MapList.First(item => item.MapName == mapName).MapBoard;
 
-        private void SetMapBoard(MapDisplay<MapGridHex> mapBoard) {
+        private void SetMapBoard(MapDisplay<Hex> mapBoard) {
             _hexgridPanel.SetModel( _mapBoard = mapBoard);
             _mapBoard.ShowPathArrow = buttonPathArrow.Checked;
             _mapBoard.ShowFov       = buttonFieldOfView.Checked;

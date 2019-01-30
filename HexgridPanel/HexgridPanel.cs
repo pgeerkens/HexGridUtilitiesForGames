@@ -39,19 +39,13 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
-    using MapGridHex      = Hex<Graphics,GraphicsPath>;
-
     /// <summary>Sub-class implementation of a <b>WinForms</b> Panel with integrated <see cref="Hexgrid"/> support.</summary>
-    [DockingAttribute(DockingBehavior.AutoDock)]
+    [Docking(DockingBehavior.AutoDock)]
     [Obsolete("Use PGNapoleonics.HexgridPanel.HexgridScrollable instead.")]
     public partial class HexgridPanel : TiltAwarePanel, ISupportInitialize {
-        #region Constructors
         /// <summary>Creates a new instance of HexgridPanel.</summary>
-        public HexgridPanel() : base() =>
-            InitializeComponent();
+        public HexgridPanel() : base() => InitializeComponent();
         
-        #endregion
-
         #region ISupportInitialize implementation
         /// <summary>Signals the object that initialization is starting.</summary>
         public virtual void BeginInit() { 
@@ -81,14 +75,14 @@ namespace PGNapoleonics.HexgridPanel {
 
         #region Properties
         /// <summary>MapBoard hosting this panel.</summary>
-        public MapDisplay<MapGridHex> Model    { 
+        public MapDisplay<Hex> Model    { 
           get => _model;
           set {  if (_model != null) _model.Dispose(); 
                  _model = value; 
                  SetScrollLimits(_model);   
                  SetMapDirty();
               }
-        } MapDisplay<MapGridHex> _model = EmptyBoard.TheOne;
+        } MapDisplay<Hex> _model = EmptyBoard.TheOne;
 
         /// <summary>Gets or sets the coordinates of the hex currently underneath the mouse.</summary>
         public     HexCoords    HotspotHex     { get; private set; }
@@ -148,7 +142,7 @@ namespace PGNapoleonics.HexgridPanel {
         public         void SetScaleList(IReadOnlyList<float> scales) => ScaleList = scales;
 
         /// <summary>Set ScrollBar increments and bounds from map dimensions.</summary>
-        public virtual void SetScrollLimits(IMapDisplayWinForms model) {
+        public virtual void SetScrollLimits(IMapDisplayWinForms<Hex> model) {
             if (model == null) return;
             var smallChange              = Size.Ceiling(model.GridSize.Scale(MapScale));
             HorizontalScroll.SmallChange = smallChange.Width;

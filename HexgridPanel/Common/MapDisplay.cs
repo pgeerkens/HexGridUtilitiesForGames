@@ -45,7 +45,6 @@ namespace PGNapoleonics.HexgridPanel {
     using Graphics      = System.Drawing.Graphics;
     using Color         = System.Drawing.Color;
     using GraphicsPath  = System.Drawing.Drawing2D.GraphicsPath;
-    using MapGridHex    = Hex<System.Drawing.Graphics, System.Drawing.Drawing2D.GraphicsPath>;
 
     using static System.Drawing.Drawing2D.PathPointType;
 
@@ -65,7 +64,7 @@ namespace PGNapoleonics.HexgridPanel {
     ///     public abstract void PaintUnits(Graphics graphics);
     /// </remarks>
     public abstract class MapDisplayFlat<THex>:MapDisplay<THex>
-    where THex : MapGridHex {
+    where THex:IHex {
         /// <summary>Creates a new instance of the MapDisplay class.</summary>
         protected MapDisplayFlat(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex)
         : base(sizeHexes, gridSize, initializeHex, DefaultLandmarks(sizeHexes),
@@ -85,7 +84,7 @@ namespace PGNapoleonics.HexgridPanel {
     ///     public abstract void PaintUnits(Graphics graphics);
     /// </remarks>
     public abstract class MapDisplayBlocked<THex> : MapDisplay<THex>
-    where THex : MapGridHex {
+    where THex:IHex {
         /// <summary>Creates a new instance of the MapDisplay class.</summary>
         protected MapDisplayBlocked(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex)
         : base(sizeHexes, gridSize, initializeHex, DefaultLandmarks(sizeHexes),
@@ -104,8 +103,8 @@ namespace PGNapoleonics.HexgridPanel {
     ///     public abstract void PaintShading(Graphics graphics);
     ///     public abstract void PaintUnits(Graphics graphics);
     /// </remarks>
-    public abstract class MapDisplay<THex> : HexBoard<THex>, IMapDisplayWinForms, IFovBoard
-    where THex:MapGridHex {
+    public abstract class MapDisplay<THex> : HexBoard<THex>, IMapDisplayWinForms<THex>, IFovBoard
+    where THex:IHex {
 
         /// <summary>TODO</summary>
         protected delegate THex InitializeHex(HexCoords coords);
@@ -194,6 +193,8 @@ namespace PGNapoleonics.HexgridPanel {
             get => _startHex;
             set { if (MapSizeHexes.IsOnboard(value)) _startHex = value; PathSet(); ; if (ShowRangeLine) _fov = null; }
         } HexCoords _startHex = HexCoords.EmptyUser;
+
+        BoardStorage<Maybe<THex>> IMapDisplay<THex>.BoardHexes => BoardHexes;
         #endregion
 
         /// <summary>TODO</summary>
@@ -227,9 +228,9 @@ namespace PGNapoleonics.HexgridPanel {
         /// <inheritdoc/>
         public abstract void PaintUnits(Graphics graphics);
 
-        /// <inheritdoc/>
-        void IMapDisplayWinForms.ForEachHex(Action<Maybe<IHex>> action)
-        => this.ForEachHex(hex => action(from h in hex select h as IHex));
+        ///// <inheritdoc/>
+        //void IMapDisplayWinForms.ForEachHex(Action<Maybe<IHex>> action)
+        //=> this.ForEachHex(hex => action(from h in hex select h as IHex));
         #endregion
 
         /// <inheritdoc/>
@@ -247,8 +248,9 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <inheritdoc/>
         [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
-        Maybe<IHex> IMapDisplayWinForms.this[HexCoords coords]
-        => from hex in BoardHexes[coords] select hex as IHex;
+        Maybe<THex> IMapDisplayWinForms<THex>.this[HexCoords coords]
+        => BoardHexes[coords];
+        //=> from hex in BoardHexes[coords] select hex;
 
         #region Derived IDisposable implementation
         /// <summary>True if already Disposed.</summary>

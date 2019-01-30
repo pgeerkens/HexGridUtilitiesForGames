@@ -33,10 +33,8 @@ using HexSize      = System.Drawing.Size;
 using GraphicsPath = System.Drawing.Drawing2D.GraphicsPath;
 
 namespace PGNapoleonics.HexgridPanel {
-    using MapGridHex = Hex<Graphics,GraphicsPath>;
-
     /// <summary>TODO</summary>
-    public sealed class EmptyBoard : MapDisplayBlocked<MapGridHex> {
+    public sealed class EmptyBoard : MapDisplayBlocked<Hex> {
         public static EmptyBoard TheOne { get; } = new EmptyBoard();
 
         /// <summary>TODO</summary>
@@ -52,7 +50,7 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <summary>Wrapper for MapDisplayPainter.PaintMap.</summary>
         public override void PaintMap(Graphics graphics)
-        => this.PaintMap<MapGridHex>(graphics, ShowHexgrid, this.Hexes(), Landmarks);
+        => this.PaintMap(graphics, ShowHexgrid, this.Hexes(), Landmarks);
 
         /// <summary>Wrapper for MapDisplayPainter.PaintShading.</summary>
         public override void PaintShading(Graphics graphics) {}
@@ -65,7 +63,7 @@ namespace PGNapoleonics.HexgridPanel {
     }
 
     /// <summary>TODO</summary>
-    public sealed class EmptyGridHex : MapGridHex, IHex {
+    public sealed class EmptyGridHex : Hex {
         /// <summary>TODO</summary>
         public EmptyGridHex(HexCoords coords) : base(coords,0) {}
 

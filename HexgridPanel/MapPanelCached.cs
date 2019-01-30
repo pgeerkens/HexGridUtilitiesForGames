@@ -17,11 +17,8 @@ using System.Diagnostics.CodeAnalysis;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 using PGNapoleonics.HexUtilities;
-using System.Drawing.Drawing2D;
 
 namespace PGNapoleonics.HexgridPanel {
-    using MapGridHex  = Hex<Graphics,GraphicsPath>;
-
     /// <summary>TODO</summary>
     public sealed partial class CachedMapPanel : HexgridScrollable {
         /// <summary>TODO</summary>/>
@@ -93,7 +90,7 @@ namespace PGNapoleonics.HexgridPanel {
                 temp = new Bitmap(width, height) { Tag = tag };
                 temp.Paint(Point.Empty, CacheScale, g => {
                     var model = DataContext.Model;
-                    model.PaintMap<MapGridHex>(g, true, c => model[c], model.Landmarks);
+                    model.PaintMap(g, true, c => from h in model[c] select h as IHex, model.Landmarks);
                 });
                 bitmap = temp;
                 temp   = null;
@@ -120,15 +117,15 @@ namespace PGNapoleonics.HexgridPanel {
                 BufferCache  .Render(BufferMap,   location, mapScale / CacheScale);
                 BufferMap    .Render(BufferUnits, location, mapScale, g => {
                     var model = DataContext.Model;
-                    model.PaintUnits<MapGridHex>(g);
+                    model.PaintUnits<Hex>(g);
                 });
                 BufferUnits  .Render(BufferBack,  location, mapScale, g => {
                     var model = DataContext.Model;
-                    model.PaintHighlight<MapGridHex>(g, true);
+                    model.PaintHighlight<Hex>(g, true);
                 });
                 BufferShading.Render(BufferBack, location, mapScale, g => {
                     var model = DataContext.Model;
-                    model.PaintShading<MapGridHex>(g, model.Fov, model.ShadeBrushAlpha, model.ShadeBrushColor);
+                    model.PaintShading<Hex>(g, model.Fov, model.ShadeBrushAlpha, model.ShadeBrushColor);
                 });
 
                 e.Graphics.DrawImageUnscaled(BufferBack, Point.Empty);

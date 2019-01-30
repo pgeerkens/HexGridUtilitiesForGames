@@ -37,17 +37,17 @@ using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridExampleCommon {
-  using MapGridHex      = Hex<System.Drawing.Graphics,System.Drawing.Drawing2D.GraphicsPath>;
+//  using MapGridHex      = Hex;
 
   /// <summary>TODO</summary>
-  public delegate MapDisplay<MapGridHex> MapExtractor();
+  public delegate MapDisplay<Hex> MapExtractor();
 
   /// <summary>TODO</summary>
   public struct Map {
     /// <summary>TODO</summary>
     public string MapName { get; private set; }
     /// <summary>TODO</summary>
-    public MapDisplay<MapGridHex> MapBoard { get { return _mapExtractor(); } } MapExtractor _mapExtractor;
+    public MapDisplay<Hex> MapBoard { get { return _mapExtractor(); } } MapExtractor _mapExtractor;
 
     /// <summary>TODO</summary>
     public Map(string mapName, MapExtractor mapExtractor) : this() {

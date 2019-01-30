@@ -28,15 +28,13 @@
 #endregion
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 using PGNapoleonics.HexUtilities;
-using GraphicsPath = System.Drawing.Drawing2D.GraphicsPath;
 
 namespace PGNapoleonics.HexgridExampleCommon {
-    using MapGridHex  = Hex<Graphics,GraphicsPath>;
-
     /// <summary>Abstract class for <c>MapGridHex</c> as used in the examples.</summary>
-    internal abstract class TerrainGridHex : MapGridHex {
+    internal abstract class TerrainGridHex : Hex {
         /// <summary>Initializes a new instance of a <see cref="TerrainGridHex"/>.</summary>
         /// <param name="coords">Board location of this hex.</param>
         /// <param name="elevationLevel">Elevation of this hex.</param>

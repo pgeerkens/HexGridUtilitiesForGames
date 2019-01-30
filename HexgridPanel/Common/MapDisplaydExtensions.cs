@@ -28,8 +28,6 @@
 #endregion
 
 using PGNapoleonics.HexUtilities;
-using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.HexUtilities.Pathfinding;
 
 namespace PGNapoleonics.HexgridPanel {
     using HexPoint = System.Drawing.Point;
@@ -40,7 +38,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <typeparam name="THex"></typeparam>
         /// <param name="this"></param>
         /// <param name="coords">Type: HexCoords - Coordinates of the hex to be painted next.</param>
-        public static Matrix TranslateToHex<THex>(this IMapDisplayWinForms @this, HexCoords coords)
+        public static Matrix TranslateToHex<THex>(this IMapDisplayWinForms<THex> @this, HexCoords coords)
         where THex:IHex {
             var offset  = @this.UpperLeftOfHex<THex>(coords);
             return new Matrix(1, 0, 0, 1, offset.X, offset.Y);
@@ -49,7 +47,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Returns pixel coordinates of upper-left corner of specified hex.</summary>
         /// <param name="coords"></param>
         /// <returns>A Point structure containing pixel coordinates for the (upper-left corner of the) specified hex.</returns>
-        public static HexPoint UpperLeftOfHex<THex>(this IMapDisplayWinForms @this, HexCoords coords)
+        public static HexPoint UpperLeftOfHex<THex>(this IMapDisplayWinForms<THex> @this, HexCoords coords)
         where THex:IHex
         => new HexPoint(
             coords.User.X * @this.GridSize.Width,
@@ -59,7 +57,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Returns pixel coordinates of centre of specified hex.</summary>
         /// <param name="coords"></param>
         /// <returns>A Point structure containing pixel coordinates for the (centre of the) specified hex.</returns>
-        public static HexPoint CentreOfHex<THex>(this IMapDisplayWinForms @this, HexCoords coords)
+        public static HexPoint CentreOfHex<THex>(this IMapDisplayWinForms<THex> @this, HexCoords coords)
         where THex:IHex
         => @this.UpperLeftOfHex<THex>(coords) + @this.HexCentreOffset;
 
