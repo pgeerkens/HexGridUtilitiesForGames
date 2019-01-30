@@ -31,7 +31,7 @@ using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridPanel {
     using HexPoint = System.Drawing.Point;
-    using Matrix = System.Drawing.Drawing2D.Matrix;
+    using Matrix   = System.Drawing.Drawing2D.Matrix;
 
     public static partial class MapDisplaydExtensions {
         /// <summary>Returns the translation transform of @this for the upper-left corner of the specified hex.</summary>
@@ -60,10 +60,5 @@ namespace PGNapoleonics.HexgridPanel {
         public static HexPoint CentreOfHex<THex>(this IMapDisplayWinForms<THex> @this, HexCoords coords)
         where THex:IHex
         => @this.UpperLeftOfHex<THex>(coords) + @this.HexCentreOffset;
-
-        ///// <summary>Perform the supplied <paramref name="action"/> for every item in the enumeration.</summary>
-        //public static void ForEachHex<THex>(this IMapDisplayWinForms @this, Action<Maybe<IHex>> action)
-        //where THex:IHex
-        //=> @this.BoardHexes.ForEachSerial(hex => action(from h in hex select h as IHex));
     }
 }

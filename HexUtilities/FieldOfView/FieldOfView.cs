@@ -32,6 +32,8 @@ using System.Linq;
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.FieldOfView {
+    using HexSize = System.Drawing.Size;
+
   /// <summary>Implementation of IFov using a backing array of BitArray.</summary>
   internal class ArrayFieldOfView : IFov {
     private readonly object _syncLock = new object();
@@ -54,6 +56,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
       }
     } readonly BitArray[] _fovBacking;
 
-    private readonly System.Drawing.Size _mapSizeHexes;
+    private readonly HexSize _mapSizeHexes;
   }
 }

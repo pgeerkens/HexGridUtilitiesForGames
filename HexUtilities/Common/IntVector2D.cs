@@ -31,8 +31,8 @@ using System.Diagnostics;
 using System.Globalization;
 
 namespace PGNapoleonics.HexUtilities.Common {
-  using HexPoint     = System.Drawing.Point;
-  using HexSize      = System.Drawing.Size;
+  using HexPoint = System.Drawing.Point;
+  using HexSize  = System.Drawing.Size;
 
     /// <summary>Representation of an immutable integer 2D vector.</summary>
     [DebuggerDisplay("({X},{Y},{W})")]

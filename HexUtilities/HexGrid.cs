@@ -26,18 +26,12 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Collections.Generic;
-
-using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities {
     using HexPoint  = System.Drawing.Point;
-    using HexPointF = System.Drawing.PointF;
     using HexPoints = IList<System.Drawing.Point>;
     using HexSize   = System.Drawing.Size;
-    using HexSizeF  = System.Drawing.SizeF;
-    using HexMatrix = System.Drawing.Drawing2D.Matrix;
 
     /// <summary>C# implementation of the hex-picking algorithm noted below.</summary>
     /// <remarks>Mathemagically (left as exercise for the reader) our 'picking' matrices are these, assuming: 
@@ -45,23 +39,18 @@ namespace PGNapoleonics.HexUtilities {
     ///  - 'straight' hex-axis vertically down; and
     ///  - 'oblique'  hex-axis up-and-to-right (at 120 degrees from 'straight').</remarks>
     /// <a href="file://Documentation/HexGridAlgorithm.mht">Hex-grid Algorithms</a>
-    public abstract class TransposableHexgrid : IHexgrid {
-        /// <summary>Return a new instance of either <see cref="RightWayHexgrid"/> or <see cref="TransposedHexgrid"/> as appropriate.</summary>
-        public static   IHexgrid  GetNewGrid(bool isTransposed, HexSize gridSize, float scale)
-        => GetNewGrid(isTransposed,gridSize,scale,HexSize.Empty);
-
-        /// <summary>Return a new instance of either <see cref="RightWayHexgrid"/> or <see cref="TransposedHexgrid"/> as appropriate.</summary>
-        public static   IHexgrid  GetNewGrid(bool isTransposed, HexSize gridSize, float scale, HexSize margin)
-        => isTransposed ? (IHexgrid) new TransposedHexgrid(gridSize, scale, margin)
-                        : (IHexgrid) new RightWayHexgrid(gridSize, scale, margin);
+    public class Hexgrid : IHexgrid {
+        /// <summary>Return a new instance of <c>Hexgrid</c>.</summary>
+        public Hexgrid(bool isTransposed, HexSize gridSize, float scale)
+        : this(isTransposed, gridSize, scale, HexSize.Empty) { }
 
         /// <summary>Return a new instance of <c>Hexgrid</c>.</summary>
-        protected TransposableHexgrid(HexSize gridSize, float scale, HexSize margin) {
-            GridSize    = gridSize;
-            Scale       = scale;
-            Margin      = margin;
+        public Hexgrid(bool isTransposed, HexSize gridSize, float scale, HexSize margin) {
+            IsTransposed = IsTransposed;
+            GridSize     = gridSize;
+            Scale        = scale;
+            Margin       = margin;
 
-            GridSizeF   = GridSize.Scale(Scale);
             HexCorners = new List<HexPoint>() {
                 new HexPoint(GridSize.Width*1/3,              0  ), 
                 new HexPoint(GridSize.Width*3/3,              0  ),
@@ -71,140 +60,17 @@ namespace PGNapoleonics.HexUtilities {
                 new HexPoint(             0,    GridSize.Height/2),
                 new HexPoint(GridSize.Width*1/3,              0  )
             }.AsReadOnly();
-
-            MatrixX = new HexMatrix(
-               (3.0F/2.0F)/GridSizeF.Width,  (3.0F/2.0F)/GridSizeF.Width,
-                     1.0F/GridSizeF.Height,       -1.0F/GridSizeF.Height,  -0.5F,-0.5F);
-
-            MatrixY = new HexMatrix(
-                                     0.0F,  (3.0F/2.0F)/GridSizeF.Width,
-                    2.0F/GridSizeF.Height,         1.0F/GridSizeF.Height,  -0.5F,-0.5F);
-        }
-
-        #region Properties
-        /// <inheritdoc/>
-        public          HexSize   GridSize     { get; }
-        /// <inheritdoc/>
-        public          HexSizeF  GridSizeF    { get; }
-        /// <inheritdoc/>
-        public          HexPoints HexCorners   { get; }
-        /// <inheritdoc/>
-        public          HexSize   Margin       { get; set; }
-        /// <inheritdoc/>
-        public          float     Scale        { get; }
-
-        /// <inheritdoc/>
-        public abstract bool      IsTransposed { get; }
-
-        /// <summary><see cref="HexMatrix"/> for 'picking' the <B>X</B> hex coordinate</summary>
-        private         HexMatrix MatrixX      { get; }
-        /// <summary><see cref="HexMatrix"/> for 'picking' the <B>Y</B> hex coordinate</summary>
-        private         HexMatrix MatrixY      { get; }
-        #endregion
-
-        #region Methods
-        /// <summary>Scroll position on the (possibly transposed) HexGrid.</summary>
-        public virtual  HexPoint  GetScrollPosition(HexPoint scrollPosition) => scrollPosition;
-
-        /// <inheritdoc/>
-        public virtual  HexSize   GetSize(HexSize mapSizePixels, float mapScale)
-        => HexSize.Ceiling(mapSizePixels.Scale(mapScale)); 
-
-        /// <inheritdoc/>
-        public virtual  HexCoords GetHexCoords(HexPoint point, HexSize autoScroll) {
-            // Adjust for origin not as assumed by GetCoordinate().
-            var grid  = new HexSize((int)(GridSizeF.Width*2F/3F), (int)GridSizeF.Height);
-            point    -= autoScroll + grid - Margin;
-
-            return HexCoords.NewCanonCoords( GetCoordinate(MatrixX, point), 
-                                             GetCoordinate(MatrixY, point) );
-        }
-        /// <inheritdoc/>
-        public virtual  HexCoords GetHexCoords(HexPointF point, HexSizeF autoScroll) {
-            // Adjust for origin not as assumed by GetCoordinate().
-            var grid  = new HexSizeF(GridSizeF.Width*2F/3F, GridSizeF.Height);
-            point    -= autoScroll + grid - new HexSizeF(Margin.Width,Margin.Height);
-
-            return HexCoords.NewCanonCoords( GetCoordinate(MatrixX, point), 
-                                             GetCoordinate(MatrixY, point) );
         }
 
         /// <inheritdoc/>
-        public virtual  HexPoint  HexCenterPoint(HexCoords coordsNewULHex)
-        => HexOrigin(coordsNewULHex) + new HexSize((int)(GridSizeF.Width*2F/3F), (int)GridSizeF.Height);
-
-        /// <summary>Returns the pixel coordinates of the center of the specified hex.</summary>
-        /// <param name="coords"><see cref="HexCoords"/> specification for which pixel center is desired.</param>
-        /// <returns>Pixel coordinates of the center of the specified hex.</returns>
-        private         HexPoint  HexOrigin(HexCoords coords)
-        => new HexPoint(
-                (int)(GridSizeF.Width  * coords.User.X),
-                (int)(GridSizeF.Height * coords.User.Y   + GridSizeF.Height/2 * (coords.User.X+1)%2)
-            );
-
+        public HexSize   GridSize     { get; }
         /// <inheritdoc/>
-        public virtual  HexPoint  ScrollPositionToCenterOnHex(HexCoords coordsNewCenterHex, CoordsRectangle visibleRectangle)
-        => HexCenterPoint(HexCoords.NewUserCoords(coordsNewCenterHex.User - (visibleRectangle.Size.User / 2)) );
-
-        /// <summary>Calculates a (canonical X or Y) grid-coordinate for a point, from the supplied 'picking' matrix.</summary>
-        /// <param name="matrix">The 'picking-matrix' matrix</param>
-        /// <param name="point">The screen point identifying the hex to be 'picked'.</param>
-        /// <returns>A (canonical X or Y) grid coordinate of the 'picked' hex.</returns>
-	    static int GetCoordinate (HexMatrix matrix, HexPoint point) {
-              var points = new HexPoint[] {point};
-              matrix.TransformPoints(points);
-
-		      return (int) Math.Floor( (points[0].X + points[0].Y + 2F) / 3F );
-	    }
-        /// <summary>Calculates a (canonical X or Y) grid-coordinate for a point, from the supplied 'picking' matrix.</summary>
-        /// <param name="matrix">The 'picking-matrix' matrix</param>
-        /// <param name="point">The screen point identifying the hex to be 'picked'.</param>
-        /// <returns>A (canonical X or Y) grid coordinate of the 'picked' hex.</returns>
-	    static int GetCoordinate (HexMatrix matrix, HexPointF point) {
-            var points = new HexPointF[] {point};
-            matrix.TransformPoints(points);
-
-		    return (int) Math.Floor( (points[0].X + points[0].Y + 2F) / 3F );
-	    }
-        #endregion
-
-        /// <summary>A right-way hexgrid (with flat-top/pointy-sided hexes); the rectangular i-axis running 
-        /// horizontally out to the right; and the rectangular j-axis running vertically down from the upper-left corner 
-        /// (which remains coordinate (0,0) for both User (rectangular) and Canon (obtuse) coordinate frames.</summary>
-        internal sealed class RightWayHexgrid : TransposableHexgrid {
-            /// <summary>Returns a <see cref="RightWayHexgrid"/> instance.</summary>
-            public RightWayHexgrid(HexSize gridSize, float scale, HexSize margin) : base(gridSize, scale, margin) { }
-
-            public override bool IsTransposed => false;
-        }
-
-        /// <summary>A transposed hexgrid (with pointy-top/flat-sided hexes); the rectangular i-axis running 
-        /// verticallly down; and the rectangular j-axis running horizontally out to the right from the upper-left corner 
-        /// (which remains coordinate (0,0) for both User (rectangular) and Canon (obtuse) coordinate frames.</summary>
-        internal sealed class TransposedHexgrid : TransposableHexgrid {
-            /// <summary>Returns a <see cref="TransposedHexgrid"/> instance.</summary>
-            public TransposedHexgrid(HexSize gridSize, float scale, HexSize margin) : base(gridSize, scale, margin) {}
-
-            /// <inheritdoc/>
-            public override HexPoint GetScrollPosition(HexPoint scrollPosition)
-            => TransposePoint(scrollPosition); 
-
-            public override bool IsTransposed => true;
-
-            /// <inheritdoc/>
-            public override HexSize  GetSize(HexSize mapSizePixels, float mapScale)
-            => TransposeSize(base.GetSize(mapSizePixels, mapScale)); 
-
-            /// <inheritdoc/>
-            public override HexCoords GetHexCoords(HexPoint point, HexSize autoScroll)
-            => base.GetHexCoords(TransposePoint(point), TransposeSize(autoScroll));
-
-            /// <inheritdoc/>
-            public override HexPoint HexCenterPoint(HexCoords coordsNewULHex)
-            => TransposePoint(base.HexCenterPoint(coordsNewULHex));
-
-            static HexPoint TransposePoint(HexPoint point) => new HexPoint(point.Y, point.X);
-            static HexSize  TransposeSize(HexSize  size)   => new HexSize (size.Height, size.Width);
-        }
+        public HexPoints HexCorners   { get; }
+        /// <inheritdoc/>
+        public HexSize   Margin       { get; set; }
+        /// <inheritdoc/>
+        public float     Scale        { get; }
+        /// <inheritdoc/>
+        public bool      IsTransposed { get; }
     }
 }

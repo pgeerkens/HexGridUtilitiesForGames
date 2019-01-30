@@ -33,28 +33,33 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>TODO</summary>
     public static partial class NullableExtensions {
         /// <summary>Returns the value of <paramref name="this">this</paramref> it it has one; otherwise returns <paramref name="alternate"/>().</summary>
-        /// <param name="this">The <see cref="{TOut}"/> being operated upon.</param>
+        /// <typeparam name="TOut">The struct basis for the rtuern type TOut?.</typeparam>
+        /// <param name="this">The <see cref="TOut"/> being operated upon.</param>
         /// <param name="alternate">The action to be perrofmed if <paramref name="this"/> has no value.</param>
         public static TOut? Else<TOut>(this TOut? @this, Func<TOut> alternate) where TOut:struct
         => @this.Match(e => e, alternate); 
 
         /// <summary>Returns the value of <paramref name="this">this</paramref> it it has one; otherwise returns default(<typeparamref name="TOut"/>).</summary>
+        /// <typeparam name="TOut">The struct basis for the rtuern type TOut?.</typeparam>
         /// <param name="this">The <see cref="Maybe{T}"/> being operated upon.</param>
         public static TOut  ElseDefault<TOut>(this TOut? @this) where TOut:struct
         => @this.Match(e => e, ()=>default(TOut)); 
 
         /// <summary>Executes <paramref name="action"/> on <paramref name="this"/> exactly if it hasn't any value.</summary>
+        /// <typeparam name="TOut">The struct basis for the rtuern type TOut?.</typeparam>
         /// <returns>Returns <paramref name="this"/>.</returns>
         public static TOut? ElseDo<TOut>(this TOut? @this, Action action) where TOut:struct
         => @this.Match(value => @this, () => { action(); return @this; });
 
         /// <summary>Returns the value of <paramref name="this"/> if it has one, otherwise throws an <see cref="InvalidOperationException"/>.</summary>
+        /// <typeparam name="TOut">The struct basis for the rtuern type TOut?.</typeparam>
         /// <returns>Returns the value of <paramref name="this"/>.</returns>
         /// <exception cref="InvalidOperationException"></exception>
         public static TOut  ForceGetValue<TOut>(this TOut? @this) where TOut:struct
         => @this.Match(e => e, () => { throw new InvalidOperationException(@this.ToString()); } );
 
         /// <summary>Executes <paramref name="action"/> on <paramref name="this"/> exactly if it has a value.</summary>
+        /// <typeparam name="TOut">The struct basis for the rtuern type TOut?.</typeparam>
         /// <returns>Returns <paramref name="this"/>.</returns>
         public static TOut? IfHasValueDo<TOut>(this TOut? @this, Action<TOut> action)
         where TOut:struct

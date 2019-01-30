@@ -31,7 +31,6 @@ using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.FieldOfView {
     using HexSize      = System.Drawing.Size;
- 
 
     /// <summary>Enumeration of line-of-sight modes</summary>
     public enum FovTargetMode {

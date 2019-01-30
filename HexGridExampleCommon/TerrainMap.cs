@@ -79,17 +79,29 @@ namespace PGNapoleonics.HexgridExampleCommon {
         #endregion
 
         public new static MapGridHex InitializeHex(HexCoords coords) {
+            //char value = _board[coords.User.Y][coords.User.X];
+            //switch(value) {
+            //    default:
+            //    case '.': return new PassableTerrainGridHex   (coords, 0,0, 4,Brushes.White);      // Clear
+            //    case '2': return new PassableTerrainGridHex   (coords, 0,0, 2,Brushes.DarkGray);   // Pike
+            //    case '3': return new PassableTerrainGridHex   (coords, 0,0, 3,Brushes.SandyBrown); // Road
+            //    case 'F': return new PassableTerrainGridHex   (coords, 0,0, 5,Brushes.Brown);      // Ford
+            //    case 'H': return new PassableTerrainGridHex   (coords, 1,0, 5,Brushes.Khaki);      // Hill
+            //    case 'M': return new PassableTerrainGridHex   (coords, 2,0, 6,Brushes.DarkKhaki);  // Mountain
+            //    case 'R': return new ImpassableTerrainGridHex (coords, 0,0,   Brushes.DarkBlue);   // River
+            //    case 'W': return new PassableTerrainGridHex   (coords, 0,7, 8,Brushes.Green);      // Woods
+            //}
             char value = _board[coords.User.Y][coords.User.X];
             switch(value) {
-            default:
-            case '.': return new PassableTerrainGridHex   (coords, 0,0, 4,Brushes.White);      // Clear
-            case '2': return new PassableTerrainGridHex   (coords, 0,0, 2,Brushes.DarkGray);   // Pike
-            case '3': return new PassableTerrainGridHex   (coords, 0,0, 3,Brushes.SandyBrown); // Road
-            case 'F': return new PassableTerrainGridHex   (coords, 0,0, 5,Brushes.Brown);      // Ford
-            case 'H': return new PassableTerrainGridHex   (coords, 1,0, 5,Brushes.Khaki);      // Hill
-            case 'M': return new PassableTerrainGridHex   (coords, 2,0, 6,Brushes.DarkKhaki);  // Mountain
-            case 'R': return new ImpassableTerrainGridHex (coords, 0,0,   Brushes.DarkBlue);   // River
-            case 'W': return new PassableTerrainGridHex   (coords, 0,7, 8,Brushes.Green);      // Woods
+                default:
+                case '.': return new PassableTerrainGridHex   (coords, 0,0, 4,value); // Clear
+                case '2': return new PassableTerrainGridHex   (coords, 0,0, 2,value); // Pike
+                case '3': return new PassableTerrainGridHex   (coords, 0,0, 3,value); // Road
+                case 'F': return new PassableTerrainGridHex   (coords, 0,0, 5,value); // Ford
+                case 'H': return new PassableTerrainGridHex   (coords, 1,0, 5,value); // Hill
+                case 'M': return new PassableTerrainGridHex   (coords, 2,0, 6,value); // Mountain
+                case 'R': return new ImpassableTerrainGridHex (coords, 0,0,   value); // River
+                case 'W': return new PassableTerrainGridHex   (coords, 0,7, 8,value); // Woods
             }
         }
     }

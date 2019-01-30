@@ -71,9 +71,10 @@ namespace PGNapoleonics.HexgridExampleCommon {
         #endregion
 
         private new static Hex InitializeHex(HexCoords coords) {
-            switch (_board[coords.User.Y][coords.User.X]) {
-                case '.': return new PassableTerrainGridHex   (coords,0, 0,1,Brushes.White);     // Path
-                default:  return new ImpassableTerrainGridHex (coords,1,10,  Brushes.DarkGray);  // Wall
+            var value = _board[coords.User.Y][coords.User.X];
+            switch (value) {
+                case '.': return new PassableTerrainGridHex   (coords,0, 0,1,value); // Path
+                default:  return new ImpassableTerrainGridHex (coords,1,10,  value); // Wall
             }
         }
     }

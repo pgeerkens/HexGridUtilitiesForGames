@@ -221,7 +221,7 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <inheritdoc/>
         protected override async void OnPaint(PaintEventArgs e) {
-            if(e==null) throw new ArgumentNullException("e");
+            if(e==null) throw new ArgumentNullException(nameof(e));
             if (DesignMode) { e.Graphics.FillRectangle(Brushes.Gray, ClientRectangle);  return; }
 
             if (IsMapDirty) { OnResize(EventArgs.Empty); IsMapDirty = false; }
@@ -261,7 +261,9 @@ namespace PGNapoleonics.HexgridPanel {
         private void RenderMapLocal(Graphics graphics) {
             if (graphics == null) throw new ArgumentNullException("graphics");
 
-            using(var brush = new SolidBrush(this.BackColor)) graphics.FillRectangle(brush,ClientRectangle);
+            using(var brush = new SolidBrush(this.BackColor)) {
+                graphics.FillRectangle(brush,ClientRectangle);
+            }
             _mapBuffer.Render(graphics, ClientRectangle.Location, 1.0F);
         }
         #endregion

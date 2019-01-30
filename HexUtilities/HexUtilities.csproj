@@ -288,9 +288,8 @@
     <Compile Include="Common\Maybe.cs" />
     <Compile Include="Common\MaybeExtensions.cs" />
     <Compile Include="Common\NullableExtensions.cs" />
-    <Compile Include="Common\ValurEventArgs.cs" />
+    <Compile Include="Common\ValueEventArgs.cs" />
     <Compile Include="FieldOfView\FovBoardExtensions.cs" />
-    <Compile Include="HexBoardExtensions.cs" />
     <Compile Include="IMapDisplay.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -321,9 +320,6 @@
     <Compile Include="Common\ImmutableStack.cs" />
     <Compile Include="Common\IntMatrix2D.cs" />
     <Compile Include="Common\IntVector2D.cs" />
-    <Compile Include="Common\PointExtensions.cs" />
-    <Compile Include="Common\SizeExtensions.cs" />
-    <Compile Include="Common\UserCoordsRectangle.cs" />
     <Compile Include="CustomCoords.cs" />
     <Compile Include="Storage\FlatBoardStorage.cs" />
     <Compile Include="FastLists\IForEachable2.cs" />

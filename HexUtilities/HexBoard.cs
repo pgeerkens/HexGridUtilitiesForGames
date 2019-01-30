@@ -39,15 +39,15 @@ using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexUtilities {
     using HexPoint = System.Drawing.Point;
-    using HexSize = System.Drawing.Size;
+    using HexSize  = System.Drawing.Size;
 
-    using ILandmarks = ILandmarkCollection;
+    using ILandmarks    = ILandmarkCollection;
     using IBoardStorage = IBoardStorage<Maybe<HexsideCosts>>;
 
     /// <summary>Abstract implementation of a hexgrid map-board.</summary>
     /// <typeparam name="THex">TODO</typeparam>
     /// <remarks>No Finalizer is implemented as the class possesses no unmanaged resources.</remarks>
-    public abstract class HexBoard<THex> : ILandmarkBoard, IFovBoard, IDisposable//, IForEachable<Maybe<THex>>
+    public abstract class HexBoard<THex> : ILandmarkBoard, IFovBoard, IDisposable
     where THex:IHex {
         /// <summary>By default, landmark all four corners and midpoints of all 4 sides.</summary>
         /// <remarks>Pre-processing time on start-up can be reduced by decreasing the number of landmarks,
@@ -71,8 +71,8 @@ namespace PGNapoleonics.HexUtilities {
 
         #region Constructors
         /// <summary>Initializes the internal contents of <see cref="HexBoard{THex,TPath}"/> with landmarks as specified for pathfinding.</summary>
-        /// <param name="sizeHexes">Extent in hexes of the board being initialized, as a <see cref="System.Drawing.Size"/>.</param>
-        /// <param name="gridSize">Extent in pixels of the layout grid for the hexagons, as a <see cref="System.Drawing.Size"/>.</param>
+        /// <param name="sizeHexes">Extent in hexes of the board being initialized, as a <see cref="HexSize"/>.</param>
+        /// <param name="gridSize">Extent in pixels of the layout grid for the hexagons, as a <see cref="HexSize"/>.</param>
         /// <param name="boardHexes">TODO</param>
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         protected HexBoard(HexSize sizeHexes, HexSize gridSize, BoardStorage<Maybe<THex>> boardHexes) {
@@ -114,16 +114,16 @@ namespace PGNapoleonics.HexUtilities {
         #region Properties & Fields
         /// <summary>TODO</summary>
         public BoardStorage<Maybe<THex>> BoardHexes { get; }
-        /// <summary>TODO </summary>
-        public    abstract int         ElevationBase   { get; } //!< Height in units of elevation level 0 (zero).
-        /// <summary>TODO </summary>
-        public    abstract int         ElevationStep   { get; } //!< Height increase in units of each elevation level.
+        /// <inheritdoc/>
+        public    abstract int         ElevationBase   { get; }
+        /// <inheritdoc/>
+        public    abstract int         ElevationStep   { get; }
         /// <inheritdoc/>
         public    virtual  int         FovRadius       { get; set; }
         /// <summary>TODO </summary>
         public    virtual  int         HeightOfMan     => 1;   //!< Height in metres.
         /// <inheritdoc/>
-        public             IHexgrid    Hexgrid         => TransposableHexgrid.GetNewGrid(IsTransposed,GridSize,MapScale);
+        public             IHexgrid    Hexgrid         => new Hexgrid(IsTransposed,GridSize,MapScale);
         /// <summary>Gets the extent in pixels of the grid on which hexes are to be laid out. </summary>
         public             HexSize     GridSize        { get; }
         /// <summary>TODO</summary>
@@ -136,7 +136,7 @@ namespace PGNapoleonics.HexUtilities {
         public             ILandmarks  Landmarks       { get; private set; }
         ///  <inheritdoc/>
         public             float       MapScale        { get; set; }
-        /// <summary>The dimensions of the board as a <see cref="System.Drawing.Size"/></summary>
+        /// <summary>The dimensions of the board as a <see cref="HexSize"/></summary>
         public             HexSize     MapSizeHexes    { get; }
         
         /// <summary>Range beyond which Fast PathFinding is used instead of Stable PathFinding.</summary>
@@ -164,11 +164,6 @@ namespace PGNapoleonics.HexUtilities {
         public  void ForAllNeighbours(HexCoords coords, Action<Maybe<THex>,Hexside> action)
         => BoardHexes.ForAllNeighbours(coords,action);
 
-#if false
-        ///  <inheritdoc/>
-        public             HexSize     MapSizePixels   => MapSizeHexes * GridSizePixels;
-#endif
-    
         /// <inheritdoc/>
         public abstract  short? Heuristic(HexCoords source, HexCoords target);
 

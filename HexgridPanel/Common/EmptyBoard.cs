@@ -30,7 +30,6 @@ using PGNapoleonics.HexUtilities;
 
 using Graphics     = System.Drawing.Graphics;
 using HexSize      = System.Drawing.Size;
-using GraphicsPath = System.Drawing.Drawing2D.GraphicsPath;
 
 namespace PGNapoleonics.HexgridPanel {
     /// <summary>TODO</summary>
@@ -65,13 +64,15 @@ namespace PGNapoleonics.HexgridPanel {
     /// <summary>TODO</summary>
     public sealed class EmptyGridHex : Hex {
         /// <summary>TODO</summary>
-        public EmptyGridHex(HexCoords coords) : base(coords,0) {}
+        public EmptyGridHex(HexCoords coords) : base(coords,0) { TerrainType = 'Z'; }
 
-        /// <summary>TODO</summary>
-        public override int         HeightTerrain => 0;
-        /// <summary>TODO</summary>
-        public override short?      TryStepCost(Hexside hexsideExit) => default(short?);
         ///  <inheritdoc/>
-        public override void        Paint(Graphics graphics, GraphicsPath graphicsPath) { ; }
+        public override char   TerrainType   { get; }
+
+        ///  <inheritdoc/>
+        public override int    HeightTerrain => 0;
+
+        ///  <inheritdoc/>
+        public override short? TryStepCost(Hexside hexsideExit) => default(short?);
     }
 }

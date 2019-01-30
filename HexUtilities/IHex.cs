@@ -30,27 +30,29 @@
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities {
-  /// <summary>External interface exposed by individual hexes.</summary>
-  public interface IHex {
-    /// <summary>The <c>HexCoords</c> coordinates for this hex on <c>Board</c>.</summary>
-    HexCoords Coords         { get; }
+    /// <summary>External interface exposed by individual hexes.</summary>
+    public interface IHex {
+        /// <summary>The <c>HexCoords</c> coordinates for this hex on <c>Board</c>.</summary>
+        HexCoords Coords         { get; }
 
-    /// <summary>Elevation of this hex in "steps" above the minimum elevation of the board.</summary>
-    int       ElevationLevel { get; }
+        /// <summary>Elevation of this hex in "steps" above the minimum elevation of the board.</summary>
+        int       ElevationLevel { get; }
 
-    /// <summary>Height ASL in <i>game units</i> of observer's eyes for FOV calculations.</summary>
-    int       HeightObserver { get; }
+        /// <summary>Height ASL in <i>game units</i> of observer's eyes for FOV calculations.</summary>
+        int       HeightObserver { get; }
 
-    /// <summary>Height ASL in <i>game units</i> of target above ground level to be spotted.</summary>
-    int       HeightTarget   { get; }
+        /// <summary>Height ASL in <i>game units</i> of target above ground level to be spotted.</summary>
+        int       HeightTarget   { get; }
 
-    /// <summary>Height ASL in <i>game units</i> of any blocking terrian in this hex.</summary>
-    int       HeightTerrain  { get; }
+        /// <summary>Height ASL in <i>game units</i> of any blocking terrian in this hex.</summary>
+        int       HeightTerrain  { get; }
+        /// <inheritdoc/>
+        char      TerrainType    { get; }
 
-    /// <summary>Returns the cost (> 0) to extend the path across <paramref name="hexsideExit"/>; or null.</summary>
-    short?    TryStepCost(Hexside hexsideExit);
+        /// <summary>Returns the cost (> 0) to extend the path across <paramref name="hexsideExit"/>; or null.</summary>
+        short?    TryStepCost(Hexside hexsideExit);
 
-    /// <summary>Height ASL in <i>game units</i> of any blocking terrain in this hex and the specified Hexside.</summary>
-    int       HeightHexside(Hexside hexside);
-  }
+        /// <summary>Height ASL in <i>game units</i> of any blocking terrain in this hex and the specified Hexside.</summary>
+        int       HeightHexside(Hexside hexside);
+    }
 }

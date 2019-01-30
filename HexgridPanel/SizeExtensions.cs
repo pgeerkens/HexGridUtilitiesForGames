@@ -26,26 +26,36 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 
 namespace PGNapoleonics.HexUtilities.Common {
-  /// <summary>TODO</summary>
-  /// <typeparam name="T"></typeparam>
-  public class ValueEventArgs<T> : EventArgs {
-    /// <summary>TODO</summary>
-    public ValueEventArgs(T value) : base() { _value = value; }
-    /// <summary>TODO</summary>
-    public T Value { get {return _value;} } readonly T _value;
-  }
+    using HexSizeF = System.Drawing.SizeF;
+    using HexSize  = System.Drawing.Size;
 
-  /// <summary>TODO</summary>
-  /// <typeparam name="T"></typeparam>
-  public class ValueChangedEventArgs<T> : ValueEventArgs<T> {
     /// <summary>TODO</summary>
-    public ValueChangedEventArgs(T value, T oldValue) : base(value) {
-      _oldValue = oldValue;
+    public static class SizeExtensions {
+        /// <summary>TODO</summary>
+        public static HexSize Scale(this HexSize @this, int value)
+        => @this.Scale(value,value);
+
+        /// <summary>TODO</summary>
+        public static HexSize Scale(this HexSize @this, int valueX, int valueY)
+        => new HexSize(@this.Width * valueX, @this.Height * valueY);
+
+        /// <summary>TODO</summary>
+        public static HexSizeF Scale(this HexSize @this, float value)
+        => @this.Scale(value,value);
+
+        /// <summary>TODO</summary>
+        public static HexSizeF Scale(this HexSize @this, float valueX, float valueY)
+        => new HexSizeF(@this).Scale(valueX,valueY);
+
+        /// <summary>TODO</summary>
+        public static HexSizeF Scale(this HexSizeF @this, float value)
+        => @this.Scale(value,value);
+
+        /// <summary>TODO</summary>
+        public static HexSizeF Scale(this HexSizeF @this, float valueX, float valueY)
+        => new HexSizeF(@this.Width * valueX, @this.Height * valueY);
     }
-    /// <summary>TODO</summary>
-    public T OldValue { get {return _oldValue;} } readonly T _oldValue;
-  }
 }
+

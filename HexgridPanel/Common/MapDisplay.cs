@@ -26,7 +26,6 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Diagnostics.CodeAnalysis;
 
 using PGNapoleonics.HexUtilities;
@@ -63,7 +62,7 @@ namespace PGNapoleonics.HexgridPanel {
     ///     public abstract void PaintShading(Graphics graphics);
     ///     public abstract void PaintUnits(Graphics graphics);
     /// </remarks>
-    public abstract class MapDisplayFlat<THex>:MapDisplay<THex>
+    public abstract class MapDisplayFlat<THex> : MapDisplay<THex>
     where THex:IHex {
         /// <summary>Creates a new instance of the MapDisplay class.</summary>
         protected MapDisplayFlat(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex)
@@ -204,6 +203,7 @@ namespace PGNapoleonics.HexgridPanel {
                         ? new StandardPathfinder(this).GetPath(source,target)
                         : new BidirectionalAltPathfinder(this).GetPath(source,target)
                    ));
+
         /// <summary>TODO</summary>
         public void PathClear() => _path = Maybe<IDirectedPath>.NoValue();
 
@@ -250,7 +250,6 @@ namespace PGNapoleonics.HexgridPanel {
         [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
         Maybe<THex> IMapDisplayWinForms<THex>.this[HexCoords coords]
         => BoardHexes[coords];
-        //=> from hex in BoardHexes[coords] select hex;
 
         #region Derived IDisposable implementation
         /// <summary>True if already Disposed.</summary>
@@ -267,5 +266,36 @@ namespace PGNapoleonics.HexgridPanel {
             base.Dispose(disposing);
         }
         #endregion
+    }
+}
+namespace PGNapoleonics.HexgridPanel {
+    using System.Drawing;
+    using System.Drawing.Drawing2D;
+
+    public class GraphicsMapPainter {
+        public GraphicsMapPainter() {
+
+        }
+
+        public void PaintMap<THex>(Graphics graphics, HexgridViewModel dataCntext, MapPanel panel)
+        where THex:IHex {
+            if (panel.IsTransposed) { graphics.Transform = TransposeMatrix; }
+
+            var scroll = dataCntext.Grid.GetScrollPosition(panel.AutoScrollPosition);
+            graphics.TranslateTransform(scroll.X + panel.Margin.Left,  scroll.Y + panel.Margin.Top);
+            graphics.ScaleTransform(panel.MapScale,panel.MapScale);
+            Tracing.PaintDetail.Trace($"{panel.Name}.PaintBuffer - VisibleClipBounds: ({graphics.VisibleClipBounds})");
+
+            using(var brush = new SolidBrush(panel.BackColor)) {
+                graphics.FillRectangle(brush, graphics.VisibleClipBounds);
+            }
+            graphics.Paint(Point.Empty, 1.0F, g => {
+                var model = dataCntext.Model;
+                model.PaintMap(g, true, c => from h in model[c] select h as IHex, model.Landmarks);
+            });
+        }
+
+        /// <summary>TODO</summary>
+        static protected Matrix TransposeMatrix => new Matrix(0F,1F, 1F,0F, 0F,0F);
     }
 }

@@ -27,29 +27,39 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 
+using PGNapoleonics.HexUtilities;
+using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Pathfinding;
 
-namespace PGNapoleonics.HexUtilities.Storage {
-  using HexSize      = System.Drawing.Size;
-
+namespace PGNapoleonics.HexgridPanel {
     /// <summary>TODO</summary>
-    /// <typeparam name="T">The <c>Type</c> being stored.</typeparam>
-    public interface IBoardStorage<out T> {
-        /// <summary>Returns the <c>THex</c> instance at the specified coordinates.</summary>
-        [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
-        T this[HexCoords coords] { get; }
-
-        /// <summary>Perform <paramref name="action"/> for all neighbours of <paramref name="coords"/>.</summary>
-        void ForAllNeighbours(HexCoords coords, Action<T,Hexside> action);
-
-        /// <summary>The rectangular extent of the board's hexagonal grid, in hexes.</summary>
-        HexSize MapSizeHexes            { get; }
-
+    public static partial class GraphicsExtensions {
         /// <summary>TODO</summary>
-        /// <param name="coords"></param>
-        /// <param name="hexside"></param>
-        /// <returns></returns>
-        T Neighbour(HexCoords coords, Hexside hexside);
-    }
+        public static void Contain(this Graphics graphics, Action<Graphics> drawingCommands) {
+            if (graphics==null) throw new ArgumentNullException("graphics");
+
+            var container = graphics.BeginContainer();
+            drawingCommands?.Invoke(graphics);
+            graphics.EndContainer(container); 
+        }
+
+        /// <summary>Paints, scaled and translated, the supplied <paramref name="action"/> to the
+        /// specified <paramref name="graphics"/>.</summary>
+        /// <param name="graphics">Target <see cref="Graphics"/> to be rendered to.</param>
+        /// <param name="point"><see cref="Point"/> at which to render <paramref name="action"/>.</param>
+        /// <param name="scale">Scale at which the source should be drawn.</param>
+        /// <param name="action">The drawing action to be performed.</param>
+        public static void Paint(this Graphics graphics, Point point, float scale, Action<Graphics> action) {
+            if (graphics == null) throw new ArgumentNullException("graphics");
+            if (action   == null) throw new ArgumentNullException("action");
+    
+            graphics.PageUnit = GraphicsUnit.Pixel;
+            graphics.TranslateTransform(point.X, point.Y);
+            graphics.ScaleTransform(scale,scale);
+
+            action(graphics);
+        }
+   }
 }

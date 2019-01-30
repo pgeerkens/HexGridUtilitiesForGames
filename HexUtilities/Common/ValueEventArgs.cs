@@ -29,40 +29,23 @@
 using System;
 
 namespace PGNapoleonics.HexUtilities.Common {
-  using HexPointF    = System.Drawing.PointF;
-  using HexPoint     = System.Drawing.Point;
-  using HexSizeF     = System.Drawing.SizeF;
-  using HexSize      = System.Drawing.Size;
-  using HexRectangle = System.Drawing.Rectangle;
-
-  /// <summary>TODO</summary>
-  public static class SizeExtensions {
     /// <summary>TODO</summary>
-    public static HexSize Scale(this HexSize @this, int value) { 
-      return @this.Scale(value,value);
-    }
-    /// <summary>TODO</summary>
-    public static HexSize Scale(this HexSize @this, int valueX, int valueY) {
-      return new HexSize(@this.Width * valueX, @this.Height * valueY);
+    /// <typeparam name="T"></typeparam>
+    public class ValueEventArgs<T> : EventArgs {
+        /// <summary>TODO</summary>
+        public ValueEventArgs() : this(default(T)) { }
+        /// <summary>TODO</summary>
+        public ValueEventArgs(T value) : base() => Value = value;
+        /// <summary>TODO</summary>
+        public T Value { get; }
     }
 
-
     /// <summary>TODO</summary>
-    public static HexSizeF Scale(this HexSize @this, float value) {
-      return @this.Scale(value,value);
+    /// <typeparam name="T"></typeparam>
+    public class ValueChangedEventArgs<T> : ValueEventArgs<T> {
+        /// <summary>TODO</summary>
+        public ValueChangedEventArgs(T value, T oldValue) : base(value) => OldValue = oldValue;
+        /// <summary>TODO</summary>
+        public T OldValue { get; }
     }
-    /// <summary>TODO</summary>
-    public static HexSizeF Scale(this HexSize @this, float valueX, float valueY) {
-      return new HexSizeF(@this).Scale(valueX,valueY);
-    }
-    /// <summary>TODO</summary>
-    public static HexSizeF Scale(this HexSizeF @this, float value) { 
-      return @this.Scale(value,value);
-    }
-    /// <summary>TODO</summary>
-    public static HexSizeF Scale(this HexSizeF @this, float valueX, float valueY) {
-      return new HexSizeF(@this.Width * valueX, @this.Height * valueY);
-    }
-  }
 }
-

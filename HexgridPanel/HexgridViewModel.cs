@@ -79,22 +79,12 @@ namespace PGNapoleonics.HexgridPanel {
     //  );
     //}
 
-    /// <summary>TODO</summary>
-    //public void SetModel(IMapDisplayWinForms model) {
-    //  Model = model;   
-    //}
-
     IHexgrid GetHexgrid() { 
       var margin          = Margin.OffsetSize();
-      return TransposableHexgrid.GetNewGrid(IsTransposed,Model.GridSize,MapScale,margin);
+      return new Hexgrid(IsTransposed,Model.GridSize,MapScale,margin);
     }
 
     #region Properties
-    ///// <summary>TODO</summary>
-    //public WpfInput.ICommand RefreshCmd { 
-    //  get { return _refreshCmd; } private set {_refreshCmd = value; } 
-    //} WpfInput.ICommand _refreshCmd;
-
     /// <summary>MapBoard hosting this panel.</summary>
     public IMapDisplayWinForms<Hex> Model           {
         get => _model;
@@ -161,7 +151,7 @@ namespace PGNapoleonics.HexgridPanel {
             if( _scaleIndex != newValue) {
               _scaleIndex = newValue;
               MapScale    = Scales[ScaleIndex];
-              Grid        = TransposableHexgrid.GetNewGrid(IsTransposed,Model.GridSize,MapScale);
+              Grid        = new Hexgrid(IsTransposed,Model.GridSize,MapScale);
               ScaleChange.Raise(this, EventArgs.Empty);
             }
           } 

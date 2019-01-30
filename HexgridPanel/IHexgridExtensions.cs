@@ -26,30 +26,27 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
-using System.Diagnostics.CodeAnalysis;
 
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexUtilities.Storage {
-  using HexSize      = System.Drawing.Size;
+namespace PGNapoleonics.HexUtilities {
+    using HexPoint = System.Drawing.Point;
+    using HexSize  = System.Drawing.Size;
 
-    /// <summary>TODO</summary>
-    /// <typeparam name="T">The <c>Type</c> being stored.</typeparam>
-    public interface IBoardStorage<out T> {
-        /// <summary>Returns the <c>THex</c> instance at the specified coordinates.</summary>
-        [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
-        T this[HexCoords coords] { get; }
-
-        /// <summary>Perform <paramref name="action"/> for all neighbours of <paramref name="coords"/>.</summary>
-        void ForAllNeighbours(HexCoords coords, Action<T,Hexside> action);
-
-        /// <summary>The rectangular extent of the board's hexagonal grid, in hexes.</summary>
-        HexSize MapSizeHexes            { get; }
+    /// <summary>.</summary>
+    public static partial class IHexgridExtensions {
+        /// <summary>Returns the scroll position to center a specified hex in viewport.</summary>
+        /// <param name="this"></param>
+        /// <param name="coordsNewCenterHex"><c>HexCoords</c> for the hex to be centered in viewport.</param>
+        /// <param name="visibleRectangle"></param>
+        /// <returns>Pixel coordinates in Client reference frame.</returns>
+        public static HexPoint ScrollPositionToCenterOnHex(this IHexgrid @this,
+                HexCoords coordsNewCenterHex, CoordsRectangle visibleRectangle)
+        => @this.HexCenterPoint(HexCoords.NewUserCoords(coordsNewCenterHex.User - (visibleRectangle.Size.User / 2)) );
 
         /// <summary>TODO</summary>
-        /// <param name="coords"></param>
-        /// <param name="hexside"></param>
-        /// <returns></returns>
-        T Neighbour(HexCoords coords, Hexside hexside);
+        /// <param name="this"></param>
+        public static HexSize GetSize(this IHexgrid @this, HexSize mapSizePixels, float mapScale)
+        => HexSize.Ceiling(mapSizePixels.Scale(mapScale)); 
     }
 }

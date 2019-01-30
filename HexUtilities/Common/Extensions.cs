@@ -27,9 +27,8 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-
-using HexSize     = System.Drawing.Size;
 namespace PGNapoleonics.HexUtilities.Common {
+    using HexSize = System.Drawing.Size;
 
     /// <summary>TODO</summary>
     public static class Extensions {

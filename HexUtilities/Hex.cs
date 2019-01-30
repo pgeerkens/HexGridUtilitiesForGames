@@ -28,8 +28,6 @@
 #endregion
 using System;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 
 namespace PGNapoleonics.HexUtilities {
     /// <summary>Abstract implementation of the interface <see Cref="IHex"/>.</summary>
@@ -44,45 +42,38 @@ namespace PGNapoleonics.HexUtilities {
         }
 
         /// <inheritdoc/>
-        public          HexCoords   Coords         { get; }
+        public          HexCoords Coords         { get; }
 
         /// <inheritdoc/>
-        public          int         ElevationLevel { get; }
+        public          int       ElevationLevel { get; }
 
         /// <inheritdoc/>
-        public virtual  int         HeightObserver => 1;
+        public virtual  int       HeightObserver => 1;
 
         /// <inheritdoc/>
-        public virtual  int         HeightTarget   => 1;
+        public virtual  int       HeightTarget   => 1;
 
         /// <inheritdoc/>
-        public abstract int         HeightTerrain  { get; }
+        public abstract int       HeightTerrain  { get; }
 
         /// <inheritdoc/>
-        public abstract short?      TryStepCost(Hexside hexsideExit);
+        public abstract char      TerrainType    { get; }
+
+        /// <inheritdoc/>
+        public abstract short?    TryStepCost(Hexside hexsideExit);
 
         /// <summary>Default implementation, assuming no blocking hexside terrain.</summary>
-        public virtual  int         HeightHexside(Hexside hexside) { return HeightTerrain; }
+        public virtual  int       HeightHexside(Hexside hexside) => HeightTerrain;
 
-        /// <summary>TODO</summary>
-        public abstract void Paint(Graphics graphics, GraphicsPath graphicsPath);
-
-        #region Value Equality
+        #region Value Equality implementation
         /// <inheritdoc/>
-        public override bool  Equals(object obj) => this.Equals(obj as Hex);
+        public override bool      Equals(object obj) => this.Equals(obj as Hex);
 
         /// <inheritdoc/>
-        public override int   GetHashCode()      => Coords.GetHashCode();
+        public override int       GetHashCode()      => Coords.GetHashCode();
 
         /// <inheritdoc/>
-        public bool           Equals(Hex other)  => other!=null  &&  Coords.Equals(other.Coords);
+        public bool               Equals(Hex other)  => other!=null  &&  Coords.Equals(other.Coords);
         #endregion
-    }
-
-    /// <summary>Extension methods for <see Cref="Hex"/>.</summary>
-    public static partial class HexExtensions {
-        /// <summary>The <i>Manhattan</i> distance from this hex to that at <c>coords</c>.</summary>
-        public static int Range(this IHex @this, IHex target)
-        => @this.Coords.Range(target.Coords); 
     }
 }

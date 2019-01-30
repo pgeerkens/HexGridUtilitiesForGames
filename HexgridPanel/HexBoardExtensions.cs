@@ -27,15 +27,14 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Linq;
 
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities {
-    using HexPoint = System.Drawing.Point;
-    using HexSize = System.Drawing.Size;
+    using HexPoint   = System.Drawing.Point;
+    using HexSize    = System.Drawing.Size;
     using RectangleF = System.Drawing.RectangleF;
-    using Matrix = System.Drawing.Drawing2D.Matrix;
+    using Matrix     = System.Drawing.Drawing2D.Matrix;
     using CoordsRect = CoordsRectangle;
 
     /// <summary>.</summary>
@@ -68,18 +67,12 @@ namespace PGNapoleonics.HexUtilities {
         where THex:IHex
         => @this.UpperLeftOfHex(coords) + @this.HexCentreOffset;
 
-        /// <summary>Perform the supplied <paramref name="action"/> for every item in the enumeration.</summary>
-        /// <param name="this">The current {HexBoard}.</param>
-        /// <param name="action"></param>
-        public static void ForEachHex<THex>(this HexBoard<THex> @this, Action<Maybe<IHex>> action)
-        where THex:IHex
-        => @this.BoardHexes.ForEachSerial(hex => action(from h in hex select h as IHex));
-
         /// <summary>Returns the location and extent in hexes, as a <see cref="CoordsRect"/>, of the current clipping region.</summary>
         /// <param name="this">The current {HexBoard}.</param>
         /// <param name="visibleClipBounds"></param>
         /// <param name="boardSizeHexes"></param>
-        public static CoordsRect GetClipInHexes<THex>(this HexBoard<THex> @this, RectangleF visibleClipBounds, HexSize boardSizeHexes)
+        public static CoordsRect GetClipInHexes<THex>(this HexBoard<THex> @this,
+                RectangleF visibleClipBounds, HexSize boardSizeHexes)
         where THex:IHex {
             var left   = Math.Max((int)visibleClipBounds.Left   / @this.GridSize.Width  - 1, 0);
             var top    = Math.Max((int)visibleClipBounds.Top    / @this.GridSize.Height - 1, 0);
@@ -90,7 +83,15 @@ namespace PGNapoleonics.HexUtilities {
 
         /// <summary>Rectangular extent in pixels of the defined mapboard.</summary>
         /// <param name="this">The current {HexBoard}.</param>
-        public static HexSize MapSizePixels<THex>(this HexBoard<THex> @this) where THex:IHex
+        public static HexSize MapSizePixels<THex>(this HexBoard<THex> @this)
+        where THex:IHex
         => @this.MapSizeHexes * @this.GridSizePixels;
+
+        /// <summary>Perform the supplied <paramref name="action"/> for every item in the enumeration.</summary>
+        /// <param name="this">The current {HexBoard}.</param>
+        /// <param name="action"></param>
+        public static void ForEachHex<THex>(this HexBoard<THex> @this, Action<Maybe<IHex>> action)
+        where THex:IHex
+        => @this.BoardHexes.ForEachSerial(hex => action(from h in hex select h as IHex));
     }
 }

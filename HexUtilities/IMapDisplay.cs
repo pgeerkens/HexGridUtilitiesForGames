@@ -66,7 +66,7 @@ namespace PGNapoleonics.HexUtilities {
         /// <summary>TODO</summary>
         IntMatrix2D GridSizePixels  { get; }
 
-        /// <summary>The dimensions of the board as a <see cref="System.Drawing.Size"/></summary>
+        /// <summary>The dimensions of the board as a <see cref="HexSize"/></summary>
         HexSize     MapSizeHexes    { get; }
 
         /// <summary>Gets the display name for this HexgridPanel host.</summary>

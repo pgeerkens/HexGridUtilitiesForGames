@@ -28,54 +28,21 @@
 #endregion
 using System.Collections.Generic;
 
-using PGNapoleonics.HexUtilities.Common;
-
 namespace PGNapoleonics.HexUtilities {
-  using HexPoint  = System.Drawing.Point;
-  using HexPointF = System.Drawing.PointF;
-  using HexPoints = IList<System.Drawing.Point>;
-  using HexSize   = System.Drawing.Size;
-  using HexSizeF  = System.Drawing.SizeF;
-
-  /// <summary>TODO</summary>
-  public interface IHexgrid {
-    /// <summary>TODO</summary>
-    HexPoint  GetScrollPosition(HexPoint scrollPosition);
-    /// <summary>TODO</summary>
-    HexSize   GetSize(HexSize mapSizePixels, float mapScale);
-
-    /// <summary><c>HexCoords</c> for the hex at the screen point, with the given AutoScroll position.</summary>
-    /// <param name="point">Screen point specifying hex to be identified.</param>
-    /// <param name="autoScroll">AutoScrollPosition for game-display Panel.</param>
-    HexCoords GetHexCoords(HexPoint point, HexSize autoScroll);
-
-    /// <summary><c>HexCoords</c> for the hex at the screen point, with the given AutoScroll position.</summary>
-    /// <param name="point">Screen point specifying hex to be identified.</param>
-    /// <param name="autoScroll">AutoScrollPosition for game-display Panel.</param>
-    HexCoords GetHexCoords(HexPointF point, HexSizeF autoScroll);
-
-    /// <summary>Returns the scroll position to center a specified hex in viewport.</summary>
-    /// <param name="coordsNewCenterHex"><c>HexCoords</c> for the hex to be centered in viewport.</param>
-    /// <param name="visibleRectangle"></param>
-    /// <returns>Pixel coordinates in Client reference frame.</returns>
-    HexPoint  ScrollPositionToCenterOnHex(HexCoords coordsNewCenterHex, CoordsRectangle visibleRectangle);
-
-    /// <summary>Returns ScrollPosition that places given hex in the upper-Left of viewport.</summary>
-    /// <param name="coordsNewULHex"><c>HexCoords</c> for new upper-left hex</param>
-    /// <returns>Pixel coordinates in Client reference frame.</returns>
-    HexPoint  HexCenterPoint(HexCoords coordsNewULHex);
+    using HexPoints = IList<System.Drawing.Point>;
+    using HexSize   = System.Drawing.Size;
 
     /// <summary>TODO</summary>
-    HexSize   GridSize      { get; }
-    /// <summary>TODO</summary>
-    HexSizeF  GridSizeF     { get; }
-    /// <summary>TODO</summary>
-    HexPoints HexCorners    { get; }
-    /// <summary>TODO</summary>
-    bool      IsTransposed  { get; }
-    /// <summary>Offset of grid origin, from control's client-area origin.</summary>
-    HexSize   Margin        { get; set; }
-    /// <summary>TODO</summary>
-    float     Scale         { get; }
-  }
+    public interface IHexgrid {
+        /// <summary>TODO</summary>
+        HexSize   GridSize      { get; }
+        /// <summary>TODO</summary>
+        HexPoints HexCorners    { get; }
+        /// <summary>TODO</summary>
+        bool      IsTransposed  { get; }
+        /// <summary>Offset of grid origin, from control's client-area origin.</summary>
+        HexSize   Margin        { get; set; }
+        /// <summary>TODO</summary>
+        float     Scale         { get; }
+    }
 }

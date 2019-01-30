@@ -26,9 +26,6 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 
 using PGNapoleonics.HexUtilities;
 
@@ -38,38 +35,37 @@ namespace PGNapoleonics.HexgridExampleCommon {
         /// <summary>Initializes a new instance of a <see cref="TerrainGridHex"/>.</summary>
         /// <param name="coords">Board location of this hex.</param>
         /// <param name="elevationLevel">Elevation of this hex.</param>
-        protected TerrainGridHex(HexCoords coords, int elevationLevel, int heightTerrain, Brush brush) 
+        protected TerrainGridHex(HexCoords coords, int elevationLevel, int heightTerrain,
+                char terrainType)
         : base(coords,elevationLevel) {
             HeightTerrain  = heightTerrain;
-            HexBrush       = brush;
+            TerrainType    = terrainType;
         }
 
-        /// <summary>TODO</summary>
-        protected          Brush HexBrush      { get; } 
         ///  <inheritdoc/>
-        public    override int   HeightTerrain { get; }
+        public override char   TerrainType   { get; }
+
         ///  <inheritdoc/>
-        public    override void  Paint(Graphics graphics, GraphicsPath graphicsPath) { 
-            if (graphics==null) throw new ArgumentNullException("graphics");
-            graphics.FillPath(HexBrush, graphicsPath);
-        }
+        public  override int   HeightTerrain { get; }
     }
 
     /// <summary>A <see cref="TerrainGridHex"/> representing clear terrain.</summary>
-    internal sealed class PassableTerrainGridHex    : TerrainGridHex {
+    internal sealed class PassableTerrainGridHex : TerrainGridHex {
         /// <summary>Creates a new instance of a passable <see cref="TerrainGridHex"/>.</summary>
-        public PassableTerrainGridHex(HexCoords coords, int elevationLevel, int heightTerrain, short stepCost, Brush brush)
-        : base(coords,elevationLevel, heightTerrain, brush) => _stepCost      = stepCost;
+        public PassableTerrainGridHex(HexCoords coords, int elevationLevel, int heightTerrain,
+                short stepCost, char terrainType)
+        : base(coords,elevationLevel, heightTerrain, terrainType) => _stepCost = stepCost;
    
         ///  <inheritdoc/>
         public    override short? TryStepCost(Hexside direction) => _stepCost; readonly short _stepCost;
     }
 
     /// <summary>A <see cref="TerrainGridHex"/> representing clear terrain.</summary>
-    internal sealed class ImpassableTerrainGridHex    : TerrainGridHex {
+    internal sealed class ImpassableTerrainGridHex : TerrainGridHex {
         /// <summary>Creates a new instance of an impassable <see cref="TerrainGridHex"/>.</summary>
-        public ImpassableTerrainGridHex(HexCoords coords, int elevationLevel, int heightTerrain, Brush brush)
-        : base(coords,elevationLevel, heightTerrain, brush) {
+        public ImpassableTerrainGridHex(HexCoords coords, int elevationLevel, int heightTerrain,
+                char terrainType)
+        : base(coords,elevationLevel, heightTerrain, terrainType) {
         }
    
         ///  <inheritdoc/>

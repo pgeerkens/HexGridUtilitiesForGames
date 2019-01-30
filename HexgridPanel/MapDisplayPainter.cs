@@ -37,7 +37,7 @@ using PGNapoleonics.HexUtilities.Pathfinding;
 
 namespace PGNapoleonics.HexgridPanel {
     using ILandmarks = ILandmarkCollection;
-    using Hexes      = Func<HexCoords,Maybe<IHex>>;
+    using Hexes = Func<HexCoords, Maybe<IHex>>;
 
     public static class MapDisplayPainter {
         public static Hexes Hexes<THex>(this MapDisplay<THex> @this) where THex:IHex
@@ -58,13 +58,30 @@ namespace PGNapoleonics.HexgridPanel {
                 var textOffset = new Point((@this.GridSize.Scale(0.50F)
                                - new SizeF(font.Size,font.Size).Scale(0.8F)).ToSize());
                 @this.PaintForEachHex(graphics, clipHexes, coords => {
-                    boardHexes(coords).IfHasValueDo(h => { if(h is Hex hex) hex.Paint(graphics, @this.HexgridPath); });
+                    boardHexes(coords).IfHasValueDo(h => {
+                        if(h is Hex hex) hex.Paint(graphics, @this.HexgridPath, hex.GetBrush());
+                    });
                     if (showHexgrid) graphics.DrawPath(Pens.Black, @this.HexgridPath);
                     if (@this.LandmarkToShow > 0) {
-                        graphics.DrawString(landmarks.DistanceFrom(coords,@this.LandmarkToShow-1), font, brush, textOffset);
+                        graphics.DrawString(landmarks.DistanceFrom(coords,@this.LandmarkToShow-1),
+                                font, brush, textOffset);
                     }
                 } );
             });
+        }
+
+        public static Brush GetBrush(this IHex hex) {
+            switch(hex.TerrainType) {
+                default:  return Brushes.DarkGray;   // Undefined
+                case '.': return Brushes.White;      // Clear
+                case '2': return Brushes.DarkGray;   // Pike
+                case '3': return Brushes.SandyBrown; // Road
+                case 'F': return Brushes.Brown;      // Ford
+                case 'H': return Brushes.Khaki;      // Hill
+                case 'M': return Brushes.DarkKhaki;  // Mountain
+                case 'R': return Brushes.DarkBlue;   // River
+                case 'W': return Brushes.Green;      // Woods
+            }
         }
 
         /// <summary>Paint the top layer of the display, graphics that changes frequently between refreshes.</summary>
@@ -212,16 +229,4 @@ namespace PGNapoleonics.HexgridPanel {
         where THex:IHex
         =>  @this.BoardHexes.ForEachSerial(hex => action(hex) );
     }
-
-    /// <summary>TODO</summary>
-    public static partial class GraphicsExtensions {
-        /// <summary>TODO</summary>
-        public static void Contain(this Graphics graphics, Action<Graphics> drawingCommands) {
-            if (graphics==null) throw new ArgumentNullException("graphics");
-
-            var container = graphics.BeginContainer();
-            drawingCommands?.Invoke(graphics);
-            graphics.EndContainer(container); 
-        }
-   }
 }
