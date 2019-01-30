@@ -5,7 +5,7 @@
 // Use of this software is permitted only as described in the attached file: license.txt.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-namespace PGNapoleonics.HexgridExampleCommon {
+namespace PGNapoleonics.HexgridPanelExample {
 #pragma warning disable 0618 // Obsolete usage of HexgridPanel expected
   partial class HexgridPanelExample {
     /// <summary>

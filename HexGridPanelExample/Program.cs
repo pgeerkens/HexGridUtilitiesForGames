@@ -38,17 +38,17 @@ using PGNapoleonics.WinForms;
 #pragma warning restore 1587
 [assembly:CLSCompliant(true)]
 namespace PGNapoleonics.HexgridExampleCommon {
-  static class Program {
-    /// <summary>The main entry point for the application.</summary>
-    [STAThread]
-    static void Main()      {
-      Application.EnableVisualStyles();
-      Application.SetCompatibleTextRenderingDefault(false);
-      Application.ThreadException += 
-        new ThreadExceptionEventHandler(
-          (new ThreadExceptionHandler()).ApplicationThreadException);
+    static class Program {
+        /// <summary>The main entry point for the application.</summary>
+        [STAThread]
+        static void Main()      {
+              Application.EnableVisualStyles();
+              Application.SetCompatibleTextRenderingDefault(false);
+              Application.ThreadException += 
+              new ThreadExceptionEventHandler(
+                  new ThreadExceptionHandler().ApplicationThreadException);
 
-      Application.Run(new HexgridPanelExample());
+              Application.Run(new HexgridPanelExample.HexgridPanelExample());
+        }
     }
-  }
 }

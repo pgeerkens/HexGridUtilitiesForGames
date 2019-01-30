@@ -28,30 +28,33 @@
 #endregion
 using System;
 using System.Diagnostics;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Security.Permissions;
 using System.Windows.Forms;
 
-using PGNapoleonics.HexgridExampleCommon;
-using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.FieldOfView;
+using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.WinForms;
 
+using PGNapoleonics.HexgridExampleCommon;
+
 namespace PGNapoleonics.HexgridScrollableExample {
+    using HexSize        = System.Drawing.Size;
+    using MapGridDisplay = MapDisplay<Hex>;
+
     internal sealed partial class ExampleBufferedHexgridScrollable : Form, IMessageFilter {
-        private bool            _isPanelResizeSuppressed = false;
-        private MapDisplay<Hex> _mapBoard;
-        private CustomCoords    _customCoords;
+        private bool           _isPanelResizeSuppressed = false;
+        private MapGridDisplay _mapBoard;
+        private CustomCoords   _customCoords;
 
         public ExampleBufferedHexgridScrollable() {
             InitializeComponent();
             Application.AddMessageFilter(this);
 
-            //ComponentResourceManager resources = new ComponentResourceManager(typeof(HexgridScrollableExample));
+            //var resources = new ComponentResourceManager(typeof(HexgridScrollableExample));
             _hexgridPanel.ScaleChange += (o,e) => OnResizeEnd(e);
 
             LoadTraceMenu(menuItemDebugTracing_Click);
@@ -67,11 +70,12 @@ namespace PGNapoleonics.HexgridScrollableExample {
         void LoadTraceMenu(EventHandler handler) =>
             Tracing.ForEachKey(item => LoadTraceMenuItem(item,handler), n => n!="None");
         
+        [Conditional("TRACE")]
         void LoadTraceMenuItem(string item, EventHandler handler) {
             var menuItem = new ToolStripMenuItem();
             menuItemDebug.DropDownItems.Add(menuItem);
             menuItem.Name         = "menuItemDebugTracing" + item.ToString();
-            menuItem.Size         = new Size(143, 22);
+            menuItem.Size         = new HexSize(143, 22);
             menuItem.Text         = item.ToString();
             menuItem.CheckOnClick = true;
             menuItem.Click       += handler;
@@ -82,20 +86,21 @@ namespace PGNapoleonics.HexgridScrollableExample {
             menuItemLandmarks.Items.Add("None");
             if (_mapBoard.Landmarks != null) {
                 _mapBoard.Landmarks.ForEach(landmark => menuItemLandmarks.Items.Add($"{landmark.Coords}"));
-                menuItemLandmarks.SelectedIndexChanged += new EventHandler(menuItemLandmarks_SelectedIndexChanged);
-                menuItemLandmarks.SelectedIndex = 0; 
             }
+
+            menuItemLandmarks.SelectedIndexChanged += new EventHandler(menuItemLandmarks_SelectedIndexChanged);
+            menuItemLandmarks.SelectedIndex = 0; 
         }
 
         #region Event handlers
         private void HexGridExampleForm_Load(object sender, EventArgs e) {
             _hexgridPanel.ScaleIndex = _hexgridPanel.Scales
-                                      .Select((f,i) => new {value=f, index=i})
-                                      .Where(s => s.value==1.0F)
-                                      .Select(s => s.index).FirstOrDefault(); 
-            var padding = this.toolStripContainer1.ContentPanel.Padding;
-            Size = _hexgridPanel.MapSizePixels  + new Size(21,93)
-                 + new Size(padding.Left+padding.Right, padding.Top+padding.Bottom);
+                                                    .Select((f,i) => new {value=f, index=i})
+                                                    .Where(s => s.value==1.0F)
+                                                    .Select(s => s.index).FirstOrDefault(); 
+            var padding = toolStripContainer1.ContentPanel.Padding;
+            Size = _hexgridPanel.MapSizePixels  + new HexSize(21,93)
+                 + new HexSize(padding.Left+padding.Right, padding.Top+padding.Bottom);
         }
 
         protected override void OnResizeBegin(EventArgs e) {
@@ -155,13 +160,13 @@ namespace PGNapoleonics.HexgridScrollableExample {
     //      helpProvider1.SetShowHelp(this,true);
         }
 
-        private void comboBoxMapSelection_SelectionChanged(object sender, EventArgs e) {
-            SetMapBoard(ParseMapName(((ToolStripItem)sender).Text));
-        }
-        private static MapDisplay<Hex> ParseMapName(string mapName) =>
-            Map.MapList.First(item => item.MapName == mapName).MapBoard;
+        private void comboBoxMapSelection_SelectionChanged(object sender, EventArgs e)
+        =>  SetMapBoard(ParseMapName(((ToolStripItem)sender).Text));
+        
+        private static MapGridDisplay ParseMapName(string mapName) 
+        =>  Map.MapList.First(item => item.MapName == mapName).MapBoard;
 
-        private void SetMapBoard(MapDisplay<Hex> mapBoard) {
+        private void SetMapBoard(MapGridDisplay mapBoard) {
             _hexgridPanel.SetModel( _mapBoard = mapBoard);
             _mapBoard.ShowPathArrow = buttonPathArrow.Checked;
             _mapBoard.ShowFov       = buttonFieldOfView.Checked;

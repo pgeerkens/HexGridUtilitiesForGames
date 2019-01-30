@@ -8,7 +8,7 @@
     <ProjectGuid>{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PGNapoleonics.HexGridExamples</RootNamespace>
+    <RootNamespace>PGNapoleonics.HexgridPanelExample</RootNamespace>
     <AssemblyName>HexGridExample2</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
