@@ -1,11 +1,11 @@
-﻿#region The MIT License - Copyright (C) 2012-2015 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2015 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -28,34 +28,34 @@
 #endregion
 
 namespace PGNapoleonics.HexUtilities.Common {
-    using HexPointF    = System.Drawing.PointF;
-    using HexPoint     = System.Drawing.Point;
+    using HexSizeF = System.Drawing.SizeF;
+    using HexSize  = System.Drawing.Size;
 
     /// <summary>TODO</summary>
-    public static class PointExtensions {
+    public static class SizeExtensions {
         /// <summary>TODO</summary>
-        public static HexPoint Scale(this HexPoint @this, int value) =>
-            @this.Scale(value,value);
+        public static HexSize Scale(this HexSize @this, int value)
+        => @this.Scale(value,value);
 
         /// <summary>TODO</summary>
-        public static HexPoint Scale(this HexPoint @this, int valueX, int valueY) =>
-            new HexPoint(@this.X * valueX, @this.Y * valueY);
+        public static HexSize Scale(this HexSize @this, int valueX, int valueY)
+        => new HexSize(@this.Width * valueX, @this.Height * valueY);
 
         /// <summary>TODO</summary>
-        public static HexPointF Scale(this HexPoint @this, float value) =>
-            @this.Scale(value,value);
+        public static HexSizeF Scale(this HexSize @this, float value)
+        => @this.Scale(value,value);
 
         /// <summary>TODO</summary>
-        public static HexPointF Scale(this HexPoint @this, float valueX, float valueY) =>
-            new HexPointF(@this.X,@this.Y).Scale(valueX,valueY);
+        public static HexSizeF Scale(this HexSize @this, float valueX, float valueY)
+        => new HexSizeF(@this).Scale(valueX,valueY);
 
         /// <summary>TODO</summary>
-        public static HexPointF Scale(this HexPointF @this, float value) =>            
-            @this.Scale(value,value);
+        public static HexSizeF Scale(this HexSizeF @this, float value)
+        => @this.Scale(value,value);
 
         /// <summary>TODO</summary>
-        public static HexPointF Scale(this HexPointF @this, float valueX, float valueY) =>
-            new HexPointF(@this.X * valueX, @this.Y * valueY);
+        public static HexSizeF Scale(this HexSizeF @this, float valueX, float valueY)
+        => new HexSizeF(@this.Width * valueX, @this.Height * valueY);
     }
 }
 

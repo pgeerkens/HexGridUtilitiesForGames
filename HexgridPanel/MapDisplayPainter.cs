@@ -1,11 +1,11 @@
-﻿#region The MIT License - Copyright (C) 2012-2015 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2015 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -34,15 +34,14 @@ using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.FieldOfView;
 using PGNapoleonics.HexUtilities.Pathfinding;
+using PGNapoleonics.HexgridExampleCommon;
+using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexgridPanel {
     using ILandmarks = ILandmarkCollection;
-    using Hexes = Func<HexCoords, Maybe<IHex>>;
+    using Hexes      = BoardStorage<Maybe<IHex>>;
 
     public static class MapDisplayPainter {
-        public static Hexes Hexes<THex>(this MapDisplay<THex> @this) where THex:IHex
-        => c => (from h in @this[c] select h as IHex);
-
         /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
         /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
         /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
@@ -58,8 +57,8 @@ namespace PGNapoleonics.HexgridPanel {
                 var textOffset = new Point((@this.GridSize.Scale(0.50F)
                                - new SizeF(font.Size,font.Size).Scale(0.8F)).ToSize());
                 @this.PaintForEachHex(graphics, clipHexes, coords => {
-                    boardHexes(coords).IfHasValueDo(h => {
-                        if(h is Hex hex) hex.Paint(graphics, @this.HexgridPath, hex.GetBrush());
+                    boardHexes[coords].IfHasValueDo(h => {
+                        if(h is IHex hex) hex.Paint(graphics, @this.HexgridPath, hex.GetBrush());
                     });
                     if (showHexgrid) graphics.DrawPath(Pens.Black, @this.HexgridPath);
                     if (@this.LandmarkToShow > 0) {

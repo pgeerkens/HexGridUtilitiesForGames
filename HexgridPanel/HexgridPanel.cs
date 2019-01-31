@@ -1,11 +1,11 @@
-﻿#region The MIT License - Copyright (C) 2012-2015 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2015 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -37,6 +37,7 @@ using System.Windows.Forms;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
+using PGNapoleonics.HexgridExampleCommon;
 
 namespace PGNapoleonics.HexgridPanel {
     /// <summary>Sub-class implementation of a <b>WinForms</b> Panel with integrated <see cref="Hexgrid"/> support.</summary>
@@ -75,14 +76,14 @@ namespace PGNapoleonics.HexgridPanel {
 
         #region Properties
         /// <summary>MapBoard hosting this panel.</summary>
-        public MapDisplay<Hex> Model    { 
+        public MapDisplay<IHex> Model    { 
           get => _model;
           set {  if (_model != null) _model.Dispose(); 
                  _model = value; 
                  SetScrollLimits(_model);   
                  SetMapDirty();
               }
-        } MapDisplay<Hex> _model = EmptyBoard.TheOne;
+        } MapDisplay<IHex> _model = EmptyBoard.TheOne;
 
         /// <summary>Gets or sets the coordinates of the hex currently underneath the mouse.</summary>
         public     HexCoords    HotspotHex     { get; private set; }
@@ -142,7 +143,7 @@ namespace PGNapoleonics.HexgridPanel {
         public         void SetScaleList(IReadOnlyList<float> scales) => ScaleList = scales;
 
         /// <summary>Set ScrollBar increments and bounds from map dimensions.</summary>
-        public virtual void SetScrollLimits(IMapDisplayWinForms<Hex> model) {
+        public virtual void SetScrollLimits(IMapDisplayWinForms<IHex> model) {
             if (model == null) return;
             var smallChange              = Size.Ceiling(model.GridSize.Scale(MapScale));
             HorizontalScroll.SmallChange = smallChange.Width;
@@ -219,9 +220,9 @@ namespace PGNapoleonics.HexgridPanel {
             graphics.ScaleTransform(MapScale,MapScale);
 
             graphics.Contain(PaintMap);
-            graphics.Contain(Model.PaintUnits);
-            graphics.Contain(Model.PaintShading);
-            graphics.Contain(Model.PaintHighlight);
+            Model.PaintUnits(graphics);
+            Model.PaintShading(graphics, Model.Fov, Model.ShadeBrushAlpha, Model.ShadeBrushColor);
+            Model.PaintHighlight(graphics, Model.ShowRangeLine);
         }
 
         private void PaintMap(Graphics graphics) =>
@@ -249,7 +250,7 @@ namespace PGNapoleonics.HexgridPanel {
                 tempBuffer = new Bitmap(size.Width,size.Height, PixelFormat.Format32bppPArgb);
                 using(var g = Graphics.FromImage(tempBuffer)) {
                     g.Clear(Color.White);
-                    Model.PaintMap(g);
+                    Model.PaintMap(g, Model.ShowHexgrid, Model.BoardHexes, Model.Landmarks);
                 }
                 buffer     = tempBuffer;
                 tempBuffer = null;

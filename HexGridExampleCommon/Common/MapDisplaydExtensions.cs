@@ -1,11 +1,11 @@
-﻿#region The MIT License - Copyright (C) 2012-2015 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2015 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -29,7 +29,7 @@
 
 using PGNapoleonics.HexUtilities;
 
-namespace PGNapoleonics.HexgridPanel {
+namespace PGNapoleonics.HexgridExampleCommon {
     using HexPoint = System.Drawing.Point;
     using Matrix   = System.Drawing.Drawing2D.Matrix;
 
@@ -59,6 +59,6 @@ namespace PGNapoleonics.HexgridPanel {
         /// <returns>A Point structure containing pixel coordinates for the (centre of the) specified hex.</returns>
         public static HexPoint CentreOfHex<THex>(this IMapDisplayWinForms<THex> @this, HexCoords coords)
         where THex:IHex
-        => @this.UpperLeftOfHex<THex>(coords) + @this.HexCentreOffset;
+        => @this.UpperLeftOfHex(coords) + @this.HexCentreOffset;
     }
 }

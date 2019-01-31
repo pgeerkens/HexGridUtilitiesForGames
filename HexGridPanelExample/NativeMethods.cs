@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -28,8 +28,6 @@
 #endregion
 using System;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
-using System.Windows.Forms;
 
 using System.Diagnostics.CodeAnalysis;
 

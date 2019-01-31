@@ -1,11 +1,11 @@
-﻿#region The MIT License - Copyright (C) 2012-2015 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2015 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -29,22 +29,21 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-
 namespace PGNapoleonics.HexUtilities.Storage {
-  using HexSize      = System.Drawing.Size;
+    using HexSize  = System.Drawing.Size;
 
     /// <summary>TODO</summary>
     /// <typeparam name="T">The <c>Type</c> being stored.</typeparam>
     public interface IBoardStorage<out T> {
+        /// <summary>The rectangular extent of the board's hexagonal grid, in hexes.</summary>
+        HexSize MapSizeHexes     { get; }
+
         /// <summary>Returns the <c>THex</c> instance at the specified coordinates.</summary>
         [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
         T this[HexCoords coords] { get; }
 
         /// <summary>Perform <paramref name="action"/> for all neighbours of <paramref name="coords"/>.</summary>
         void ForAllNeighbours(HexCoords coords, Action<T,Hexside> action);
-
-        /// <summary>The rectangular extent of the board's hexagonal grid, in hexes.</summary>
-        HexSize MapSizeHexes            { get; }
 
         /// <summary>TODO</summary>
         /// <param name="coords"></param>

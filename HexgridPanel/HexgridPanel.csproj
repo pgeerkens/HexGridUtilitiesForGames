@@ -201,12 +201,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BitmapExtensions.cs" />
-    <Compile Include="Common\MapDisplaydExtensions.cs" />
     <Compile Include="GraphicsExtensions.cs" />
-    <Compile Include="HexBoardExtensions.cs" />
-    <Compile Include="HexExtensions.cs" />
-    <Compile Include="HexPickingExtensions.cs" />
-    <Compile Include="IHexgridExtensions.cs" />
+    <Compile Include="GraphicsMapPainter.cs" />
+    <Compile Include="HexEventArgs.cs" />
     <Compile Include="MapPanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -220,9 +217,6 @@
       <DependentUpon>MapPanelCached.cs</DependentUpon>
     </Compile>
     <Compile Include="Namespaces.cs" />
-    <Compile Include="PointExtensions.cs" />
-    <Compile Include="SizeExtensions.cs" />
-    <Compile Include="UserCoordsRectangle.cs" />
     <Compile Include="WinForms\BufferedGraphicsExtensions.cs" />
     <Compile Include="BufferedHexgridScrollable.cs">
       <SubType>Component</SubType>
@@ -230,17 +224,13 @@
     <Compile Include="BufferedHexgridScrollable.Designer.cs">
       <DependentUpon>BufferedHexgridScrollable.cs</DependentUpon>
     </Compile>
-    <Compile Include="Common\EmptyBoard.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Common\HexEventArgs.cs" />
     <Compile Include="HexgridPanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="HexgridPanel.Designer.cs">
       <DependentUpon>HexgridPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Common\MapDisplay.cs" />
-    <Compile Include="IMapDisplayWinForms.cs" />
     <Compile Include="MapDisplayPainter.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -328,6 +318,10 @@
     <None Include="PGSoftwareSolutions.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HexGridExampleCommon\HexgridExampleCommon.csproj">
+      <Project>{4e4ec92b-2bf5-4342-a069-3a6bb76b7fca}</Project>
+      <Name>HexgridExampleCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HexUtilities\HexUtilities.csproj">
       <Project>{013628e1-60e2-40a6-91d4-8b446f397a0a}</Project>
       <Name>HexUtilities</Name>
@@ -338,6 +332,9 @@
       <Link>CustomDictionary.xml</Link>
       <SubType>Designer</SubType>
     </CodeAnalysisDictionary>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Common\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

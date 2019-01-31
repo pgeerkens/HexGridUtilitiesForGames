@@ -1,11 +1,11 @@
-﻿#region The MIT License - Copyright (C) 2012-2015 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2015 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -192,7 +192,8 @@ namespace PGNapoleonics.HexgridPanel {
             using(var brush = new SolidBrush(this.BackColor)) graphics.FillRectangle(brush, graphics.VisibleClipBounds);
             graphics.Paint(Point.Empty, 1.0F, g => {
                     var model = DataContext.Model;
-                    model.PaintMap(g, true, c => from h in model[c] select h as IHex, model.Landmarks);
+                    //model.PaintMap(g, true, c => from h in model[c] select h as IHex, model.Landmarks);
+                    model.PaintMap(g, true, model.BoardHexes, model.Landmarks);
             });
         }
 

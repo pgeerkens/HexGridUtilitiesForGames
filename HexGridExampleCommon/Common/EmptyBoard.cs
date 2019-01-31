@@ -1,11 +1,11 @@
-﻿#region The MIT License - Copyright (C) 2012-2015 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2015 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -28,12 +28,12 @@
 #endregion
 using PGNapoleonics.HexUtilities;
 
-using Graphics     = System.Drawing.Graphics;
-using HexSize      = System.Drawing.Size;
+namespace PGNapoleonics.HexgridExampleCommon {
+    using MapHex  = IHex;
+    using HexSize = System.Drawing.Size;
 
-namespace PGNapoleonics.HexgridPanel {
     /// <summary>TODO</summary>
-    public sealed class EmptyBoard : MapDisplayBlocked<Hex> {
+    public sealed class EmptyBoard : MapDisplayBlocked<MapHex> {
         public static EmptyBoard TheOne { get; } = new EmptyBoard();
 
         /// <summary>TODO</summary>
@@ -41,24 +41,12 @@ namespace PGNapoleonics.HexgridPanel {
         : base(new HexSize(1,1), new HexSize(26,30), c => new EmptyGridHex(c)) => FovRadius = 20;
         /// <inheritdoc/>
         public override int      ElevationBase     => 0;
+
         /// <inheritdoc/>
         public override int      ElevationStep     => 10;
 
-        /// <summary>Wrapper for MapDisplayPainter.PaintHighlight.</summary>
-        public override void PaintHighlight(Graphics graphics) {}
-
-        /// <summary>Wrapper for MapDisplayPainter.PaintMap.</summary>
-        public override void PaintMap(Graphics graphics)
-        => this.PaintMap(graphics, ShowHexgrid, this.Hexes(), Landmarks);
-
-        /// <summary>Wrapper for MapDisplayPainter.PaintShading.</summary>
-        public override void PaintShading(Graphics graphics) {}
-
-        /// <summary>Wrapper for MapDisplayPainter.PaintUnits.</summary>
-        public override void PaintUnits(Graphics graphics) {}
-
         /// <inheritdoc/>
-        public    override short?   Heuristic(HexCoords source, HexCoords target) => source.Range(target);
+        public override short?   Heuristic(HexCoords source, HexCoords target) => source.Range(target);
     }
 
     /// <summary>TODO</summary>

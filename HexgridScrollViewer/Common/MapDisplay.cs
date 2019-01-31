@@ -50,6 +50,8 @@ namespace PGNapoleonics.HexgridScrollViewer {
     using HexRectF   = System.Drawing.RectangleF;
     using MapGridHex = IHex;
 
+    using static System.Drawing.Drawing2D.PathPointType;
+
     using Int32ValueEventArgs = ValueChangedEventArgs<Int32>;
     using IDirectedPath       = IDirectedPathCollection;
 

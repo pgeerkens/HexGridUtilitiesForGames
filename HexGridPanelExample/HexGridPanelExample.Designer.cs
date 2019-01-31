@@ -1,4 +1,4 @@
-﻿#region License - Copyright (C) 2012-2014 Pieter Geerkens, all rights reserved.
+﻿#region License - Copyright (C) 2012-2019 Pieter Geerkens, all rights reserved.
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 //

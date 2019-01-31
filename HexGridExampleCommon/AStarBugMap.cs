@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -26,52 +26,35 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-
-using System.Diagnostics.CodeAnalysis;
 
 using PGNapoleonics.HexUtilities;
-using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.HexgridPanel;
 
 namespace PGNapoleonics.HexgridExampleCommon {
-    using MapGridHex  = Hex;
+    using MapHex  = IHex;
+    using HexSize = System.Drawing.Size;
 
     /// <summary>TODO</summary>
-    public sealed class AStarBugMap : MapDisplayBlocked<MapGridHex> {
+    public sealed class AStarBugMap : MapDisplayBlocked<MapHex> {
          /// <summary>TODO</summary>
-         public AStarBugMap() : base(_sizeHexes, new Size(26,30), TerrainMap.InitializeHex) { }
+         public AStarBugMap() : base(_sizeHexes, new HexSize(26,30), TerrainMap.InitializeHex) { }
 
         /// <inheritdoc/>
-        [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "2*range")]
-        public override short?  Heuristic(HexCoords source, HexCoords target) => (short)(2 * source.Range(target));
+        public override short?  Heuristic(HexCoords source, HexCoords target)
+        => (short)(MinimumStepCost * source.Range(target));
 
         /// <inheritdoc/>
-        public override int  ElevationBase =>  0;
+        public override int    ElevationBase   =>  0;
+
         /// <inheritdoc/>
-        public override int  ElevationStep => 10;
+        public override int    ElevationStep   => 10;
 
-        /// <summary>Wrapper for MapDisplayPainter.PaintHighlight.</summary>
-        public override void PaintHighlight(Graphics graphics)
-        => this.PaintHighlight(graphics, ShowRangeLine);
-
-        /// <summary>Wrapper for MapDisplayPainter.PaintMap.</summary>
-        public override void PaintMap(Graphics graphics)
-        => this.PaintMap(graphics,ShowHexgrid, this.Hexes(), Landmarks);
-
-        /// <summary>Wrapper for MapDisplayPainter.PaintShading.</summary>
-        public override void PaintShading(Graphics graphics)
-        => this.PaintShading(graphics,Fov,ShadeBrushAlpha,ShadeBrushColor);
-
-        /// <summary>Wrapper for MapDisplayPainter.PaintUnits.</summary>
-        public override void PaintUnits(Graphics graphics) {}// => MapDisplayPainter.PaintUnits(this, graphics);
+        /// <summary>TODO</summary>
+        protected override int MinimumStepCost => 2;
 
         #region static Board definition
         static IReadOnlyList<string> _board     = MapDefinitions.AStarBugMapDefinition;
-        static Size                  _sizeHexes = new Size(_board[0].Length, _board.Count);
+        static HexSize               _sizeHexes = new HexSize(_board[0].Length, _board.Count);
         #endregion
     }
 }

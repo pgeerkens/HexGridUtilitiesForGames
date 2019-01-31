@@ -1,11 +1,11 @@
-﻿#region The MIT License - Copyright (C) 2012-2015 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2015 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -26,13 +26,12 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.FieldOfView;
 using PGNapoleonics.HexUtilities.Pathfinding;
 
-namespace PGNapoleonics.HexgridPanel {
+namespace PGNapoleonics.HexgridExampleCommon {
     using HexPoint     = System.Drawing.Point;
     using HexPointF    = System.Drawing.PointF;
     using HexSize      = System.Drawing.Size;
@@ -41,7 +40,6 @@ namespace PGNapoleonics.HexgridPanel {
     using RectangleF   = System.Drawing.RectangleF;
     using Color        = System.Drawing.Color;
     using GraphicsPath = System.Drawing.Drawing2D.GraphicsPath;
-    using Matrix       = System.Drawing.Drawing2D.Matrix;
 
     /// <summary>(Technology-dependent portion of) interface contract required of a map board to be displayed by the Hexgrid control.</summary>
     public interface IMapDisplayWinForms<THex> : IMapDisplay<THex> where THex:IHex {

@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -30,45 +30,45 @@
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridExampleCommon {
-    /// <summary>Abstract class for <c>MapGridHex</c> as used in the examples.</summary>
-    internal abstract class TerrainGridHex : Hex {
+    /// <summary>Implementation of abstract class <c>MapGridHex</c> as used in the examples.</summary>
+    internal class TerrainGridHex : Hex {
+        /// <summary>Returns a new passable <see cref="TerrainGridHex"/>, as specified.</summary>
+        /// <param name="coords">Board location of this hex.</param>
+        /// <param name="elevationLevel">Elevation of this hex.</param>
+        /// <param name="heightTerrain"></param>
+        /// <param name="terrainType"></param>
+        /// <param name="stepCost"></param>
+        public static TerrainGridHex NewPassable(HexCoords coords, int elevationLevel,
+                                            int heightTerrain, char terrainType, short stepCost)
+        => new TerrainGridHex(coords, elevationLevel, heightTerrain, terrainType, stepCost);
+
+        /// <summary>Returns a new impassable <see cref="TerrainGridHex"/>.</summary>
+        /// <param name="coords">Board location of this hex.</param>
+        /// <param name="elevationLevel">Elevation of this hex.</param>
+        /// <param name="heightTerrain"></param>
+        /// <param name="terrainType"></param>
+        public static TerrainGridHex NewImpassable(HexCoords coords, int elevationLevel,
+                                            int heightTerrain, char terrainType)
+        => new TerrainGridHex(coords, elevationLevel, heightTerrain, terrainType, null);
+
         /// <summary>Initializes a new instance of a <see cref="TerrainGridHex"/>.</summary>
         /// <param name="coords">Board location of this hex.</param>
         /// <param name="elevationLevel">Elevation of this hex.</param>
-        protected TerrainGridHex(HexCoords coords, int elevationLevel, int heightTerrain,
-                char terrainType)
+        private TerrainGridHex(HexCoords coords, int elevationLevel, int heightTerrain,
+                        char terrainType, short? stepCost)
         : base(coords,elevationLevel) {
-            HeightTerrain  = heightTerrain;
-            TerrainType    = terrainType;
+            HeightTerrain = heightTerrain;
+            TerrainType   = terrainType;
+            _stepCost     = stepCost;
         }
-
-        ///  <inheritdoc/>
-        public override char   TerrainType   { get; }
 
         ///  <inheritdoc/>
         public  override int   HeightTerrain { get; }
-    }
 
-    /// <summary>A <see cref="TerrainGridHex"/> representing clear terrain.</summary>
-    internal sealed class PassableTerrainGridHex : TerrainGridHex {
-        /// <summary>Creates a new instance of a passable <see cref="TerrainGridHex"/>.</summary>
-        public PassableTerrainGridHex(HexCoords coords, int elevationLevel, int heightTerrain,
-                short stepCost, char terrainType)
-        : base(coords,elevationLevel, heightTerrain, terrainType) => _stepCost = stepCost;
+        ///  <inheritdoc/>
+        public override char   TerrainType   { get; }
    
         ///  <inheritdoc/>
-        public    override short? TryStepCost(Hexside direction) => _stepCost; readonly short _stepCost;
-    }
-
-    /// <summary>A <see cref="TerrainGridHex"/> representing clear terrain.</summary>
-    internal sealed class ImpassableTerrainGridHex : TerrainGridHex {
-        /// <summary>Creates a new instance of an impassable <see cref="TerrainGridHex"/>.</summary>
-        public ImpassableTerrainGridHex(HexCoords coords, int elevationLevel, int heightTerrain,
-                char terrainType)
-        : base(coords,elevationLevel, heightTerrain, terrainType) {
-        }
-   
-        ///  <inheritdoc/>
-        public    override short? TryStepCost(Hexside direction) => null;
+        public override short? TryStepCost(Hexside direction) => _stepCost; readonly short? _stepCost;
     }
 }

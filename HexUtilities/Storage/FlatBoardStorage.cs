@@ -1,11 +1,11 @@
-﻿#region The MIT License - Copyright (C) 2012-2015 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2015 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -52,13 +52,14 @@ namespace PGNapoleonics.HexUtilities.Storage {
                                     : Enumerable.Range(0,sizeHexes.Height);
           BackingStore = InitializeStoreX(sizeHexes, factory, rowRange);
         }
-        private static IFastList<IFastListX<T>> InitializeStoreX(HexSize sizeHexes, Func<HexCoords, T> tFactory, IEnumerable<int> rowRange) {
-          return ( from y in rowRange
-                   select ( from x in Enumerable.Range(0, sizeHexes.Width)
-                            select tFactory(HexCoords.NewUserCoords(x,y))
-                          ).ToArray().ToFastListX()
-                 ).ToArray().ToFastList();
-        }
+
+        private static IFastList<IFastListX<T>> InitializeStoreX(HexSize sizeHexes,
+                Func<HexCoords, T> tFactory, IEnumerable<int> rowRange)
+        => ( from y in rowRange
+             select ( from x in Enumerable.Range(0, sizeHexes.Width)
+                      select tFactory(HexCoords.NewUserCoords(x,y))
+                    ).ToArray().ToFastListX()
+           ).ToArray().ToFastList();
 
         /// <inheritdoc/>>
         protected override T ItemInner(int x, int y) => BackingStore[y][x];

@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ using PGNapoleonics.HexgridExampleCommon;
 
 namespace PGNapoleonics.HexgridPanelExample {
     using HexSize        = System.Drawing.Size;
-    using MapGridDisplay = MapDisplay<Hex>;
+    using MapGridDisplay = MapDisplay<IHex>;
 
     internal sealed partial class HexgridPanelExample : Form, IMessageFilter {
         private bool           _isPanelResizeSuppressed = false;

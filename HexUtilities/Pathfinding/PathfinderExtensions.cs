@@ -1,11 +1,11 @@
-﻿#region The MIT License - Copyright (C) 2012-2015 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2015 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -45,6 +45,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// <param name="target">Coordinates for the <c>last</c> step on the desired path.</param>
         public static async Task<Maybe<IDirectedPath>> GetPathAsync(this IPathfinder @this, IHex source, IHex target)
         => await Task.Run( () => @this.GetPath(source, target) );
+
         /// <summary>Calculates an <see cref="IDirectedPath"/> asynchronously for the optimal path from coordinates .</summary>
         /// <param name="source">Coordinates for the <c>first</c> step on the desired path.</param>
         /// <param name="target">Coordinates for the <c>last</c> step on the desired path.</param>

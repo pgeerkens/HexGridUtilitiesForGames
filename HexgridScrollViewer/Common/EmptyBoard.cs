@@ -26,22 +26,21 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System.Windows.Media;
-
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridScrollViewer {
-    using HexSize         = System.Drawing.Size;
+    using Graphics     = System.Drawing.Graphics;
+    using HexSize      = System.Drawing.Size;
 
     /// <summary>TODO</summary>
-    public sealed class EmptyBoard : MapDisplay<Hex> {
+    public sealed class EmptyBoard : MapDisplayBlocked<Hex> {
         /// <summary>TODO</summary>
         public EmptyBoard()
         : base(new HexSize(1,1), new HexSize(26,30), (c) => new EmptyGridHex(c)) => FovRadius = 20;
         /// <inheritdoc/>
-        protected override int        ElevationBase => 0;
+        public override int        ElevationBase => 0;
         /// <inheritdoc/>
-        protected override int        ElevationStep => 10;
+        public override int        ElevationStep => 10;
 
         /// <inheritdoc/>
         public    override short?   Heuristic(HexCoords source, HexCoords target) => source.Range(target);
@@ -52,11 +51,13 @@ namespace PGNapoleonics.HexgridScrollViewer {
         /// <summary>TODO</summary>
         public EmptyGridHex(HexCoords coords) : base(coords,0) {}
 
-        /// <summary>TODO</summary>
-        public override int           HeightTerrain => 0;
-        /// <summary>TODO</summary>
-        public override short?        TryStepCost(Hexside hexsideExit) => -1;
         ///  <inheritdoc/>
-        public override void          Paint(DrawingContext graphics, StreamGeometry graphicsPath) { ; }
+        public override char   TerrainType   { get; }
+
+        /// <summary>TODO</summary>
+        public override int    HeightTerrain => 0;
+
+        /// <summary>TODO</summary>
+        public override short? TryStepCost(Hexside hexsideExit) => default(short?);
     }
 }

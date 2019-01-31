@@ -1,4 +1,4 @@
-﻿#region License - Copyright (C) 2012-2014 Pieter Geerkens, all rights reserved.
+﻿#region License - Copyright (C) 2012-2019 Pieter Geerkens, all rights reserved.
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 //
@@ -16,7 +16,6 @@ using System.Diagnostics.CodeAnalysis;
 
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
-using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridPanel {
     /// <summary>TODO</summary>
@@ -90,7 +89,7 @@ namespace PGNapoleonics.HexgridPanel {
                 temp = new Bitmap(width, height) { Tag = tag };
                 temp.Paint(Point.Empty, CacheScale, g => {
                     var model = DataContext.Model;
-                    model.PaintMap(g, true, c => from h in model[c] select h as IHex, model.Landmarks);
+                    model.PaintMap(g, true, model.BoardHexes, model.Landmarks);
                 });
                 bitmap = temp;
                 temp   = null;
@@ -117,15 +116,15 @@ namespace PGNapoleonics.HexgridPanel {
                 BufferCache  .Render(BufferMap,   location, mapScale / CacheScale);
                 BufferMap    .Render(BufferUnits, location, mapScale, g => {
                     var model = DataContext.Model;
-                    model.PaintUnits<Hex>(g);
+                    model.PaintUnits(g);
                 });
                 BufferUnits  .Render(BufferBack,  location, mapScale, g => {
                     var model = DataContext.Model;
-                    model.PaintHighlight<Hex>(g, true);
+                    model.PaintHighlight(g, true);
                 });
                 BufferShading.Render(BufferBack, location, mapScale, g => {
                     var model = DataContext.Model;
-                    model.PaintShading<Hex>(g, model.Fov, model.ShadeBrushAlpha, model.ShadeBrushColor);
+                    model.PaintShading(g, model.Fov, model.ShadeBrushAlpha, model.ShadeBrushColor);
                 });
 
                 e.Graphics.DrawImageUnscaled(BufferBack, Point.Empty);

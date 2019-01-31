@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,7 @@ using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridScrollableExample {
-    using MapGridDisplay = MapDisplay<Hex>;
+    using MapGridDisplay = MapDisplay<IHex>;
 
     internal sealed partial class ExampleHexgridScrollable : Form, IMessageFilter {
         private bool           _isPanelResizeSuppressed = false;

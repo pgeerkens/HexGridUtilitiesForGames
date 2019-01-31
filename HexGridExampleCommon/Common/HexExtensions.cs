@@ -4,7 +4,7 @@ using System.Drawing.Drawing2D;
 
 using PGNapoleonics.HexUtilities;
 
-namespace PGNapoleonics.HexgridPanel {
+namespace PGNapoleonics.HexgridExampleCommon {
     /// <summary>Extension methods for <see Cref="Hex"/>.</summary>
     public static partial class HexExtensions {
         /// <summary>The <i>Manhattan</i> distance from this hex to that at <c>coords</c>.</summary>

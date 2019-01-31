@@ -1,11 +1,11 @@
-﻿#region The MIT License - Copyright (C) 2012-2015 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2015 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -26,41 +26,36 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System.Windows.Forms;
 
-using System.Diagnostics.CodeAnalysis;
-
-using PGNapoleonics.HexUtilities;
-using PGNapoleonics.HexUtilities.Common;
-
-namespace PGNapoleonics.HexgridPanel {
-  /// <summary></summary>
-  public class HexEventArgs : MouseEventArgs {
-    /// <summary>TODO</summary>
-    public HexCoords  Coords       { get; private set; }
+namespace PGNapoleonics.HexUtilities.Common {
+    using HexPointF    = System.Drawing.PointF;
+    using HexPoint     = System.Drawing.Point;
 
     /// <summary>TODO</summary>
-    public bool     Alt          { get { return ModifierKeys.HasFlag(Keys.Alt);  } }
-    /// <summary>TODO</summary>
-    public bool     Control      { get { return ModifierKeys.HasFlag(Keys.Control); } }
-    /// <summary>TODO</summary>
-    public bool     Shift        { get { return ModifierKeys.HasFlag(Keys.Shift); } }
+    public static class PointExtensions {
+        /// <summary>TODO</summary>
+        public static HexPoint Scale(this HexPoint @this, int value) =>
+            @this.Scale(value,value);
 
-    /// <summary>TODO</summary>
-    public Keys     ModifierKeys { get; private set; }
+        /// <summary>TODO</summary>
+        public static HexPoint Scale(this HexPoint @this, int valueX, int valueY) =>
+            new HexPoint(@this.X * valueX, @this.Y * valueY);
 
-    /// <summary>TODO</summary>
-    public HexEventArgs(HexCoords coords) 
-      : this(coords, Keys.None, MouseButtons.None,0,0,0,0) {}
-    /// <summary>TODO</summary>
-    public HexEventArgs(HexCoords coords, Keys modifierKeys) 
-      : this(coords, modifierKeys, MouseButtons.None,0,0,0,0) {}
-    /// <summary>TODO</summary>
-    public HexEventArgs(HexCoords coords, Keys modifierKeys, 
-      MouseButtons buttons, int clicks, int x, int y, int delta)
-      : base(buttons,clicks,x,y,delta) {
-      Coords       = coords;
-      ModifierKeys = modifierKeys;
+        /// <summary>TODO</summary>
+        public static HexPointF Scale(this HexPoint @this, float value) =>
+            @this.Scale(value,value);
+
+        /// <summary>TODO</summary>
+        public static HexPointF Scale(this HexPoint @this, float valueX, float valueY) =>
+            new HexPointF(@this.X,@this.Y).Scale(valueX,valueY);
+
+        /// <summary>TODO</summary>
+        public static HexPointF Scale(this HexPointF @this, float value) =>            
+            @this.Scale(value,value);
+
+        /// <summary>TODO</summary>
+        public static HexPointF Scale(this HexPointF @this, float valueX, float valueY) =>
+            new HexPointF(@this.X * valueX, @this.Y * valueY);
     }
-  }
 }
+

@@ -1,11 +1,11 @@
-﻿#region The MIT License - Copyright (C) 2012-2015 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2015 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -46,10 +46,10 @@ namespace PGNapoleonics.HexUtilities {
 
         /// <summary>Return a new instance of <c>Hexgrid</c>.</summary>
         public Hexgrid(bool isTransposed, HexSize gridSize, float scale, HexSize margin) {
-            IsTransposed = isTransposed;
             GridSize     = gridSize;
-            Scale        = scale;
+            IsTransposed = isTransposed;
             Margin       = margin;
+            Scale        = scale;
 
             HexCorners = new List<HexPoint>() {
                 new HexPoint(GridSize.Width*1/3,              0  ), 
@@ -67,10 +67,10 @@ namespace PGNapoleonics.HexUtilities {
         /// <inheritdoc/>
         public HexPoints HexCorners   { get; }
         /// <inheritdoc/>
+        public bool      IsTransposed { get; }
+        /// <inheritdoc/>
         public HexSize   Margin       { get; set; }
         /// <inheritdoc/>
         public float     Scale        { get; }
-        /// <inheritdoc/>
-        public bool      IsTransposed { get; }
     }
 }

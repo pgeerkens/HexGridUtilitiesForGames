@@ -1,11 +1,11 @@
-﻿#region The MIT License - Copyright (C) 2012-2015 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2015 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -35,20 +35,18 @@ using PGNapoleonics.HexUtilities.FieldOfView;
 using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexUtilities.Storage;
 
-namespace PGNapoleonics.HexgridPanel {
+namespace PGNapoleonics.HexgridExampleCommon {
     using HexPoint      = System.Drawing.Point;
     using HexPointF     = System.Drawing.PointF;
     using HexSize       = System.Drawing.Size;
     using HexSizeF      = System.Drawing.SizeF;
     using RectangleF    = System.Drawing.RectangleF;
-    using Graphics      = System.Drawing.Graphics;
     using Color         = System.Drawing.Color;
     using GraphicsPath  = System.Drawing.Drawing2D.GraphicsPath;
+    using IDirectedPath = IDirectedPathCollection;
+    using Int32ValueEventArgs = ValueEventArgs<int>;
 
     using static System.Drawing.Drawing2D.PathPointType;
-
-    using Int32ValueEventArgs = ValueEventArgs<int>;
-    using IDirectedPath = IDirectedPathCollection;
 
     /// <summary>.</summary>
     /// <typeparam name="THex"></typeparam>
@@ -215,22 +213,6 @@ namespace PGNapoleonics.HexgridPanel {
         /// <inheritdoc/>
         public CoordsRectangle GetClipInHexes(RectangleF visibleClipBounds)
         => this.GetClipInHexes(visibleClipBounds, MapSizeHexes);
-
-        /// <inheritdoc/>
-        public abstract void PaintHighlight(Graphics graphics);
-
-        /// <inheritdoc/>
-        public abstract void PaintMap(Graphics graphics);
-
-        /// <inheritdoc/>
-        public abstract void PaintShading(Graphics graphics);
-
-        /// <inheritdoc/>
-        public abstract void PaintUnits(Graphics graphics);
-
-        ///// <inheritdoc/>
-        //void IMapDisplayWinForms.ForEachHex(Action<Maybe<IHex>> action)
-        //=> this.ForEachHex(hex => action(from h in hex select h as IHex));
         #endregion
 
         /// <inheritdoc/>
@@ -266,36 +248,5 @@ namespace PGNapoleonics.HexgridPanel {
             base.Dispose(disposing);
         }
         #endregion
-    }
-}
-namespace PGNapoleonics.HexgridPanel {
-    using System.Drawing;
-    using System.Drawing.Drawing2D;
-
-    public class GraphicsMapPainter {
-        public GraphicsMapPainter() {
-
-        }
-
-        public void PaintMap<THex>(Graphics graphics, HexgridViewModel dataCntext, MapPanel panel)
-        where THex:IHex {
-            if (panel.IsTransposed) { graphics.Transform = TransposeMatrix; }
-
-            var scroll = dataCntext.Grid.GetScrollPosition(panel.AutoScrollPosition);
-            graphics.TranslateTransform(scroll.X + panel.Margin.Left,  scroll.Y + panel.Margin.Top);
-            graphics.ScaleTransform(panel.MapScale,panel.MapScale);
-            Tracing.PaintDetail.Trace($"{panel.Name}.PaintBuffer - VisibleClipBounds: ({graphics.VisibleClipBounds})");
-
-            using(var brush = new SolidBrush(panel.BackColor)) {
-                graphics.FillRectangle(brush, graphics.VisibleClipBounds);
-            }
-            graphics.Paint(Point.Empty, 1.0F, g => {
-                var model = dataCntext.Model;
-                model.PaintMap(g, true, c => from h in model[c] select h as IHex, model.Landmarks);
-            });
-        }
-
-        /// <summary>TODO</summary>
-        static protected Matrix TransposeMatrix => new Matrix(0F,1F, 1F,0F, 0F,0F);
     }
 }

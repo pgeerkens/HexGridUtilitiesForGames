@@ -1,11 +1,11 @@
-﻿#region The MIT License - Copyright (C) 2012-2015 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2015 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -33,67 +33,60 @@ using System.Globalization;
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities {
-  /// <summary>TODO</summary>
-  public class CustomCoords : IFormatProvider, ICustomFormatter {
-    /// <summary>Return the coordinate vector of this hex in the Custom frame.</summary>
-    public IntVector2D UserToCustom(HexCoords coords) {
-      return coords.User * MatrixUserToCustom;
-    }
-    /// <summary>Return the coordinate vector of this hex in the User frame.</summary>
-    public HexCoords CustomToUser(IntVector2D coords) {
-      return HexCoords.NewUserCoords(coords * MatrixUserToCustom);
-    }
-
-    /// <summary>Initialize the conversion matrices for the Custom coordinate frame.</summary>
-    public CustomCoords(IntMatrix2D matrix) : this(matrix,matrix) { }
-
-    /// <summary>Initialize the conversion matrices for the Custom coordinate frame.</summary>
-    public CustomCoords(IntMatrix2D userToCustom, IntMatrix2D customToUser) {
-      _matrixUserToCustom = userToCustom;
-      _matrixCustomToUser = customToUser;
-    }
-
-    /// <summary>Gets the conversion @this from Custom to Rectangular (User) coordinates.</summary>
-    public IntMatrix2D MatrixCustomToUser { get { return _matrixCustomToUser; } }
-    private readonly IntMatrix2D _matrixCustomToUser;
-
-    /// <summary>Gets the conversion @this from Rectangular (User) to Custom coordinates.</summary>
-    public IntMatrix2D MatrixUserToCustom { get { return _matrixUserToCustom; } }
-    private readonly IntMatrix2D _matrixUserToCustom;
-
     /// <summary>TODO</summary>
-    public ICustomFormatter GetFormat(Type formatType) {
-      return formatType == typeof(HexCoords) ? this : CultureInfo.CurrentUICulture.GetFormat(formatType) as ICustomFormatter;
-    }
+    public class CustomCoords : IFormatProvider, ICustomFormatter {
+        /// <summary>Return the coordinate vector of this hex in the Custom frame.</summary>
+        public IntVector2D UserToCustom(HexCoords coords)
+        => coords.User * MatrixUserToCustom;
+        
+        /// <summary>Return the coordinate vector of this hex in the User frame.</summary>
+        public HexCoords CustomToUser(IntVector2D coords)
+        => HexCoords.NewUserCoords(coords * MatrixUserToCustom);
 
-    /// <summary>TODO</summary>
-    [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames", MessageId = "0#",
-      Justification="Agrees with interface specification.")]
-    public string Format(string format, HexCoords coords, IFormatProvider formatProvider) {
-      if (format==null || format.Length==0) format = "U";
-      switch(format[0]) {
-        case 'U': return UserToCustom(coords).ToString(format.Substring(1), formatProvider);
-        case 'u': return "Custom: " + 
-                         UserToCustom(coords).ToString(format.Substring(1), formatProvider);
+        /// <summary>Initialize the conversion matrices for the Custom coordinate frame.</summary>
+        public CustomCoords(IntMatrix2D matrix) : this(matrix,matrix) { }
 
-        default:  return coords.ToString(format, formatProvider);
-      }
-    }
+        /// <summary>Initialize the conversion matrices for the Custom coordinate frame.</summary>
+        public CustomCoords(IntMatrix2D userToCustom, IntMatrix2D customToUser) {
+            MatrixUserToCustom = userToCustom;
+            MatrixCustomToUser = customToUser;
+        }
 
-    Object IFormatProvider.GetFormat(Type formatType) { return GetFormat(formatType); }
+        /// <summary>Gets the conversion @this from Custom to Rectangular (User) coordinates.</summary>
+        public IntMatrix2D MatrixCustomToUser { get; }
+
+        /// <summary>Gets the conversion @this from Rectangular (User) to Custom coordinates.</summary>
+        public IntMatrix2D MatrixUserToCustom { get; }
+
+        /// <summary>TODO</summary>
+        public ICustomFormatter GetFormat(Type formatType)
+        => formatType == typeof(HexCoords) ? this : CultureInfo.CurrentUICulture.GetFormat(formatType) as ICustomFormatter;
+
+        /// <summary>TODO</summary>
+        [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames", MessageId = "0#",
+          Justification="Agrees with interface specification.")]
+        public string Format(string format, HexCoords coords, IFormatProvider formatProvider) {
+            if (format==null || format.Length==0) format = "U";
+            switch(format[0]) {
+                case 'U': return UserToCustom(coords).ToString(format.Substring(1), formatProvider);
+                case 'u': return "Custom: " + 
+                                 UserToCustom(coords).ToString(format.Substring(1), formatProvider);
+
+                default:  return coords.ToString(format, formatProvider);
+            }
+        }
+
+        object IFormatProvider.GetFormat(Type formatType) { return GetFormat(formatType); }
  
-    string ICustomFormatter.Format(string format, Object arg, IFormatProvider formatProvider) {
-      var coords = arg as HexCoords?;
-      if (coords.HasValue)
-        return Format(format, coords.Value, formatProvider);
-      else
-          return HandleOtherFormats(format, arg);
+        string ICustomFormatter.Format(string format, Object arg, IFormatProvider formatProvider) {
+            var coords = arg as HexCoords?;
+            if (coords.HasValue)
+                return Format(format, coords.Value, formatProvider);
+            else
+                  return HandleOtherFormats(format, arg);
+        }
+        private static string HandleOtherFormats(string format, object obj)
+        => (obj is IFormattable f) ? f.ToString(format, CultureInfo.CurrentCulture)
+                                   : obj?.ToString() ?? string.Empty;
     }
-    private static string HandleOtherFormats(string format, object argument) {
-      var formattable = argument as IFormattable;
-      return (formattable != null)  ?  formattable.ToString(format, CultureInfo.CurrentCulture)
-           :    (argument != null)  ?  argument.ToString()
-                                    :  String.Empty;
-    }
-  }
 }

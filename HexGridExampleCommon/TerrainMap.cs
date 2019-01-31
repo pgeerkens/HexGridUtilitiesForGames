@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -29,79 +29,45 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
-
-using HexSize       = System.Drawing.Size;
-using Graphics      = System.Drawing.Graphics;
-using Brushes       = System.Drawing.Brushes;
-using GraphicsPath  = System.Drawing.Drawing2D.GraphicsPath;
 
 #pragma warning disable 1587
 /// <summary>TODO</summary>
 #pragma warning restore 1587
 namespace PGNapoleonics.HexgridExampleCommon {
-    using MapGridHex    = Hex;
+    using HexSize    = System.Drawing.Size;
+    using MapGridHex = IHex;
+    using MapDef     = IReadOnlyList<string>;
 
-    /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexgridPanel"/> to implement
-    /// a terrain map.</summary>
+    /// <summary>Example of <see cref="HexUtilities"/> usage to implement a terrain map.</summary>
     public sealed class TerrainMap : MapDisplayBlocked<MapGridHex> {
         /// <summary>TODO</summary>
         public TerrainMap() : base(_sizeHexes, new HexSize(26,30), InitializeHex) {}
 
         /// <inheritdoc/>
-        [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow",
-                MessageId = "2*range", Justification="No map is big enough to overflow,")]
-        public    override short?   Heuristic(HexCoords source, HexCoords target) => (short)(2 * source.Range(target));
+        public override int    ElevationBase =>  0;
+        /// <inheritdoc/>
+        public override int    ElevationStep => 10;
 
         /// <inheritdoc/>
-        public override int      ElevationBase     { get {return  0;} }
-        /// <inheritdoc/>
-        public override int      ElevationStep     { get {return 10;} }
+        [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "2*range", Justification="No map is big enough to overflow,")]
+        public override short? Heuristic(HexCoords source, HexCoords target) => (short)(2 * source.Range(target));
 
-        /// <summary>Wrapper for MapDisplayPainter.PaintHighlight.</summary>
-        public override void PaintHighlight(Graphics graphics)
-        => this.PaintHighlight(graphics, ShowRangeLine);
-        /// <summary>Wrapper for MapDisplayPainter.PaintMap.</summary>
-        public override void PaintMap(Graphics graphics)
-        => this.PaintMap(graphics, ShowHexgrid, this.Hexes(), Landmarks);
-
-        /// <summary>Wrapper for MapDisplayPainter.PaintShading.</summary>
-        public override void PaintShading(Graphics graphics)
-        => this.PaintShading(graphics, Fov, ShadeBrushAlpha, ShadeBrushColor);
-
-        /// <summary>Wrapper for MapDisplayPainter.PaintUnits.</summary>
-        public override void PaintUnits(Graphics graphics) {}
-
-        #region static Board definition
-        static IReadOnlyList<string> _board     = MapDefinitions.TerrainMapDefinition;
-        static HexSize               _sizeHexes = new HexSize(_board[0].Length, _board.Count);
-        #endregion
+        static MapDef          _board     = MapDefinitions.TerrainMapDefinition;
+        static HexSize         _sizeHexes = new HexSize(_board[0].Length, _board.Count);
 
         public new static MapGridHex InitializeHex(HexCoords coords) {
-            //char value = _board[coords.User.Y][coords.User.X];
-            //switch(value) {
-            //    default:
-            //    case '.': return new PassableTerrainGridHex   (coords, 0,0, 4,Brushes.White);      // Clear
-            //    case '2': return new PassableTerrainGridHex   (coords, 0,0, 2,Brushes.DarkGray);   // Pike
-            //    case '3': return new PassableTerrainGridHex   (coords, 0,0, 3,Brushes.SandyBrown); // Road
-            //    case 'F': return new PassableTerrainGridHex   (coords, 0,0, 5,Brushes.Brown);      // Ford
-            //    case 'H': return new PassableTerrainGridHex   (coords, 1,0, 5,Brushes.Khaki);      // Hill
-            //    case 'M': return new PassableTerrainGridHex   (coords, 2,0, 6,Brushes.DarkKhaki);  // Mountain
-            //    case 'R': return new ImpassableTerrainGridHex (coords, 0,0,   Brushes.DarkBlue);   // River
-            //    case 'W': return new PassableTerrainGridHex   (coords, 0,7, 8,Brushes.Green);      // Woods
-            //}
             char value = _board[coords.User.Y][coords.User.X];
             switch(value) {
+                case '.': return TerrainGridHex.NewPassable(coords, 0,0,value, 4); // Clear
+                case '2': return TerrainGridHex.NewPassable(coords, 0,0,value, 2); // Pike
+                case '3': return TerrainGridHex.NewPassable(coords, 0,0,value, 3); // Road
+                case 'F': return TerrainGridHex.NewPassable(coords, 0,0,value, 5); // Ford
+                case 'H': return TerrainGridHex.NewPassable(coords, 1,0,value, 5); // Hill
+                case 'M': return TerrainGridHex.NewPassable(coords, 2,0,value, 6); // Mountain
+                case 'W': return TerrainGridHex.NewPassable(coords, 0,7,value, 8); // Woods
                 default:
-                case '.': return new PassableTerrainGridHex   (coords, 0,0, 4,value); // Clear
-                case '2': return new PassableTerrainGridHex   (coords, 0,0, 2,value); // Pike
-                case '3': return new PassableTerrainGridHex   (coords, 0,0, 3,value); // Road
-                case 'F': return new PassableTerrainGridHex   (coords, 0,0, 5,value); // Ford
-                case 'H': return new PassableTerrainGridHex   (coords, 1,0, 5,value); // Hill
-                case 'M': return new PassableTerrainGridHex   (coords, 2,0, 6,value); // Mountain
-                case 'R': return new ImpassableTerrainGridHex (coords, 0,0,   value); // River
-                case 'W': return new PassableTerrainGridHex   (coords, 0,7, 8,value); // Woods
+                case 'R': return TerrainGridHex.NewImpassable(coords, 0,0,value);    // River
             }
         }
     }

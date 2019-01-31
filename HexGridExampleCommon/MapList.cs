@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -26,63 +26,55 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-using System.Diagnostics.CodeAnalysis;
-
-using PGNapoleonics.HexgridExampleCommon;
-using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridExampleCommon {
-//  using MapGridHex      = Hex;
-
-  /// <summary>TODO</summary>
-  public delegate MapDisplay<Hex> MapExtractor();
-
-  /// <summary>TODO</summary>
-  public struct Map {
-    /// <summary>TODO</summary>
-    public string MapName { get; private set; }
-    /// <summary>TODO</summary>
-    public MapDisplay<Hex> MapBoard { get { return _mapExtractor(); } } MapExtractor _mapExtractor;
+    using MapGridHex = IHex;
 
     /// <summary>TODO</summary>
-    public Map(string mapName, MapExtractor mapExtractor) : this() {
-      MapName = mapName;
-      _mapExtractor = mapExtractor;
-    }
+    public delegate MapDisplay<MapGridHex> MapExtractor();
 
-    private static IList<Map> _mapList = 
-        new ReadOnlyCollection<Map>(new Map[] {
+    /// <summary>TODO</summary>
+    public struct Map {
+        /// <summary>TODO</summary>
+        public string MapName { get; private set; }
+        /// <summary>TODO</summary>
+        public MapDisplay<MapGridHex> MapBoard { get { return _mapExtractor(); } } MapExtractor _mapExtractor;
+
+        /// <summary>TODO</summary>
+        public Map(string mapName, MapExtractor mapExtractor) : this() {
+              MapName = mapName;
+              _mapExtractor = mapExtractor;
+        }
+
+        /// <summary>TODO</summary>
+        public static IList<Map> MapList { get; } = new ReadOnlyCollection<Map>(new Map[] {
             new Map("Terrain Map",   () => new TerrainMap()),
             new Map("Maze Map",      () => new MazeMap()),
             new Map("AStar Bug Map", () => new AStarBugMap())
-          } );
+        } );
 
-    /// <summary>TODO</summary>
-    public static IList<Map> MapList { get { return _mapList; } }
+        #region Value Equality
+        /// <inheritdoc/>
+        public override bool Equals(object obj) {
+            var other = obj as Map?;
+            return other.HasValue && this == other.Value;
+        }
 
-    #region Value Equality
-    /// <inheritdoc/>
-    public override bool Equals(object obj) {
-      var other = obj as Map?;
-      return other.HasValue && this == other.Value;
+        /// <inheritdoc/>
+        public override int GetHashCode() { return MapName.GetHashCode(); }
+
+        /// <inheritdoc/>
+        public bool Equals(Map other) { return this == other; }
+
+        /// <summary>Tests value-inequality.</summary>
+        public static bool operator !=(Map lhs, Map rhs) { return !(lhs == rhs); }
+
+        /// <summary>Tests value-equality.</summary>
+        public static bool operator ==(Map lhs, Map rhs) { return (lhs.MapName == rhs.MapName); }
+        #endregion
     }
-
-    /// <inheritdoc/>
-    public override int GetHashCode() { return MapName.GetHashCode(); }
-
-    /// <inheritdoc/>
-    public bool Equals(Map other) { return this == other; }
-
-    /// <summary>Tests value-inequality.</summary>
-    public static bool operator !=(Map lhs, Map rhs) { return !(lhs == rhs); }
-
-    /// <summary>Tests value-equality.</summary>
-    public static bool operator ==(Map lhs, Map rhs) { return (lhs.MapName == rhs.MapName); }
-    #endregion
-  }
 }

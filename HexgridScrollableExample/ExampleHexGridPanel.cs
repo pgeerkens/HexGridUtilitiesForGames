@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -28,7 +28,6 @@
 #endregion
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Security.Permissions;
@@ -42,10 +41,12 @@ using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridScrollableExample {
+    using HexSize       = System.Drawing.Size;
+
     internal sealed partial class ExampleHexgridPanel : Form, IMessageFilter {
-        private bool            _isPanelResizeSuppressed = false;
-        private MapDisplay<Hex> _mapBoard;
-        private CustomCoords    _customCoords;
+        private bool             _isPanelResizeSuppressed = false;
+        private MapDisplay<IHex> _mapBoard;
+        private CustomCoords     _customCoords;
 
         [SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "resources")]
         public ExampleHexgridPanel() {
@@ -73,7 +74,7 @@ namespace PGNapoleonics.HexgridScrollableExample {
             var menuItem = new ToolStripMenuItem();
             menuItemDebug.DropDownItems.Add(menuItem);
             menuItem.Name         = "menuItemDebugTracing" + item.ToString();
-            menuItem.Size         = new System.Drawing.Size(143, 22);
+            menuItem.Size         = new HexSize(143, 22);
             menuItem.Text         = item.ToString();
             menuItem.CheckOnClick = true;
             menuItem.Click       += handler;
@@ -94,8 +95,8 @@ namespace PGNapoleonics.HexgridScrollableExample {
                                                     .Where(v => v.value > 0.95F)
                                                     .Select(s => s.index).FirstOrDefault(); 
             var padding = toolStripContainer1.ContentPanel.Padding;
-            Size = _hexgridPanel.MapSizePixels  + new Size(21,93)
-                 + new Size(padding.Left+padding.Right, padding.Top+padding.Bottom);
+            Size = _hexgridPanel.MapSizePixels  + new HexSize(21,93)
+                 + new HexSize(padding.Left+padding.Right, padding.Top+padding.Bottom);
         }
 
         protected override void OnResizeBegin(EventArgs e) {
@@ -154,10 +155,10 @@ namespace PGNapoleonics.HexgridScrollableExample {
 
         private void comboBoxMapSelection_SelectionChanged(object sender, EventArgs e) =>
             SetMapBoard(ParseMapName(((ToolStripItem)sender).Text));
-        private static MapDisplay<Hex> ParseMapName(string mapName) =>
+        private static MapDisplay<IHex> ParseMapName(string mapName) =>
             Map.MapList.First(item => item.MapName == mapName).MapBoard;
 
-        private void SetMapBoard(MapDisplay<Hex> mapBoard) {
+        private void SetMapBoard(MapDisplay<IHex> mapBoard) {
             _hexgridPanel.Model     = (_mapBoard = mapBoard);
             _mapBoard.ShowPathArrow = buttonPathArrow.Checked;
             _mapBoard.ShowFov       = buttonFieldOfView.Checked;

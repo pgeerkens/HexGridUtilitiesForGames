@@ -1,4 +1,4 @@
-﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -27,54 +27,41 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 
-using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridExampleCommon {
-//    using MapGridHex   = IHex;
+    using MapHex  = IHex;
+    using HexSize = System.Drawing.Size;
 
-    /// <summary>Example of <see cref="HexUtilities"/> usage with <see cref="HexgridPanel"/> to implement
-    /// a maze map.</summary>
-    public sealed class MazeMap : MapDisplayBlocked<Hex> {
+    /// <summary>Example of <see cref="HexUtilities"/> usage to implement a maze map.</summary>
+    public sealed class MazeMap : MapDisplayBlocked<MapHex> {
         /// <summary>TODO</summary>
-        public MazeMap() : base(_sizeHexes, new Size(26,30), InitializeHex) {}
+        public MazeMap() : base(_sizeHexes, new HexSize(26,30), InitializeHex) {}
 
         /// <inheritdoc/>
-        public override short?  Heuristic(HexCoords source, HexCoords target) => source.Range(target);
+        public override short?  Heuristic(HexCoords source, HexCoords target)
+        => (short)(MinimumStepCost * source.Range(target));
+
+        /// <inheritdoc/>
+        public override int    ElevationBase   =>  0;
+
+        /// <inheritdoc/>
+        public override int    ElevationStep   => 10;
 
         /// <summary>TODO</summary>
-        protected override int  MinimumStepCost => 1;
-
-        /// <inheritdoc/>
-        public override int  ElevationBase   =>  0;
-        /// <inheritdoc/>
-        public override int  ElevationStep   => 10;
-
-        /// <summary>Wrapper for MapDisplayPainter.PaintHighlight.</summary>
-        public override void PaintHighlight(Graphics graphics)
-        => this.PaintHighlight(graphics, ShowRangeLine);
-        /// <summary>Wrapper for MapDisplayPainter.PaintMap.</summary>
-        public override void PaintMap(Graphics graphics)
-        => this.PaintMap(graphics,ShowHexgrid, this.Hexes(), Landmarks);
-        /// <summary>Wrapper for MapDisplayPainter.PaintShading.</summary>
-        public override void PaintShading(Graphics graphics)
-        => this.PaintShading(graphics, Fov, ShadeBrushAlpha, ShadeBrushColor);
-        /// <summary>Wrapper for MapDisplayPainter.PaintUnits.</summary>
-        public override void PaintUnits(Graphics graphics) {}
+        protected override int MinimumStepCost => 1;
 
         #region static Board definition
         static IReadOnlyList<string> _board     = MapDefinitions.MazeMapDefinition;
-        static Size                  _sizeHexes = new Size(_board[0].Length, _board.Count);
+        static HexSize               _sizeHexes = new HexSize(_board[0].Length, _board.Count);
         #endregion
 
         private new static Hex InitializeHex(HexCoords coords) {
             var value = _board[coords.User.Y][coords.User.X];
             switch (value) {
-                case '.': return new PassableTerrainGridHex   (coords,0, 0,1,value); // Path
-                default:  return new ImpassableTerrainGridHex (coords,1,10,  value); // Wall
+                case '.': return TerrainGridHex.NewPassable   (coords,0, 0, value, 1); // Path
+                default:  return TerrainGridHex.NewImpassable (coords,1,10, value);    // Wall
             }
         }
     }

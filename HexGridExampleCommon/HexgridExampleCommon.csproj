@@ -96,8 +96,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\EmptyBoard.cs" />
+    <Compile Include="Common\HexBoardExtensions.cs" />
+    <Compile Include="Common\HexExtensions.cs" />
+    <Compile Include="Common\IHexgridExtensions.cs" />
+    <Compile Include="Common\IMapDisplayWinForms.cs" />
+    <Compile Include="Common\MapDisplay.cs" />
+    <Compile Include="Common\MapDisplaydExtensions.cs" />
+    <Compile Include="Common\PointExtensions.cs" />
+    <Compile Include="Common\SizeExtensions.cs" />
+    <Compile Include="Common\UserCoordsRectangle.cs" />
     <Compile Include="DocMainPage.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="HexPickingExtensions.cs" />
     <Compile Include="MapDefs.cs" />
     <Compile Include="MapList.cs" />
     <Compile Include="MazeMap.cs" />
@@ -112,10 +123,6 @@
     <Compile Include="TerrainMap.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HexgridPanel\HexgridPanel.csproj">
-      <Project>{388ad675-d18e-4dfa-abb9-55ab3ea993a2}</Project>
-      <Name>HexgridPanel</Name>
-    </ProjectReference>
     <ProjectReference Include="..\HexUtilities\HexUtilities.csproj">
       <Project>{013628e1-60e2-40a6-91d4-8b446f397a0a}</Project>
       <Name>HexUtilities</Name>

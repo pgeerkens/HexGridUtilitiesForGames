@@ -1,11 +1,11 @@
-﻿#region The MIT License - Copyright (C) 2012-2015 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions Inc. - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2015 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -36,10 +36,12 @@ using System.Windows.Forms;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
+using PGNapoleonics.HexgridExampleCommon;
 
 using WpfInput = System.Windows.Input;
 
 namespace PGNapoleonics.HexgridPanel {
+    using Model = IMapDisplayWinForms<IHex>;
 
     /// <summary>Map orientation settings in 90 degree increments, CCW.</summary>
     public enum MapOrientation {
@@ -129,14 +131,8 @@ namespace PGNapoleonics.HexgridPanel {
         [Browsable(true)] [Bindable(true)] [EditorBrowsable(EditorBrowsableState.Always)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         [Category("Custom")]
-        public         bool            IsTransposed      { 
-    #if OLD_WAY
-          get { return DataContext.IsTransposed; }
-          set { DataContext.IsTransposed = value;  SetScrollLimits(DataContext.Model); }
-        }
-    #else
-          get; set; }
-    #endif
+        public         bool            IsTransposed      { get; set; }
+
         /// <inheritdoc/>
         public         Size            MapSizePixels     => DataContext.Model.MapSizePixels(); // + MapMargin.Scale(2);} }
         /// <summary>Current scaling factor for map display.</summary>
@@ -191,7 +187,7 @@ namespace PGNapoleonics.HexgridPanel {
         public virtual void SetMapDirty() { Invalidate(ClientRectangle); }
 
         /// <summary>TODO</summary>
-        public         void SetModel(IMapDisplayWinForms<Hex> model) {
+        public         void SetModel(Model model) {
           SetScrollLimits(DataContext.Model);   
           DataContext.Model = model;
           SetMapDirty();
@@ -215,7 +211,7 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <summary>Set ScrollBar increments and bounds from map dimensions.</summary>
-        public virtual void SetScrollLimits(IMapDisplayWinForms<Hex> model) {
+        public virtual void SetScrollLimits(Model model) {
           if (model == null  ||  !AutoScroll) return;
           var smallChange              = Size.Ceiling(model.GridSize.Scale(MapScale));
           HorizontalScroll.SmallChange = smallChange.Width;
@@ -294,7 +290,7 @@ namespace PGNapoleonics.HexgridPanel {
             if (graphics == null) throw new ArgumentNullException("graphics");
             using(var brush = new SolidBrush(BackColor)) graphics.FillRectangle(brush, graphics.VisibleClipBounds);
             var model = DataContext.Model;
-            model.PaintMap(graphics, true, c => from h in model[c] select h as IHex, model.Landmarks);
+            model.PaintMap(graphics, true, model.BoardHexes, model.Landmarks);
         }
         /// <inheritdoc/>
         protected virtual void RenderShading(Graphics graphics) {
