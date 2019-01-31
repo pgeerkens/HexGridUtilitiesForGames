@@ -29,11 +29,13 @@
 using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridScrollViewer {
-    using Graphics     = System.Drawing.Graphics;
-    using HexSize      = System.Drawing.Size;
+    using MapHex  = IHex;
+    using HexSize = System.Drawing.Size;
 
     /// <summary>TODO</summary>
-    public sealed class EmptyBoard : MapDisplayBlocked<Hex> {
+    public sealed class EmptyBoard : MapDisplayBlocked<MapHex> {
+        public static EmptyBoard TheOne { get; } = new EmptyBoard();
+
         /// <summary>TODO</summary>
         public EmptyBoard()
         : base(new HexSize(1,1), new HexSize(26,30), (c) => new EmptyGridHex(c)) => FovRadius = 20;
