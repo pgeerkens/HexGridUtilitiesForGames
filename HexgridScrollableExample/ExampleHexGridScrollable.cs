@@ -42,7 +42,7 @@ using PGNapoleonics.WinForms;
 namespace PGNapoleonics.HexgridScrollableExample {
     using MapGridDisplay = MapDisplay<IHex>;
 
-    internal sealed partial class ExampleHexgridScrollable : Form, IMessageFilter {
+    public sealed partial class ExampleHexgridScrollable : Form, IMessageFilter {
         private bool           _isPanelResizeSuppressed = false;
         private MapGridDisplay _mapBoard;
         private CustomCoords   _customCoords;

@@ -27,29 +27,28 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.FieldOfView;
 using PGNapoleonics.HexUtilities.Pathfinding;
-using PGNapoleonics.HexgridExampleCommon;
 using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexgridPanel {
+    using System.Drawing;
+    using System.Drawing.Drawing2D;
+
     using ILandmarks = ILandmarkCollection;
     using Hexes      = BoardStorage<Maybe<IHex>>;
 
-    public static class MapDisplayPainter {
+    public static partial class MapDisplayPainter {
         /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
         /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
         /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
         /// <remarks>For each visible hex: perform <c>paintAction</c> and then draw its hexgrid outline.</remarks>
         public static void PaintMap<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics,
                 bool showHexgrid, Hexes boardHexes, ILandmarks landmarks)
-        where THex:IHex { 
-            graphics.Contain( g => {
+        where THex:IHex
+        =>  graphics.Contain( g => {
                 var clipHexes  = @this.GetClipInHexes(graphics.VisibleClipBounds);
                 graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 var font       = SystemFonts.MenuFont;
@@ -66,32 +65,18 @@ namespace PGNapoleonics.HexgridPanel {
                                 font, brush, textOffset);
                     }
                 } );
-            });
-        }
-
-        public static Brush GetBrush(this IHex hex) {
-            switch(hex.TerrainType) {
-                default:  return Brushes.DarkGray;   // Undefined
-                case '.': return Brushes.White;      // Clear
-                case '2': return Brushes.DarkGray;   // Pike
-                case '3': return Brushes.SandyBrown; // Road
-                case 'F': return Brushes.Brown;      // Ford
-                case 'H': return Brushes.Khaki;      // Hill
-                case 'M': return Brushes.DarkKhaki;  // Mountain
-                case 'R': return Brushes.DarkBlue;   // River
-                case 'W': return Brushes.Green;      // Woods
-            }
-        }
+            } );
 
         /// <summary>Paint the top layer of the display, graphics that changes frequently between refreshes.</summary>
         /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
         /// <param name="graphics">Graphics object for the canvas being painted.</param>
-        public static void PaintHighlight<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics, bool showRangeLine)
+        public static void PaintHighlight<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics,
+                bool showRangeLine)
         where THex:IHex {
             graphics.Contain(g => {
                 g.Transform = @this.TranslateToHex(@this.StartHex);
                 g.DrawPath(Pens.Red, @this.HexgridPath);
-            });
+            } );
 
             if (@this.Path != null) {
                 graphics.Contain(g => { @this.PaintPath(g, @this.Path); });
@@ -103,7 +88,7 @@ namespace PGNapoleonics.HexgridPanel {
                     graphics.DrawLine(Pens.Red, @this.CentreOfHex(@this.StartHex), target);
                     graphics.DrawLine(Pens.Red, target.X-8,target.Y-8, target.X+8,target.Y+8);
                     graphics.DrawLine(Pens.Red, target.X-8,target.Y+8, target.X+8,target.Y-8);
-                });
+                } );
             }
         }
 
@@ -113,8 +98,8 @@ namespace PGNapoleonics.HexgridPanel {
         /// <param name="graphics"></param>
         public static void PaintShading<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics,
                 IFov fov, byte shadeBrushAlpha, Color shadeBrushColor)
-        where THex:IHex {
-            graphics.Contain(g => {
+        where THex:IHex
+        =>  graphics.Contain(g => {
                 if (fov != null) {
                     var clipHexes  = @this.GetClipInHexes(graphics.VisibleClipBounds);
                     using(var shadeBrush = new SolidBrush(Color.FromArgb(shadeBrushAlpha, shadeBrushColor))) {
@@ -123,8 +108,7 @@ namespace PGNapoleonics.HexgridPanel {
                         } );
                     }
                 }
-            });
-        }
+            } );
 
         /// <summary>Paints all the hexes in <paramref name="clipHexes"/> by executing <paramref name="paintAction"/>
         /// for each hex on <paramref name="graphics"/>.</summary>
@@ -216,12 +200,33 @@ namespace PGNapoleonics.HexgridPanel {
             graphics.DrawLine(Pens.Black, -unit*2, unit*2, unit*2,-unit*2);
         }
 
+        /// <summary>.</summary>
+        /// <typeparam name="THex"></typeparam>
+        /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
+        /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
         public static void PaintUnits<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics)
         where THex:IHex {
             if (@this    == null) throw new ArgumentNullException("this");
             if (graphics == null) throw new ArgumentNullException("graphics");
 
             /* NO-OP - Not implemented in examples. */
+        }
+
+        /// <summary>.</summary>
+        /// <param name="hex"></param>
+        /// <returns></returns>
+        public static Brush GetBrush(this IHex hex) {
+            switch(hex.TerrainType) {
+                default:  return Brushes.DarkGray;   // Undefined
+                case '.': return Brushes.White;      // Clear
+                case '2': return Brushes.DarkGray;   // Pike
+                case '3': return Brushes.SandyBrown; // Road
+                case 'F': return Brushes.Brown;      // Ford
+                case 'H': return Brushes.Khaki;      // Hill
+                case 'M': return Brushes.DarkKhaki;  // Mountain
+                case 'R': return Brushes.DarkBlue;   // River
+                case 'W': return Brushes.Green;      // Woods
+            }
         }
 
         public static void ForEachHex<THex>(this IMapDisplayWinForms<THex> @this, Action<Maybe<THex>> action)

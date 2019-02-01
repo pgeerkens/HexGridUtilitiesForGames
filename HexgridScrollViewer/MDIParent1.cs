@@ -1,38 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Resources;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using System.Diagnostics.CodeAnalysis;
-
-using PGNapoleonics.HexgridExampleCommon;
-using PGNapoleonics.HexgridExampleCommon.Properties;
 
 namespace PGNapoleonics.HexgridScrollableExample {
     /// <summary>TODO</summary>
-    public partial class MdiParent : Form {
+    public partial class MdiParent1 : Form, ISupportInitialize {
         private int childFormNumber = 0;
 
-//        static CultureInfo Culture = CultureInfo.CurrentCulture;
-        //static ResourceManager StringManager =
-        //        new ResourceManager("en-US", Assembly.GetExecutingAssembly());
-        private static string FileExtensionMask = PGNapoleonics.HexgridScrollableExample.Properties.Resources.FileExtensionMask;
+        static CultureInfo Culture = CultureInfo.CurrentCulture;
+        static ResourceManager StringManager =
+                new ResourceManager("en-US", Assembly.GetExecutingAssembly());
+        private static string FileExtensionMask = "";// Properties.Resources.FileExtensionMask;
 
         /// <summary>TODO</summary>
-        public MdiParent() {
+        public MdiParent1() {
             InitializeComponent();
-
-            Size = new Size(1472,1068);
-
             CreateDefaultChildren();
+        }
+
+        /// <summary>Signals the object that initialization is starting.</summary>
+        public virtual void BeginInit() { ; }
+        /// <summary>Signals the object that initialization is complete.</summary>
+        public virtual void EndInit() { 
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
+            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            SetStyle(ControlStyles.Opaque, true);
         }
 
         [System.CodeDom.Compiler.GeneratedCode("","")]

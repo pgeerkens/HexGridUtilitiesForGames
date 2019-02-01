@@ -36,7 +36,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
   using HexRectF  = System.Drawing.RectangleF;
 
   /// <summary>(Technology-dependent portion of) interface contract required of a map board to be displayed by the Hexgrid control.</summary>
-  public interface IMapDisplayWpf : IMapDisplay {
+  public interface IMapDisplayWpf : IMapDisplay<IHex> {
 
     /// <summary>Gets the CoordsRectangle description of the clipping region.</summary>
     /// <param name="point">Upper-left corner in pixels of the clipping region.</param>

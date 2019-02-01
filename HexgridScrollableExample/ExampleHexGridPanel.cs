@@ -43,7 +43,7 @@ using PGNapoleonics.WinForms;
 namespace PGNapoleonics.HexgridScrollableExample {
     using HexSize       = System.Drawing.Size;
 
-    internal sealed partial class ExampleHexgridPanel : Form, IMessageFilter {
+    public sealed partial class ExampleHexgridPanel : Form, IMessageFilter {
         private bool             _isPanelResizeSuppressed = false;
         private MapDisplay<IHex> _mapBoard;
         private CustomCoords     _customCoords;

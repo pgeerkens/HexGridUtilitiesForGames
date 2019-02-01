@@ -45,7 +45,7 @@ namespace PGNapoleonics.HexgridScrollableExample {
     using HexSize        = System.Drawing.Size;
     using MapGridDisplay = MapDisplay<IHex>;
 
-    internal sealed partial class ExampleBufferedHexgridScrollable : Form, IMessageFilter {
+    public sealed partial class ExampleBufferedHexgridScrollable : Form, IMessageFilter {
         private bool           _isPanelResizeSuppressed = false;
         private MapGridDisplay _mapBoard;
         private CustomCoords   _customCoords;

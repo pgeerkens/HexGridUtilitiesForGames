@@ -131,6 +131,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     [Conditional("TRACE")]
     public  void Trace(string format) => Trace(false, format);
 
+    /// <summary>TODO</summary>
     [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "format")]
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args")]
