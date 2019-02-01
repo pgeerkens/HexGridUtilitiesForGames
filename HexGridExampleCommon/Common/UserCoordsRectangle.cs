@@ -45,7 +45,7 @@ namespace PGNapoleonics.HexUtilities.Common {
         => new CoordsRectangle(new HexRectangle(x,y,width,height));
 
         /// <summary>TODO</summary>
-        private CoordsRectangle(HexRectangle rectangle) : this() { Rectangle = rectangle; }
+        private CoordsRectangle(HexRectangle rectangle) : this() => Rectangle = rectangle;
 
         /// <summary>TODO</summary>
         public int       Bottom     => Rectangle.Bottom;

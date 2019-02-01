@@ -54,10 +54,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [DebuggerDisplay("")]
     internal sealed class AltPathfinder{
         /// <param name="pathHalves"></param>
-        /// <param name="board">Board on which this path search is taking place.</param>
-        /// <param name="start">Start hex for this half of the bidirectional path search.</param>
-        /// <param name="goal">Goal hex for this this half of the bidirectional path search.</param>
-        /// <param name="closedSet"></param>
         /// <param name="isForward"></param>
         public AltPathfinder(IPathHalves pathHalves, bool isForward) {
             IsForward   = isForward;

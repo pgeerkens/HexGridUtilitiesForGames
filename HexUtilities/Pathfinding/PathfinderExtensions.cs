@@ -41,12 +41,14 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
             => @this.GetPath(target.Coords, source.Coords);
 
         /// <summary>Calculates an <see cref="IDirectedPath"/> asynchronously for the optimal path from coordinates .</summary>
+        /// <param name="this"></param>
         /// <param name="source">Coordinates for the <c>first</c> step on the desired path.</param>
         /// <param name="target">Coordinates for the <c>last</c> step on the desired path.</param>
         public static async Task<Maybe<IDirectedPath>> GetPathAsync(this IPathfinder @this, IHex source, IHex target)
         => await Task.Run( () => @this.GetPath(source, target) );
 
         /// <summary>Calculates an <see cref="IDirectedPath"/> asynchronously for the optimal path from coordinates .</summary>
+        /// <param name="this"></param>
         /// <param name="source">Coordinates for the <c>first</c> step on the desired path.</param>
         /// <param name="target">Coordinates for the <c>last</c> step on the desired path.</param>
         public static async Task<Maybe<IDirectedPath>> GetPathAsync(this IPathfinder @this, HexCoords source, HexCoords target)
@@ -108,8 +110,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// <summary>If the conditional constant TRACE is defined: writes the dequeue details to the trace log.</summary>
         /// <param name="searchDirection"></param>
         /// <param name="coords"></param>
-        /// <param name="cost"></param>
-        /// <param name="exit"></param>
+        /// <param name="path"></param>
         /// <param name="priority"></param>
         /// <param name="preference"></param>
         [Conditional("TRACE")]

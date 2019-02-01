@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 using PGNapoleonics.HexUtilities;
+using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexgridExampleCommon {
     using MapGridHex = IHex;
@@ -40,41 +41,41 @@ namespace PGNapoleonics.HexgridExampleCommon {
     /// <summary>TODO</summary>
     public struct Map {
         /// <summary>TODO</summary>
-        public string MapName { get; private set; }
-        /// <summary>TODO</summary>
-        public MapDisplay<MapGridHex> MapBoard { get { return _mapExtractor(); } } MapExtractor _mapExtractor;
-
-        /// <summary>TODO</summary>
-        public Map(string mapName, MapExtractor mapExtractor) : this() {
-              MapName = mapName;
-              _mapExtractor = mapExtractor;
+        public Map(string mapName, MapExtractor mapSource) : this() {
+            MapName   = mapName;
+            MapSource = mapSource;
         }
 
         /// <summary>TODO</summary>
-        public static IList<Map> MapList { get; } = new ReadOnlyCollection<Map>(new Map[] {
-            new Map("Terrain Map",   () => new TerrainMap()),
-            new Map("Maze Map",      () => new MazeMap()),
-            new Map("AStar Bug Map", () => new AStarBugMap())
-        } );
+        public  string                 MapName   { get; }
+        /// <summary>TODO</summary>
+        public  MapDisplay<MapGridHex> MapBoard  => MapSource(); 
+        
+        private MapExtractor           MapSource { get; }
 
-        #region Value Equality
+        /// <summary>TODO</summary>
+        public static IReadOnlyList<Map> MapList { get; } = new ReadOnlyCollection<Map>(
+            new Map[] {
+                new Map("Terrain Map", () => new TerrainMap()),
+                new Map("Maze Map",    () => new MazeMap()),
+                new Map("A* Bug Map",  () => new AStarBugMap())
+            } );
+
+        #region Value Equality with IEquatable<T>
         /// <inheritdoc/>
-        public override bool Equals(object obj) {
-            var other = obj as Map?;
-            return other.HasValue && this == other.Value;
-        }
+        public override bool Equals(object obj) => (obj is Map other) && this.Equals(other);
 
         /// <inheritdoc/>
-        public override int GetHashCode() { return MapName.GetHashCode(); }
+        public bool Equals(Map other) => MapName == other.MapName;
 
         /// <inheritdoc/>
-        public bool Equals(Map other) { return this == other; }
+        public override int GetHashCode() => MapName.GetHashCode();
 
         /// <summary>Tests value-inequality.</summary>
-        public static bool operator !=(Map lhs, Map rhs) { return !(lhs == rhs); }
+        public static bool operator !=(Map lhs, Map rhs) => ! lhs.Equals(rhs);
 
         /// <summary>Tests value-equality.</summary>
-        public static bool operator ==(Map lhs, Map rhs) { return (lhs.MapName == rhs.MapName); }
+        public static bool operator ==(Map lhs, Map rhs) => lhs.Equals(rhs);
         #endregion
     }
 }

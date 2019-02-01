@@ -28,65 +28,65 @@
 #endregion
 using System;
 using System.Diagnostics;
-using System.Globalization;
 
 namespace PGNapoleonics.HexUtilities.FieldOfView {
-  /// <summary>TODO</summary>
-  [DebuggerDisplay("RiseRun: ({Rise} over {Run})")]
-  public struct RiseRun : IEquatable<RiseRun>, IComparable<RiseRun> {
-    #region Constructors
-    /// <summary>Creates a new instance of the RiseRUn struct.</summary>
-    /// <param name="rise"></param>
-    /// <param name="run"></param>
-    internal RiseRun(int rise, int run) : this() {
-      this.Rise = rise;
-      this.Run  = run;
+    /// <summary>TODO</summary>
+    [DebuggerDisplay("RiseRun: ({Rise} over {Run})")]
+    public struct RiseRun : IEquatable<RiseRun>, IComparable<RiseRun> {
+        #region Constructors
+        /// <summary>Creates a new instance of the RiseRUn struct.</summary>
+        /// <param name="rise"></param>
+        /// <param name="run"></param>
+        internal RiseRun(int rise, int run) : this() {
+            Rise = rise;
+            Run  = run;
+        }
+        #endregion
+
+        #region Properties
+        /// <summary>Delta-height in units of elevation: meters.</summary>
+        public int Rise { get; }
+        /// <summary>Delta-width in units of distance:  hexes.</summary>
+        public int Run  { get; }
+        #endregion
+
+        /// <inheritdoc/>
+        public override string ToString() => $"Rise={Rise}; Run={Run}";
+
+        #region Value Equality with IEquatable<T>
+        /// <inheritdoc/>
+        public override bool Equals(object obj) => (obj is RiseRun other) && this.Equals(other);
+
+        /// <inheritdoc/>
+        public bool Equals(RiseRun other) => Rise == other.Rise && Run == other.Run;
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => Run != 0 ? (Rise / Run).GetHashCode() 
+                                                      : int.MaxValue.GetHashCode();
+
+        /// <summary>Tests value-inequality.</summary>
+        public static bool operator != (RiseRun lhs, RiseRun rhs) => lhs.CompareTo(rhs) != 0;
+
+        /// <summary>Tests value-equality.</summary>
+        public static bool operator == (RiseRun lhs, RiseRun rhs) => lhs.CompareTo(rhs) == 0;
+        #endregion
+
+        #region Operators and  IComparable<RiseRun> implementations: 
+        /// <summary>Less Than operator</summary>
+        public static bool operator <  (RiseRun lhs, RiseRun rhs) => lhs.CompareTo(rhs) <  0;
+
+        /// <summary>Less Than or Equals operator</summary>
+        public static bool operator <= (RiseRun lhs, RiseRun rhs) => lhs.CompareTo(rhs) <= 0;
+
+        /// <summary>Greater Thanoperator</summary>
+        public static bool operator >  (RiseRun lhs, RiseRun rhs) => lhs.CompareTo(rhs) >  0;
+
+        /// <summary>Greater Than or Equals operator</summary>
+        public static bool operator >= (RiseRun lhs, RiseRun rhs) => lhs.CompareTo(rhs) >= 0;
+
+        /// <summary>Less-Than comparaator.</summary>
+        public int CompareTo(RiseRun other) => (Rise * other.Run).CompareTo(other.Rise * Run);
+        
+        #endregion
     }
-    #endregion
-
-    #region Properties
-    /// <summary>Delta-height in units of elevation: meters.</summary>
-    public int Rise { get; private set; }
-    /// <summary>Delta-width in units of distance:  hexes.</summary>
-    public int Run  { get; private set; }
-    #endregion
-
-    /// <inheritdoc/>
-    public override string ToString() { return string.Format(CultureInfo.InvariantCulture,"Rise={0}; Run={1}", Rise, Run); }
-
-    #region Value equality
-    /// <inheritdoc/>
-    public override bool Equals(object obj) { 
-      var other = obj as RiseRun?;
-      return other.HasValue  &&  this == other.Value;
-    }
-
-    /// <inheritdoc/>
-    public override int GetHashCode() { return Run != 0 ? (Rise / Run).GetHashCode() 
-                                                        : int.MaxValue.GetHashCode(); }
-
-    /// <inheritdoc/>
-    public bool Equals(RiseRun other) { return this == other; }
-
-    #region Operators and  IComparable<RiseRun> implementations: 
-    /// <summary>Test Value-Inequality.</summary>
-    public static bool operator != (RiseRun lhs, RiseRun rhs) { return lhs.CompareTo(rhs) != 0; }
-    /// <summary>Test Value-Equality.</summary>
-    public static bool operator == (RiseRun lhs, RiseRun rhs) { return lhs.CompareTo(rhs) == 0; }
-
-    /// <summary>Less Than operator</summary>
-    public static bool operator <  (RiseRun lhs, RiseRun rhs) { return lhs.CompareTo(rhs) <  0; }
-    /// <summary>Less Than or Equals operator</summary>
-    public static bool operator <= (RiseRun lhs, RiseRun rhs) { return lhs.CompareTo(rhs) <= 0; }
-    /// <summary>Greater Thanoperator</summary>
-    public static bool operator >  (RiseRun lhs, RiseRun rhs) { return lhs.CompareTo(rhs) >  0; }
-    /// <summary>Greater Than or Equals operator</summary>
-    public static bool operator >= (RiseRun lhs, RiseRun rhs) { return lhs.CompareTo(rhs) >= 0; }
-    /// <summary>Less-Than comparaator.</summary>
-    public int CompareTo(RiseRun other) { 
-      return (this.Rise * other.Run).CompareTo(other.Rise * this.Run);
-    }
-    #endregion
-    #endregion
-  }
 }

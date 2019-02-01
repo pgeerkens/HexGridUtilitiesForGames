@@ -26,40 +26,37 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using PGNapoleonics.HexUtilities;
-using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.FieldOfView;
 using PGNapoleonics.HexUtilities.Pathfinding;
 
-namespace PGNapoleonics.HexgridExampleCommon {
-    using HexPoint     = System.Drawing.Point;
+namespace PGNapoleonics.HexUtilities.Common {
+    using Color        = System.Drawing.Color;
+    using GraphicsPath = System.Drawing.Drawing2D.GraphicsPath;
     using HexPointF    = System.Drawing.PointF;
     using HexSize      = System.Drawing.Size;
     using HexSizeF     = System.Drawing.SizeF;
     using ILandmarks   = ILandmarkCollection;
     using RectangleF   = System.Drawing.RectangleF;
-    using Color        = System.Drawing.Color;
-    using GraphicsPath = System.Drawing.Drawing2D.GraphicsPath;
 
     /// <summary>(Technology-dependent portion of) interface contract required of a map board to be displayed by the Hexgrid control.</summary>
     public interface IMapDisplayWinForms<THex> : IMapDisplay<THex> where THex:IHex {
         /// <summary>Gets or sets the Field-of-View for the current <see cref="HotspotHex"/>, as an <see cref="IFov"/> object.</summary>
-        IFov         Fov             { get; }
+        IFov         Fov                    { get; }
         /// <summary>.</summary>/>
-        GraphicsPath HexgridPath     { get; }
+        GraphicsPath HexgridPath            { get; }
         /// <summary>Offset of hex centre from upper-left corner, as a <see cref="HexSize"/> struct.</summary>
-        HexSize      HexCentreOffset { get; }
+        HexSize      HexCentreOffset        { get; }
         /// <summary>.</summary>
-        ILandmarks   Landmarks       { get;}
+        ILandmarks   Landmarks              { get;}
         /// <summary>Gets or sets the alpha component for the shading brush used by Field-of-View display to indicate non-visible hexes.</summary>
-        byte         ShadeBrushAlpha { get; }
+        byte         ShadeBrushAlpha        { get; }
         /// <summary>Gets or sets the base color for the shading brush used by Field-of-View display to indicate non-visible hexes.</summary>
-        Color        ShadeBrushColor { get; }
+        Color        ShadeBrushColor        { get; }
         /// <summary>Gets or sets whether to display direction indicators for the current path.</summary>
-        bool         ShowPathArrow   { get; }
+        bool         ShowPathArrow          { get; }
 
         /// <summary>Returns the "{Maybe<IHex>}" at location <c>coords</c>.</summary>
-        Maybe<THex> this[HexCoords coords] { get; }
+        Maybe<THex>  this[HexCoords coords] { get; }
 
         /// <summary>Gets the CoordsRectangle description of the clipping region.</summary>
         /// <param name="point">Upper-left corner in pixels of the clipping region.</param>
@@ -69,9 +66,5 @@ namespace PGNapoleonics.HexgridExampleCommon {
         /// <summary>Gets the CoordsRectangle description of the clipping region.</summary>
         /// <param name="visibleClipBounds">Rectangular extent in pixels of the clipping region.</param>
         CoordsRectangle GetClipInHexes(RectangleF visibleClipBounds);
-
-        ///// <summary>TODO</summary>
-        ///// <param name="action"></param>
-        //void ForEachHex(Action<Maybe<IHex>> action);
     }
 }

@@ -68,12 +68,15 @@ namespace PGNapoleonics.HexUtilities.Common {
 
         #region Value Equality with IEquatable<T>
         /// <summary>Tests value-equality.</summary>
-        public override bool Equals(object obj) => (obj as Maybe<T>?)?.Equals(this) ?? false;
+        public override bool Equals(object obj) => (obj is Maybe<T> other) && this.Equals(other);
 
         /// <inheritdoc/>
         public bool Equals(Maybe<T> other)
-        => ( HasValue  &&  other.HasValue  &&  (Value.Equals(other.Value)) )
+        => ( HasValue  &&  other.HasValue  &&  Value.Equals(other.Value) )
         || (!HasValue  && !other.HasValue);
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => Value.GetHashCode();
 
         /// <summary>Tests value-inequality.</summary>
         public static bool operator != (Maybe<T> lhs, Maybe<T> rhs) => ! lhs.Equals(rhs);
@@ -84,9 +87,6 @@ namespace PGNapoleonics.HexUtilities.Common {
         /// <summary>TODO</summary>
         public override string ToString()
         => (HasValue && Value!=null) ? PreferredName(Value) : AlternateName();
-
-        /// <inheritdoc/>
-        public override int GetHashCode() => Value.GetHashCode();
         #endregion
 
         /// <summary>TODO</summary>

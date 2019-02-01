@@ -221,6 +221,7 @@
     <Compile Include="IMapDisplay.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MapDisplayExtensions.cs" />
     <Compile Include="Pathfinding\AltPathfinder.cs" />
     <Compile Include="Pathfinding\DirectedLandmark.cs" />
     <Compile Include="Pathfinding\HexsideCosts.cs" />

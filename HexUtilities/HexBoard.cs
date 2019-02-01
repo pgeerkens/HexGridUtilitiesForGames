@@ -70,7 +70,7 @@ namespace PGNapoleonics.HexUtilities {
         public event EventHandler<ValueEventArgs<ILandmarks>> LandmarksReady;
 
         #region Constructors
-        /// <summary>Initializes the internal contents of <see cref="HexBoard{THex,TPath}"/> with landmarks as specified for pathfinding.</summary>
+        /// <summary>Initializes the internal contents of <see cref="BoardStorage{T}"/> with landmarks as specified for pathfinding.</summary>
         /// <param name="sizeHexes">Extent in hexes of the board being initialized, as a <see cref="HexSize"/>.</param>
         /// <param name="gridSize">Extent in pixels of the layout grid for the hexagons, as a <see cref="HexSize"/>.</param>
         /// <param name="boardHexes">TODO</param>

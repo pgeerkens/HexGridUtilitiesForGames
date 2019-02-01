@@ -28,9 +28,7 @@
 #endregion
 using System;
 
-using PGNapoleonics.HexUtilities.Common;
-
-namespace PGNapoleonics.HexUtilities {
+namespace PGNapoleonics.HexUtilities.Common {
     using HexPoint   = System.Drawing.Point;
     using HexSize    = System.Drawing.Size;
     using RectangleF = System.Drawing.RectangleF;

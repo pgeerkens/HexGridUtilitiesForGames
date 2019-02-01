@@ -29,7 +29,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-
+using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexgridPanel {
@@ -53,7 +53,7 @@ namespace PGNapoleonics.HexgridPanel {
         public static void Render(this Image source, Image target, Point point, float scale) {
             if (source == null) throw new ArgumentNullException("source");
             if (target == null) throw new ArgumentNullException("target");
-            Tracing.Paint.Trace("Render source to {0}:",target.Tag);
+            Tracing.Paint.Trace($"Render source to {target.Tag}:");
 
             using (var graphics = Graphics.FromImage(target)) source.Render(graphics, point, scale);
         }
@@ -87,7 +87,7 @@ namespace PGNapoleonics.HexgridPanel {
                                 Action<Graphics> action) {
             if (target == null) throw new ArgumentNullException("target");
             if (action == null) throw new ArgumentNullException("action");
-            Tracing.Paint.Trace("Render cache to {0}:",target.Tag);
+            Tracing.Paint.Trace($"Render cache to {target.Tag}:");
 
             using (var graphics = Graphics.FromImage(target)) {
                 graphics.DrawImageUnscaled(source, Point.Empty);;
@@ -118,12 +118,42 @@ namespace PGNapoleonics.HexgridPanel {
         public static void Paint(this Image target, Point point, float scale, Action<Graphics> action,
                                 Color background) {
             if (target == null) throw new ArgumentNullException("target");
-            Tracing.Paint.Trace("Paint Buffer-{0}:",target.Tag);
+            Tracing.Paint.Trace($"Paint Buffer-{target.Tag}:");
 
             using (var graphics = Graphics.FromImage(target)) {
                 graphics.Clear(background);
                 graphics.Paint(point, scale, action);
             }
+        }
+
+        /// <summary>Service routine to paint the backing store bitmap for the map underlay.</summary>
+        public static Bitmap ToBitmap(this Action<Graphics> paintBuffer, Func<Size,Bitmap> allocate,
+                                            Size clientSize, Rectangle clipBounds) {
+            Bitmap bitmap = null, temp = null;
+            try {
+                temp = allocate(clientSize);
+                using(var graphics = Graphics.FromImage(temp)) {
+                    graphics.Clip = new Region(clipBounds);
+                    graphics.Contain(paintBuffer);
+                }
+
+                bitmap = temp;
+                temp   = null;
+            } finally { if(temp != null) temp.Dispose(); }
+
+            return bitmap;
+        }
+
+        /// <summary>Returns a new empty allocated bitmap of the specified size.</summary>
+        /// <param name="size">The {Size} of the bitmap to be allocated.</param>
+        public static Bitmap AllocateBitmap(this Size size) {
+            Bitmap temp = null, buffer = null;
+            try {
+                temp   = new Bitmap(Math.Max(1,size.Width), Math.Max(1,size.Height));
+                buffer = temp;
+                temp   = null;
+            } finally { if (temp != null) temp.Dispose(); }
+            return buffer;
         }
     }
 }

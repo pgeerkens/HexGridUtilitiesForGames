@@ -128,24 +128,23 @@ namespace PGNapoleonics.HexUtilities.Common {
     public  int  Value { get; private set; }
 
     /// <summary>TODO</summary>
-#if ! TRACE
+    [Conditional("TRACE")]
+    public  void Trace(string format) => Trace(false, format);
+
     [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "format")]
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args")]
-#endif
     [Conditional("TRACE")]
-    public  void Trace(string format, params object[] args) {
-      Trace(false, string.Format(CultureInfo.CurrentCulture,format,args));
-    }
+    public  void Trace(string format, params object[] args)
+    =>  Trace(false, string.Format(CultureInfo.CurrentCulture,format,args));
     /// <summary>TODO</summary>
     [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newLine")]
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "format")]
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args")]
     [Conditional("TRACE")]
-    public  void Trace(bool newLine, string format, params object[] args) {
-      Trace(newLine, string.Format(CultureInfo.CurrentCulture,format,args));
-    }
+    public  void Trace(bool newLine, string format, params object[] args)
+     => Trace(newLine, string.Format(CultureInfo.CurrentCulture,format,args));
 
     #region Operators
     /// <summary>TODO</summary>
@@ -178,48 +177,38 @@ namespace PGNapoleonics.HexUtilities.Common {
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newLine")]
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "description")]
     [Conditional("TRACE")]
-    public void Trace(bool newLine, string description) {
-      TraceDetail(newLine, description);
-    }
+    public void Trace(bool newLine, string description) =>  TraceDetail(newLine, description);
 
     /// <summary>TODO</summary>
     [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "format")]
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args")]
     [Conditional("TRACE")]
-    public void LogTime(string format, params object[] args) {
-      LogTime(false, string.Format(CultureInfo.CurrentCulture,format,args));
-    }
+    public void LogTime(string format, params object[] args)
+    =>  LogTime(false, string.Format(CultureInfo.CurrentCulture,format,args));
+
     /// <summary>TODO</summary>
-#if ! TRACE
     [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newLine")]
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "format")]
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args")]
-#endif
     [Conditional("TRACE")]
-    public void LogTime(bool newLine, string format, params object[] args) {
-      LogTime(newLine, string.Format(CultureInfo.CurrentCulture,format,args));
-    }
+    public void LogTime(bool newLine, string format, params object[] args)
+    =>  LogTime(newLine, string.Format(CultureInfo.CurrentCulture,format,args));
+
     /// <summary>TODO</summary>
-#if ! TRACE
     [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "description")]
-#endif
     [Conditional("TRACE")]
-    public void LogTime(string description) {
-      LogTime(false, description);
-    }
+    public void LogTime(string description) =>  LogTime(false, description);
+
     /// <summary>TODO</summary>
-#if ! TRACE
     [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "newLine")]
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "description")]
-#endif
     [Conditional("TRACE")]
-    public void LogTime(bool newLine, string description) {
-      LogTimeDetail(newLine, description);
-    }
+    public void LogTime(bool newLine, string description)
+    =>  LogTimeDetail(newLine, description);
 
     partial void TraceDetail(bool newLine, string description);
     partial void LogTimeDetail(bool newLine, string description);

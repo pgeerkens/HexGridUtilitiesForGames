@@ -26,10 +26,7 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -40,24 +37,24 @@ using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexgridExampleCommon;
-using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridExampleWpf {
     using MapGridDisplay = IMapDisplayWinForms<IHex>;
     using MyMapDisplay   = MapDisplayBlocked<IHex>;
 
-    /// <summary>TODO</summary>
+    /// <summary>Interaction logic for MainWindow.xaml.</summary>
     public partial class MainWindow : Window {
-        /// <summary>TODO</summary>
-        public MainWindow() { InitializeComponent(); DataContext = this; }
+        public MainWindow() {
+            InitializeComponent();
+            DataContext = this; }
 
         void RefreshCmdExecuted(object target, ExecutedRoutedEventArgs e) { 
             if (e.Parameter != null) HexgridPanel.SetMapDirty();
             HexgridPanel.Refresh();  
         }
-        void RefreshCmdCanExecute(object sender, CanExecuteRoutedEventArgs e) { e.CanExecute = true; }
+        public void RefreshCmdCanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
 
-        private void Window_Loaded (object sender, RoutedEventArgs e) {
+        private void Window_Loaded(object sender, RoutedEventArgs e) {
             HexgridPanel = (HexgridScrollable) _host.Child;
             _host.Child.Focus();
 
@@ -75,21 +72,24 @@ namespace PGNapoleonics.HexgridExampleWpf {
 
         /// <summary>TODO</summary>
         public   HexgridScrollable HexgridPanel { get; private set; }
+
         /// <summary>TODO</summary>
         public   MapGridDisplay    Model        => HexgridPanel.DataContext.Model;
 
         /// <summary>TODO</summary>
         public   int               SelectedMapIndex  { 
-            get { return _selectedMapIndex; } 
+            get => _selectedMapIndex;
             set {
                 _selectedMapIndex = value;
                 var mapName = ((ListBoxItem)comboBoxMapSelection.Items[_selectedMapIndex]).Name;
                 switch (mapName) {
-                    case "MazeMap":    HexgridPanel.SetModel(SetMapBoard(new MazeMap(),    Model.FovRadius)); break;
-                    case "TerrainMap": HexgridPanel.SetModel(SetMapBoard(new TerrainMap(), Model.FovRadius)); break;
-                    default:            break;
+                    case "MazeMap":    HexgridPanel.SetModel(SetMapBoard(new MazeMap(),     Model.FovRadius)); break;
+                    case "TerrainMap": HexgridPanel.SetModel(SetMapBoard(new TerrainMap(),  Model.FovRadius)); break;
+                    case "A* Bug Map": HexgridPanel.SetModel(SetMapBoard(new AStarBugMap(), Model.FovRadius)); break;
+                    default:           break;
                 }
                 sliderFovRadius.Value = Model.FovRadius;
+
                 HexgridPanel.Refresh();
             }
         } int _selectedMapIndex = 0;
@@ -98,29 +98,33 @@ namespace PGNapoleonics.HexgridExampleWpf {
             mapBoard.FovRadius  = fovRadius;
             RefreshLandmarkMenu(mapBoard);
 
-            CustomCoords.SetMatrices(new IntMatrix2D(2,0, 0,-2, 0,2*mapBoard.MapSizeHexes.Height-1, 2));
+            var customCoords = new CustomCoords(new IntMatrix2D(2,0, 0,-2, 0,2*mapBoard.MapSizeHexes.Height-1, 2));
             return mapBoard;
         }
 
         /// <summary>TODO</summary>
-        public ObservableCollection<ListBoxItem> LandmarkItems { get; } = new ObservableCollection<ListBoxItem>() { new ListBoxItem() { Name = "None", Content = "None" } };
+        public ObservableCollection<ListBoxItem> LandmarkItems { get; }
+                = new ObservableCollection<ListBoxItem>()
+                        { new ListBoxItem() { Name = "None", Content = "None" } };
 
         void RefreshLandmarkMenu(MyMapDisplay model) {
             Model.LandmarkToShow = 0;
             while(LandmarkItems.Count > 1) LandmarkItems.RemoveAt(1);
 
-            foreach(var item in model.Landmarks.Select((l,i) => new ListBoxItem
-                                   { Name = $"No_{i}", Content = $"{l.Coords}" } ) )
-            { LandmarkItems.Add(item); }
+            if (model.Landmarks != null) {
+                foreach(var item in model.Landmarks?.Select((l,i) => new ListBoxItem
+                                       { Name = $"No_{i}", Content = $"{l.Coords}" } ) )
+                { LandmarkItems.Add(item); }
+            }
             HexgridPanel.SetMapDirty();
         }
 
         void hexgridPanel_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e) {
             var hotHex = Model.HotspotHex;
             var vector = Model.StartHex - hotHex;
-            var cost   = Model.Path==null ? 0 : Model.Path.TotalCost;
-            statusLabel.Content = 
-              $"Hotspot Hex: {hotHex:gi3} / {hotHex:uI4} / {hotHex:c5}; {vector:r6}; Path Length = {cost}";
+            var cost = Model.Path.ElseDefault()?.TotalCost ?? -1;
+            statusLabel.Content =
+                $"Hotspot Hex: {hotHex:gi3} / {hotHex:uI4} / {hotHex:c5}; {vector:r6}; Path Length = {cost}";
         }
     }
 }

@@ -29,6 +29,7 @@
 using System.Collections.Generic;
 
 using PGNapoleonics.HexUtilities;
+using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexgridExampleCommon {
     using MapHex  = IHex;

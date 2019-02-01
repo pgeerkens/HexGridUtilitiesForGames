@@ -26,25 +26,42 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
+using PGNapoleonics.HexUtilities;
+using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexUtilities.Common {
-    using HexPoint = System.Drawing.Point;
-    using HexSize  = System.Drawing.Size;
+namespace PGNapoleonics.HexgridExampleCommon {
+    using MapHex  = IHex;
+    using HexSize = System.Drawing.Size;
 
-    /// <summary>.</summary>
-    public static partial class IHexgridExtensions {
-        /// <summary>Returns the scroll position to center a specified hex in viewport.</summary>
-        /// <param name="this"></param>
-        /// <param name="coordsNewCenterHex"><c>HexCoords</c> for the hex to be centered in viewport.</param>
-        /// <param name="visibleRectangle"></param>
-        /// <returns>Pixel coordinates in Client reference frame.</returns>
-        public static HexPoint ScrollPositionToCenterOnHex(this IHexgrid @this,
-                HexCoords coordsNewCenterHex, CoordsRectangle visibleRectangle)
-        => @this.HexCenterPoint(HexCoords.NewUserCoords(coordsNewCenterHex.User - (visibleRectangle.Size.User / 2)) );
+    /// <summary>TODO</summary>
+    public sealed class EmptyBoard : MapDisplayBlocked<MapHex> {
+        public static EmptyBoard TheOne { get; } = new EmptyBoard();
 
         /// <summary>TODO</summary>
-        /// <param name="this"></param>
-        public static HexSize GetSize(this IHexgrid @this, HexSize mapSizePixels, float mapScale)
-        => HexSize.Ceiling(mapSizePixels.Scale(mapScale)); 
+        private EmptyBoard()
+        : base(new HexSize(1,1), new HexSize(26,30), c => new EmptyGridHex(c)) => FovRadius = 20;
+        /// <inheritdoc/>
+        public override int      ElevationBase     => 0;
+
+        /// <inheritdoc/>
+        public override int      ElevationStep     => 10;
+
+        /// <inheritdoc/>
+        public override short?   Heuristic(HexCoords source, HexCoords target) => source.Range(target);
+    }
+
+    /// <summary>TODO</summary>
+    public sealed class EmptyGridHex : Hex {
+        /// <summary>TODO</summary>
+        public EmptyGridHex(HexCoords coords) : base(coords,0) => TerrainType = 'Z';
+
+        ///  <inheritdoc/>
+        public override char   TerrainType   { get; }
+
+        ///  <inheritdoc/>
+        public override int    HeightTerrain => 0;
+
+        ///  <inheritdoc/>
+        public override short? TryStepCost(Hexside hexsideExit) => default(short?);
     }
 }

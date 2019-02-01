@@ -154,11 +154,12 @@ namespace PGNapoleonics.HexgridPanel {
         protected virtual Bitmap PaintBuffer(Rectangle clipBounds) {
             if (DataContext.Model==null) return null;
 
-            Bitmap bitmap = null, temp = AllocateBuffer(ClientSize);
+            Bitmap bitmap = null, temp = null;
             try {
+                temp = ClientSize.AllocateBitmap();
                 using(var graphics = Graphics.FromImage(temp)) {
-                  graphics.Clip = new Region(clipBounds);
-                  graphics.Contain(PaintBuffer);
+                    graphics.Clip = new Region(clipBounds);
+                    graphics.Contain(PaintBuffer);
                 }
 
                 bitmap = temp;
@@ -187,28 +188,19 @@ namespace PGNapoleonics.HexgridPanel {
             var scroll = DataContext.Grid.GetScrollPosition(AutoScrollPosition);
             graphics.TranslateTransform(scroll.X + Margin.Left,  scroll.Y + Margin.Top);
             graphics.ScaleTransform(MapScale,MapScale);
-            Tracing.PaintDetail.Trace("{0}.PaintBuffer - VisibleClipBounds: ({1})", Name, graphics.VisibleClipBounds);
+            Tracing.PaintDetail.Trace($"{Name}.PaintBuffer - VisibleClipBounds: ({graphics.VisibleClipBounds})");
 
-            using(var brush = new SolidBrush(this.BackColor)) graphics.FillRectangle(brush, graphics.VisibleClipBounds);
+            using(var brush = new SolidBrush(BackColor)) {
+                graphics.FillRectangle(brush, graphics.VisibleClipBounds);
+            }
             graphics.Paint(Point.Empty, 1.0F, g => {
-                    var model = DataContext.Model;
-                    //model.PaintMap(g, true, c => from h in model[c] select h as IHex, model.Landmarks);
-                    model.PaintMap(g, true, model.BoardHexes, model.Landmarks);
+                var model = DataContext.Model;
+                model.PaintMap(g, true, model.BoardHexes, model.Landmarks);
             });
         }
 
         /// <summary>TODO</summary>
         void ResizeBuffer() { _cacheStatus = _NEEDS_PAINTING; }
-
-        private static Bitmap AllocateBuffer(Size size) {
-          Bitmap temp = null, buffer = null;
-          try {
-            temp   = new Bitmap(Math.Max(1,size.Width), Math.Max(1,size.Height));
-            buffer = temp;
-            temp   = null;
-          } finally { if (temp != null) temp.Dispose(); }
-          return buffer;
-        }
         #endregion
 
         #region Painting
@@ -237,9 +229,9 @@ namespace PGNapoleonics.HexgridPanel {
 
                     _backBuffer = Interlocked.Exchange(ref _mapBuffer, await PaintBufferAsync(ClientRectangle));
 
-                    if (_backBuffer != null) { _backBuffer.Dispose(); }   _backBuffer = AllocateBuffer(ClientSize);
+                    if (_backBuffer != null) { _backBuffer.Dispose(); }   _backBuffer = ClientSize.AllocateBitmap();
                 } catch (InvalidOperationException) {
-                    if (_backBuffer == null) _backBuffer = AllocateBuffer(ClientSize);
+                    if (_backBuffer == null) _backBuffer = ClientSize.AllocateBitmap();
 
                     Interlocked.CompareExchange(ref _cacheStatus, _NEEDS_PAINTING, _IS_PAINTING);
                     Thread.Sleep(250);

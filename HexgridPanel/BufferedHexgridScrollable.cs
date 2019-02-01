@@ -41,9 +41,8 @@ namespace PGNapoleonics.HexgridPanel {
     /// <summary>TODO</summary>
     public partial class BufferedHexgridScrollableOld : HexgridScrollable {
         /// <summary>TODO</summary>
-        public BufferedHexgridScrollableOld() : base() {
-            InitializeComponent();
-        }
+        public BufferedHexgridScrollableOld() : base() => InitializeComponent();
+
         /// <summary>Force repaint of backing buffer for Map underlay.</summary>
         public override void SetMapDirty() { 
             _cacheStatus = _NEEDS_PAINTING;
@@ -155,9 +154,9 @@ namespace PGNapoleonics.HexgridPanel {
 
                     _backBuffer = Interlocked.Exchange(ref _mapBuffer, await PaintBufferAsync(ClientRectangle));
 
-                    if (_backBuffer != null) { _backBuffer.Dispose(); }   _backBuffer = AllocateBuffer(ClientSize);
+                    if (_backBuffer != null) { _backBuffer.Dispose(); }   _backBuffer = ClientSize.AllocateBitmap();
                 } catch (InvalidOperationException) {
-                    if (_backBuffer == null) _backBuffer = AllocateBuffer(ClientSize);
+                    if (_backBuffer == null) _backBuffer = ClientSize.AllocateBitmap();
 
                     Interlocked.CompareExchange(ref _cacheStatus, _NEEDS_PAINTING, _IS_PAINTING);
                     Thread.Sleep(250);
@@ -201,18 +200,9 @@ namespace PGNapoleonics.HexgridPanel {
         => await Task.Run(() => PaintBuffer(clipBounds));
 
         /// <summary>Service routine to paint the backing store bitmap for the map underlay.</summary>
-        protected virtual Bitmap PaintBuffer(Rectangle clipBounds) {
-            if (DataContext.Model==null) return null;
-
-            Bitmap bitmap = null;
-            return Extensions.InitializeDisposable((Func<Bitmap>)(() => {
-                using (var graphics = Graphics.FromImage(bitmap)) {
-                      graphics.Clip = new Region(clipBounds);
-                    GraphicsExtensions.Contain(graphics, (Action<Graphics>)this.PaintBuffer);
-                }
-                return bitmap;
-            }) );
-        }
+        protected virtual Bitmap PaintBuffer(Rectangle clipBounds)
+        => DataContext.Model==null ? null
+                                   : _paintBuffer?.ToBitmap(s => s.AllocateBitmap(), ClientSize, clipBounds);
 
         /// <summary>Service routine to paint the backing store bitmap for the map underlay.</summary>
         protected virtual Bitmap ScrollBuffer(Rectangle clipBounds) {
@@ -220,40 +210,33 @@ namespace PGNapoleonics.HexgridPanel {
 
             using(var graphics = Graphics.FromImage(_backBuffer)) {
                 graphics.Clip = new Region(clipBounds);
-                graphics.Contain(PaintBuffer);
+                graphics.Contain(_paintBuffer);
             }
             this.UIThread(Invalidate);
             return _backBuffer;
         }
+
         /// <summary>TODO</summary>
         /// <param name="graphics"></param>
-        private void PaintBuffer(Graphics graphics) {
+        private Action<Graphics> _paintBuffer => graphics => {
             if (IsTransposed) { graphics.Transform = TransposeMatrix; }
 
             var scroll = DataContext.Grid.GetScrollPosition(AutoScrollPosition);
             graphics.TranslateTransform(scroll.X + Margin.Left,  scroll.Y + Margin.Top);
             graphics.ScaleTransform(MapScale,MapScale);
-            Tracing.PaintDetail.Trace("{0}.PaintBuffer - VisibleClipBounds: ({1})", Name, graphics.VisibleClipBounds);
+            Tracing.PaintDetail.Trace($"{Name}.PaintBuffer - VisibleClipBounds: ({graphics.VisibleClipBounds})");
 
-            using(var brush = new SolidBrush(BackColor)) graphics.FillRectangle(brush, graphics.VisibleClipBounds);
+            using(var brush = new SolidBrush(BackColor)) {
+                graphics.FillRectangle(brush, graphics.VisibleClipBounds);
+            }
             graphics.Paint(Point.Empty, 1.0F, g => {
-                        var model = DataContext.Model;
-                        model.PaintMap(g, true, model.BoardHexes, model.Landmarks);
-                });
-        }
+                var model = DataContext.Model;
+                model.PaintMap(g, true, model.BoardHexes, model.Landmarks);
+            });
+        };
 
         /// <summary>TODO</summary>
-        void ResizeBuffer() { _cacheStatus = _NEEDS_PAINTING; }
-
-        private static Bitmap AllocateBuffer(Size size) {
-            Bitmap temp = null, buffer = null;
-            try {
-                temp   = new Bitmap(Math.Max(1,size.Width), Math.Max(1,size.Height));
-                buffer = temp;
-                temp   = null;
-            } finally { if (temp != null) temp.Dispose(); }
-            return buffer;
-        }
+        void ResizeBuffer() => _cacheStatus = _NEEDS_PAINTING;
         #endregion
     }
 }

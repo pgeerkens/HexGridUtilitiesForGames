@@ -27,9 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 
-using PGNapoleonics.HexUtilities;
-
-namespace PGNapoleonics.HexgridExampleCommon {
+namespace PGNapoleonics.HexUtilities.Common {
     using HexPoint = System.Drawing.Point;
     using Matrix   = System.Drawing.Drawing2D.Matrix;
 

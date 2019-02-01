@@ -28,14 +28,12 @@
 #endregion
 using System.Diagnostics.CodeAnalysis;
 
-using PGNapoleonics.HexUtilities;
-using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.FastLists;
 using PGNapoleonics.HexUtilities.FieldOfView;
 using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexUtilities.Storage;
 
-namespace PGNapoleonics.HexgridExampleCommon {
+namespace PGNapoleonics.HexUtilities.Common {
     using HexPoint      = System.Drawing.Point;
     using HexPointF     = System.Drawing.PointF;
     using HexSize       = System.Drawing.Size;

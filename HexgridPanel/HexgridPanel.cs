@@ -244,8 +244,7 @@ namespace PGNapoleonics.HexgridPanel {
         Bitmap PaintBuffer() {
             var size      = MapSizePixels;
 
-            Bitmap buffer     = null;
-            Bitmap tempBuffer = null;
+            Bitmap buffer = null, tempBuffer = null;
             try {
                 tempBuffer = new Bitmap(size.Width,size.Height, PixelFormat.Format32bppPArgb);
                 using(var g = Graphics.FromImage(tempBuffer)) {

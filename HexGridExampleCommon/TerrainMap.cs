@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 using PGNapoleonics.HexUtilities;
+using PGNapoleonics.HexUtilities.Common;
 
 #pragma warning disable 1587
 /// <summary>TODO</summary>

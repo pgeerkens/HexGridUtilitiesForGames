@@ -167,8 +167,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="WinForms\ControlExtensions.cs" />
     <Compile Include="WinForms\Layer.cs" />
     <Compile Include="WinForms\LayerCollection.cs" />
+    <Compile Include="WinForms\ScrollableControlExtensions.cs" />
     <Compile Include="WinForms\TiltAwareFlowLayoutPanel.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -63,17 +63,23 @@ namespace PGNapoleonics.HexUtilities {
         public abstract short?    TryStepCost(Hexside hexsideExit);
 
         /// <summary>Default implementation, assuming no blocking hexside terrain.</summary>
-        public virtual  int       HeightHexside(Hexside hexside) => HeightTerrain;
+        public virtual  int   HeightHexside(Hexside hexside) => HeightTerrain;
 
-        #region Value Equality implementation
+        #region Value Equality with IEquatable<T>
         /// <inheritdoc/>
-        public override bool      Equals(object obj) => this.Equals(obj as Hex);
-
-        /// <inheritdoc/>
-        public override int       GetHashCode()      => Coords.GetHashCode();
+        public override bool Equals(object obj) => (obj is Hex other) && this.Equals(other);
 
         /// <inheritdoc/>
-        public bool               Equals(Hex other)  => other!=null  &&  Coords.Equals(other.Coords);
+        public bool Equals(Hex other) => Coords == other.Coords;
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => Coords.GetHashCode();
+
+        /// <summary>Tests value-inequality.</summary>
+        public static bool operator !=(Hex lhs, Hex rhs) => ! lhs.Equals(rhs);
+
+        /// <summary>Tests value-equality.</summary>
+        public static bool operator ==(Hex lhs, Hex rhs) => lhs.Equals(rhs);
         #endregion
     }
 }

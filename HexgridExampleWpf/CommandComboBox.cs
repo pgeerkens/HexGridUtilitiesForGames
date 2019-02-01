@@ -32,96 +32,89 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PGNapoleonics.HexgridExampleWpf {
-  public sealed partial class CommandComboBox : ComboBox, ICommandSource {
-    public CommandComboBox() : base() { ; }
+    public sealed partial class CommandComboBox : ComboBox, ICommandSource {
+        public CommandComboBox() : base() { ; }
 
-    #region Dependency Property (static) Backing Stores
-    // Using DependencyProperties as the backing store enables animation, styling, binding, etc...
-    /// <summary>TODO</summary>
-    public static readonly DependencyProperty CommandProperty =
-      DependencyProperty.Register("Command", typeof(ICommand), typeof(CommandComboBox),
-              new UIPropertyMetadata(null,new PropertyChangedCallback(CommandChanged)));
-    /// <summary>TODO</summary>
-    public static readonly DependencyProperty CommandParameterProperty =
-      DependencyProperty.Register("CommandParameter", typeof(object), typeof(CommandComboBox), 
-              new UIPropertyMetadata(null));
-    /// <summary>TODO</summary>
-    public static readonly DependencyProperty CommandTargetProperty =
-      DependencyProperty.Register("CommandTarget", typeof(IInputElement), typeof(CommandComboBox),
-              new UIPropertyMetadata(null));
-    #endregion
+        #region Dependency Property (static) Backing Stores
+        // Using DependencyProperties as the backing store enables animation, styling, binding, etc...
+        /// <summary>TODO</summary>
+        public static readonly DependencyProperty CommandProperty =
+                DependencyProperty.Register("Command", typeof(ICommand), typeof(CommandComboBox),
+                    new UIPropertyMetadata(null,new PropertyChangedCallback(CommandChanged)));
+        /// <summary>TODO</summary>
+        public static readonly DependencyProperty CommandParameterProperty =
+                DependencyProperty.Register("CommandParameter", typeof(object), typeof(CommandComboBox), 
+                    new UIPropertyMetadata(null));
+        /// <summary>TODO</summary>
+        public static readonly DependencyProperty CommandTargetProperty =
+                DependencyProperty.Register("CommandTarget", typeof(IInputElement), typeof(CommandComboBox),
+                    new UIPropertyMetadata(null));
+        #endregion
 
-    public ICommand      Command          {
-      get { return (ICommand)GetValue(CommandProperty); }
-      set { SetValue(CommandProperty, value); }
+        public ICommand      Command {
+            get => (ICommand)GetValue(CommandProperty);
+            set => SetValue(CommandProperty, value);
+        }
+        public object        CommandParameter {
+            get => GetValue(CommandParameterProperty);
+            set => SetValue(CommandParameterProperty, value);
+        }
+        public IInputElement CommandTarget {
+            get => (IInputElement)GetValue(CommandTargetProperty);
+            set => SetValue(CommandTargetProperty, value);
+        }
+
+        #region Event Handlers
+        /// <summary>Command dependency property change callback.</summary>
+        private static void CommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        =>  ((CommandComboBox)d).HookUpCommand((ICommand)e.OldValue, (ICommand)e.NewValue);
+
+        /// <inheritdoc/>
+        /// <remarks>
+        /// If Command is defined, moving the slider will invoke the command; 
+        /// Otherwise, the slider will behave normally. 
+        /// </remarks>
+        protected override void OnSelectionChanged(SelectionChangedEventArgs e) {
+            base.OnSelectionChanged(e);
+
+            if (Command != null) {
+                if(Command is RoutedCommand routedCmd) {
+                    routedCmd.Execute(CommandParameter, CommandTarget);
+                }  else {
+                    Command.Execute(CommandParameter);
+                }
+            }
+        }
+        /// <inheritdoc/>
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e) {
+            base.OnMouseLeftButtonUp(e);
+
+            var command = Command;
+            var parameter = CommandParameter;
+            var target = CommandTarget;
+
+            if(command is RoutedCommand routedCmd && routedCmd.CanExecute(parameter, target)) {
+                routedCmd.Execute(parameter, target);
+            } else if(command != null && command.CanExecute(parameter)) {
+                command.Execute(parameter);
+            }
+        }
+        /// <summary>.</summary>
+        private void CanExecuteChanged(object sender, EventArgs e) {
+            if (Command != null)    {
+                if(Command is RoutedCommand routedCmd) {
+                    IsEnabled = routedCmd.CanExecute(CommandParameter, CommandTarget);
+                }  else {
+                    IsEnabled = Command.CanExecute(CommandParameter);
+                }
+            }
+        }
+        #endregion
+
+        /// <summary>Add a new command to the Command Property. </summary>
+        private void HookUpCommand(ICommand oldCommand, ICommand newCommand) {
+            if (oldCommand != null)   oldCommand.CanExecuteChanged -= this.CanExecuteChanged;
+            if (newCommand != null)   newCommand.CanExecuteChanged += this.CanExecuteChanged;
+        }
     }
-    public object        CommandParameter {
-      get { return (object)GetValue(CommandParameterProperty); }
-      set { SetValue(CommandParameterProperty, value); }
-    }
-    public IInputElement CommandTarget    {
-      get { return (IInputElement)GetValue(CommandTargetProperty); }
-      set { SetValue(CommandTargetProperty, value); }
-    }
-
-    #region Event Handlers
-    /// <summary>Command dependency property change callback.</summary>
-    private static void CommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-      var cs = (CommandComboBox)d;
-      cs.HookUpCommand((ICommand)e.OldValue, (ICommand)e.NewValue);
-    }
-
-    /// <inheritdoc/>
-    /// <remarks>
-    /// If Command is defined, moving the slider will invoke the command; 
-    /// Otherwise, the slider will behave normally. 
-    /// </remarks>
-    protected override void OnSelectionChanged(SelectionChangedEventArgs e) {
-      base.OnSelectionChanged(e);
-
-      if (this.Command != null) {
-        RoutedCommand command = Command as RoutedCommand;
-
-        if (command != null)
-          command.Execute(CommandParameter, CommandTarget);
-        else
-          ((ICommand)Command).Execute(CommandParameter);
-      }
-    }
-    /// <inheritdoc/>
-    protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e) {
-      base.OnMouseLeftButtonUp(e);
-
-      var command = Command;
-      var parameter = CommandParameter;
-      var target = CommandTarget;
-
-      var routedCmd = command as RoutedCommand;
-      if (routedCmd != null && routedCmd.CanExecute(parameter, target))
-      {
-          routedCmd.Execute(parameter, target);
-      }
-      else if (command != null && command.CanExecute(parameter))
-      {
-          command.Execute(parameter);
-      }
-    }
-    /// <summary>TODO</summary>
-    private            void CanExecuteChanged(object sender, EventArgs e) {
-      if (this.Command != null)    {
-        var routed = this.Command as RoutedCommand;
-        if (routed == null)       // If not a RoutedCommand. 
-          this.IsEnabled = Command.CanExecute(CommandParameter);
-        else                      // Else a RoutedCommand. 
-          this.IsEnabled = routed.CanExecute(CommandParameter, CommandTarget);
-      }
-    }
-    #endregion
-
-    /// <summary>Add a new command to the Command Property. </summary>
-    private void HookUpCommand(ICommand oldCommand, ICommand newCommand) {
-      if (oldCommand != null)   oldCommand.CanExecuteChanged -= this.CanExecuteChanged;
-      if (newCommand != null)   newCommand.CanExecuteChanged += this.CanExecuteChanged;
-    }
-  }
 }

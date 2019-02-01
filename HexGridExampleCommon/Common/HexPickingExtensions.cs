@@ -28,8 +28,7 @@
 #endregion
 using System;
 
-using PGNapoleonics.HexUtilities.Common;
-namespace PGNapoleonics.HexUtilities {
+namespace PGNapoleonics.HexUtilities.Common {
     using HexPoint = System.Drawing.Point;
     using HexPointF = System.Drawing.PointF;
     using HexSize = System.Drawing.Size;
@@ -88,10 +87,9 @@ namespace PGNapoleonics.HexUtilities {
         /// <param name="this"></param>
         /// <param name="coordsNewULHex"><c>HexCoords</c> for new upper-left hex</param>
         /// <returns>Pixel coordinates in Client reference frame.</returns>
-        public static HexPoint HexCenterPoint(this IHexgrid @this, HexCoords coordsNewULHex) {
-            return @this.IsTransposed ? TransposePoint(@this.HexCenterPointInner(coordsNewULHex))
-                                      : @this.HexCenterPointInner(coordsNewULHex);
-        }
+        public static HexPoint HexCenterPoint(this IHexgrid @this, HexCoords coordsNewULHex)
+        => @this.IsTransposed ? TransposePoint(@this.HexCenterPointInner(coordsNewULHex))
+                              : @this.HexCenterPointInner(coordsNewULHex);
 
         /// <summary>Returns ScrollPosition that places given hex in the upper-Left of viewport.</summary>
         /// <param name="this"></param>

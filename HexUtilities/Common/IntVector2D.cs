@@ -165,29 +165,26 @@ namespace PGNapoleonics.HexUtilities.Common {
             new HexSize(vector.X, vector.Y);
         #endregion
 
-        #region Value Equality
+        #region Value Equality with IEquatable<T>
         /// <inheritdoc/>
-        public override bool Equals(object obj) { 
-            var other = obj as IntVector2D?;
-            return other.HasValue  &&  this == other.Value;
-        }
+        public override bool Equals(object obj) => (obj is IntVector2D other) && this.Equals(other);
+
+        /// <inheritdoc/>
+        public bool Equals(IntVector2D other) 
+        => (X == other.X)  &&  (Y == other.Y)  &&  (W == other.W);
 
         /// <inheritdoc/>
         /// <remarks>
         /// Maps the components into 32 bits as "wwww-xxxx xxxx-xxxx xxyy-yyyy yyyy-yyyy" 
         /// without any overlap if -8 &lt;= w &lt;= 7 and -8192 &lt;= x(y) &lt;= 8191.
         /// </remarks>
-        public override int GetHashCode() => W<<28 ^ X<<14  ^  Y;
-
-        /// <inheritdoc/>
-        public bool Equals(IntVector2D other) => this == other;
+        public override int GetHashCode() => W<<28  ^  X<<14  ^  Y;
 
         /// <summary>Tests value-inequality.</summary>
-        public static bool operator != (IntVector2D lhs, IntVector2D rhs) => ! (lhs == rhs);
+        public static bool operator !=(IntVector2D lhs, IntVector2D rhs) => ! lhs.Equals(rhs);
 
         /// <summary>Tests value-equality.</summary>
-        public static bool operator == (IntVector2D lhs, IntVector2D rhs) =>
-            (lhs.X == rhs.X)  &&  (lhs.Y == rhs.Y)  &&  (lhs.W == rhs.W);
+        public static bool operator ==(IntVector2D lhs, IntVector2D rhs) => lhs.Equals(rhs);
         #endregion
 
         /// <summary>Culture-invariant string representation of this instance's value.</summary>
