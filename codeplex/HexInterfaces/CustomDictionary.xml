@@ -1,0 +1,106 @@
+﻿<Dictionary>
+      <Words>
+         <Unrecognized>
+           <Word>cb</Word>
+         </Unrecognized>
+         <Recognized>
+            <Word>Alt</Word>
+            <Word>App</Word>
+            <Word>Bkgnd</Word>
+            <Word>Cb</Word>
+            <Word>Calc</Word>
+            <Word>Char</Word>
+            <Word>coloured</Word>
+            <Word>Comm</Word>
+            <Word>Coords</Word>
+            <Word>Ctl</Word>
+            <Word>Dbl</Word>
+            <Word>Dlg</Word>
+            <Word>Eachable</Word>
+            <Word>Fov</Word>
+            <Word>Fwd</Word>
+            <Word>functor</Word>      <Word>functors</Word>
+            <Word>hexgrid</Word>
+            <Word>HexgridExampleWinForms</Word>
+            <Word>HexgridUtilities</Word>
+            <Word>hexside</Word>      <Word>hexsides</Word>
+            <Word>Hotspot</Word>
+            <Word>Hwheel</Word>
+            <Word>Ime</Word>
+            <Word>Init</Word>
+            <Word>Lang</Word>
+            <Word>lhs</Word>
+            <Word>m11</Word>   <Word>m12</Word>  <Word>m13</Word>
+            <Word>m21</Word>   <Word>m22</Word>  <Word>m23</Word>
+            <Word>m31</Word>   <Word>m32</Word>  <Word>m33</Word>
+            <Word>Mdi</Word>
+            <Word>Msgbox</Word>
+            <Word>Napoleonics</Word>
+            <Word>NC</Word>
+            <Word>Neighbour</Word>    <Word>Neighbours</Word>
+            <Word>Pos</Word>
+            <Word>rhs</Word>
+            <Word>c</Word>
+            <Word>dx</Word>
+            <Word>dy</Word>
+            <Word>f</Word>
+            <Word>g</Word>
+            <Word>h</Word>
+            <Word>i</Word>   <Word>j</Word>   <Word>k</Word>
+            <Word>l</Word>
+            <Word>m</Word>
+            <Word>p</Word>
+            <Word>Pathfinding</Word>
+            <Word>s</Word>
+            <Word>Sync</Word>
+            <Word>Sys</Word>
+            <Word>TransparentPanel</Word>
+            <Word>Uni</Word>
+            <Word>Uninit</Word>
+            <Word>v</Word>
+            <Word>w</Word>
+            <Word>Wts</Word>
+            <Word>x</Word>      <Word>dx</Word>
+            <Word>y</Word>      <Word>dy</Word>
+            <Word>z</Word>      <Word>dz</Word>
+            <Word>wParam</Word>
+            <Word>lParam</Word>
+            <Word>param</Word>
+            <Word>param</Word>
+            <Word>Lbutton</Word>
+            <Word>Rbutton</Word>
+            <Word>Mbutton</Word>
+            <Word>Xbutton</Word>
+            <Word>Vscroll</Word>
+            <Word>Hscroll</Word>
+            <Word>Afx</Word>
+            <Word>DWM</Word>
+            <Word>Cpl</Word>
+            <Word>Rtl</Word>
+            <Word>Ltr</Word>
+         </Recognized>
+         <Deprecated>
+            <Term PreferredAlternate="EnterpriseServices">ComPlus</Term>
+         </Deprecated>
+         <DiscreteExceptions>
+            <Term>LParam</Term>
+            <Term>lParam</Term>
+            <Term>TransparentPanel</Term>
+            <Term>WParam</Term>
+            <Term>wParam</Term>
+            <Term>LineUp</Term>
+         </DiscreteExceptions>
+      </Words>
+      <Acronyms>
+         <CasingExceptions>
+            <Acronym>ASL</Acronym>
+            <Acronym>CB</Acronym>
+            <Acronym>DWM</Acronym>
+            <Acronym>Fov</Acronym>
+            <Acronym>NC</Acronym>
+            <Acronym>PG</Acronym>
+            <Acronym>TransparentPanel</Acronym>
+            <Acronym>x</Acronym>
+         </CasingExceptions>
+      </Acronyms>
+   </Dictionary>

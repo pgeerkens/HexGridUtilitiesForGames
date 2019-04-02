@@ -1,0 +1,136 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexUtilities", "HexUtilities\HexUtilities.csproj", "{013628E1-60E2-40A6-91D4-8B446F397A0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridPanel", "HexgridPanel\HexgridPanel.csproj", "{388AD675-D18E-4DFA-ABB9-55AB3EA993A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridExampleWpf", "HexgridExampleWpf\HexgridExampleWpf.csproj", "{6CEB2C15-1E1A-446C-92C6-77BC49833742}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridExampleCommon", "HexGridExampleCommon\HexgridExampleCommon.csproj", "{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridScrollableExample", "HexgridScrollableExample\HexgridScrollableExample.csproj", "{45429A16-9A82-41C2-9E2D-70D88B4D6D6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridScrollViewer", "HexgridScrollViewer\HexgridScrollViewer.csproj", "{DAC3749C-6181-4B9C-A1E8-598AF5656F5E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridPanelExample", "HexGridPanelExample\HexgridPanelExample.csproj", "{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 8
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs37
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = HexUtilities\\HexUtilities.csproj
+		SccProjectName1 = HexUtilities
+		SccLocalPath1 = HexUtilities
+		SccProjectUniqueName2 = HexgridPanel\\HexgridPanel.csproj
+		SccProjectName2 = HexgridPanel
+		SccLocalPath2 = HexgridPanel
+		SccProjectUniqueName3 = HexgridExampleWpf\\HexgridExampleWpf.csproj
+		SccProjectName3 = HexgridExampleWpf
+		SccLocalPath3 = HexgridExampleWpf
+		SccProjectUniqueName4 = HexGridExampleCommon\\HexgridExampleCommon.csproj
+		SccProjectName4 = HexGridExampleCommon
+		SccLocalPath4 = HexGridExampleCommon
+		SccProjectUniqueName5 = HexgridScrollableExample\\HexgridScrollableExample.csproj
+		SccProjectName5 = HexgridScrollableExample
+		SccLocalPath5 = HexgridScrollableExample
+		SccProjectUniqueName6 = HexgridScrollViewer\\HexgridScrollViewer.csproj
+		SccProjectName6 = HexgridScrollViewer
+		SccLocalPath6 = HexgridScrollViewer
+		SccProjectUniqueName7 = HexGridPanelExample\\HexgridPanelExample.csproj
+		SccProjectName7 = HexGridPanelExample
+		SccLocalPath7 = HexGridPanelExample
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Checked|Any CPU = Checked|Any CPU
+		Checked|x86 = Checked|x86
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{013628E1-60E2-40A6-91D4-8B446F397A0A}.Checked|Any CPU.ActiveCfg = Checked|Any CPU
+		{013628E1-60E2-40A6-91D4-8B446F397A0A}.Checked|Any CPU.Build.0 = Checked|Any CPU
+		{013628E1-60E2-40A6-91D4-8B446F397A0A}.Checked|x86.ActiveCfg = Checked|x86
+		{013628E1-60E2-40A6-91D4-8B446F397A0A}.Checked|x86.Build.0 = Checked|x86
+		{013628E1-60E2-40A6-91D4-8B446F397A0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{013628E1-60E2-40A6-91D4-8B446F397A0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{013628E1-60E2-40A6-91D4-8B446F397A0A}.Debug|x86.ActiveCfg = Debug|x86
+		{013628E1-60E2-40A6-91D4-8B446F397A0A}.Debug|x86.Build.0 = Debug|x86
+		{013628E1-60E2-40A6-91D4-8B446F397A0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{013628E1-60E2-40A6-91D4-8B446F397A0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{013628E1-60E2-40A6-91D4-8B446F397A0A}.Release|x86.ActiveCfg = Release|x86
+		{013628E1-60E2-40A6-91D4-8B446F397A0A}.Release|x86.Build.0 = Release|x86
+		{388AD675-D18E-4DFA-ABB9-55AB3EA993A2}.Checked|Any CPU.ActiveCfg = Checked|Any CPU
+		{388AD675-D18E-4DFA-ABB9-55AB3EA993A2}.Checked|Any CPU.Build.0 = Checked|Any CPU
+		{388AD675-D18E-4DFA-ABB9-55AB3EA993A2}.Checked|x86.ActiveCfg = Checked|x86
+		{388AD675-D18E-4DFA-ABB9-55AB3EA993A2}.Checked|x86.Build.0 = Checked|x86
+		{388AD675-D18E-4DFA-ABB9-55AB3EA993A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{388AD675-D18E-4DFA-ABB9-55AB3EA993A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{388AD675-D18E-4DFA-ABB9-55AB3EA993A2}.Debug|x86.ActiveCfg = Debug|x86
+		{388AD675-D18E-4DFA-ABB9-55AB3EA993A2}.Debug|x86.Build.0 = Debug|x86
+		{388AD675-D18E-4DFA-ABB9-55AB3EA993A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{388AD675-D18E-4DFA-ABB9-55AB3EA993A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{388AD675-D18E-4DFA-ABB9-55AB3EA993A2}.Release|x86.ActiveCfg = Release|x86
+		{388AD675-D18E-4DFA-ABB9-55AB3EA993A2}.Release|x86.Build.0 = Release|x86
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Checked|Any CPU.ActiveCfg = Checked|Any CPU
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Checked|Any CPU.Build.0 = Checked|Any CPU
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Checked|x86.ActiveCfg = Checked|Any CPU
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CEB2C15-1E1A-446C-92C6-77BC49833742}.Release|x86.ActiveCfg = Release|Any CPU
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Checked|Any CPU.ActiveCfg = Checked|Any CPU
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Checked|Any CPU.Build.0 = Checked|Any CPU
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Checked|x86.ActiveCfg = Checked|x86
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Checked|x86.Build.0 = Checked|x86
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Debug|x86.ActiveCfg = Debug|x86
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Debug|x86.Build.0 = Debug|x86
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Release|x86.ActiveCfg = Release|x86
+		{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}.Release|x86.Build.0 = Release|x86
+		{45429A16-9A82-41C2-9E2D-70D88B4D6D6B}.Checked|Any CPU.ActiveCfg = Checked|Any CPU
+		{45429A16-9A82-41C2-9E2D-70D88B4D6D6B}.Checked|Any CPU.Build.0 = Checked|Any CPU
+		{45429A16-9A82-41C2-9E2D-70D88B4D6D6B}.Checked|x86.ActiveCfg = Checked|x86
+		{45429A16-9A82-41C2-9E2D-70D88B4D6D6B}.Checked|x86.Build.0 = Checked|x86
+		{45429A16-9A82-41C2-9E2D-70D88B4D6D6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45429A16-9A82-41C2-9E2D-70D88B4D6D6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45429A16-9A82-41C2-9E2D-70D88B4D6D6B}.Debug|x86.ActiveCfg = Debug|x86
+		{45429A16-9A82-41C2-9E2D-70D88B4D6D6B}.Debug|x86.Build.0 = Debug|x86
+		{45429A16-9A82-41C2-9E2D-70D88B4D6D6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45429A16-9A82-41C2-9E2D-70D88B4D6D6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45429A16-9A82-41C2-9E2D-70D88B4D6D6B}.Release|x86.ActiveCfg = Release|x86
+		{45429A16-9A82-41C2-9E2D-70D88B4D6D6B}.Release|x86.Build.0 = Release|x86
+		{DAC3749C-6181-4B9C-A1E8-598AF5656F5E}.Checked|Any CPU.ActiveCfg = Release|Any CPU
+		{DAC3749C-6181-4B9C-A1E8-598AF5656F5E}.Checked|Any CPU.Build.0 = Release|Any CPU
+		{DAC3749C-6181-4B9C-A1E8-598AF5656F5E}.Checked|x86.ActiveCfg = Debug|Any CPU
+		{DAC3749C-6181-4B9C-A1E8-598AF5656F5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAC3749C-6181-4B9C-A1E8-598AF5656F5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAC3749C-6181-4B9C-A1E8-598AF5656F5E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DAC3749C-6181-4B9C-A1E8-598AF5656F5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAC3749C-6181-4B9C-A1E8-598AF5656F5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAC3749C-6181-4B9C-A1E8-598AF5656F5E}.Release|x86.ActiveCfg = Release|Any CPU
+		{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}.Checked|Any CPU.ActiveCfg = Checked|Any CPU
+		{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}.Checked|Any CPU.Build.0 = Checked|Any CPU
+		{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}.Checked|x86.ActiveCfg = Checked|Any CPU
+		{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEA36FDA-557C-4FDA-94A2-48A21A0C31FC}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

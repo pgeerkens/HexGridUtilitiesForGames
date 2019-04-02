@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{013628E1-60E2-40A6-91D4-8B446F397A0A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PGNapoleonics.HexUtilities</RootNamespace>
+    <AssemblyName>PGNapoleonics.HexUtilities</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET45, HotPriorityQueue, TraceFoV</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+    <NoWarn>1587,1607</NoWarn>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>NET45, HotPriorityQueue</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\PGNapoleonics.HexUtilities.xml</DocumentationFile>
+    <NoWarn>1587,1607</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>PGSoftwareSolutions.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Checked|AnyCPU'">
+    <OutputPath>bin\Checked\</OutputPath>
+    <DefineConstants>TRACE;NET45, HotPriorityQueue,TraceFoV</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <Optimize>true</Optimize>
+    <NoWarn>1587,1607</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET45, HotPriorityQueue, TraceFoV</DefineConstants>
+    <NoWarn>1587,1607</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRulesLessCA1303.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>NET45, HotPriorityQueue</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <Optimize>true</Optimize>
+    <NoWarn>1587,1607</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRulesLessCA1303.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Checked|x86'">
+    <OutputPath>bin\x86\Checked\</OutputPath>
+    <DefineConstants>TRACE;NET45, HotPriorityQueue,TraceFoV</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>1587,1607</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRulesLessCA1303.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\BlockedBoardStorage32x32.cs" />
+    <Compile Include="Common\BoardStorage.cs" />
+    <Compile Include="Common\DebugTracing.cs" />
+    <Compile Include="Common\EnumExtensions.cs" />
+    <Compile Include="Common\EnumHelper.cs" />
+    <Compile Include="Common\Extensions.cs" />
+    <Compile Include="Common\FastList.cs" />
+    <Compile Include="Common\ImmutableStack.cs" />
+    <Compile Include="Common\IntMatrix2D.cs" />
+    <Compile Include="Common\IntVector2D.cs" />
+    <Compile Include="Common\PointExtensions.cs" />
+    <Compile Include="Common\SizeExtensions.cs" />
+    <Compile Include="Common\UserCoordsRectangle.cs" />
+    <Compile Include="CustomCoordsFactory.cs" />
+    <Compile Include="Common\FlatBoardStorage.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="HexCoords.cs" />
+    <Compile Include="Hexside.cs" />
+    <Compile Include="Hexsides.cs" />
+    <Compile Include="Common\IBoardStorage.cs" />
+    <Compile Include="FieldOfView\IFieldOfView.cs" />
+    <Compile Include="IHex.cs" />
+    <Compile Include="IHexBoard.cs" />
+    <Compile Include="IHexgrid.cs" />
+    <Compile Include="IMapDisplay.cs" />
+    <Compile Include="NeighbourCoords.cs" />
+    <Compile Include="NeighbourHex.cs" />
+    <Compile Include="Pathfinding\BidirectionalPathfinder.cs" />
+    <Compile Include="Pathfinding\ConcurrentHashSet.cs" />
+    <Compile Include="Pathfinding\DictPriorityQueue.cs" />
+    <Compile Include="HexGrid.cs" />
+    <Compile Include="Hex.cs" />
+    <Compile Include="HexBoard.cs" />
+    <Compile Include="Pathfinding\HexKeyValuePair.cs" />
+    <Compile Include="Pathfinding\HotPriorityQueue.cs" />
+    <Compile Include="Pathfinding\HotPriorityQueueueList.cs" />
+    <Compile Include="Pathfinding\IDirectedPathCollection.cs" />
+    <Compile Include="Pathfinding\ILandmark.cs" />
+    <Compile Include="Pathfinding\INavigableBoard.cs" />
+    <Compile Include="Pathfinding\IPathfinder.cs" />
+    <Compile Include="Pathfinding\IPriorityQueue.cs" />
+    <Compile Include="Pathfinding\Landmark.cs" />
+    <Compile Include="Pathfinding\DirectedPathCollection.cs" />
+    <Compile Include="Pathfinding\LandmarkCollection.cs" />
+    <Compile Include="Pathfinding\UnidirectionalPathfinder.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="FieldOfView\FieldOfView.cs" />
+    <Compile Include="FieldOfView\FovFactory.cs" />
+    <Compile Include="FieldOfView\FovCone.cs" />
+    <Compile Include="FieldOfView\FovQueue.cs" />
+    <Compile Include="FieldOfView\RiseRun.cs" />
+    <Compile Include="FieldOfView\ShadowCastingFov.cs" />
+    <Compile Include="FieldOfView\Dodecant.cs" />
+    <Compile Include="FieldOfView\ShadowCastingFov_Utilities.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="license.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="PGSoftwareSolutions.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
+      <Link>CustomDictionary.xml</Link>
+    </CodeAnalysisDictionary>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

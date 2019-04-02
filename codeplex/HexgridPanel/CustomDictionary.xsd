@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <xs:element name="Dictionary">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element name="Words">
+               <xs:complexType>
+                  <xs:sequence>
+                     <xs:element name="Unrecognized">
+                        <xs:complexType>
+                           <xs:sequence>
+                              <xs:element name="Word" type="xs:string" />
+                           </xs:sequence>
+                        </xs:complexType>
+                     </xs:element>
+                     <xs:element name="Recognized">
+                        <xs:complexType>
+                           <xs:sequence>
+                              <xs:element maxOccurs="unbounded" name="Word" type="xs:string" />
+                           </xs:sequence>
+                        </xs:complexType>
+                     </xs:element>
+                     <xs:element name="Deprecated">
+                        <xs:complexType>
+                           <xs:sequence>
+                              <xs:element name="Term">
+                                 <xs:complexType>
+                                    <xs:simpleContent>
+                                       <xs:extension base="xs:string">
+                                          <xs:attribute name="PreferredAlternate" type="xs:string" use="required" />
+                                       </xs:extension>
+                                    </xs:simpleContent>
+                                 </xs:complexType>
+                              </xs:element>
+                           </xs:sequence>
+                        </xs:complexType>
+                     </xs:element>
+                     <xs:element name="DiscreteExceptions">
+                        <xs:complexType>
+                           <xs:sequence>
+                              <xs:element maxOccurs="unbounded" name="Term" type="xs:string" />
+                           </xs:sequence>
+                        </xs:complexType>
+                     </xs:element>
+                  </xs:sequence>
+               </xs:complexType>
+            </xs:element>
+            <xs:element name="Acronyms">
+               <xs:complexType>
+                  <xs:sequence>
+                     <xs:element name="CasingExceptions">
+                        <xs:complexType>
+                           <xs:sequence>
+                              <xs:element maxOccurs="unbounded" name="Acronym" type="xs:string" />
+                           </xs:sequence>
+                        </xs:complexType>
+                     </xs:element>
+                  </xs:sequence>
+               </xs:complexType>
+            </xs:element>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+</xs:schema>

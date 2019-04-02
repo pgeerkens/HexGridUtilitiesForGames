@@ -1,0 +1,125 @@
+﻿<Window Name="mainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:PGNapoleonics.HexgridExampleWpf"
+        xmlns:Properties="clr-namespace:HexgridExampleWpf.Properties" 
+        xmlns:HexgridPanel="clr-namespace:PGNapoleonics.HexgridPanel;assembly=HexgridPanel" 
+        xmlns:HexCommon="clr-namespace:PGNapoleonics.HexgridExamples;assembly=HexgridExampleCommon"
+        x:Class="HexgridExampleWpf.MainWindow"
+
+        Title="Hexgrid Utilities WPF Example" Height="422" Width="782" Loaded="Window_Loaded" 
+        SizeToContent="WidthAndHeight" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+        >
+   <Window.Resources>
+      <CollectionViewSource Source="{Binding MapSelectionItems}" x:Key="mapSelectionItems" />
+   </Window.Resources>
+
+   <Window.CommandBindings>
+      <CommandBinding Command="Refresh" Executed="RefreshCmdExecuted" CanExecute="RefreshCmdCanExecute"/>
+   </Window.CommandBindings>
+
+   <DockPanel x:Name="_dockPanel" Cursor="Arrow" 
+		ScrollViewer.VerticalScrollBarVisibility="Disabled" >
+      <StackPanel Name="toolbarControls" DockPanel.Dock="Top" 
+			Height="25" 
+			VerticalAlignment="Top" 
+			Orientation="Horizontal" >
+         <StackPanel.Background>
+            <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+               <GradientStop Color="White" Offset="0"/>
+               <GradientStop Color="#994040A0" Offset="1"/>
+            </LinearGradientBrush>
+         </StackPanel.Background>
+         <ToggleButton x:Name="buttonTransposeMap" 
+				      Content="Transpose" 
+				      Width="75" 
+				      ClickMode="Press" 
+              Focusable="False"
+              IsChecked="{Binding HexgridPanel.IsTransposed, Mode=TwoWay, FallbackValue=False, UpdateSourceTrigger=PropertyChanged}"
+				      ToolTip="Toggles transposition of the current map." Margin="3,0"/>
+         <ToggleButton x:Name="buttonRangeLine" 
+				      Content="Range Line" 
+				      Width="75" 
+				      ClickMode="Press" 
+              Focusable="False"
+              IsChecked="{Binding Model.ShowRangeLine, Mode=TwoWay, FallbackValue=False, UpdateSourceTrigger=PropertyChanged}"
+              Command="Refresh"
+				      ToolTip="Toggles (a) display of Range Line; and (b) Field-of-View source between Start-Hex and Hotspot-Hex." 
+              Margin="3,0">
+         </ToggleButton>
+         <ToggleButton x:Name="buttonPathArrow" 
+				      Content="Path Arrow" 
+				      Width="75" 
+				      ClickMode="Press" 
+              Focusable="False"
+              IsChecked="{Binding Model.ShowPathArrow, Mode=TwoWay, FallbackValue=True, UpdateSourceTrigger=PropertyChanged}"
+              Command="Refresh"
+				      ToolTip="Toggle display of Path Arrow." 
+              Margin="3,0"/>
+         <ToggleButton x:Name="buttonFieldOfView" 
+				      Content="FOV" 
+				      Width="75" 
+				      ClickMode="Press" 
+              Focusable="False"
+              IsChecked="{Binding Model.ShowFov, Mode=TwoWay, FallbackValue=True, UpdateSourceTrigger=PropertyChanged}"
+              Command="Refresh"
+				      ToolTip="Toggles display of current Field-of-View" Margin="3,0,0,0" 
+        />
+         <local:CommandSlider x:Name="sliderFovRadius" Width="116" TickFrequency="5" 
+      	      Maximum="60" SmallChange="1" LargeChange="5" 
+      	      Focusable="False" AutoToolTipPlacement="TopLeft"
+      	      Value="{Binding Model.FovRadius, FallbackValue=20, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+      	      Command="Refresh"
+      	      CommandParameter="SetMapDirty"
+      	      ToolTip="Range beyond which Fast PathFinding is used instead of Stable PathFinding." 
+      	      Margin="0,0,3,0" TickPlacement="TopLeft" Background="#FFE0E0E0" Foreground="#FF6C6C6C" 
+              />
+         <ComboBox x:Name="comboBoxMapSelection" 
+				      Width="90" 
+              Margin="3,0" 
+              Focusable="False"
+				      ToolTip="Selects map to display."
+              SelectedIndex="{Binding SelectedMapIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+              >
+            <ListBoxItem x:Name="TerrainMap" Content="Terrain Map"/>
+            <ListBoxItem x:Name="MazeMap"    Content="Maze Map"/>
+         </ComboBox>
+         <Label Content="Landmark to Show:" HorizontalContentAlignment="Right" Width="115" Margin="3,0,0,0"/>
+         <local:CommandComboBox x:Name="menuItemLandmarks" Width="60" Margin="0,0,3,0"
+              Focusable="False"
+              ItemsSource="{Binding LandmarkItems}"
+              SelectedIndex="{Binding Model.LandmarkToShow, Mode=TwoWay}"
+              Command="Refresh" CommandParameter="SetMapDirty"
+              />
+      </StackPanel>
+      <StackPanel DockPanel.Dock="Bottom"  
+			Height="25" 
+			VerticalAlignment="Top">
+         <StackPanel.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+               <GradientStop Color="#664040A0" Offset="1"/>
+               <GradientStop Color="#994040A0"/>
+            </LinearGradientBrush>
+         </StackPanel.Background>
+         <Label x:Name="statusLabel" Content="Status display"/>
+      </StackPanel>
+      <ScrollViewer 
+			x:Name="_scrollViewer" 
+			ClipToBounds="True" 
+			HorizontalContentAlignment="Stretch" 
+			VerticalContentAlignment="Stretch" 
+			VerticalScrollBarVisibility="Disabled">
+         <WindowsFormsHost x:Name="_host" 
+				ScrollViewer.VerticalScrollBarVisibility="Disabled" 
+				ScrollViewer.CanContentScroll="True">
+            <HexgridPanel:BufferedHexgridScrollable 
+                  AutoScrollMinSize="200,100" 
+                  Margin="5, 5, 5, 5" 
+                  Size="1445,920" 
+                  />
+         </WindowsFormsHost>
+      </ScrollViewer>
+   </DockPanel>
+</Window>
+   
