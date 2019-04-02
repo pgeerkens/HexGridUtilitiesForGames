@@ -330,7 +330,7 @@ namespace PGNapoleonics.HexgridScrollableExample {
       this.ClientSize = new System.Drawing.Size(770, 420);
       this.Controls.Add(this.toolStripContainer1);
       this.Name = "HexgridPanelExample";
-      this.Text = "Hexgrid Panel Example (WinForms)";
+      this.Text = "HexgridScrollableExample (Panel-Winforms)";
       this.Load += new System.EventHandler(this.HexGridExampleForm_Load);
       this.toolStripContainer1.BottomToolStripPanel.ResumeLayout(false);
       this.toolStripContainer1.BottomToolStripPanel.PerformLayout();

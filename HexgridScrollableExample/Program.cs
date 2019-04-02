@@ -39,7 +39,7 @@ using PGNapoleonics.WinForms;
 [assembly:CLSCompliant(true)]
 namespace PGNapoleonics.HexgridScrollableExample {
     static class Program {
-        volatile static int i = 1;
+        volatile static int i = 0;
 
         /// <summary>The main entry point for the application.</summary>
         [STAThread]
