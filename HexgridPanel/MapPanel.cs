@@ -58,8 +58,8 @@ namespace PGNapoleonics.HexgridPanel {
 
         #region Mouse Events
         /// <inheritdoc/>
-        protected override void OnMouseHwheel(MouseEventArgs e) {
-            if (e==null) throw new ArgumentNullException("e");
+        protected override void OnMouseHWheel(MouseEventArgs e) {
+            if (e==null) throw new ArgumentNullException(nameof(e));
 
             var oldPosition    = - AutoScrollPosition.X;
             var newPosition    = NewPosition(HorizontalScroll, ClientSize.Width, oldPosition,  e.Delta);
@@ -70,7 +70,7 @@ namespace PGNapoleonics.HexgridPanel {
         }
         /// <inheritdoc/>
         protected override void OnMouseWheel(MouseEventArgs e) {
-            if (e==null) throw new ArgumentNullException("e");
+            if (e==null) throw new ArgumentNullException(nameof(e));
 
             var oldPosition    = - AutoScrollPosition.Y;
             var newPosition    = NewPosition(VerticalScroll, ClientSize.Height, oldPosition, -e.Delta);

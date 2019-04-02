@@ -644,7 +644,7 @@ namespace PGNapoleonics.WinForms {
     /// <summary>
     /// The WM_MOUSEHWHEEL message is sent to the focus window when the mouse's horizontal scroll wheel is tilted or rotated. The DefWindowProc function propagates the message to the window's parent. There should be no internal forwarding of the message, since DefWindowProc propagates it up the parent chain until it finds a window that processes it.
     /// </summary>
-    MouseHwheel = 0x020E,
+    MouseHWheel = 0x020E,
     /// <summary>
     /// Use WM_MOUSELAST to specify the last mouse message. Used with PeekMessage() Function.
     /// </summary>

@@ -130,7 +130,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
         /// <summary>TODO</summary>
         /// <param name="dc"></param>
         protected void HexgridScrollViewer_Rendering(object sender, RenderingEventArgs e) {
-            if (e==null) throw new ArgumentNullException("e");
+            if (e==null) throw new ArgumentNullException(nameof(e));
 
             var dc = e.DrawingContext;
     //        dc.Clip = new Region(e.ClipRectangle);

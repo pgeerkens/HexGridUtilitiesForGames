@@ -221,13 +221,13 @@ namespace PGNapoleonics.HexgridScrollableExample {
         /// <returns>Success (true) or failure (false) to OS.</returns>
         [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public bool PreFilterMessage(ref Message m) {
-            if ((WM)m.Msg != WM.MouseHwheel && (WM)m.Msg != WM.MouseWheel) return false;
+            if ((WM)m.Msg != WM.MouseHWheel && (WM)m.Msg != WM.MouseWheel) return false;
 
             var hWnd = NativeMethods.WindowFromPoint(WindowsMouseInput.GetPointLParam(m.LParam));
             var ctrl = FromChildHandle(hWnd);
             if (hWnd != IntPtr.Zero  &&  hWnd != m.HWnd  &&  ctrl != null) {
                 switch ((WM)m.Msg) {
-                    case WM.MouseHwheel:
+                    case WM.MouseHWheel:
                     case WM.MouseWheel:
                         Tracing.ScrollEvents.Trace(true, $" - {Name}.WM.{(WM)m.Msg}: ");
                         return (NativeMethods.SendMessage(hWnd, m.Msg, m.WParam, m.LParam) == IntPtr.Zero);

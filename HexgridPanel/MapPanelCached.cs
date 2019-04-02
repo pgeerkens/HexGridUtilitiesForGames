@@ -64,8 +64,8 @@ namespace PGNapoleonics.HexgridPanel {
             try {
                 var width  = Math.Max(1,size.Width);
                 var height = Math.Max(1,size.Height);
-                //temp       = new Bitmap(width, height) {Tag = tag};
-                temp       = new Bitmap(width, height); temp.Tag = tag;
+                temp       = new Bitmap(width, height) {Tag = tag};
+                //temp       = new Bitmap(width, height); temp.Tag = tag;
                 buffer     = temp;
                 temp       = null;
             } finally {
@@ -106,7 +106,7 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <inheritdoc/>
         protected override async void OnPaint(PaintEventArgs e) {
-            if(e==null) throw new ArgumentNullException("e");
+            if(e==null) throw new ArgumentNullException(nameof(e));
             if (DesignMode) { e.Graphics.FillRectangle(Brushes.Gray, ClientRectangle);  return; }
 
             if (BufferCache != null) {

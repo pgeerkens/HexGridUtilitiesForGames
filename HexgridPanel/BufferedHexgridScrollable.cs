@@ -51,8 +51,8 @@ namespace PGNapoleonics.HexgridPanel {
 
         #region Mouse Events
         /// <inheritdoc/>
-        protected override void OnMouseHwheel(MouseEventArgs e) {
-            if (e==null) throw new ArgumentNullException("e");
+        protected override void OnMouseHWheel(MouseEventArgs e) {
+            if (e==null) throw new ArgumentNullException(nameof(e));
 
             var oldPosition    = - AutoScrollPosition.X;
             var newPosition    = NewPosition(HorizontalScroll, ClientSize.Width, oldPosition,  e.Delta);
@@ -63,7 +63,7 @@ namespace PGNapoleonics.HexgridPanel {
         }
         /// <inheritdoc/>
         protected override void OnMouseWheel(MouseEventArgs e) {
-            if (e==null) throw new ArgumentNullException("e");
+            if (e==null) throw new ArgumentNullException(nameof(e));
 
             var oldPosition    = - AutoScrollPosition.Y;
             var newPosition    = NewPosition(VerticalScroll, ClientSize.Height, oldPosition, -e.Delta);
@@ -142,7 +142,7 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <inheritdoc/>
         protected override async void OnPaint(PaintEventArgs e) {
-            if(e==null) throw new ArgumentNullException("e");
+            if(e==null) throw new ArgumentNullException(nameof(e));
             if (DesignMode) { e.Graphics.FillRectangle(Brushes.Gray, ClientRectangle);  return; }
 
             if (_mapBuffer != null) base.OnPaint(e);
@@ -150,13 +150,13 @@ namespace PGNapoleonics.HexgridPanel {
             var status = Interlocked.CompareExchange(ref _cacheStatus, _IS_PAINTING, _NEEDS_PAINTING);
             if (status == _NEEDS_PAINTING) {
                 try {
-                    if (_backBuffer != null) { _backBuffer.Dispose(); }
-
+                    _backBuffer?.Dispose();
                     _backBuffer = Interlocked.Exchange(ref _mapBuffer, await PaintBufferAsync(ClientRectangle));
 
-                    if (_backBuffer != null) { _backBuffer.Dispose(); }   _backBuffer = ClientSize.AllocateBitmap();
+                    _backBuffer?.Dispose();
+                    _backBuffer = ClientSize.AllocateBitmap();
                 } catch (InvalidOperationException) {
-                    if (_backBuffer == null) _backBuffer = ClientSize.AllocateBitmap();
+                    if (_backBuffer == null) { _backBuffer = ClientSize.AllocateBitmap(); }
 
                     Interlocked.CompareExchange(ref _cacheStatus, _NEEDS_PAINTING, _IS_PAINTING);
                     Thread.Sleep(250);
@@ -166,19 +166,22 @@ namespace PGNapoleonics.HexgridPanel {
         }
         /// <inheritdoc/>
         protected override void PaintMe(Graphics graphics) {
-            if (graphics==null) throw new ArgumentNullException("graphics");
+            if (graphics==null) throw new ArgumentNullException(nameof(graphics));
 
             graphics.Contain(RenderMapLocal);
             base.PaintMe(graphics);
         }
 
         /// <summary>TODO</summary>
-        protected override void RenderMap(Graphics graphics) { }
+        protected override void RenderMap(Graphics graphics) {
+        }
 
         private void RenderMapLocal(Graphics graphics) {
-            if (graphics == null) throw new ArgumentNullException("graphics");
+            if (graphics == null) throw new ArgumentNullException(nameof(graphics));
 
-            using(var brush = new SolidBrush(this.BackColor)) graphics.FillRectangle(brush,ClientRectangle);
+            using(var brush = new SolidBrush(BackColor)) {
+                graphics.FillRectangle(brush,ClientRectangle);
+            }
            _mapBuffer.Render(graphics, ClientRectangle.Location, 1.0F);
         }
 
@@ -202,7 +205,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Service routine to paint the backing store bitmap for the map underlay.</summary>
         protected virtual Bitmap PaintBuffer(Rectangle clipBounds)
         => DataContext.Model==null ? null
-                                   : _paintBuffer?.ToBitmap(s => s.AllocateBitmap(), ClientSize, clipBounds);
+                                   : _paintBuffer?.ToBitmap(()=>ClientSize.AllocateBitmap(), clipBounds);
 
         /// <summary>Service routine to paint the backing store bitmap for the map underlay.</summary>
         protected virtual Bitmap ScrollBuffer(Rectangle clipBounds) {

@@ -261,7 +261,7 @@ namespace PGNapoleonics.HexgridPanel {
         #region Mouse event handlers
         /// <inheritdoc/>
         protected override void OnMouseClick(MouseEventArgs e) {
-            if (e == null) throw new ArgumentNullException("e");
+            if (e == null) throw new ArgumentNullException(nameof(e));
             Tracing.Mouse.Trace(" - {0}.OnMouseClick - Shift: {1}; Ctl: {2}; Alt: {3}",
                                             Name, IsShiftKeyDown, IsCtlKeyDown, IsAltKeyDown);
             var eventArgs = new HexEventArgs(GetHexCoords(e.Location), ModifierKeys,e.Button,e.Clicks,e.X,e.Y,e.Delta);
@@ -274,7 +274,7 @@ namespace PGNapoleonics.HexgridPanel {
         }
         /// <inheritdoc/>
         protected override void OnMouseMove(MouseEventArgs e) {
-            if (e == null) throw new ArgumentNullException("e");
+            if (e == null) throw new ArgumentNullException(nameof(e));
             var newHex = GetHexCoords(e.Location);
             if (newHex != HotspotHex) OnHotspotHexChange(new HexEventArgs(newHex));
                 HotspotHex = newHex;
@@ -300,11 +300,11 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <inheritdoc/>
         protected override void OnMouseWheel(MouseEventArgs e) {
-            if (e == null) throw new ArgumentNullException("e");
+            if (e == null) throw new ArgumentNullException(nameof(e));
             Tracing.ScrollEvents.Trace(" - {0}.OnMouseWheel: {1}", Model.Name, e.ToString());
 
             if (ModifierKeys.HasFlag(Keys.Control))   ScaleIndex += Math.Sign(e.Delta);
-            else if (IsShiftKeyDown)                  base.OnMouseHwheel(e);
+            else if (IsShiftKeyDown)                  base.OnMouseHWheel(e);
             else                                      base.OnMouseWheel(e);
         }
         #endregion

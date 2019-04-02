@@ -27,53 +27,35 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Automation.Peers;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 
-using WpfInput = System.Windows.Input;
-
 namespace PGNapoleonics.HexgridScrollViewer {
-  /// <summary>Interaction logic for HexgridScrollableViewer.xaml</summary>
-  public partial class TiltAwareScrollViewer : ScrollViewer {
-    /// <summary>TODO</summary>
-    public TiltAwareScrollViewer() : base() {
-//      InitializeComponent();
+    /// <summary>Interaction logic for HexgridScrollableViewer.xaml</summary>
+    public partial class TiltAwareScrollViewer : ScrollViewer {
+        /// <summary>TODO</summary>
+        public TiltAwareScrollViewer() : base() {
+    //      InitializeComponent();
+        }
+
+        #region Mouse Tilt Wheel (MouseHWheel) event implementation
+        /// <summary>Occurs when the mouse tilt-wheel moves while the control has focus.</summary>
+        public event EventHandler<MouseEventArgs> MouseHWheel;
+
+        private int _wheelHPos = 0;   //!< <summary>Unapplied horizontal scroll.</summary>
+
+        /// <summary>Scrolls horizontally and raises the MouseHWheel event</summary>
+        /// <param name="e"></param>
+        protected virtual void OnMouseHWheel(MouseWheelEventArgs e) {
+          if (e == null) throw new ArgumentNullException(nameof(e));
+            if (CanContentScroll) {
+                ScrollToHorizontalOffset(HorizontalOffset + e.Delta);
+
+                if (MouseHWheel != null) MouseHWheel.Raise(this, e);
+            }
+        }
+        #endregion
     }
-
-    #region Mouse Tilt Wheel (MouseHWheel) event implementation
-    /// <summary>Occurs when the mouse tilt-wheel moves while the control has focus.</summary>
-    public event EventHandler<MouseEventArgs> MouseHWheel;
-
-    private int _wheelHPos = 0;   //!< <summary>Unapplied horizontal scroll.</summary>
-
-    /// <summary>Scrolls horizontally and raises the MouseHWheel event</summary>
-    /// <param name="e"></param>
-    protected virtual void OnMouseHWheel(MouseWheelEventArgs e) {
-      if (e == null) throw new ArgumentNullException("e");
-      if (this.CanContentScroll) {
-        ScrollToHorizontalOffset(HorizontalOffset + e.Delta);
-
-        if (MouseHWheel != null) MouseHWheel.Raise(this, e);
-      }
-    }
-    #endregion
-  }
 }

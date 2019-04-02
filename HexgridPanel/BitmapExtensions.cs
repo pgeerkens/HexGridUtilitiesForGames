@@ -127,14 +127,18 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <summary>Service routine to paint the backing store bitmap for the map underlay.</summary>
-        public static Bitmap ToBitmap(this Action<Graphics> paintBuffer, Func<Size,Bitmap> allocate,
-                                            Size clientSize, Rectangle clipBounds) {
-            Bitmap bitmap = null, temp = null;
+        /// <param name="paintAction">The painting <see cref="Action{Graphics}"/> to be performed. </param>
+        /// <param name="getBitmap">A <see cref="Func{T}"/> that prouces the <typeparamref name="T"/> drawing target.</param>
+        /// <param name="clientSize"></param>
+        /// <param name="clipBounds"></param>
+        public static T ToBitmap<T>(this Action<Graphics> paintAction, Func<T> getBitmap,
+                                      Rectangle clipBounds) where T:Image {
+            T bitmap = null, temp = null;
             try {
-                temp = allocate(clientSize);
+                temp = getBitmap();
                 using(var graphics = Graphics.FromImage(temp)) {
                     graphics.Clip = new Region(clipBounds);
-                    graphics.Contain(paintBuffer);
+                    graphics.Contain(paintAction);
                 }
 
                 bitmap = temp;

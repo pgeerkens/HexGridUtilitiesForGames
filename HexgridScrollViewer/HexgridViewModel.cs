@@ -184,7 +184,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
 
 //    /// <summary>Announces that the mouse is now over a new hex.</summary>
 //    void HotspotHexChange(object sender, HexEventArgs e) {
-//      if (e==null) throw new ArgumentNullException("e");
+//      if (e==null) throw new ArgumentNullException(nameof(e));
 //      if ( e.Coords != HotspotHex)    HotspotHex = e.Coords;
 //    }
 

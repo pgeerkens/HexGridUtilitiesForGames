@@ -68,16 +68,16 @@ namespace PGNapoleonics.HexgridPanel {
         #endregion
 
         /// <summary>Occurs when the mouse tilt-wheel moves while the control has focus.</summary>
-        public event EventHandler<MouseEventArgs> MouseHwheel;
+        public event EventHandler<MouseEventArgs> MouseHWheel;
 
         /// <summary>Raises the MouseHWheel event.</summary>
         /// <param name="e">A <c>MouseEventArgs</c> that contains the event data. </param>
-        protected virtual void OnMouseHwheel(MouseEventArgs e) {
-            if (e == null) throw new ArgumentNullException("e");
+        protected virtual void OnMouseHWheel(MouseEventArgs e) {
+            if (e == null) throw new ArgumentNullException(nameof(e));
             if (!AutoScroll) return;
 
-            this.RollHorizontal(e.Delta * MouseHwheelStep/120);
-            MouseHwheel.Raise(this, e);
+            this.RollHorizontal(e.Delta * MouseHWheelStep/120);
+            MouseHWheel.Raise(this, e);
 
             if(e is HandledMouseEventArgs eh) eh.Handled = true;
         }
@@ -85,16 +85,16 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>TODO</summary>
         /// <param name="e"></param>
         protected override void OnMouseWheel(MouseEventArgs e) {
-            if (e == null) throw new ArgumentNullException("e");
+            if (e == null) throw new ArgumentNullException(nameof(e));
             base.OnMouseWheel(new MouseEventArgs(e.Button,e.Clicks,e.X,e.Y,
-                                e.Delta*MouseVwheelStep/120));
+                                e.Delta*MouseVWheelStep/120));
         }
 
         /// <summary>TODO</summary>
         [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Vwheel")]
-        public int MouseVwheelStep { set; get; }
+        public int MouseVWheelStep { set; get; }
         /// <summary>TODO</summary>
-        public int MouseHwheelStep { set; get; }
+        public int MouseHWheelStep { set; get; }
 
         /// <summary>TODO</summary>
         public void ScrollByOneControl(bool forward) {
@@ -108,11 +108,11 @@ namespace PGNapoleonics.HexgridPanel {
 
         public Point ScrollLargeChange => new Point (120, 120);
 
-        /// <summary>Extend Windows Message Loop to receive MouseHwheel messages.</summary>
+        /// <summary>Extend Windows Message Loop to receive MouseHWheel messages.</summary>
         protected override void WndProc(ref Message m) {
             if (!IsDisposed && m.HWnd == this.Handle) {
                 switch ((WM)m.Msg) {
-                    case WM.MouseHwheel:  OnMouseHwheel(m.CreateMouseEventArgs());
+                    case WM.MouseHWheel:  OnMouseHWheel(m.CreateMouseEventArgs());
                                           m.Result = (IntPtr)0;
                                           break;
                     default:              break;

@@ -68,16 +68,16 @@ namespace PGNapoleonics.HexgridPanel {
         #endregion
 
         /// <summary>Occurs when the mouse tilt-wheel moves while the control has focus.</summary>
-        public event EventHandler<MouseEventArgs> MouseHwheel;
+        public event EventHandler<MouseEventArgs> MouseHWheel;
 
         /// <summary>Raises the MouseHWheel event.</summary>
         /// <param name="e">A <c>MouseEventArgs</c> that contains the event data. </param>
-        protected virtual void OnMouseHwheel(MouseEventArgs e) {
-            if (e == null) throw new ArgumentNullException("e");
+        protected virtual void OnMouseHWheel(MouseEventArgs e) {
+            if (e == null) throw new ArgumentNullException(nameof(e));
             if (!AutoScroll) return;
 
             this.RollHorizontal(e.Delta);
-            MouseHwheel.Raise(this, e);
+            MouseHWheel.Raise(this, e);
 
             if(e is HandledMouseEventArgs eh) eh.Handled = true;
         }
@@ -86,11 +86,11 @@ namespace PGNapoleonics.HexgridPanel {
 
         public Point ScrollLargeChange => new Point (120, 120);
 
-        /// <summary>Extend Windows Message Loop to receive MouseHwheel messages.</summary>
+        /// <summary>Extend Windows Message Loop to receive MouseHWheel messages.</summary>
         protected override void WndProc(ref Message m) {
             if (!IsDisposed && m.HWnd == Handle) {
                 switch ((WM)m.Msg) {
-                    case WM.MouseHwheel:  OnMouseHwheel(m.CreateMouseEventArgs());
+                    case WM.MouseHWheel:  OnMouseHWheel(m.CreateMouseEventArgs());
                                           m.Result = (IntPtr)0;
                                           break;
                     default:              break;

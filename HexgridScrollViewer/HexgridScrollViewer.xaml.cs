@@ -239,7 +239,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
 
     //    /// <inheritdoc/>
     //    //protected override void OnPaint(PaintEventArgs e) {
-    //    //  if (e==null) throw new ArgumentNullException("e");
+    //    //  if (e==null) throw new ArgumentNullException(nameof(e));
 
     //    //  if(!IsHandleCreated) return;
     //    //  var dc      = e.Graphics;
@@ -320,7 +320,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
     //    #region Mouse event handlers
     //    /// <inheritdoc/>
     //    protected virtual void OnMouseClick(MouseEventArgs e) {
-    //      if (e==null) throw new ArgumentNullException("e");
+    //      if (e==null) throw new ArgumentNullException(nameof(e));
     //      //TraceFlags.Mouse.Trace(" - {0}.OnMouseClick - Shift: {1}; Ctl: {2}; Alt: {3}", 
     //      //                                Name, IsShiftKeyDown, IsCtlKeyDown, IsAltKeyDown);
     //      var coords    = GetHexCoords(Mouse.GetPosition(this).ToHexPoint());
@@ -335,7 +335,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
     //    }
     //    /// <inheritdoc/>
     //    protected override void OnMouseMove(MouseEventArgs e) {
-    //      if (e==null) throw new ArgumentNullException("e");
+    //      if (e==null) throw new ArgumentNullException(nameof(e));
     //      var coords    = GetHexCoords(Mouse.GetPosition(this).ToHexPoint());
     //      // TODO - remap this in ViewModel
     ////      OnHotspotHexChange(new HexEventArgs(GetHexCoords(e.Location - Margin.OffsetSize())));
@@ -347,14 +347,14 @@ namespace PGNapoleonics.HexgridScrollViewer {
     //    protected virtual void OnMouseAltClick(HexEventArgs e) { MouseAltClick.Raise(this,e); }
     //    /// <summary>Raise the MouseCtlClick event.</summary>
     //    protected virtual void OnMouseCtlClick(HexEventArgs e) {
-    //      if (e==null) throw new ArgumentNullException("e");
+    //      if (e==null) throw new ArgumentNullException(nameof(e));
     //      DataContext.Model.GoalHex = e.Coords;
     //      MouseCtlClick.Raise(this,e);
     ////      Refresh();
     //    }
     //    /// <summary>Raise the MouseLeftClick event.</summary>
     //    protected virtual void OnMouseLeftClick(HexEventArgs e) {
-    //      if (e==null) throw new ArgumentNullException("e");
+    //      if (e==null) throw new ArgumentNullException(nameof(e));
     //      DataContext.Model.StartHex = e.Coords;
     //      MouseLeftClick.Raise(this,e);
     ////      Refresh();
@@ -363,7 +363,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
     //    protected virtual void OnMouseRightClick(HexEventArgs e) { MouseRightClick.Raise(this,e); }
     //   /// <summary>Raise the HotspotHexChange event.</summary>
     //    protected virtual void OnHotspotHexChange(HexEventArgs e) {
-    //      if (e==null) throw new ArgumentNullException("e");
+    //      if (e==null) throw new ArgumentNullException(nameof(e));
     //      DataContext.Model.HotspotHex = e.Coords;
     //      HotspotHexChange.Raise(this,e);
     ////      Refresh();
@@ -387,7 +387,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
     //    #region MouseWheel & Scroll event handlers
     //    ///// <inheritdoc/>
     //    //protected virtual void OnMouseWheel(MouseEventArgs e) {
-    //    //  if (e == null) throw new ArgumentNullException("e");
+    //    //  if (e == null) throw new ArgumentNullException(nameof(e));
     //    //  TraceFlags.ScrollEvents.Trace(" - {0}.OnMouseWheel: {1}", Name, e.ToString());
 
     //    //  //if (Control.ModifierKeys.HasFlag(Keys.Control)) ScaleIndex += Math.Sign(e.Delta);

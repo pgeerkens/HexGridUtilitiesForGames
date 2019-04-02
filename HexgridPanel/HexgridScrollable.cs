@@ -36,7 +36,6 @@ using System.Windows.Forms;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
-using PGNapoleonics.HexgridExampleCommon;
 
 using WpfInput = System.Windows.Input;
 
@@ -158,8 +157,9 @@ namespace PGNapoleonics.HexgridPanel {
             }
         }
         /// <summary>Returns, as a Rectangle, the IUserCoords for the currently visible extent.</summary>
-        public virtual CoordsRectangle VisibleRectangle => GetClipInHexes(AutoScrollPosition.Scale(-1.0F / MapScale),
-                                             ClientSize.Scale(1.0F / MapScale));
+        public virtual CoordsRectangle VisibleRectangle
+            => GetClipInHexes(AutoScrollPosition.Scale(-1.0F / MapScale),
+                              ClientSize.Scale(1.0F / MapScale));
         #endregion
 
         #region Methods
@@ -252,6 +252,7 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <inheritdoc/>
         protected override void OnPaint(PaintEventArgs e) {
+            if(e==null) throw new ArgumentNullException(nameof(e));
             if (DesignMode) { e.Graphics.FillRectangle(Brushes.Gray, ClientRectangle);  return; }
 
             if(IsHandleCreated) e.Graphics.Contain(PaintMe);
@@ -261,14 +262,14 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>TODO</summary>
         /// <param name="graphics"></param>
         protected virtual void PaintMe(Graphics graphics) {
-            if (graphics==null) throw new ArgumentNullException("graphics");
+            if (graphics==null) throw new ArgumentNullException(nameof(graphics));
 
             if (IsTransposed) { graphics.Transform = TransposeMatrix; }
 
             var scroll = DataContext.Grid.GetScrollPosition(AutoScrollPosition);
             graphics.TranslateTransform(scroll.X + Margin.Left,  scroll.Y + Margin.Top);
             graphics.ScaleTransform(MapScale,MapScale);
-            Tracing.PaintDetail.Trace("{0}.PaintPanel: ({1})", Name, graphics.VisibleClipBounds);
+            Tracing.PaintDetail.Trace($"{Name}.PaintPanel: ({graphics.VisibleClipBounds})");
 
             graphics.Contain(RenderMap);
             graphics.Contain(RenderUnits);
@@ -282,7 +283,7 @@ namespace PGNapoleonics.HexgridPanel {
         }
         /// <inheritdoc/>
         protected virtual void RenderMap(Graphics graphics) {
-            if (graphics == null) throw new ArgumentNullException("graphics");
+            if (graphics == null) throw new ArgumentNullException(nameof(graphics));
             using(var brush = new SolidBrush(BackColor)) graphics.FillRectangle(brush, graphics.VisibleClipBounds);
             var model = DataContext.Model;
             model.PaintMap(graphics, true, model.BoardHexes, model.Landmarks);
@@ -307,7 +308,7 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <summary>TODO</summary>
         protected override void OnMarginChanged(EventArgs e) {
-          if (e == null) throw new ArgumentNullException("e");
+          if (e == null) throw new ArgumentNullException(nameof(e));
           base.OnMarginChanged(e);
           DataContext.Margin = Margin;
         }
@@ -315,7 +316,7 @@ namespace PGNapoleonics.HexgridPanel {
         #region Mouse event handlers
         /// <inheritdoc/>
         protected override void OnMouseClick(MouseEventArgs e) {
-          if (e==null) throw new ArgumentNullException("e");
+          if (e==null) throw new ArgumentNullException(nameof(e));
           Tracing.Mouse.Trace(" - {0}.OnMouseClick - Shift: {1}; Ctl: {2}; Alt: {3}", 
                                           Name, IsShiftKeyDown, IsCtlKeyDown, IsAltKeyDown);
 
@@ -330,7 +331,7 @@ namespace PGNapoleonics.HexgridPanel {
         }
         /// <inheritdoc/>
         protected override void OnMouseMove(MouseEventArgs e) {
-          if (e==null) throw new ArgumentNullException("e");
+          if (e==null) throw new ArgumentNullException(nameof(e));
           OnHotspotHexChange(new HexEventArgs(GetHexCoords(e.Location - Margin.OffsetSize())));
 
           base.OnMouseMove(e);
@@ -340,14 +341,14 @@ namespace PGNapoleonics.HexgridPanel {
         protected virtual void OnMouseAltClick(HexEventArgs e) { MouseAltClick.Raise(this,e); }
         /// <summary>Raise the MouseCtlClick event.</summary>
         protected virtual void OnMouseCtlClick(HexEventArgs e) {
-          if (e==null) throw new ArgumentNullException("e");
+          if (e==null) throw new ArgumentNullException(nameof(e));
           DataContext.Model.GoalHex = e.Coords;
           MouseCtlClick.Raise(this,e);
           Refresh();
         }
         /// <summary>Raise the MouseLeftClick event.</summary>
         protected virtual void OnMouseLeftClick(HexEventArgs e) {
-          if (e==null) throw new ArgumentNullException("e");
+          if (e==null) throw new ArgumentNullException(nameof(e));
           DataContext.Model.StartHex = e.Coords;
           MouseLeftClick.Raise(this,e);
           Refresh();
@@ -356,7 +357,7 @@ namespace PGNapoleonics.HexgridPanel {
         protected virtual void OnMouseRightClick(HexEventArgs e) { MouseRightClick.Raise(this,e); }
        /// <summary>Raise the HotspotHexChange event.</summary>
         protected virtual void OnHotspotHexChange(HexEventArgs e) {
-          if (e==null) throw new ArgumentNullException("e");
+          if (e==null) throw new ArgumentNullException(nameof(e));
           DataContext.Model.HotspotHex = e.Coords;
           HotspotHexChange.Raise(this,e);
           Refresh();
@@ -385,7 +386,7 @@ namespace PGNapoleonics.HexgridPanel {
 
             if (ModifierKeys.HasFlag(Keys.Control)) { ScaleIndex += Math.Sign(e.Delta); }
             else if (IsShiftKeyDown) {
-                base.OnMouseHwheel(e);
+                base.OnMouseHWheel(e);
             } else{
                 base.OnMouseWheel(e);
             }
