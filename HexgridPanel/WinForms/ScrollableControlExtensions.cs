@@ -74,7 +74,6 @@ namespace PGNapoleonics.WinForms {
         /// <summary>TODO</summary>
         /// <param name="this">The <see cref="IScrollableControl"/> to be scrolled.</param>
         /// <param name="delta"></param>
-        /// <param name="unapplied"></param>
         public static void RollHorizontal(this IScrollableControl @this, int delta) {
             @this.UnappliedScroll += new Size(delta, 0);// += delta;
             while (@this.UnappliedScroll.X >= MouseWheelStep) {
@@ -90,7 +89,6 @@ namespace PGNapoleonics.WinForms {
         /// <summary>TODO</summary>
         /// <param name="this">The <see cref="IScrollableControl"/> to be scrolled.</param>
         /// <param name="delta"></param>
-        /// <param name="unapplied"></param>
         public static void RollVertical(this IScrollableControl @this, int delta) {
             @this.UnappliedScroll += new Size(0, delta);
             while (@this.UnappliedScroll.Y >= MouseWheelStep) {

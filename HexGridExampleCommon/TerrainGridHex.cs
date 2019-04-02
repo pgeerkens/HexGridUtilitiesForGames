@@ -54,6 +54,9 @@ namespace PGNapoleonics.HexgridExampleCommon {
         /// <summary>Initializes a new instance of a <see cref="TerrainGridHex"/>.</summary>
         /// <param name="coords">Board location of this hex.</param>
         /// <param name="elevationLevel">Elevation of this hex.</param>
+        /// <param name="heightTerrain">Elevation of the terrain in this hex.</param>
+        /// <param name="terrainType">Type of the terrain in this hex.</param>
+        /// <param name="stepCost">Cost to enter this hex.</param>
         private TerrainGridHex(HexCoords coords, int elevationLevel, int heightTerrain,
                         char terrainType, short? stepCost)
         : base(coords,elevationLevel) {

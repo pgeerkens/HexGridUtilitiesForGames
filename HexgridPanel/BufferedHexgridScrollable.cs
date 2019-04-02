@@ -220,7 +220,6 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <summary>TODO</summary>
-        /// <param name="graphics"></param>
         private Action<Graphics> _paintBuffer => graphics => {
             if (IsTransposed) { graphics.Transform = TransposeMatrix; }
 
