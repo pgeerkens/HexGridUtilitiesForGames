@@ -30,7 +30,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
-namespace PGNapoleonics.WinForms {
+namespace PGNapoleonics.HexgridPanel.WinForms {
   /// <summary>TODO</summary>
   public static partial class BufferedGraphicsExtensions {
     /// <summary>Performs a SrcCopy BitBLt from <paramref name="source"/> to <paramref name="target"/> of the rectangle <paramref name="clientRectangle"/>.</summary>

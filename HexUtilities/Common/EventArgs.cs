@@ -31,21 +31,12 @@ using System;
 namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>TODO</summary>
     /// <typeparam name="T"></typeparam>
-    public class ValueEventArgs<T> : EventArgs {
+    public class EventArgs<T> : EventArgs {
         /// <summary>TODO</summary>
-        public ValueEventArgs() : this(default(T)) { }
+        public EventArgs() : this(default(T)) { }
         /// <summary>TODO</summary>
-        public ValueEventArgs(T value) : base() => Value = value;
+        public EventArgs(T value) : base() => Value = value;
         /// <summary>TODO</summary>
         public T Value { get; }
-    }
-
-    /// <summary>TODO</summary>
-    /// <typeparam name="T"></typeparam>
-    public class ValueChangedEventArgs<T> : ValueEventArgs<T> {
-        /// <summary>TODO</summary>
-        public ValueChangedEventArgs(T value, T oldValue) : base(value) => OldValue = oldValue;
-        /// <summary>TODO</summary>
-        public T OldValue { get; }
     }
 }

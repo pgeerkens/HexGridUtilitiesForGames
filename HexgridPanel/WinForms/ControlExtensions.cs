@@ -30,7 +30,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace PGNapoleonics.WinForms {
+namespace PGNapoleonics.HexgridPanel.WinForms {
     /// <summary>Extension methods for System.Windows.Forms.Control.</summary>
     public static partial class ControlExtensions {
         /// <summary>Executes Action asynchronously on the UI thread, without blocking the calling thread.</summary>

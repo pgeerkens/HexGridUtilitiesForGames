@@ -28,7 +28,7 @@
 #endregion
 using System;
 
-namespace PGNapoleonics.WinForms {
+namespace PGNapoleonics.HexgridPanel.WinForms {
   internal enum GdiRasterOps {
     SrcCopy                 = 0x00CC0020, /* dest = source                   */ 
     SrcPaint                = 0x00EE0086, /* dest = source OR dest           */

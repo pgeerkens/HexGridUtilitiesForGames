@@ -29,7 +29,7 @@
 using System;
 using System.Windows.Forms;
 
-using PGNapoleonics.WinForms;
+using PGNapoleonics.HexgridPanel.WinForms;
 
 #pragma warning disable 1587
 /// <summary>Example usage of <see cref="HexUtilities"/> with <see cref="HexUtilities.HexgridPanel"/> 

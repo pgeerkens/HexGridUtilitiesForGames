@@ -11,7 +11,7 @@ namespace PGNapoleonics.HexgridPanel {
 }
 
 /// <summary>Extensions to the System.Windows.Forms technologies used by namespace PGNapoleonics.HexgridPanel.</summary>
-namespace PGNapoleonics.WinForms {
+namespace PGNapoleonics.HexgridPanel.WinForms {
 }
 #pragma warning restore 1587
 

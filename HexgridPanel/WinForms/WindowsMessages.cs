@@ -29,7 +29,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace PGNapoleonics.WinForms {
+namespace PGNapoleonics.HexgridPanel.WinForms {
   /// <summary>Windows Messages</summary>
     /// <remarks>
     /// Defined in winuser.h from Windows SDK v6.1

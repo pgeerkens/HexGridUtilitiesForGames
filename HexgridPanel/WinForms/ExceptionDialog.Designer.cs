@@ -1,4 +1,4 @@
-﻿namespace PGNapoleonics.WinForms {
+﻿namespace PGNapoleonics.HexgridPanel.WinForms {
   partial class ExceptionDialog {
     /// <summary>
     /// Required designer variable.

@@ -35,7 +35,7 @@ using System.Windows.Forms;
 
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.WinForms;
+using PGNapoleonics.HexgridPanel.WinForms;
 
 using WpfInput = System.Windows.Input;
 

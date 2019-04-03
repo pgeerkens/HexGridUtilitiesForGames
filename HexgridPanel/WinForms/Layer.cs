@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
 
-using PGNapoleonics.WinForms;
+using PGNapoleonics.HexgridPanel.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
     using PaintAction = Action<Graphics>;

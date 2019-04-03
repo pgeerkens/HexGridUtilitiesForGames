@@ -42,7 +42,7 @@ namespace PGNapoleonics.HexUtilities.Common {
     using Color         = System.Drawing.Color;
     using GraphicsPath  = System.Drawing.Drawing2D.GraphicsPath;
     using IDirectedPath = IDirectedPathCollection;
-    using Int32ValueEventArgs = ValueEventArgs<int>;
+    using Int32ValueEventArgs = EventArgs<int>;
 
     using static System.Drawing.Drawing2D.PathPointType;
 

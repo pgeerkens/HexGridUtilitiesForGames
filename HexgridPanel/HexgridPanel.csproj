@@ -124,10 +124,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +134,12 @@
     </Compile>
     <Compile Include="Example\HexgridBufferedPanelForm.Designer.cs">
       <DependentUpon>HexgridBufferedPanelForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Example\MenuBarToolStrip.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Example\MenuBarToolStrip.Designer.cs">
+      <DependentUpon>MenuBarToolStrip.cs</DependentUpon>
     </Compile>
     <Compile Include="GraphicsExtensions.cs" />
     <Compile Include="GraphicsMapPainter.cs" />

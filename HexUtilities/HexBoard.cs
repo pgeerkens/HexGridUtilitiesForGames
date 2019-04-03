@@ -67,7 +67,7 @@ namespace PGNapoleonics.HexUtilities {
            ).ToArray().ToFastList();
 
         /// <summary>Signals completion of a ResetLandmarks request.</summary>
-        public event EventHandler<ValueEventArgs<ILandmarks>> LandmarksReady;
+        public event EventHandler<EventArgs<ILandmarks>> LandmarksReady;
 
         #region Constructors
         /// <summary>Initializes the internal contents of <see cref="BoardStorage{T}"/> with landmarks as specified for pathfinding.</summary>
@@ -103,12 +103,12 @@ namespace PGNapoleonics.HexUtilities {
         /// <returns></returns>
         protected         bool       ResetLandmarks(IFastList<HexCoords> landmarkCoords) { 
             Landmarks = LandmarkCollection.New(this, landmarkCoords);
-            OnLandmarksReady(new ValueEventArgs<ILandmarks>(Landmarks));
+            OnLandmarksReady(new EventArgs<ILandmarks>(Landmarks));
             return true;
         }
 
         /// <inheritdoc/>
-        protected virtual void OnLandmarksReady(ValueEventArgs<ILandmarks> e) => LandmarksReady.Raise(this,e);
+        protected virtual void OnLandmarksReady(EventArgs<ILandmarks> e) => LandmarksReady.Raise(this,e);
         #endregion
 
         #region Properties & Fields

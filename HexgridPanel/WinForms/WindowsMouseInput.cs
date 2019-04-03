@@ -27,11 +27,12 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Drawing;
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace  PGNapoleonics.WinForms {
+namespace PGNapoleonics.HexgridPanel.WinForms {
+    using Point = System.Drawing.Point;
+
 	/// <summary>Enumeration for buttons and modifiers in Windows Mouse messages.</summary>
  [SuppressMessage("Microsoft.Design", "CA1028:EnumStorageShouldBeInt32")]
 	[Flags]public enum MouseKeys : short {
@@ -53,45 +54,45 @@ namespace  PGNapoleonics.WinForms {
 		Xbutton2	= 0x40
 	}
 
-  /// <summary>TODO</summary>
-	public static class WindowsMouseInput {
     /// <summary>TODO</summary>
-   [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    public static MouseKeys GetKeyStateWParam(IntPtr wParam) {
+    public static class WindowsMouseInput {
+        /// <summary>TODO</summary>
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public static MouseKeys GetKeyStateWParam(IntPtr wParam) {
 			return (MouseKeys)(wParam.ToInt64() & 0x0000ffff);
 		}
 
 		/// <summary> Determine (sign-extended for multiple monitors) screen coordinates at m.LParam.</summary>
 		/// <param name="lParam"></param>
 		/// <returns></returns>
-   [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static System.Drawing.Point GetPointLParam(IntPtr lParam) {
-			return new System.Drawing.Point(
-					 (int)(short)(lParam.ToInt64() & 0x0000ffff), 
-					 (int)(short)(lParam.ToInt64() >> 16)
-				);
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		public static Point GetPointLParam(IntPtr lParam) {
+			return new Point(
+                     (short)(lParam.ToInt64() & 0x0000ffff),
+                     (short)(lParam.ToInt64() >> 16)
+                );
 		}
 
-    /// <summary>TODO</summary>
-   [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    public static Int16 WheelDelta(IntPtr wParam) {
-			return (Int16)(wParam.ToInt64() >> 16);
+        /// <summary>TODO</summary>
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public static short WheelDelta(IntPtr wParam) {
+			return (short)(wParam.ToInt64() >> 16);
 		}
 
-    /// <summary>TODO</summary>
-   [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    public static IntPtr LParam(Point point) {
-			if (point.X<Int16.MinValue || point.X > Int16.MaxValue
-      ||  point.Y<Int16.MinValue || point.Y > Int16.MaxValue)
-				throw new ArgumentOutOfRangeException("point",point,
+        /// <summary>TODO</summary>
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public static IntPtr LParam(Point point) {
+			if (point.X<short.MinValue || point.X > Int16.MaxValue
+            ||  point.Y<short.MinValue || point.Y > Int16.MaxValue)
+			throw new ArgumentOutOfRangeException("point",point,
 					"Must be a valid Point struct.");
 			return (IntPtr)((Int16)point.Y <<16 + (Int16)point.X);
 		}
 
-    /// <summary>TODO</summary>
-   [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-    public static IntPtr WParam (Int16 wheelDelta, MouseKeys mouseKeys) {
-			return IntPtr.Zero + (wheelDelta << 16) + (Int16)mouseKeys;
+        /// <summary>TODO</summary>
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public static IntPtr WParam (short wheelDelta, MouseKeys mouseKeys) {
+			return IntPtr.Zero + (wheelDelta << 16) + (short)mouseKeys;
 		}
 	}
 }

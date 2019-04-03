@@ -31,10 +31,9 @@ using System.Linq;
 using System.Security.Permissions;
 using System.Windows.Forms;
 
-using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.WinForms;
+using PGNapoleonics.HexgridPanel.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
     using HexSize        = System.Drawing.Size;
@@ -56,9 +55,9 @@ namespace PGNapoleonics.HexgridPanel {
 
         protected virtual void HexgridPanelForm_Load(object sender, EventArgs e) {
             HexgridPanel.ScaleIndex = HexgridPanel.Scales
-                                                    .Select((f,i) => new {value=f, index=i})
-                                                    .Where(s => s.value==1.0F)
-                                                    .Select(s => s.index).FirstOrDefault(); 
+                                                  .Select((f,i) => new {value=f, index=i})
+                                                  .Where(s => s.value==1.0F)
+                                                  .Select(s => s.index).FirstOrDefault(); 
             var padding = ToolStripContainer.ContentPanel.Padding;
             Size = HexgridPanel.MapSizePixels  + new HexSize(21,93)
                  + new HexSize(padding.Left+padding.Right, padding.Top+padding.Bottom);

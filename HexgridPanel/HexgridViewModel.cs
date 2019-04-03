@@ -32,7 +32,7 @@ using System.Windows.Forms;
 using PGNapoleonics.HexgridExampleCommon;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.WinForms;
+using PGNapoleonics.HexgridPanel.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
     using Model     = IMapDisplayWinForms<IHex>;

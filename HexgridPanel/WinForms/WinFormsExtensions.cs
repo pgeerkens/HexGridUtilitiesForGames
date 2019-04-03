@@ -31,7 +31,7 @@ using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace PGNapoleonics.WinForms {
+namespace PGNapoleonics.HexgridPanel.WinForms {
   /// <summary>TODO</summary>
   public static partial class WinFormsExtensions {
     /// <summary>Reflect to set Double-Buffering on Control.</summary>

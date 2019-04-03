@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace PGNapoleonics.WinForms {
+namespace PGNapoleonics.HexgridPanel.WinForms {
     /// <summary>The interface that must be supported for controls leveraging the <see cref="ScrollableControlExtensions"/> methods.</summary>
     public interface IScrollableControl {
         /// <summary>Returns or sets the current scrolling position for the control.</summary>

@@ -30,7 +30,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace  PGNapoleonics.WinForms {
+namespace PGNapoleonics.HexgridPanel.WinForms {
 	/// <summary> Transparent Panel control.</summary>
 	/// <remarks>
 	/// See "http://componentfactory.blogspot.ca/2005/06/net2-transparent-controls.html"

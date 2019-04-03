@@ -32,7 +32,7 @@ using System.Runtime.Versioning;
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace PGNapoleonics.WinForms {
+namespace PGNapoleonics.HexgridPanel.WinForms {
     /// <summary>Extern declarations from the Win32 API.</summary>
     internal static class NativeMethods {
         /// <summary>P/Invoke declaration for user32.dll.WindowFromPoint</summary>

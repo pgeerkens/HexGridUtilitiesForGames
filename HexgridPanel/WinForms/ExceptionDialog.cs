@@ -28,7 +28,7 @@
 #endregion
 using System.Windows.Forms;
 
-namespace PGNapoleonics.WinForms {
+namespace PGNapoleonics.HexgridPanel.WinForms {
   /// <summary>TODO</summary>
   public partial class ExceptionDialog : Form {
   /// <summary>TODO</summary>

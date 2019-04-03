@@ -206,9 +206,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -216,7 +214,8 @@
     <Compile Include="Common\Maybe.cs" />
     <Compile Include="Common\MaybeExtensions.cs" />
     <Compile Include="Common\NullableExtensions.cs" />
-    <Compile Include="Common\ValueEventArgs.cs" />
+    <Compile Include="Common\ValueChangedEventArgs.cs" />
+    <Compile Include="Common\EventArgs.cs" />
     <Compile Include="FieldOfView\FovBoardExtensions.cs" />
     <Compile Include="IMapDisplay.cs">
       <SubType>Code</SubType>

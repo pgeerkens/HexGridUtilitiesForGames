@@ -36,7 +36,7 @@ using System.Windows.Forms;
 
 using PGNapoleonics.HexgridPanel.Properties;
 
-namespace  PGNapoleonics.WinForms {
+namespace  PGNapoleonics.HexgridPanel.WinForms {
   /// <summary>A Last-chance Thread Exception handler.</summary>
   [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage()]
   public class ThreadExceptionHandler {

@@ -27,9 +27,8 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Diagnostics.CodeAnalysis;
 
-namespace  PGNapoleonics.WinForms {
+namespace  PGNapoleonics.HexgridPanel.WinForms {
   /// <summary>TODO</summary>
   /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ff700543(v=vs.85).aspx">MSDN - Extended Windows Styles</a>
   [Flags]
