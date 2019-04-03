@@ -1,6 +1,6 @@
 ﻿#region The MIT License - Copyright (C) 2012-2013 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
@@ -41,9 +41,9 @@ using System.Windows;
 [assembly: AssemblyTitle("HexgridExampleWpf")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("PG Software Solutions Inc.")]
+[assembly: AssemblyCompany("PG Software Solutions")]
 [assembly: AssemblyProduct("HexgridExampleWpf")]
-[assembly: AssemblyCopyright("Copyright © PG Software Solutions Inc. 2013")]
+[assembly: AssemblyCopyright("Copyright © PG Software Solutions 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

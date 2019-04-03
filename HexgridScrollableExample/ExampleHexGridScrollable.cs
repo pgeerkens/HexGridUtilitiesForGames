@@ -1,6 +1,6 @@
 ﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
@@ -80,7 +80,7 @@ namespace PGNapoleonics.HexgridScrollableExample {
             menuItem.Click       += handler;
         }
 
-        void LandmarksReady(object sender, EventArgs e) { LoadLandmarkMenu(); }
+        void LandmarksReady(object sender, EventArgs e) => LoadLandmarkMenu();
 
         private void LoadLandmarkMenu() {
             menuItemLandmarks.Items.Clear();
@@ -158,9 +158,9 @@ namespace PGNapoleonics.HexgridScrollableExample {
     //      helpProvider1.SetShowHelp(this,true);
         }
 
-        private void comboBoxMapSelection_SelectionChanged(object sender, EventArgs e) {
-            SetMapBoard(ParseMapName(((ToolStripItem)sender).Text));
-        }
+        private void comboBoxMapSelection_SelectionChanged(object sender, EventArgs e)
+        =>  SetMapBoard(ParseMapName(((ToolStripItem)sender).Text));
+
         private static MapGridDisplay ParseMapName(string mapName) =>
             Map.MapList.First(item => item.MapName == mapName).MapBoard;
 
@@ -169,7 +169,7 @@ namespace PGNapoleonics.HexgridScrollableExample {
             _mapBoard.ShowPathArrow = buttonPathArrow.Checked;
             _mapBoard.ShowFov       = buttonFieldOfView.Checked;
             _mapBoard.FovRadius     =
-            _mapBoard.RangeCutoff   = Int32.Parse(txtPathCutover.Tag.ToString(),CultureInfo.InvariantCulture);
+            _mapBoard.RangeCutoff   = int.Parse(txtPathCutover.Tag.ToString(),CultureInfo.InvariantCulture);
             LoadLandmarkMenu();
 
             _customCoords = new CustomCoords(new IntMatrix2D(2,0, 0,-2, 0,2*_mapBoard.MapSizeHexes.Height-1, 2));
@@ -191,9 +191,8 @@ namespace PGNapoleonics.HexgridScrollableExample {
             _mapBoard.StartHex = _mapBoard.StartHex; // Indirect, but it works.
             _hexgridPanel.Refresh();
         }
-        private void buttonTransposeMap_Click(object sender, EventArgs e) {
-            _hexgridPanel.IsTransposed = buttonTransposeMap.Checked;
-        }
+        private void buttonTransposeMap_Click(object sender, EventArgs e)
+        =>  _hexgridPanel.IsTransposed = buttonTransposeMap.Checked;
 
         private void PanelBoard_GoalHexChange(object sender, HexEventArgs e) {
             _mapBoard.GoalHex = e.Coords;

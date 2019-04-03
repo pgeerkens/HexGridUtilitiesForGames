@@ -1,7 +1,7 @@
 ﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 #region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------

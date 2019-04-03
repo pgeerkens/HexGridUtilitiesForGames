@@ -1,11 +1,11 @@
-﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2013 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -28,38 +28,21 @@
 #endregion
 using PGNapoleonics.HexUtilities;
 
-namespace PGNapoleonics.HexgridScrollViewer {
-    using MapHex  = IHex;
-    using HexSize = System.Drawing.Size;
-
+namespace PGNapoleonics.HexgridExampleCommon {
     /// <summary>TODO</summary>
-    public sealed class EmptyBoard : MapDisplayBlocked<MapHex> {
-        public static EmptyBoard TheOne { get; } = new EmptyBoard();
-
+    public sealed class EmptyGridHex : Hex {
         /// <summary>TODO</summary>
-        public EmptyBoard()
-        : base(new HexSize(1,1), new HexSize(26,30), (c) => new EmptyGridHex(c)) => FovRadius = 20;
-        /// <inheritdoc/>
-        public override int        ElevationBase => 0;
-        /// <inheritdoc/>
-        public override int        ElevationStep => 10;
-
-        /// <inheritdoc/>
-        public    override short?   Heuristic(HexCoords source, HexCoords target) => source.Range(target);
-    }
-
-    /// <summary>TODO</summary>
-    public sealed class EmptyGridHex : Hex, IHex {
-        /// <summary>TODO</summary>
-        public EmptyGridHex(HexCoords coords) : base(coords,0) {}
+        public EmptyGridHex(HexCoords coords) : base(coords,0) {
+            TerrainType = 'Z';  // Expression body causes a Doxygen warning
+        }
 
         ///  <inheritdoc/>
         public override char   TerrainType   { get; }
 
-        /// <summary>TODO</summary>
+        ///  <inheritdoc/>
         public override int    HeightTerrain => 0;
 
-        /// <summary>TODO</summary>
+        ///  <inheritdoc/>
         public override short? TryStepCost(Hexside hexsideExit) => default(short?);
     }
 }

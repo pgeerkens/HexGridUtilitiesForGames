@@ -10,9 +10,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("HexgridScrollableExample")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("PG Software Solutions Inc.")]
+[assembly: AssemblyCompany("PG Software Solutions")]
 [assembly: AssemblyProduct("HexgridScrollableExample")]
-[assembly: AssemblyCopyright("Copyright © PG Software Solutions Inc. 2014")]
+[assembly: AssemblyCopyright("Copyright © PG Software Solutions 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

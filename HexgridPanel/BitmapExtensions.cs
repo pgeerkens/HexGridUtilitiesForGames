@@ -1,6 +1,6 @@
 ﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
@@ -129,7 +129,6 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Service routine to paint the backing store bitmap for the map underlay.</summary>
         /// <param name="paintAction">The painting <see cref="Action{Graphics}"/> to be performed. </param>
         /// <param name="getBitmap">A <see cref="Func{T}"/> that prouces the <typeparamref name="T"/> drawing target.</param>
-        /// <param name="clientSize"></param>
         /// <param name="clipBounds"></param>
         public static T ToBitmap<T>(this Action<Graphics> paintAction, Func<T> getBitmap,
                                       Rectangle clipBounds) where T:Image {

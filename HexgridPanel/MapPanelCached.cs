@@ -1,6 +1,6 @@
 ﻿#region License - Copyright (C) 2012-2019 Pieter Geerkens, all rights reserved.
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 //
 // Use of this software is permitted only as described in the attached file: license.txt.
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +32,7 @@ namespace PGNapoleonics.HexgridPanel {
         #endregion
 
         #region Map Caching
-        /// <summary>The fraction of 100% at which the map is drawn (and stored) to <seealso name="BufferCache"/>.</summary>
+        /// <summary>The fraction of 100% at which the map is drawn (and stored) to <seealso cref="BufferCache"/>.</summary>
         [Browsable(false)]
         public  float  CacheScale    { 
             get { return _cacheScale; }

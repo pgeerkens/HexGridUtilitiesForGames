@@ -1,6 +1,6 @@
 ﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
@@ -30,7 +30,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace PGNapoleonics.HexUtilities.Common {
-    /// <summary>A Maybe monad wrapping an instance of type<typeparam name="T">T</typeparam>.</summary>
+    /// <summary>A Maybe monad wrapping an instance of type <typeparamref name="T"/>.</summary>
     public struct Maybe<T> : IEquatable<Maybe<T>> {
         /// <summary>TODO</summary>
         [SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]

@@ -1,6 +1,6 @@
 ﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
@@ -38,7 +38,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
 /// 
 /// @subsection Detailed_Description Detailed Description
 ///
-/// - <b>PGNapoleonics</b> is the top level namespace for software develoepd by <b>PGSoftware Solutions Inc.</b>,
+/// - <b>PGNapoleonics</b> is the top level namespace for software develoepd by <b>PGSoftware Solutions.</b>,
 /// and comprises these subsidiary namespaces:
 ///   + <b>HexgridExample2</b> is a sample <b>WinForms</b> application demonstrating some straight-forward usage of the library.
 ///   + <b>HexgridPanel</b> is the <b>System.Windows.Forms</b> specific extensions to support hex-grid panels in <b>Winforms</b> applications.
@@ -54,7 +54,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
 /// 
 /// @subsection Authorship 
 /// 
-/// Brought to you by <b>PG Software Solutions Inc.</b>, a quality software provider.
+/// Brought to you by <b>PG Software Solutions</b>, a quality software provider.
 /// 
 /// Our software are more than <b>Pretty Good Solutions</b>; ... they're <b>Pretty Great Solutions!</b>
 /// 

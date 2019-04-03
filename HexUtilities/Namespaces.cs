@@ -1,6 +1,6 @@
 ﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
@@ -36,7 +36,7 @@
 /// overrides the base control <see cref="HexgridPanel"/>. The Collaboration diagram for MapDisplay{THex}
 /// provides a good overview fof the library structure.
 /// 
-/// Brought to you by PG Software Solutions Inc., a quality software provider.
+/// Brought to you by PG Software Solutions, a quality software provider.
 /// 
 /// Our products are more than Pretty Good Software; ... they're Pretty Great Solutions!
 /// </remarks>

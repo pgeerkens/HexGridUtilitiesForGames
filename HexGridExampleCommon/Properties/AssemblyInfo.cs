@@ -10,9 +10,9 @@ using System.Resources;
 [assembly: AssemblyTitle("HexgridExampleCommon")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("PG Software Solutions Inc.")]
+[assembly: AssemblyCompany("PG Software Solutions")]
 [assembly: AssemblyProduct("HexgridExampleCommon")]
-[assembly: AssemblyCopyright("Copyright © PG Software Solutions Inc. 2013")]
+[assembly: AssemblyCopyright("Copyright © PG Software Solutions 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

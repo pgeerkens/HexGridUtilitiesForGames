@@ -1,6 +1,6 @@
 ﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
@@ -36,54 +36,48 @@ namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>Stores a rectangular board region as a a location and extent of <see cref="HexCoords"/>.</summary>
     [DebuggerDisplay("({Location}):({Size})")]
     public struct CoordsRectangle : IEquatable<CoordsRectangle> {
-        /// <summary>TODO</summary>
+        /// <summary>Returns a new <see cref="CoordsRectangle"/> from the specified location and dimensions.</summary>
+        /// <param name="location">The upper left corner as a <see cref="HexCoords"/> object.</param>
+        /// <param name="size">The dimensions as a <see cref="HexCoords"/> object.</param>
         public static CoordsRectangle New(HexCoords location, HexCoords size)
         => new CoordsRectangle(new HexRectangle(location.User, size.User));
 
-        /// <summary>TODO</summary>
+        /// <summary>Returns a new <see cref="CoordsRectangle"/> from the specified location and dimensions.</summary>
+        /// <param name="x">X-coordinate of the upper left corner.</param>
+        /// <param name="y">Y-coordinate of the upper left corner.</param>
+        /// <param name="width">X extent of the size.</param>
+        /// <param name="height">Y extent of the size.</param>
         public static CoordsRectangle New(int x, int y, int width, int height)
         => new CoordsRectangle(new HexRectangle(x,y,width,height));
 
-        /// <summary>TODO</summary>
+        /// <summary>Initializes a new <see cref="CoordsRectangle"/>.</summary>
         private CoordsRectangle(HexRectangle rectangle) : this() => Rectangle = rectangle;
 
-        /// <summary>TODO</summary>
-        public int       Bottom     => Rectangle.Bottom;
-        /// <summary>TODO</summary>
-        public int       Height     => Rectangle.Height;
-        /// <summary>TODO</summary>
-        public bool      IsEmpty    => Rectangle.IsEmpty;
-        /// <summary>TODO</summary>
-        public int       Left       => Rectangle.Left;
-        /// <summary>TODO</summary>
-        public HexCoords Location   => HexCoords.NewUserCoords(Rectangle.Location);
-        /// <summary>TODO</summary>
-        public int       Right      => Rectangle.Right;
-        /// <summary>TODO</summary>
-        public HexCoords Size       => HexCoords.NewUserCoords(Rectangle.Size);
-        /// <summary>TODO</summary>
-        public int       Top        => Rectangle.Top;
-        /// <summary>TODO</summary>
-        public int       Width      => Rectangle.Width;
-        /// <summary>TODO</summary>
-        public int       X          => Rectangle.X;
-        /// <summary>TODO</summary>
-        public int       Y          => Rectangle.Y;
+        /// <summary>Returns true exactly when the test hex is inside this rectangle.</summary>
+        /// <param name="hexCoords">Location as a <see cref="HexCoords"/> of the hex to be tested.</param>
+        public bool EncompassesHex(HexCoords hexCoords)
+        =>  Rectangle.Left <= hexCoords.User.X  &&  hexCoords.User.X <= Rectangle.Right
+        &&  Rectangle.Top  <= hexCoords.User.Y  &&  hexCoords.User.Y <= Rectangle.Bottom;
 
-        /// <summary>TODO</summary>
-        public HexRectangle Rectangle  { get; private set; }
-        /// <summary>TODO</summary>
-        public HexCoords    UpperLeft  => HexCoords.NewUserCoords(Left,Top);
-        /// <summary>TODO</summary>
-        public HexCoords    UpperRight => HexCoords.NewUserCoords(Right,Top);
-        /// <summary>TODO</summary>
-        public HexCoords    LowerLeft  => HexCoords.NewUserCoords(Left,Bottom);
-        /// <summary>TODO</summary>
-        public HexCoords    LowerRight => HexCoords.NewUserCoords(Right,Bottom);
+        /// <summary>Gets the <see cref="HexCoords"/> of the upper-left corner for this CoordsRectangle</summary>
+        public HexCoords Location => HexCoords.NewUserCoords(Rectangle.Location);
+
+        /// <summary>Gets the <see cref="HexCoords"/> of the dimensions for this CoordsRectangle</summary>
+        public HexCoords Size => HexCoords.NewUserCoords(Rectangle.Size);
+
+        /// <summary>Gets the underlying hex-coordinates as a <see cref="HexRectangle"/>.</summary>
+        private HexRectangle Rectangle  { get; }
+
+        /// <summary>Gets the underlying hex-coordinates as a <see cref="HexRectangle"/>.</summary>
+        public static implicit operator HexRectangle(CoordsRectangle rectangle) => rectangle.Rectangle;
+
+        /// <summary>Gets the underlying hex-coordinates as a <see cref="CoordsRectangle"/>.</summary>
+        public static implicit operator CoordsRectangle(HexRectangle rectangle) => new CoordsRectangle(rectangle);
 
         /// <inheritdoc/>
         public override string ToString()
-        => string.Format(CultureInfo.CurrentCulture,"({0},{1}):({2},{3})",X,Y,Width,Height);
+        => string.Format(CultureInfo.CurrentCulture,"({0},{1}):({2},{3})",
+                Rectangle.X,Rectangle.Y,Rectangle.Width,Rectangle.Height);
 
         #region Value Equality
         /// <inheritdoc/>

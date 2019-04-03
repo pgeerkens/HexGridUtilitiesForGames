@@ -1,6 +1,6 @@
 ﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
@@ -63,16 +63,15 @@ namespace PGNapoleonics.HexUtilities.Storage {
         /// <summary>TODO</summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        
         protected abstract T ItemInner(int x, int y);
         #pragma warning restore 3008
 
         /// <inheritdoc/>
-        public          void ForAllNeighbours(HexCoords coords, Action<T,Hexside> action) {
-            Hexside.ForEach( hexside =>
+        public          void ForAllNeighbours(HexCoords coords, Action<T,Hexside> action)
+        =>  Hexside.ForEach( hexside =>
                 action(this[coords.GetNeighbour(hexside)], hexside)
             );
-        }
+
         /// <inheritdoc/>
         void IBoardStorage<T>.ForAllNeighbours(HexCoords coords, Action<T, Hexside> action) =>
             ForAllNeighbours(coords, action);
@@ -84,12 +83,14 @@ namespace PGNapoleonics.HexUtilities.Storage {
 
         /// <summary>Perform the specified <paramref name="action"/> in parallel on all hexes.</summary>
         public abstract void ForEach(Action<T> action);
+
         /// <summary>Perform the Invoke action of the specified <paramref name="functor"/> in parallel on all hexes.</summary>
         public abstract void ForEach(FastIteratorFunctor<T> functor);
 
-        /// <summary>Perform the specified <paramref name="action"/> in parallel on all hexes.</summary>
+        /// <summary>Perform the specified <paramref name="action"/> serially on all hexes.</summary>
         public abstract void ForEachSerial(Action<T> action);
-        /// <summary>Perform the Invoke action of the specified <paramref name="functor"/> in parallel on all hexes.</summary>
+
+        /// <summary>Perform the Invoke action of the specified <paramref name="functor"/> serially on all hexes.</summary>
         public abstract void ForEachSerial(FastIteratorFunctor<T> functor);
 
         /// <summary>Sets the location to the specified value.</summary>

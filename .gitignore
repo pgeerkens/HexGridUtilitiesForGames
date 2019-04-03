@@ -8,6 +8,7 @@
 *.csproj.user
 [Ee]xcluded/
 Documentation/
+docs/
 
 # External NuGet Packages
 [Pp]ackages/

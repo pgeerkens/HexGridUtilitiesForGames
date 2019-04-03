@@ -1,6 +1,6 @@
 ﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
@@ -103,12 +103,14 @@ namespace PGNapoleonics.WinForms {
 
         /// <summary>TODO</summary>
         /// <param name="this">The <see cref="IScrollableControl"/> to be scrolled.</param>
+        /// <param name="delta">The amount to be scrolled.</param>
         public static void HScrollByOffset(this IScrollableControl @this, int delta)
         =>   @this.AutoScrollPosition = new Point (- @this.AutoScrollPosition.X + delta,
                                                    - @this.AutoScrollPosition.Y);
 
         /// <summary>TODO</summary>
         /// <param name="this">The <see cref="IScrollableControl"/> to be scrolled.</param>
+        /// <param name="delta">The amount to be scrolled.</param>
         public static void VScrollByOffset(this IScrollableControl @this, int delta)
         =>  @this.AutoScrollPosition = new Point (-@this.AutoScrollPosition.X,
                                                   -@this.AutoScrollPosition.Y + delta);

@@ -1,6 +1,6 @@
 ﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
@@ -44,6 +44,8 @@ namespace PGNapoleonics.HexUtilities.Common {
 
         /// <summary>TODO</summary>
         /// <param name="this"></param>
+        /// <param name="mapSizePixels"></param>
+        /// <param name="mapScale"></param>
         public static HexSize GetSize(this IHexgrid @this, HexSize mapSizePixels, float mapScale)
         => HexSize.Ceiling(mapSizePixels.Scale(mapScale)); 
     }

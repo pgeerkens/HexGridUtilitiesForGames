@@ -1,6 +1,6 @@
 ﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
@@ -30,7 +30,7 @@ using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexgridExampleCommon {
-    using MapHex  = IHex;
+    using MapHex = IHex;
     using HexSize = System.Drawing.Size;
 
     /// <summary>TODO</summary>
@@ -38,8 +38,9 @@ namespace PGNapoleonics.HexgridExampleCommon {
         public static EmptyBoard TheOne { get; } = new EmptyBoard();
 
         /// <summary>TODO</summary>
-        private EmptyBoard()
-        : base(new HexSize(1,1), new HexSize(26,30), c => new EmptyGridHex(c)) => FovRadius = 20;
+        private EmptyBoard() : base(new HexSize(1,1),new HexSize(26,30),c => new EmptyGridHex(c))
+        => FovRadius = 20;
+
         /// <inheritdoc/>
         public override int      ElevationBase     => 0;
 
@@ -48,20 +49,5 @@ namespace PGNapoleonics.HexgridExampleCommon {
 
         /// <inheritdoc/>
         public override short?   Heuristic(HexCoords source, HexCoords target) => source.Range(target);
-    }
-
-    /// <summary>TODO</summary>
-    public sealed class EmptyGridHex : Hex {
-        /// <summary>TODO</summary>
-        public EmptyGridHex(HexCoords coords) : base(coords,0) => TerrainType = 'Z';
-
-        ///  <inheritdoc/>
-        public override char   TerrainType   { get; }
-
-        ///  <inheritdoc/>
-        public override int    HeightTerrain => 0;
-
-        ///  <inheritdoc/>
-        public override short? TryStepCost(Hexside hexsideExit) => default(short?);
     }
 }

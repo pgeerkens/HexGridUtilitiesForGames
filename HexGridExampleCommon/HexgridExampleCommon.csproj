@@ -77,6 +77,7 @@
     <Compile Include="Common\SizeExtensions.cs" />
     <Compile Include="Common\UserCoordsRectangle.cs" />
     <Compile Include="DocMainPage.cs" />
+    <Compile Include="EmptyGridHex.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Common\HexPickingExtensions.cs" />
     <Compile Include="MapDefs.cs" />

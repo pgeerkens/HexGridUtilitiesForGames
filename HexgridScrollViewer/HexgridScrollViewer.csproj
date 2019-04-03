@@ -61,7 +61,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\HexEventArgs.cs" />
     <Compile Include="HexgridScrollViewer.xaml.cs">
       <DependentUpon>HexgridScrollViewer.xaml</DependentUpon>
     </Compile>

@@ -1,6 +1,6 @@
 ﻿#region The MIT License - Copyright (C) 2012-2014 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
@@ -47,15 +47,15 @@ namespace PGNapoleonics.HexgridScrollViewer {
     CoordsRectangle GetClipInHexes(HexRectF visibleClipBounds);
 
     /// <summary>Paint the top layer of the display, graphics that changes frequently between refreshes.</summary>
-    /// <param name="dc">Graphics object for the canvas being painted.</param>
+    /// <param name="graphics">Graphics object for the canvas being painted.</param>
     void  PaintHighlight(DrawingContext graphics);
 
     /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
-    /// <param name="dc">Type: Graphics - Object representing the canvas being painted.</param>
+    /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
     /// <remarks>For each visible hex: perform <c>paintAction</c> and then draw its hexgrid outline.</remarks>
     void  PaintMap(DrawingContext graphics);
     /// <summary>Paint the intermediate layer of the display, graphics that changes infrequently between refreshes.</summary>
-    /// <param name="dc">Type: Graphics - Object representing the canvas being painted.</param>
+    /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
     void  PaintUnits(DrawingContext graphics);
   }
 }
@@ -65,7 +65,6 @@ namespace PGNapoleonics.HexgridScrollViewer {
   using HexPointF = System.Drawing.PointF;
   using HexSize   = System.Drawing.Size;
   using HexSizeF  = System.Drawing.SizeF;
-  using HexRectF  = System.Drawing.RectangleF;
 
   using WpfPoint  = System.Windows.Point;
   using WpfSize   = System.Windows.Size;

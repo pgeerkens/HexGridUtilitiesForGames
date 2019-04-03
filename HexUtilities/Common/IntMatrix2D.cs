@@ -1,6 +1,6 @@
 ﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
@@ -132,7 +132,7 @@ namespace PGNapoleonics.HexUtilities.Common {
         /// <summary>(Covariant) Vector transformation by a matrix.</summary>
         /// <param name="m">IntMatrix2D to be applied.</param>
         /// <param name="v">IntVector2D to be transformed.</param>
-        /// <returns>New IntVector2D resulting from application of matrix<c>m</c> to vector <c>v</c>.</returns>
+        /// <returns>New IntVector2D resulting from application of matrix <paramref name="m"/> to vector <paramref name="v"/>.</returns>
         [Obsolete("The standard in PGNapoleonics is to use Contravariant (ie column) vectors.")]
         public static IntVector2D operator * (IntMatrix2D m, IntVector2D v)
         => new IntVector2D (

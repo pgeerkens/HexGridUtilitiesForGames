@@ -1,6 +1,6 @@
 ﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions Inc. - Hex-Grid Utilities
+//                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
@@ -27,6 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.FieldOfView;
@@ -121,14 +122,9 @@ namespace PGNapoleonics.HexgridPanel {
         public static void PaintForEachHex<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics, 
                                     CoordsRectangle clipHexes, Action<HexCoords> paintAction) 
         where THex:IHex
-        =>  @this.ForEachHex(maybe => {
-                maybe.IfHasValueDo(hex => {
-                    if( (uint)(hex.Coords.User.X - clipHexes.Left) <= clipHexes.Right
-                    &&  (uint)(hex.Coords.User.Y - clipHexes.Top)  <= clipHexes.Bottom) {
-                        graphics.Transform = @this.TranslateToHex<THex>(hex.Coords);
-                        paintAction(hex.Coords);
-                    }
-                } );
+        =>  @this.ForEachHex(clipHexes, hex => {
+                graphics.Transform = @this.TranslateToHex(hex.Coords);
+                paintAction(hex.Coords);
             } );
 
         /// <summary>Paint the current shortese path.</summary>
@@ -229,8 +225,11 @@ namespace PGNapoleonics.HexgridPanel {
             }
         }
 
-        public static void ForEachHex<THex>(this IMapDisplayWinForms<THex> @this, Action<Maybe<THex>> action)
+        public static void ForEachHex<THex>(this IMapDisplayWinForms<THex> @this,
+                CoordsRectangle clipRectangle, Action<THex> action)
         where THex:IHex
-        =>  @this.BoardHexes.ForEachSerial(hex => action(hex) );
+        =>  @this.BoardHexes.ForEachSerial(maybe =>
+                maybe.IfHasValueDo(hex => { if (clipRectangle.EncompassesHex(hex.Coords)) action(hex); } )
+            );
     }
 }
