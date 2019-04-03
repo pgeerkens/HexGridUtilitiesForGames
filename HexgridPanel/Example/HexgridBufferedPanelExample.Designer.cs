@@ -6,7 +6,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 namespace PGNapoleonics.HexgridPanel.Example {
-    partial class HexgridBufferedPanelForm {
+    partial class HexgridBufferedPanelExample {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -31,7 +31,7 @@ namespace PGNapoleonics.HexgridPanel.Example {
         /// </summary>
         [System.CodeDom.Compiler.GeneratedCode("","")]
         private void InitializeComponent() {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HexgridBufferedPanelForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HexgridBufferedPanelExample));
 
             this.StatusBarToolStrip = new PGNapoleonics.HexgridPanel.Example.StatusBarToolStrip();
             this.MenuBarToolStrip = new PGNapoleonics.HexgridPanel.Example.MenuBarToolStrip();
@@ -57,11 +57,10 @@ namespace PGNapoleonics.HexgridPanel.Example {
             // 
             // MenuBarToolStrip
             // 
-            this.StatusBarToolStrip.Location = new System.Drawing.Point(3, 0);
-            this.StatusBarToolStrip.Name = "StatusBarToolStrip";
-            this.StatusBarToolStrip.Size = new System.Drawing.Size(744, 25);
-            this.StatusBarToolStrip.StatusLabelText = "toolStripLabel2";
-            this.StatusBarToolStrip.TabIndex = 0;
+            this.MenuBarToolStrip.Location = new System.Drawing.Point(3, 0);
+            this.MenuBarToolStrip.Name = "MenuBarToolStrip";
+            this.MenuBarToolStrip.Size = new System.Drawing.Size(744, 25);
+            this.MenuBarToolStrip.TabIndex = 0;
 
             this.MenuBarToolStrip.TextPathCutoverChanged += TextPathCutoverChanged;
             this.MenuBarToolStrip.SelectedLandmarkChanged += SelectedLandmarkChanged;

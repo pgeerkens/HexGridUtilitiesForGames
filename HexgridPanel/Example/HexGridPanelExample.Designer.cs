@@ -57,11 +57,10 @@ namespace PGNapoleonics.HexgridPanel.Example {
             // 
             // MenuBarToolStrip
             // 
-            this.StatusBarToolStrip.Location = new System.Drawing.Point(3, 0);
-            this.StatusBarToolStrip.Name = "StatusBarToolStrip";
-            this.StatusBarToolStrip.Size = new System.Drawing.Size(744, 25);
-            this.StatusBarToolStrip.StatusLabelText = "toolStripLabel2";
-            this.StatusBarToolStrip.TabIndex = 0;
+            this.MenuBarToolStrip.Location = new System.Drawing.Point(3, 0);
+            this.MenuBarToolStrip.Name = "MenuBarToolStrip";
+            this.MenuBarToolStrip.Size = new System.Drawing.Size(744, 25);
+            this.MenuBarToolStrip.TabIndex = 0;
 
             this.MenuBarToolStrip.TextPathCutoverChanged += TextPathCutoverChanged;
             this.MenuBarToolStrip.SelectedLandmarkChanged += SelectedLandmarkChanged;

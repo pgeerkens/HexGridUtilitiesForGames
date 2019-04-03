@@ -41,10 +41,10 @@ using PGNapoleonics.HexgridExampleCommon;
 namespace PGNapoleonics.HexgridPanel.Example {
     using MapGridDisplay = MapDisplay<IHex>;
 
-    public sealed partial class HexgridBufferedPanelForm : HexgridPanelForm {
+    public sealed partial class HexgridBufferedPanelExample : HexgridBufferedPanelForm {
         private bool           _isPanelResizeSuppressed = false;
 
-        public HexgridBufferedPanelForm() {
+        public HexgridBufferedPanelExample() {
             InitializeComponent();
 
             MenuBarToolStrip.LoadTraceMenu();

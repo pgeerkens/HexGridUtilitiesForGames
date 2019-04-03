@@ -129,11 +129,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BitmapExtensions.cs" />
-    <Compile Include="Example\HexgridBufferedPanelForm.cs">
+    <Compile Include="Example\HexgridBufferedPanelExample.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Example\HexgridBufferedPanelForm.Designer.cs">
-      <DependentUpon>HexgridBufferedPanelForm.cs</DependentUpon>
+    <Compile Include="Example\HexgridBufferedPanelExample.Designer.cs">
+      <DependentUpon>HexgridBufferedPanelExample.cs</DependentUpon>
     </Compile>
     <Compile Include="Example\MenuBarToolStrip.cs">
       <SubType>UserControl</SubType>
@@ -149,6 +149,12 @@
     </Compile>
     <Compile Include="Example\HexGridPanelExample.Designer.cs">
       <DependentUpon>HexGridPanelExample.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HexgridBufferedPanelForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HexgridBufferedPanelForm.Designer.cs">
+      <DependentUpon>HexgridBufferedPanelForm.cs</DependentUpon>
     </Compile>
     <Compile Include="HexgridPanelForm.cs">
       <SubType>Form</SubType>
@@ -247,8 +253,8 @@
     <Compile Include="WinForms\WinFormsExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Example\HexgridBufferedPanelForm.resx">
-      <DependentUpon>HexgridBufferedPanelForm.cs</DependentUpon>
+    <EmbeddedResource Include="Example\HexgridBufferedPanelExample.resx">
+      <DependentUpon>HexgridBufferedPanelExample.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Example\HexGridPanelExample.resx">
