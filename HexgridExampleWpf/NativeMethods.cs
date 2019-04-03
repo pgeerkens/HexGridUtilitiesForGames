@@ -1,12 +1,11 @@
 ﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
-#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
 /////////////////////////////////////////////////////////////////////////////////////////
 //                PG Software Solutions - Hex-Grid Utilities
 /////////////////////////////////////////////////////////////////////////////////////////
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2013 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2013 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -26,7 +25,6 @@
 //     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
-#endregion
 #endregion
 using System;
 using System.Runtime.InteropServices;
