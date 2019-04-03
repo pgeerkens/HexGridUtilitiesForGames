@@ -174,7 +174,6 @@
     <Compile Include="MapPanelCached.Designer.cs">
       <DependentUpon>MapPanelCached.cs</DependentUpon>
     </Compile>
-    <Compile Include="Namespaces.cs" />
     <Compile Include="Example\StatusBarToolStrip.cs">
       <SubType>UserControl</SubType>
     </Compile>

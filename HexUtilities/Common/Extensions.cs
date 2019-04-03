@@ -27,6 +27,10 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+
+#pragma warning disable 1587
+/// <summary>Shared technoloiges across the library, and useful gadgets.</summary>
+#pragma warning restore 1587
 namespace PGNapoleonics.HexUtilities.Common {
     using HexSize = System.Drawing.Size;
 

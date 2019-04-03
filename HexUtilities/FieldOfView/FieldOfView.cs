@@ -31,6 +31,10 @@ using System.Linq;
 
 using PGNapoleonics.HexUtilities.Common;
 
+#pragma warning disable 1587
+/// <summary>Fast efficient <b>Shadow-Casting</b> 
+/// implementation of 3D Field-of-View on a <see cref="Hexgrid"/> map.</summary>
+#pragma warning restore 1587
 namespace PGNapoleonics.HexUtilities.FieldOfView {
     using HexSize = System.Drawing.Size;
 

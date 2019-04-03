@@ -28,6 +28,10 @@
 #endregion
 using PGNapoleonics.HexUtilities.Common;
 
+#pragma warning disable 1587
+/// <summary>A fast efficient serial implementation of <b>Bidirectional ALT</b> (<b>A*</b> with <b>L</b>andmarks
+/// and <b>T</b>riangle-inequality heuristic) <b>path-finding</b> on a <see cref="Hexgrid"/> map.</summary>
+#pragma warning restore 1587
 namespace PGNapoleonics.HexUtilities.Pathfinding {
     using IDirectedPath = IDirectedPathCollection;
 

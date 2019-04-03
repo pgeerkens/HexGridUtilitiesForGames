@@ -259,7 +259,6 @@
     <Compile Include="FieldOfView\IFovBoard.cs" />
     <Compile Include="IHex.cs" />
     <Compile Include="IHexgrid.cs" />
-    <Compile Include="Namespaces.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Pathfinding\DirectedPathStepHex.cs" />
     <Compile Include="Pathfinding\BidirectionalAltPathfinder.cs" />

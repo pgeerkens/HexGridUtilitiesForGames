@@ -32,6 +32,9 @@ using System.Runtime.Versioning;
 
 using System.Diagnostics.CodeAnalysis;
 
+#pragma warning disable 1587
+/// <summary>Extensions to the System.Windows.Forms technologies used by namespace PGNapoleonics.HexgridPanel.</summary>
+#pragma warning restore 1587
 namespace PGNapoleonics.HexgridPanel.WinForms {
     /// <summary>Extern declarations from the Win32 API.</summary>
     internal static class NativeMethods {

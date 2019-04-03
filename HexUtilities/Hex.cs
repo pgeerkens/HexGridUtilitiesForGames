@@ -29,6 +29,9 @@
 using System;
 using System.Diagnostics;
 
+#pragma warning disable 1587
+/// <summary>Display-technology-independent utilities for implementation of hex-grids..</summary>
+#pragma warning restore 1587
 namespace PGNapoleonics.HexUtilities {
     /// <summary>Abstract implementation of the interface <see Cref="IHex"/>.</summary>
     [DebuggerDisplay("Coords: {Coords} / ElevLevel: {ElevationLevel}")]

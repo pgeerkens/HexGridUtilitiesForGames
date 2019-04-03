@@ -34,6 +34,9 @@ using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexgridPanel.WinForms;
 
+#pragma warning disable 1587
+/// <summary>Implementations of a scrollable tiltable Winforms Panel.</summary>
+#pragma warning restore 1587
 namespace PGNapoleonics.HexgridPanel {
     using Model     = IMapDisplayWinForms<IHex>;
     using HexSize   = System.Drawing.Size;
