@@ -63,12 +63,12 @@ namespace PGNapoleonics.HexgridPanel {
                  + new HexSize(padding.Left+padding.Right, padding.Top+padding.Bottom);
         }
 
-        private void PanelBoard_GoalHexChange(object sender, HexEventArgs e) =>
-            RefreshAfter(()=>{MapBoard.GoalHex = e.Coords;} );
-        private void PanelBoard_StartHexChange(object sender, HexEventArgs e) =>
-            RefreshAfter(()=>{MapBoard.StartHex = e.Coords;} );
-        private void PanelBoard_HotSpotHexChange(object sender, HexEventArgs e) =>
-            RefreshAfter(()=>{MapBoard.HotspotHex = e.Coords;} );
+        private void PanelBoard_GoalHexChange(object sender, HexEventArgs e)
+        =>  RefreshAfter(()=>{MapBoard.GoalHex = e.Coords;} );
+        private void PanelBoard_StartHexChange(object sender, HexEventArgs e)
+        =>  RefreshAfter(()=>{MapBoard.StartHex = e.Coords;} );
+        private void PanelBoard_HotSpotHexChange(object sender, HexEventArgs e)
+        =>  RefreshAfter(()=>{MapBoard.HotspotHex = e.Coords;} );
 
         protected void RefreshAfter(Action action) { action?.Invoke(); HexgridPanel.Refresh(); }
         #endregion
