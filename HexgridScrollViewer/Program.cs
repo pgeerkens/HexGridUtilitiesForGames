@@ -37,7 +37,7 @@ using PGNapoleonics.WinForms;
 /// in a simple <see cref="WinForms"/> application.</summary>
 #pragma warning restore 1587
 [assembly:CLSCompliant(true)]
-namespace PGNapoleonics.HexgridScrollableExample {
+namespace PGNapoleonics.HexgridScrollViewer {
     static class Program {
         /// <summary>The main entry point for the application.</summary>
         [STAThread]

@@ -92,12 +92,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="ExampleBufferedHexgridScrollable.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ExampleBufferedHexgridScrollable.Designer.cs">
-      <DependentUpon>ExampleBufferedHexgridScrollable.cs</DependentUpon>
-    </Compile>
     <Compile Include="IMapView.cs" />
     <Compile Include="IMapViewModel.cs" />
     <Compile Include="MapModel.cs" />
@@ -111,10 +105,6 @@
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ExampleBufferedHexgridScrollable.resx">
-      <DependentUpon>ExampleBufferedHexgridScrollable.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="MDIParent1.resx">
       <DependentUpon>MDIParent1.cs</DependentUpon>
     </EmbeddedResource>
@@ -128,7 +118,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="PGSoftwareSolutions.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

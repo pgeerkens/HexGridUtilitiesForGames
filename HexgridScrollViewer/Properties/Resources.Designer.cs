@@ -59,5 +59,14 @@ namespace PGNapoleonics.HexgridScrollViewer.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text Files (*.txt)|*.txt|All Files (*.*)|*.*.
+        /// </summary>
+        internal static string FileExtensionMask {
+            get {
+                return ResourceManager.GetString("FileExtensionMask", resourceCulture);
+            }
+        }
     }
 }

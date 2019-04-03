@@ -524,13 +524,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(632, 453);
+            //this.ClientSize = new System.Drawing.Size(632, 453);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.menuStrip);
             this.IsMdiContainer = true;
             this.MainMenuStrip = this.menuStrip;
             this.Name = "MdiParent";
+            this.Size = new System.Drawing.Size(1472,1046);
             this.Text = "HexgridScrollableExample";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MdiParent_FormClosing);
             this.menuStrip.ResumeLayout(false);
@@ -539,6 +540,7 @@
             this.toolStrip.PerformLayout();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
+            this.statusStrip.Visible = statusBarToolStripMenuItem.Checked;
             this.ResumeLayout(false);
             this.PerformLayout();
 

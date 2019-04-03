@@ -6,7 +6,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 namespace PGNapoleonics.HexgridPanel.Example {
-    partial class HexgridPanelExample {
+    partial class HexgridBufferedPanelForm {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -31,7 +31,7 @@ namespace PGNapoleonics.HexgridPanel.Example {
         /// </summary>
         [System.CodeDom.Compiler.GeneratedCode("","")]
         private void InitializeComponent() {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HexgridPanelExample));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HexgridBufferedPanelForm));
 
             this.StatusBarToolStrip = new PGNapoleonics.HexgridPanel.Example.StatusBarToolStrip();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
@@ -89,11 +89,10 @@ namespace PGNapoleonics.HexgridPanel.Example {
                 this.toolStripSeparator1,
                 this.menuItemDebug,
                 this.toolStripSeparator3,
-                this.menuItemHelp
-            });
+                this.menuItemHelp});
             this.toolStrip2.Location = new System.Drawing.Point(3, 0);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(744, 25);
+            this.toolStrip2.Size = new System.Drawing.Size(767, 25);
             this.toolStrip2.TabIndex = 0;
             // 
             // buttonTransposeMap
@@ -123,8 +122,8 @@ namespace PGNapoleonics.HexgridPanel.Example {
             this.buttonRangeLine.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
             this.buttonRangeLine.Size = new System.Drawing.Size(75, 22);
             this.buttonRangeLine.Text = "Range Line";
-            this.buttonRangeLine.ToolTipText = "Toggles (a) display of Range Line; and (b) Field-of-View source between Start-Hex" +
-    " and Hotspot-Hex.";
+            this.buttonRangeLine.ToolTipText =
+                "Toggles (a) display of Range Line; and (b) Field-of-View source between Start-Hex and Hotspot-Hex.";
             this.buttonRangeLine.CheckedChanged += this.ButtonRangeLine_Click;
             // 
             // buttonFieldOfView
@@ -204,7 +203,7 @@ namespace PGNapoleonics.HexgridPanel.Example {
             // 
             this.menuItemLandmarks.AutoSize = false;
             this.menuItemLandmarks.Items.AddRange(new object[] {
-                    "None"});
+                "None"});
             this.menuItemLandmarks.Name = "menuItemLandmarks";
             this.menuItemLandmarks.Size = new System.Drawing.Size(50, 23);
             this.menuItemLandmarks.ToolTipText = "Landmark from which shortest-paths distances are to be displayed.";
@@ -219,7 +218,7 @@ namespace PGNapoleonics.HexgridPanel.Example {
             this.menuItemDebug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.menuItemDebug.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.menuItemDebug.Name = "menuItemDebug";
-            this.menuItemDebug.Size = new System.Drawing.Size(86, 22);
+            this.menuItemDebug.Size = new System.Drawing.Size(87, 22);
             this.menuItemDebug.Text = "&Debug Trace";
             this.menuItemDebug.ToolTipText = "Build with DEBUG to enable this feature.";
             // 
@@ -232,9 +231,9 @@ namespace PGNapoleonics.HexgridPanel.Example {
             // 
             this.menuItemHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.menuItemHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItemHelpContents,
-            this.toolStripSeparator4,
-            this.menuItemHelpAbout});
+                this.menuItemHelpContents,
+                this.toolStripSeparator4,
+                this.menuItemHelpAbout});
             this.menuItemHelp.Image = ((System.Drawing.Image)(resources.GetObject("menuItemHelp.Image")));
             this.menuItemHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.menuItemHelp.Name = "menuItemHelp";
@@ -249,7 +248,7 @@ namespace PGNapoleonics.HexgridPanel.Example {
             this.menuItemHelpContents.ShortcutKeys = System.Windows.Forms.Keys.F1;
             this.menuItemHelpContents.Size = new System.Drawing.Size(190, 22);
             this.menuItemHelpContents.Text = "&Contents";
-            this.menuItemHelpContents.Click += new System.EventHandler(this.MenuItemHelpContents_Click);
+            this.menuItemHelpContents.Click += this.MenuItemHelpContents_Click;
             // 
             // toolStripSeparator4
             // 
@@ -262,13 +261,13 @@ namespace PGNapoleonics.HexgridPanel.Example {
             this.menuItemHelpAbout.Size = new System.Drawing.Size(190, 22);
             this.menuItemHelpAbout.Text = "&ABout HexgridUtilities";
             // 
-            // HexgridPanelExample
+            // HexgridBufferedPanelForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(770, 420);
-            this.Name = "HexgridPanelExample";
-            this.Text = "Hexgrid Panel Example (WinForms)";
+            this.Name = "HexgridBufferedPanelForm";
+            this.Text = "HexgridScrollableExample (Buffered-Winforms)";
             this.ResumeLayout(false);
 
         }

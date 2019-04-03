@@ -54,7 +54,7 @@ namespace PGNapoleonics.HexgridScrollableExample {
                 default:
                 case 0:  Application.Run(new MdiParent()); break;
                 case 1:  Application.Run(new HexgridPanelExample()); break;
-                case 2:  Application.Run(new ExampleBufferedHexgridScrollable()); break;
+                case 2:  Application.Run(new HexgridBufferedPanelForm()); break;
             }
         }
     }
