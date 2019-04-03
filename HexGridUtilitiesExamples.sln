@@ -11,9 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridExampleWpf", "Hexgri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridExampleCommon", "HexGridExampleCommon\HexgridExampleCommon.csproj", "{4E4EC92B-2BF5-4342-A069-3A6BB76B7FCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridScrollableExample", "HexgridScrollableExample\HexgridScrollableExample.csproj", "{45429A16-9A82-41C2-9E2D-70D88B4D6D6B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridExampleWinforms", "HexgridScrollableExample\HexgridExampleWinforms.csproj", "{45429A16-9A82-41C2-9E2D-70D88B4D6D6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridScrollViewer", "HexgridScrollViewer\HexgridScrollViewer.csproj", "{DAC3749C-6181-4B9C-A1E8-598AF5656F5E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexgridExampleWinforms2", "HexgridScrollViewer\HexgridExampleWinforms2.csproj", "{DAC3749C-6181-4B9C-A1E8-598AF5656F5E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

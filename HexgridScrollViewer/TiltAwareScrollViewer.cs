@@ -32,7 +32,7 @@ using System.Windows.Input;
 
 using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexgridScrollViewer {
+namespace PGNapoleonics.HexgridExampleWinforms2 {
     /// <summary>Interaction logic for HexgridScrollableViewer.xaml</summary>
     public partial class TiltAwareScrollViewer : ScrollViewer {
         /// <summary>TODO</summary>

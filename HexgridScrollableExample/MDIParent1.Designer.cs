@@ -1,4 +1,4 @@
-﻿namespace PGNapoleonics.HexgridScrollableExample {
+﻿namespace PGNapoleonics.HexgridExampleWinforms {
     partial class MdiParent {
         /// <summary>
         /// Required designer variable.
@@ -532,7 +532,7 @@
             this.MainMenuStrip = this.menuStrip;
             this.Name = "MdiParent";
             this.Size = new System.Drawing.Size(1472,1046);
-            this.Text = "HexgridScrollableExample";
+            this.Text = "HexgridExampleWinforms";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MdiParent_FormClosing);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();

@@ -7,8 +7,8 @@
     <ProjectGuid>{DAC3749C-6181-4B9C-A1E8-598AF5656F5E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PGNapoleonics.HexgridScrollViewer</RootNamespace>
-    <AssemblyName>PGNapoleonics.HexgridScrollViewer</AssemblyName>
+    <RootNamespace>PGNapoleonics.HexgridExampleWinforms2</RootNamespace>
+    <AssemblyName>PGNapoleonics.HexgridExampleWinforms2</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -68,11 +68,11 @@
     <Compile Include="HexgridViewModel.cs" />
     <Compile Include="IMapDisplayWpf.cs" />
     <Compile Include="MapDisplayPainter.cs" />
-    <Compile Include="MDIParent1.cs">
+    <Compile Include="MDIParent.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MDIParent1.Designer.cs">
-      <DependentUpon>MDIParent1.cs</DependentUpon>
+    <Compile Include="MDIParent.Designer.cs">
+      <DependentUpon>MDIParent.cs</DependentUpon>
     </Compile>
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Program.cs" />
@@ -100,9 +100,9 @@
       <Project>{388ad675-d18e-4dfa-abb9-55ab3ea993a2}</Project>
       <Name>HexgridPanel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HexgridScrollableExample\HexgridScrollableExample.csproj">
+    <ProjectReference Include="..\HexgridScrollableExample\HexgridExampleWinforms.csproj">
       <Project>{45429a16-9a82-41c2-9e2d-70d88b4d6d6b}</Project>
-      <Name>HexgridScrollableExample</Name>
+      <Name>HexgridExampleWinforms</Name>
     </ProjectReference>
     <ProjectReference Include="..\HexUtilities\HexUtilities.csproj">
       <Project>{013628e1-60e2-40a6-91d4-8b446f397a0a}</Project>
@@ -110,8 +110,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MDIParent1.resx">
-      <DependentUpon>MDIParent1.cs</DependentUpon>
+    <EmbeddedResource Include="MDIParent.resx">
+      <DependentUpon>MDIParent.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -33,7 +33,7 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexUtilities.Storage;
 
-namespace PGNapoleonics.HexgridScrollViewer {
+namespace PGNapoleonics.HexgridExampleWinforms2 {
     using ILandmarks = ILandmarkCollection;
     using Hexes      = BoardStorage<Maybe<IHex>>;
 

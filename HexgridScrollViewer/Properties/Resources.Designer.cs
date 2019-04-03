@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace PGNapoleonics.HexgridScrollViewer.Properties {
+namespace PGNapoleonics.HexgridExampleWinforms2.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace PGNapoleonics.HexgridScrollViewer.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PGNapoleonics.HexgridScrollViewer.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PGNapoleonics.HexgridExampleWinforms2.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

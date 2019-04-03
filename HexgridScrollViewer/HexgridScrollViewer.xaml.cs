@@ -33,7 +33,7 @@ using System.Windows.Media;
 
 using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexgridScrollViewer {
+namespace PGNapoleonics.HexgridExampleWinforms2 {
     /// <summary>Sub-class implementation of a <b>WPF</b> Scrollable with integrated <see cref="TransposableHexgrid"/> support.</summary>
     public partial class HexgridScrollViewer : Canvas { //, IHexgridHost {
         /// <summary>Creates a new instance of HexgridScrollable.</summary>

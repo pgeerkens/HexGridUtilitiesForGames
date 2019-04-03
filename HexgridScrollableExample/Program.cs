@@ -27,10 +27,8 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Threading;
 using System.Windows.Forms;
 
-using PGNapoleonics.HexgridPanel.Example;
 using PGNapoleonics.WinForms;
 
 #pragma warning disable 1587
@@ -38,24 +36,16 @@ using PGNapoleonics.WinForms;
 /// in a simple <see cref="WinForms"/> application.</summary>
 #pragma warning restore 1587
 [assembly:CLSCompliant(true)]
-namespace PGNapoleonics.HexgridScrollableExample {
+namespace PGNapoleonics.HexgridExampleWinforms {
     static class Program {
-        volatile static int i = 0;
-
         /// <summary>The main entry point for the application.</summary>
         [STAThread]
         static void Main()      {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.ThreadException +=  new ThreadExceptionEventHandler(
-                    new ThreadExceptionHandler().ApplicationThreadException
-            );
-            switch (i) {
-                default:
-                case 0:  Application.Run(new MdiParent()); break;
-                case 1:  Application.Run(new HexgridPanelExample()); break;
-                case 2:  Application.Run(new HexgridBufferedPanelForm()); break;
-            }
+            Application.ThreadException += new ThreadExceptionHandler().ApplicationThreadException;
+
+            Application.Run(new MdiParent());
         }
     }
 }

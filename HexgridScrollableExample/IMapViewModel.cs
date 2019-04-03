@@ -30,7 +30,7 @@ using System;
 using System.Windows.Forms;
 using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexgridPanel;
-namespace PGNapoleonics.HexgridScrollableExample {
+namespace PGNapoleonics.HexgridExampleWinforms {
     public interface IMapViewModel {
         event EventHandler<HexEventArgs> GoalHexChanged;
         event EventHandler<HexEventArgs> StartHexChanged;

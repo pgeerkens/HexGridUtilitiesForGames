@@ -33,7 +33,7 @@ using System.Windows.Input;
 
 using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexgridScrollViewer {
+namespace PGNapoleonics.HexgridExampleWinforms2 {
   /// <summary>TODO</summary>
   public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable {
     /// <summary>TODO</summary>

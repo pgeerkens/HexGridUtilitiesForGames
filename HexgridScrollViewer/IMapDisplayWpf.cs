@@ -32,7 +32,7 @@ using System.Windows.Media;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexgridScrollViewer {
+namespace PGNapoleonics.HexgridExampleWinforms2 {
   using HexRectF  = System.Drawing.RectangleF;
 
   /// <summary>(Technology-dependent portion of) interface contract required of a map board to be displayed by the Hexgrid control.</summary>
@@ -60,7 +60,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
   }
 }
 
-namespace PGNapoleonics.HexgridScrollViewer {
+namespace PGNapoleonics.HexgridExampleWinforms2 {
   using HexPoint  = System.Drawing.Point;
   using HexPointF = System.Drawing.PointF;
   using HexSize   = System.Drawing.Size;

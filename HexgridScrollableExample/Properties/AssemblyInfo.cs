@@ -7,11 +7,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("HexgridScrollableExample")]
+[assembly: AssemblyTitle("HexgridExampleWinforms")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("PG Software Solutions")]
-[assembly: AssemblyProduct("HexgridScrollableExample")]
+[assembly: AssemblyProduct("HexgridExampleWinforms")]
 [assembly: AssemblyCopyright("Copyright © PG Software Solutions 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -32,7 +32,7 @@ using System.Windows.Forms;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexgridPanel;
-namespace PGNapoleonics.HexgridScrollableExample {
+namespace PGNapoleonics.HexgridExampleWinforms {
     using HexSize = System.Drawing.Size;
 
     public abstract class MapModel : MapDisplayBlocked<Hex> {

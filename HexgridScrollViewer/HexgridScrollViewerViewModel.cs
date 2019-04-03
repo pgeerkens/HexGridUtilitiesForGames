@@ -35,13 +35,13 @@ using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexgridExampleCommon;
 
-namespace PGNapoleonics.HexgridScrollViewer {
+namespace PGNapoleonics.HexgridExampleWinforms2 {
     using HexPoint = System.Drawing.Point;
     using HexSize = System.Drawing.Size;
     using MapGridHex = IHex;
 
     public class HexgridScrollViewerViewModel : ViewModelBase {
-        public HexgridScrollViewerViewModel() : base("HexgridScrollViewer Test (WPF)") {
+        public HexgridScrollViewerViewModel() : base("HexgridExampleWinforms2 Test (WPF)") {
           View.Render += HexgridScrollViewer_Rendering;
         }
 

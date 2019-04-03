@@ -36,7 +36,7 @@ using System.Windows.Input;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 
-namespace PGNapoleonics.HexgridScrollViewer {
+namespace PGNapoleonics.HexgridExampleWinforms2 {
   using WpfInput  = System.Windows.Input;
 
   using HexPoint  = System.Drawing.Point;
@@ -47,7 +47,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
 //  /// <summary>TODO</summary>
 //  public class HexgridViewModel : IHexgridHost {
 //    /// <summary>TODO</summary>
-//    public HexgridViewModel(HexgridScrollViewer viewer) {
+//    public HexgridViewModel(HexgridExampleWinforms2 viewer) {
 //      HotspotHex    = HexCoords.EmptyUser;
 
 //      Viewer        = viewer;
@@ -63,7 +63,7 @@ namespace PGNapoleonics.HexgridScrollViewer {
 //      Hexgrid       = GetHexgrid();
 //    }
 
-//    HexgridScrollViewer Viewer { get; set; }
+//    HexgridExampleWinforms2 Viewer { get; set; }
 
 //    ///// <summary>Return new ScrollPosition for applied muse-wheel scroll.</summary>
 //    //static Point WheelPanel(ScrollProperties scroll, int delta, ref int remainder,

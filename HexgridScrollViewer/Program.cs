@@ -27,7 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Threading;
 using System.Windows.Forms;
 
 using PGNapoleonics.WinForms;
@@ -37,18 +36,16 @@ using PGNapoleonics.WinForms;
 /// in a simple <see cref="WinForms"/> application.</summary>
 #pragma warning restore 1587
 [assembly:CLSCompliant(true)]
-namespace PGNapoleonics.HexgridScrollViewer {
+namespace PGNapoleonics.HexgridExampleWinforms2 {
     static class Program {
         /// <summary>The main entry point for the application.</summary>
         [STAThread]
         static void Main()      {
-              Application.EnableVisualStyles();
-              Application.SetCompatibleTextRenderingDefault(false);
-              Application.ThreadException += 
-              new ThreadExceptionEventHandler(
-                  new ThreadExceptionHandler().ApplicationThreadException);
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.ThreadException += new ThreadExceptionHandler().ApplicationThreadException;
 
-              Application.Run(new MdiParent1());
+            Application.Run(new MdiParent());
         }
     }
 }

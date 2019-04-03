@@ -32,7 +32,7 @@ using System.Windows.Forms;
 
 using PGNapoleonics.HexgridPanel.Example;
 
-namespace PGNapoleonics.HexgridScrollableExample {
+namespace PGNapoleonics.HexgridExampleWinforms {
     /// <summary>TODO</summary>
     public partial class MdiParent : Form {
         private int childFormNumber = 0;

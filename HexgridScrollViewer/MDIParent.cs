@@ -32,15 +32,15 @@ using System.Windows.Forms;
 
 using PGNapoleonics.HexgridPanel.Example;
 
-namespace PGNapoleonics.HexgridScrollViewer {
+namespace PGNapoleonics.HexgridExampleWinforms2 {
     /// <summary>TODO</summary>
-    public partial class MdiParent1 : Form {
+    public partial class MdiParent : Form {
         private int childFormNumber = 0;
 
         private static string FileExtensionMask = Properties.Resources.FileExtensionMask;
 
         /// <summary>TODO</summary>
-        public MdiParent1() {
+        public MdiParent() {
             InitializeComponent();
 
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
