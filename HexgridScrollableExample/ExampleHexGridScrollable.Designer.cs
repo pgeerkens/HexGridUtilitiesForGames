@@ -64,14 +64,14 @@ namespace PGNapoleonics.HexgridScrollableExample {
       ((System.ComponentModel.ISupportInitialize)(this._hexgridPanel)).BeginInit();
       this.SuspendLayout();
       // 
-      // toolStripContainer1
+      // ToolStripContainer
       // 
       // 
-      // toolStripContainer1.BottomToolStripPanel
+      // ToolStripContainer.BottomToolStripPanel
       // 
       this.toolStripContainer1.BottomToolStripPanel.Controls.Add(this.toolStrip1);
       // 
-      // toolStripContainer1.ContentPanel
+      // ToolStripContainer.ContentPanel
       // 
       this.toolStripContainer1.ContentPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
       this.toolStripContainer1.ContentPanel.Controls.Add(this._hexgridPanel);
@@ -80,12 +80,12 @@ namespace PGNapoleonics.HexgridScrollableExample {
       this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
       this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
       this.toolStripContainer1.Margin = new System.Windows.Forms.Padding(0);
-      this.toolStripContainer1.Name = "toolStripContainer1";
+      this.toolStripContainer1.Name = "ToolStripContainer";
       this.toolStripContainer1.Size = new System.Drawing.Size(770, 420);
       this.toolStripContainer1.TabIndex = 0;
-      this.toolStripContainer1.Text = "toolStripContainer1";
+      this.toolStripContainer1.Text = "ToolStripContainer";
       // 
-      // toolStripContainer1.TopToolStripPanel
+      // ToolStripContainer.TopToolStripPanel
       // 
       this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip2);
       // 

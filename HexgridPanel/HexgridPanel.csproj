@@ -135,6 +135,12 @@
     <Compile Include="GraphicsExtensions.cs" />
     <Compile Include="GraphicsMapPainter.cs" />
     <Compile Include="HexEventArgs.cs" />
+    <Compile Include="HexgridPanelForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HexgridPanelForm.Designer.cs">
+      <DependentUpon>HexgridPanelForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MapPanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -171,6 +177,7 @@
     <Compile Include="WinForms\ControlExtensions.cs" />
     <Compile Include="WinForms\Layer.cs" />
     <Compile Include="WinForms\LayerCollection.cs" />
+    <Compile Include="WinForms\NativeMethodsTreeView.cs" />
     <Compile Include="WinForms\ScrollableControlExtensions.cs" />
     <Compile Include="WinForms\TiltAwareFlowLayoutPanel.cs">
       <SubType>Component</SubType>
@@ -264,9 +271,7 @@
       <SubType>Designer</SubType>
     </CodeAnalysisDictionary>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Common\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -5,7 +5,7 @@
 // The MIT License:
 // ----------------
 // 
-// Copyright (c) 2012-2013 Pieter Geerkens (email: pgeerkens@hotmail.com)
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@hotmail.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -27,34 +27,33 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Threading;
-using System.Windows.Forms;
+using System.Runtime.InteropServices;
+using System.Drawing;
 
-using PGNapoleonics.WinForms;
+namespace PGNapoleonics.WinForms {
+    /// <summary>Methods to get/set AUtoScrollPosition for a <see cref="TreeView"/> control</summary>
+    /// <remarks>
+    ///  Courtesy of Stefan Koell for this solution:
+    ///    <a>https://stackoverflow.com/questions/332788/maintain-scroll-position-of-treeview]]</a>
+    /// </remarks>
+    internal static class NativeMethodsTreeView {
+        #region TreeView
+        public static Point GetAutoScrollPosition(this IntPtr HWnd)
+            => new Point(GetScrollPos(HWnd, SB_HORZ),  GetScrollPos(HWnd, SB_VERT) );
 
-#pragma warning disable 1587
-/// <summary>Example usage of <see cref="HexUtilities"/> with <see cref="HexUtilities.HexgridPanel"/> 
-/// in a simple <see cref="WinForms"/> application.</summary>
-#pragma warning restore 1587
-[assembly:CLSCompliant(true)]
-namespace PGNapoleonics.HexgridScrollableExample {
-    static class Program {
-        volatile static int i = 0;
-
-        /// <summary>The main entry point for the application.</summary>
-        [STAThread]
-        static void Main()      {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.ThreadException +=  new ThreadExceptionEventHandler(
-                    new ThreadExceptionHandler().ApplicationThreadException
-            );
-            switch (i) {
-                default:
-                case 0:  Application.Run(new MdiParent()); break;
-                case 1:  Application.Run(new ExampleHexgridScrollable()); break;
-                case 2:  Application.Run(new ExampleBufferedHexgridScrollable()); break;
-            }
+        public static void SetAutoScrollPosition(this IntPtr HWnd, Point position) {
+            SetScrollPos(HWnd, SB_HORZ, position.X, true);
+            SetScrollPos(HWnd, SB_VERT, position.Y, true); 
         }
+
+        [DllImport("user32.dll",  CharSet = CharSet.Unicode)]
+        private static extern int GetScrollPos(IntPtr hWnd, int nBar);
+
+        [DllImport("user32.dll",  CharSet = CharSet.Unicode)]
+        private static extern int SetScrollPos(IntPtr hWnd, int nBar, int nPos, bool bRedraw);
+
+        private const int SB_HORZ = 0x0;
+        private const int SB_VERT = 0x1;
+        #endregion
     }
 }

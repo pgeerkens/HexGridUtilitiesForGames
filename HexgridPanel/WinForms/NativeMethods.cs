@@ -31,11 +31,10 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 
 namespace PGNapoleonics.WinForms {
     /// <summary>Extern declarations from the Win32 API.</summary>
-    internal static partial class NativeMethods {
+    internal static class NativeMethods {
         /// <summary>P/Invoke declaration for user32.dll.WindowFromPoint</summary>
 		    /// <remarks><a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms633558(vector=vs.85).aspx"></a></remarks>
 		    /// <param name="point">(Sign-extended) screen coordinates as a Point structure.</param>
@@ -66,39 +65,22 @@ namespace PGNapoleonics.WinForms {
         /// <summary>Message Cracker for HiWord</summary>
         /// <param name="ptr">A Windows message IntPtr</param>
         /// <returns>Most significant 16 bits of <c>ptr</c> as Int32.</returns>
-        //public static int HiWord(this IntPtr ptr) => (int)unchecked(((uint)ptr >> 16) & 0xFFFF);
         public static int HiWord(this IntPtr ptr)
         => unchecked((short)unchecked((int)(((ulong)ptr & 0xFFFFFFFFFFFF0000UL) >> 16)));
 
         /// <summary>Message Cracker for LoWord</summary>
         /// <param name="ptr">A Windows message IntPtr</param>
         /// <returns>Least significant 16 bits of <c>ptr</c> as Int32.</returns>
-        //public static int LoWord(this IntPtr ptr) => (int)unchecked(((uint)(ptr) & 0xFFFF);
         public static int LoWord(this IntPtr ptr)
         =>  unchecked((short)(int)((ulong)ptr & 0xFFFFUL));
-    }
 
-    /// <summary>Methods to get/set AUtoScrollPosition for a <see cref="TreeView"/> control</summary>
-    /// <remarks>
-    ///  Courtesy of Stefan Koell for this solution:
-    ///    <a>https://stackoverflow.com/questions/332788/maintain-scroll-position-of-treeview]]</a>
-    /// </remarks>
-    internal static partial class NativeMethods {
-        public static Point GetAutoScrollPosition(this IntPtr HWnd)
-            => new Point(GetScrollPos(HWnd, SB_HORZ),  GetScrollPos(HWnd, SB_VERT) );
-
-        public static void SetAutoScrollPosition(this IntPtr HWnd, Point position) {
-            SetScrollPos(HWnd, SB_HORZ, position.X, true);
-            SetScrollPos(HWnd, SB_VERT, position.Y, true); 
-        }
-
-        [DllImport("user32.dll",  CharSet = CharSet.Unicode)]
-        private static extern int GetScrollPos(IntPtr hWnd, int nBar);
-
-        [DllImport("user32.dll",  CharSet = CharSet.Unicode)]
-        private static extern int SetScrollPos(IntPtr hWnd, int nBar, int nPos, bool bRedraw);
-
-        private const int SB_HORZ = 0x0;
-        private const int SB_VERT = 0x1;
+        /// <summary>P/Invoke declaration for user32.dll.SendMessage</summary>
+        /// <param name="hWnd">Window handle</param>
+        /// <param name="msg">Windows message</param>
+        /// <param name="wParam">WParam</param>
+        /// <param name="lParam">LParam</param>
+        /// <returns></returns>
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
     }
 }

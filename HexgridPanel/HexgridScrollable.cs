@@ -140,7 +140,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Returns <code>HexCoords</code> of the hex closest to the center of the current viewport.</summary>
         public HexCoords PanelCenterHex => GetHexCoords(Location + Size.Round(ClientSize.Scale(0.50F)));
         /// <summary>TODO</summary>
-        public WpfInput.ICommand RefreshCmd { get; }
+        public WpfInput.ICommand     RefreshCmd        { get; }
 
         /// <summary>Index into <code>Scales</code> of current map scale.</summary>
         [Browsable(false)]
