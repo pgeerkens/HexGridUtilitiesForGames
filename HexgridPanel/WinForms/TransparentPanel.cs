@@ -53,17 +53,15 @@ namespace PGNapoleonics.HexgridPanel.WinForms {
 			} 
 		}
 
-		/// <summary> Invalidate entire parent control to redraw on our background.</summary>
-		/// <remarks>Invalidate the parent of the control, not the control itself, whenever 
-		/// we need to update the graphics. This ensures that whatever is behind the control 
-		/// gets painted before we need to do our own graphics output.
-		/// See "http://www.bobpowell.net/transcontrols.htm"</remarks>
-		public virtual void Invalidate2() { 
-			Invalidate2(new Rectangle(this.Location,this.Size));
-		} 
-    /// <summary>Invalidates the entire surface of the control and causes the control to be redrawn.</summary>
-    /// <param name="rectangle">Clipping <c>Rectangle</c> to be invalidated.</param>
-    public virtual void Invalidate2(Rectangle rectangle) { 
+        /// <summary> Invalidate entire parent control to redraw on our background.</summary>
+        /// <remarks>Invalidate the parent of the control, not the control itself, whenever 
+        /// we need to update the graphics. This ensures that whatever is behind the control 
+        /// gets painted before we need to do our own graphics output.
+        /// See "http://www.bobpowell.net/transcontrols.htm"</remarks>
+        public virtual void Invalidate2() => Invalidate2(new Rectangle(Location,Size));
+        /// <summary>Invalidates the entire surface of the control and causes the control to be redrawn.</summary>
+        /// <param name="rectangle">Clipping <c>Rectangle</c> to be invalidated.</param>
+        public virtual void Invalidate2(Rectangle rectangle) { 
 			if(Parent!=null  &&  Parent.IsHandleCreated) {
 				Parent.Invoke((Action<Rectangle,bool>)((rc,b) => Parent.Invalidate(rc,b)), rectangle,true); 
 			}

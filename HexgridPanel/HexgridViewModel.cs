@@ -102,76 +102,81 @@ namespace PGNapoleonics.HexgridPanel {
         public HexCoords   HotspotHex      { get; set; }
 
         /// <summary>Gets whether the <b>Alt</b> <i>shift</i> key is depressed.</summary>
-        protected static  bool  IsAltKeyDown   { get { return HexgridPanel.IsAltKeyDown; } }
+        protected static bool IsAltKeyDown   => HexgridPanel.IsAltKeyDown;
         /// <summary>Gets whether the <b>Ctl</b> <i>shift</i> key is depressed.</summary>
-        protected static  bool  IsCtlKeyDown   { get { return HexgridPanel.IsCtlKeyDown; } }
+        protected static bool IsCtlKeyDown   => HexgridPanel.IsCtlKeyDown;
         /// <summary>Gets whether the <b>Shift</b> <i>shift</i> key is depressed.</summary>
-        protected static  bool  IsShiftKeyDown { get { return HexgridPanel.IsShiftKeyDown; } }
+        protected static bool IsShiftKeyDown => HexgridPanel.IsShiftKeyDown;
 
         /// <summary>Gets or sets whether the board is transposed from flat-topped hexes to pointy-topped hexes.</summary>
-        public bool        IsTransposed    { 
-            get { return _isTransposed; }
-            set { _isTransposed = value;  
-                  Grid = GetHexgrid();
-                  if (Panel.IsHandleCreated) Panel.SetScrollLimits(Model);   
-                }
-        } bool _isTransposed;
+        public bool        IsTransposed {
+            get => _isTransposed;
+            set {
+                _isTransposed = value;
+                Grid = GetHexgrid();
+                if (Panel.IsHandleCreated) Panel.SetScrollLimits(Model);
+            }
+        }
+        bool _isTransposed;
 
         /// <inheritdoc/>
         public HexSize     MapSizePixels   => Model.MapSizePixels(); // + MapMargin.Scale(2);} }
 
         /// <summary>Current scaling factor for map display.</summary>
-        public float       MapScale        { 
-          get { return Model.MapScale; } 
-          private set { Model.MapScale = value; } 
+        public float       MapScale {
+            get => Model.MapScale;
+            private set => Model.MapScale = value;
         }
 
         /// <inheritdoc/>
-        public Padding     Margin          { 
-          get { return _margin; } 
-          set { _margin = value; Grid.Margin = new HexSize(_margin.Left, _margin.Top); }
-        } Padding _margin;
+        public Padding     Margin {
+            get => _margin;
+            set { _margin = value; Grid.Margin = new HexSize(_margin.Left,_margin.Top); }
+        }
+        Padding _margin;
 
         /// <summary>TODO</summary>
-        public    bool     IsMapDirty      { 
-          get { return _isMapDirty; }
-          set { 
-            _isMapDirty = value; 
-            if(_isMapDirty) { IsUnitsDirty = true; } 
-          }
-        } bool _isMapDirty;
+        public    bool     IsMapDirty {
+            get => _isMapDirty;
+            set {
+                _isMapDirty = value;
+                if (_isMapDirty) { IsUnitsDirty = true; }
+            }
+        }
+        bool _isMapDirty;
         /// <summary>TODO</summary>
-        public    bool     IsUnitsDirty    { 
-          get { return _isUnitsDirty; }
-          set { 
-            _isUnitsDirty = value; 
-            if(_isUnitsDirty) { Panel.Invalidate(); }
-          }
-        } bool _isUnitsDirty;
+        public    bool     IsUnitsDirty {
+            get => _isUnitsDirty;
+            set {
+                _isUnitsDirty = value;
+                if (_isUnitsDirty) { Panel.Invalidate(); }
+            }
+        }
+        bool _isUnitsDirty;
 
         /// <summary>Array of supported map scales  as IList {float}.</summary>
         public IReadOnlyList<float> Scales         { get; private set; }
         /// <summary>Index into <code>Scales</code> of current map scale.</summary>
-        public virtual int ScaleIndex      { 
-          get { return _scaleIndex; }
-          set { var newValue = Math.Max(0, Math.Min(Scales.Count-1, value));
-                if( _scaleIndex != newValue) {
-                  _scaleIndex = newValue;
-                  MapScale    = Scales[ScaleIndex];
-                  Grid        = new Hexgrid(IsTransposed,Model.GridSize,MapScale);
-                  ScaleChange.Raise(this, EventArgs.Empty);
+        public virtual int ScaleIndex {
+            get => _scaleIndex;
+            set {
+                var newValue = Math.Max(0, Math.Min(Scales.Count-1, value));
+                if (_scaleIndex != newValue) {
+                    _scaleIndex = newValue;
+                    MapScale    = Scales[ScaleIndex];
+                    Grid        = new Hexgrid(IsTransposed,Model.GridSize,MapScale);
+                    ScaleChange.Raise(this,EventArgs.Empty);
                 }
-              } 
-        } int _scaleIndex;
+            }
+        }
+        int _scaleIndex;
         #endregion
 
         /// <summary>TODO</summary>
-        public void SetScales (IReadOnlyList<float> scales) {
-          Scales = scales;
-        }
+        public void SetScales(IReadOnlyList<float> scales) => Scales = scales;
         #region Events
         /// <summary>TODO</summary>
-        void MarginChanged(object sender, EventArgs e) { Margin = Panel.Margin; }
+        void MarginChanged(object sender,EventArgs e) => Margin = Panel.Margin;
 
         /// <summary>Announces that the mouse is now over a new hex.</summary>
         void HotspotHexChange(object sender, HexEventArgs e) {
@@ -193,9 +198,9 @@ namespace PGNapoleonics.HexgridPanel {
 
         #region Grid Coordinates
         /// <inheritdoc/>
-        public IHexgrid   Grid        { get; set; }
+        public IHexgrid   Grid    { get; set; }
         /// <summary>Gets a SizeF struct for the hex GridSize under the current scaling.</summary>
-        public HexSizeF   GridSizeF      { get { return Model.GridSize.Scale(MapScale); } }
+        public HexSizeF GridSizeF => Model.GridSize.Scale(MapScale);
 
         //CoordsRectangle  GetClipInHexes(PointF point, SizeF size) {
         //  return Model.GetClipInHexes(point, size);
@@ -204,9 +209,8 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Returns ScrollPosition that places given hex in the upper-Left of viewport.</summary>
         /// <param name="coordsNewULHex"><c>HexCoords</c> for new upper-left hex</param>
         /// <returns>Pixel coordinates in Client reference frame.</returns>
-        public HexPointF  HexCenterPoint(HexCoords coordsNewULHex) {
-          return Grid.HexCenterPoint(coordsNewULHex);
-        }
+        public HexPointF HexCenterPoint(HexCoords coordsNewULHex)
+        => Grid.HexCenterPoint(coordsNewULHex);
         #endregion
     }
 }

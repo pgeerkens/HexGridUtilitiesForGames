@@ -21,7 +21,7 @@ namespace PGNapoleonics.HexgridPanel {
     /// <summary>TODO</summary>
     public sealed partial class CachedMapPanel : HexgridPanel {
         /// <summary>TODO</summary>/>
-        public CachedMapPanel() { InitializeComponent(); }
+        public CachedMapPanel() => InitializeComponent();
 
         #region EventHandlers
         /// <inheritdoc/>
@@ -34,38 +34,43 @@ namespace PGNapoleonics.HexgridPanel {
         #region Map Caching
         /// <summary>The fraction of 100% at which the map is drawn (and stored) to <seealso cref="BufferCache"/>.</summary>
         [Browsable(false)]
-        public  float  CacheScale    { 
-            get { return _cacheScale; }
+        public  float  CacheScale {
+            get => _cacheScale;
             set { _cacheScale = value; BufferCache = null; }
-        } float  _cacheScale = 1.00F;
-        private Bitmap BufferCache   {
-            get { return _bufferCache; }
-            set { if(_bufferCache!=null) _bufferCache.Dispose(); _bufferCache = value; }
-        } Bitmap _bufferCache = null;
-        private Bitmap BufferBack    {
-            get { return _bufferBack    ?? ( _bufferBack  = AllocateBuffer(ClientSize,"Back") ); }
-            set { if(_bufferBack != null) _bufferBack.Dispose(); _bufferBack = value; }
-        } Bitmap _bufferBack = null;
-        private Bitmap BufferMap     {
-            get { return _bufferMap     ?? ( _bufferMap   = AllocateBuffer(ClientSize,"Map") ); }
-            set { if(_bufferMap != null) _bufferMap.Dispose(); _bufferMap = value; }
-        } Bitmap _bufferMap = null;
+        }
+        float  _cacheScale = 1.00F;
+        private Bitmap BufferCache {
+            get => _bufferCache;
+            set { if (_bufferCache!=null) _bufferCache.Dispose(); _bufferCache = value; }
+        }
+        Bitmap _bufferCache = null;
+        private Bitmap BufferBack {
+            get => _bufferBack    ?? (_bufferBack  = AllocateBuffer(ClientSize,"Back"));
+            set { if (_bufferBack != null) _bufferBack.Dispose(); _bufferBack = value; }
+        }
+        Bitmap _bufferBack = null;
+        private Bitmap BufferMap {
+            get => _bufferMap     ?? (_bufferMap   = AllocateBuffer(ClientSize,"Map"));
+            set { if (_bufferMap != null) _bufferMap.Dispose(); _bufferMap = value; }
+        }
+        Bitmap _bufferMap = null;
         private Bitmap BufferShading {
-            get { return _bufferShading ?? ( _bufferShading = AllocateBuffer(ClientSize,"Shading") ); }
-            set { if(_bufferShading != null) _bufferShading.Dispose(); _bufferShading = value; }
-        } Bitmap _bufferShading = null;
-        private Bitmap BufferUnits   {
-            get { return _bufferUnits   ?? ( _bufferUnits = AllocateBuffer(ClientSize,"Units") ); }
-            set { if(_bufferUnits != null) _bufferUnits.Dispose(); _bufferUnits = value; }
-        } Bitmap _bufferUnits = null;
+            get => _bufferShading ?? (_bufferShading = AllocateBuffer(ClientSize,"Shading"));
+            set { if (_bufferShading != null) _bufferShading.Dispose(); _bufferShading = value; }
+        }
+        Bitmap _bufferShading = null;
+        private Bitmap BufferUnits {
+            get => _bufferUnits   ?? (_bufferUnits = AllocateBuffer(ClientSize,"Units"));
+            set { if (_bufferUnits != null) _bufferUnits.Dispose(); _bufferUnits = value; }
+        }
+        Bitmap _bufferUnits = null;
 
         private static Bitmap AllocateBuffer(Size size, string tag) {
           Bitmap temp = null, buffer = null;
             try {
                 var width  = Math.Max(1,size.Width);
                 var height = Math.Max(1,size.Height);
-                temp       = new Bitmap(width, height) {Tag = tag};
-                //temp       = new Bitmap(width, height); temp.Tag = tag;
+                temp       = new Bitmap(width, height) { Tag = tag };
                 buffer     = temp;
                 temp       = null;
             } finally {
@@ -73,10 +78,10 @@ namespace PGNapoleonics.HexgridPanel {
             }
             return buffer;
         }
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        private async Task<Bitmap> PaintedCacheBufferAsync(string tag) {
-            return await Task.Run( () => PaintedCacheBuffer(tag) );
-        }
+        [SuppressMessage("Microsoft.Performance","CA1811:AvoidUncalledPrivateCode")]
+        private async Task<Bitmap> PaintedCacheBufferAsync(string tag)
+        => await Task.Run(() => PaintedCacheBuffer(tag));
+
         private Bitmap PaintedCacheBuffer(string tag) {
             Bitmap temp   = null;
             Bitmap bitmap = null;

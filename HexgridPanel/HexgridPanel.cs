@@ -171,7 +171,7 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <summary>TODO</summary>
-            CoordsRectangle GetClipInHexes(PointF point, SizeF size) { return DataContext.Model.GetClipInHexes(point, size); }
+        CoordsRectangle GetClipInHexes(PointF point,SizeF size) => DataContext.Model.GetClipInHexes(point,size);
         /// <summary><c>HexCoords</c> for a selected hex.</summary>
         /// <param name="point">Screen point specifying hex to be identified.</param>
         /// <returns>Coordinates for a hex specified by a screen point.</returns>
@@ -179,7 +179,7 @@ namespace PGNapoleonics.HexgridPanel {
         public HexCoords GetHexCoords(Point point) => DataContext.Grid.GetHexCoords(point, new Size(AutoScrollPosition));
 
         /// <summary>Force repaint of backing buffer for Map underlay.</summary>
-        public virtual void SetMapDirty() { Invalidate(ClientRectangle); }
+        public virtual void SetMapDirty() => Invalidate(ClientRectangle);
 
         /// <summary>TODO</summary>
         public         void SetModel(Model model) {
@@ -235,15 +235,14 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Returns ScrollPosition that places given hex in the upper-Left of viewport.</summary>
         /// <param name="coordsNewULHex"><c>HexCoords</c> for new upper-left hex</param>
         /// <returns>Pixel coordinates in Client reference frame.</returns>
-        public Point HexCenterPoint(HexCoords coordsNewULHex) {
-          return DataContext.Grid.HexCenterPoint(coordsNewULHex);
-        }
+        public Point HexCenterPoint(HexCoords coordsNewULHex)
+        => DataContext.Grid.HexCenterPoint(coordsNewULHex);
+
         /// <summary>Returns the scroll position to center a specified hex in viewport.</summary>
         /// <param name="coordsNewCenterHex"><c>HexCoords</c> for the hex to be centered in viewport.</param>
         /// <returns>Pixel coordinates in Client reference frame.</returns>
-        protected Point ScrollPositionToCenterOnHex(HexCoords coordsNewCenterHex) {
-          return DataContext.Grid.ScrollPositionToCenterOnHex(coordsNewCenterHex,VisibleRectangle);
-        }
+        protected Point ScrollPositionToCenterOnHex(HexCoords coordsNewCenterHex)
+        => DataContext.Grid.ScrollPositionToCenterOnHex(coordsNewCenterHex,VisibleRectangle);
         #endregion
 
         #region Painting
@@ -301,9 +300,7 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <summary>TODO</summary>
-        static protected Matrix TransposeMatrix { get {
-          return new Matrix(0F,1F, 1F,0F, 0F,0F);
-        } }
+        static protected Matrix TransposeMatrix => new Matrix(0F,1F,1F,0F,0F,0F);
         #endregion
 
         /// <summary>TODO</summary>
@@ -338,7 +335,7 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <summary>Raise the MouseAltClick event.</summary>
-        protected virtual void OnMouseAltClick(HexEventArgs e) { MouseAltClick.Raise(this,e); }
+        protected virtual void OnMouseAltClick(HexEventArgs e) => MouseAltClick.Raise(this,e);
         /// <summary>Raise the MouseCtlClick event.</summary>
         protected virtual void OnMouseCtlClick(HexEventArgs e) {
           if (e==null) throw new ArgumentNullException(nameof(e));
@@ -354,8 +351,8 @@ namespace PGNapoleonics.HexgridPanel {
           Refresh();
         }
         /// <summary>Raise the MouseRightClick event.</summary>
-        protected virtual void OnMouseRightClick(HexEventArgs e) { MouseRightClick.Raise(this,e); }
-       /// <summary>Raise the HotspotHexChange event.</summary>
+        protected virtual void OnMouseRightClick(HexEventArgs e) => MouseRightClick.Raise(this,e);
+        /// <summary>Raise the HotspotHexChange event.</summary>
         protected virtual void OnHotspotHexChange(HexEventArgs e) {
           if (e==null) throw new ArgumentNullException(nameof(e));
           DataContext.Model.HotspotHex = e.Coords;
@@ -404,16 +401,16 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>TODO</summary>
         private void ScrollPanelCommon(ScrollEventType type, int sign, ScrollProperties scroll) {
             if (sign == 0) return;
-            Func<Point, int, Point> func = (p, step) => new Point(-p.X, -p.Y + step * sign);
+            Point func(Point p,int step) => new Point(-p.X,-p.Y + step * sign);
             AutoScrollPosition = func(AutoScrollPosition,
                 type.HasFlag(ScrollEventType.LargeDecrement) ? scroll.LargeChange : scroll.SmallChange);
         }
         #endregion
 
         /// <summary>Array of supported map scales  as IList {float}.</summary>
-        public IReadOnlyList<float>     Scales        { 
-          get { return DataContext.Scales; }
-          private set { DataContext.SetScales(value); }
+        public IReadOnlyList<float>     Scales {
+            get => DataContext.Scales;
+            private set => DataContext.SetScales(value);
         }
 
         /// <summary>TODO</summary>

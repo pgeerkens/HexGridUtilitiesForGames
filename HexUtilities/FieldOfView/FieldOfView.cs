@@ -38,28 +38,27 @@ using PGNapoleonics.HexUtilities.Common;
 namespace PGNapoleonics.HexUtilities.FieldOfView {
     using HexSize = System.Drawing.Size;
 
-  /// <summary>Implementation of IFov using a backing array of BitArray.</summary>
-  internal class ArrayFieldOfView : IFov {
-    private readonly object _syncLock = new object();
+    /// <summary>Implementation of IFov using a backing array of BitArray.</summary>
+    internal class ArrayFieldOfView : IFov {
+        private readonly object _syncLock = new object();
 
-    public ArrayFieldOfView(IFovBoard board) {
-      _mapSizeHexes = board.MapSizeHexes;
-      _fovBacking   = ( from i in Enumerable.Range(0,board.MapSizeHexes.Width)
-                        select new BitArray(board.MapSizeHexes.Height)
-                      ).ToArray();
-    }
-
-    public bool this[HexCoords coords] {
-      get {
-        return _mapSizeHexes.IsOnboard(coords) && _fovBacking[coords.User.X][coords.User.Y];
-      } 
-      internal set { 
-        lock(_syncLock) {
-          if (_mapSizeHexes.IsOnboard(coords)) { _fovBacking[coords.User.X][coords.User.Y] = value; } 
+        public ArrayFieldOfView(IFovBoard board) {
+          _mapSizeHexes = board.MapSizeHexes;
+          _fovBacking   = ( from i in Enumerable.Range(0,board.MapSizeHexes.Width)
+                            select new BitArray(board.MapSizeHexes.Height)
+                          ).ToArray();
         }
-      }
-    } readonly BitArray[] _fovBacking;
 
-    private readonly HexSize _mapSizeHexes;
-  }
+        public bool this[HexCoords coords] {
+            get => _mapSizeHexes.IsOnboard(coords) && _fovBacking[coords.User.X][coords.User.Y];
+            internal set {
+                lock (_syncLock) {
+                    if (_mapSizeHexes.IsOnboard(coords)) { _fovBacking[coords.User.X][coords.User.Y] = value; }
+                }
+            }
+        }
+        readonly BitArray[] _fovBacking;
+
+        private readonly HexSize _mapSizeHexes;
+    }
 }
