@@ -19,7 +19,7 @@ using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
     /// <summary>TODO</summary>
-    public sealed partial class CachedMapPanel : HexgridScrollable {
+    public sealed partial class CachedMapPanel : HexgridPanel {
         /// <summary>TODO</summary>/>
         public CachedMapPanel() { InitializeComponent(); }
 

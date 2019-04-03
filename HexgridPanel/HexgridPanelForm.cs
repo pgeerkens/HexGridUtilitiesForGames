@@ -36,7 +36,7 @@ using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.WinForms;
 
-namespace PGNapoleonics.HexgridPanelExample {
+namespace PGNapoleonics.HexgridPanel {
     using HexSize        = System.Drawing.Size;
     using MapGridDisplay = MapDisplay<IHex>;
 

@@ -34,7 +34,8 @@ namespace PGNapoleonics.HexgridScrollableExample {
         [System.CodeDom.Compiler.GeneratedCode("","")]
         private void CreateDefaultChildren() {
             ShowDefaultChildren (new ExampleBufferedHexgridScrollable());
-            ShowDefaultChildren (new ExampleHexgridScrollable());
+            //ShowDefaultChildren (new ExampleHexgridScrollable());
+            ShowDefaultChildren (new HexgridPanel.Example.HexgridPanelExample());
         }
 
         [System.CodeDom.Compiler.GeneratedCode("","")]

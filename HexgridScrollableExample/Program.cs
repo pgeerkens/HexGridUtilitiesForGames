@@ -30,6 +30,7 @@ using System;
 using System.Threading;
 using System.Windows.Forms;
 
+using PGNapoleonics.HexgridPanel.Example;
 using PGNapoleonics.WinForms;
 
 #pragma warning disable 1587
@@ -52,7 +53,7 @@ namespace PGNapoleonics.HexgridScrollableExample {
             switch (i) {
                 default:
                 case 0:  Application.Run(new MdiParent()); break;
-                case 1:  Application.Run(new ExampleHexgridScrollable()); break;
+                case 1:  Application.Run(new HexgridPanelExample()); break;
                 case 2:  Application.Run(new ExampleBufferedHexgridScrollable()); break;
             }
         }

@@ -115,5 +115,14 @@ namespace PGNapoleonics.HexgridPanel.Properties {
                 return ResourceManager.GetString("SevereApplicationError", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hotspot Hex: {0:gi3} / {1:uI4} / {2:c5}; {3:r6}; Path Length = {4}.
+        /// </summary>
+        internal static string StatusLabelText {
+            get {
+                return ResourceManager.GetString("StatusLabelText", resourceCulture);
+            }
+        }
     }
 }

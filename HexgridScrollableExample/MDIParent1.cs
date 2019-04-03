@@ -4,6 +4,8 @@ using System.Windows.Forms;
 
 using System.Diagnostics.CodeAnalysis;
 
+using PGNapoleonics.HexgridPanel.Example;
+
 namespace PGNapoleonics.HexgridScrollableExample {
     /// <summary>TODO</summary>
     public partial class MdiParent : Form {
@@ -26,9 +28,8 @@ namespace PGNapoleonics.HexgridScrollableExample {
 
         [System.CodeDom.Compiler.GeneratedCode("","")]
         private void CreateDefaultChildren() {
-            //ShowDefaultChild(new ExampleHexgridPanel());
             ShowDefaultChild(new ExampleBufferedHexgridScrollable());
-            ShowDefaultChild(new ExampleHexgridScrollable());
+            ShowDefaultChild(new HexgridPanelExample());
         }
 
         [System.CodeDom.Compiler.GeneratedCode("","")]

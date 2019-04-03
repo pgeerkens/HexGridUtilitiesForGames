@@ -137,4 +137,7 @@ From: </value>
   <data name="SevereApplicationError" xml:space="preserve">
     <value>- Severe Application Error</value>
   </data>
+  <data name="StatusLabelText" xml:space="preserve">
+    <value>Hotspot Hex: {0:gi3} / {1:uI4} / {2:c5}; {3:r6}; Path Length = {4}</value>
+  </data>
 </root>

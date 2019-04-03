@@ -43,7 +43,7 @@ namespace PGNapoleonics.HexgridPanel {
     /// <summary>TODO</summary>
     public class HexgridViewModel {
         /// <summary>TODO</summary>
-        public HexgridViewModel(HexgridScrollable panel) {
+        public HexgridViewModel(HexgridPanel panel) {
             HotspotHex    = HexCoords.EmptyUser;
 
             Panel         = panel;
@@ -60,7 +60,7 @@ namespace PGNapoleonics.HexgridPanel {
             Grid   = GetHexgrid();
         }
 
-        HexgridScrollable Panel { get; set; }
+        HexgridPanel Panel { get; set; }
 
         ///// <summary>Return new AutoScrollPosition for applied muse-wheel scroll.</summary>
         //static Point WheelPanel(ScrollProperties scroll, int delta, ref int remainder,
@@ -99,11 +99,11 @@ namespace PGNapoleonics.HexgridPanel {
         public HexCoords   HotspotHex      { get; set; }
 
         /// <summary>Gets whether the <b>Alt</b> <i>shift</i> key is depressed.</summary>
-        protected static  bool  IsAltKeyDown   { get { return HexgridScrollable.IsAltKeyDown; } }
+        protected static  bool  IsAltKeyDown   { get { return HexgridPanel.IsAltKeyDown; } }
         /// <summary>Gets whether the <b>Ctl</b> <i>shift</i> key is depressed.</summary>
-        protected static  bool  IsCtlKeyDown   { get { return HexgridScrollable.IsCtlKeyDown; } }
+        protected static  bool  IsCtlKeyDown   { get { return HexgridPanel.IsCtlKeyDown; } }
         /// <summary>Gets whether the <b>Shift</b> <i>shift</i> key is depressed.</summary>
-        protected static  bool  IsShiftKeyDown { get { return HexgridScrollable.IsShiftKeyDown; } }
+        protected static  bool  IsShiftKeyDown { get { return HexgridPanel.IsShiftKeyDown; } }
 
         /// <summary>Gets or sets whether the board is transposed from flat-topped hexes to pointy-topped hexes.</summary>
         public bool        IsTransposed    { 

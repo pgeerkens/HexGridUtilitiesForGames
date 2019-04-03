@@ -113,7 +113,7 @@
             <WindowsFormsHost x:Name="_host" 
 				ScrollViewer.VerticalScrollBarVisibility="Disabled" 
 				ScrollViewer.CanContentScroll="True">
-                <HexgridPanel:BufferedHexgridScrollableOld 
+                <HexgridPanel:HexgridBufferedPanel 
                   AutoScrollMinSize="200,100" 
                   Margin="5, 5, 5, 5" 
                   Size="1445,920" 

@@ -41,6 +41,7 @@ using PGNapoleonics.HexgridExampleCommon;
 namespace PGNapoleonics.HexgridExampleWpf {
     using MapGridDisplay = IMapDisplayWinForms<IHex>;
     using MyMapDisplay   = MapDisplayBlocked<IHex>;
+    using HexgridPanel   = HexgridPanel.HexgridPanel;
 
     /// <summary>Interaction logic for MainWindow.xaml.</summary>
     public partial class MainWindow : Window {
@@ -55,7 +56,7 @@ namespace PGNapoleonics.HexgridExampleWpf {
         public void RefreshCmdCanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
-            HexgridPanel = (HexgridScrollable) _host.Child;
+            HexgridPanel = (HexgridPanel)_host.Child;
             _host.Child.Focus();
 
             HexgridPanel.ScaleIndex   = HexgridPanel.Scales
@@ -71,7 +72,7 @@ namespace PGNapoleonics.HexgridExampleWpf {
         }
 
         /// <summary>TODO</summary>
-        public   HexgridScrollable HexgridPanel { get; private set; }
+        public   HexgridPanel HexgridPanel { get; private set; }
 
         /// <summary>TODO</summary>
         public   MapGridDisplay    Model        => HexgridPanel.DataContext.Model;

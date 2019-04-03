@@ -37,7 +37,7 @@ using PGNapoleonics.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
     /// <summary>TODO</summary>
-    public partial class MapPanel : HexgridScrollable {
+    public partial class MapPanel : HexgridPanel {
         /// <summary>TODO</summary>
         public MapPanel() => InitializeComponent();
 

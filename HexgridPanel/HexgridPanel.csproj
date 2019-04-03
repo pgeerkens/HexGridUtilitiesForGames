@@ -135,6 +135,12 @@
     <Compile Include="GraphicsExtensions.cs" />
     <Compile Include="GraphicsMapPainter.cs" />
     <Compile Include="HexEventArgs.cs" />
+    <Compile Include="Example\HexGridPanelExample.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Example\HexGridPanelExample.Designer.cs">
+      <DependentUpon>HexGridPanelExample.cs</DependentUpon>
+    </Compile>
     <Compile Include="HexgridPanelForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -154,20 +160,20 @@
       <DependentUpon>MapPanelCached.cs</DependentUpon>
     </Compile>
     <Compile Include="Namespaces.cs" />
+    <Compile Include="Example\StatusBarToolStrip.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Example\StatusBarToolStrip.Designer.cs">
+      <DependentUpon>StatusBarToolStrip.cs</DependentUpon>
+    </Compile>
     <Compile Include="WinForms\BufferedGraphicsExtensions.cs" />
-    <Compile Include="BufferedHexgridScrollable.cs">
+    <Compile Include="HexgridBufferedPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="BufferedHexgridScrollable.Designer.cs">
-      <DependentUpon>BufferedHexgridScrollable.cs</DependentUpon>
+    <Compile Include="HexgridBufferedPanel.Designer.cs">
+      <DependentUpon>HexgridBufferedPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="HexgridPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HexgridPanel.Designer.cs">
-      <DependentUpon>HexgridPanel.cs</DependentUpon>
-    </Compile>
     <Compile Include="MapDisplayPainter.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -185,11 +191,11 @@
     <Compile Include="WinForms\TiltAwarePanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="HexgridScrollable.cs">
+    <Compile Include="HexgridPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="HexgridScrollable.Designer.cs">
-      <DependentUpon>HexgridScrollable.cs</DependentUpon>
+    <Compile Include="HexgridPanel.Designer.cs">
+      <DependentUpon>HexgridPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="HexgridViewModel.cs">
       <SubType>Code</SubType>
@@ -232,13 +238,16 @@
     <Compile Include="WinForms\WinFormsExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="HexgridPanel.resx">
-      <DependentUpon>HexgridPanel.cs</DependentUpon>
+    <EmbeddedResource Include="Example\HexGridPanelExample.resx">
+      <DependentUpon>HexGridPanelExample.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Example\StatusBarToolStrip.resx">
+      <DependentUpon>StatusBarToolStrip.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="WinForms\ExceptionDialog.en-US.resx">
       <DependentUpon>ExceptionDialog.cs</DependentUpon>

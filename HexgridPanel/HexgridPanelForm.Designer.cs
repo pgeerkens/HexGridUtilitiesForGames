@@ -1,4 +1,4 @@
-﻿namespace PGNapoleonics.HexgridPanelExample {
+﻿namespace PGNapoleonics.HexgridPanel {
     partial class HexgridPanelForm {
         /// <summary>
         /// Required designer variable.
@@ -24,7 +24,7 @@
         /// </summary>
         private void InitializeComponent() {
             this.ToolStripContainer = new System.Windows.Forms.ToolStripContainer();
-            this.HexgridPanel = new PGNapoleonics.HexgridPanel.HexgridScrollable();
+            this.HexgridPanel = new PGNapoleonics.HexgridPanel.HexgridPanel();
 
             this.ToolStripContainer.ContentPanel.SuspendLayout();
             this.ToolStripContainer.TopToolStripPanel.SuspendLayout();
@@ -98,6 +98,6 @@
 
         #endregion
         protected System.Windows.Forms.ToolStripContainer ToolStripContainer;
-        protected PGNapoleonics.HexgridPanel.HexgridScrollable HexgridPanel;
+        protected PGNapoleonics.HexgridPanel.HexgridPanel HexgridPanel;
     }
 }
