@@ -32,32 +32,13 @@ using System.Drawing;
 using System.Windows.Forms;
 
 namespace PGNapoleonics.HexgridPanel.WinForms {
-    /// <summary>The interface that must be supported for controls leveraging the <see cref="ScrollableControlExtensions"/> methods.</summary>
-    public interface IScrollableControl {
-        /// <summary>Returns or sets the current scrolling position for the control.</summary>
-        /// <remarks>
-        /// The getter must return the current scrolling position; and 
-        /// the setter must scroll to the specified position when assigned.
-        /// </remarks>
-        Point AutoScrollPosition { get; set; }
-
-        /// <summary>Reserved for internal use by <see cref="ScrollableControlExtensions"/>.</summary>
-        Point UnappliedScroll    { get; set; }
-
-        /// <summary>The horizontal <see cref="X"/> and vertical <see cref="Y"/> scrolling increments for 'paging'.</summary>
-        Point ScrollLargeChange  { get; }
-    }
-
     /// <summary>Extension methoda supporting  horizontal (ie tilt) scrolling on the <see cref="IScrollableControl"/> interface.</summary>
-    public static class ScrollableControlExtensions {
+    internal static class ScrollableControlExtensions {
         /// <summary>Service routine to execute a Panel scroll.</summary>
         [Obsolete("Use ScrollPanelVertical or ScrollPanelHorizontal instead.")]
         public static void ScrollPanel(this IScrollableControl @this, ScrollEventType type,
                     ScrollOrientation orientation, int sign)
-        =>  ScrollActions [
-                    ( type.HasFlag(ScrollEventType.SmallDecrement)        ? 4 : 0 )
-                  + ( (orientation == ScrollOrientation.HorizontalScroll) ? 2 : 0 )
-                  + ( (sign == +1)                                        ? 1 : 0 ) ] (@this);
+        =>  ScrollActions[ScrollActionIndex(type, orientation, sign)](@this);
 
         /// <summary>Returns a new <see cref="MouseEventArgs"/> from the supplies <see cref="Message"/>.</summary>
         /// <param name="this"></param>
@@ -143,6 +124,11 @@ namespace PGNapoleonics.HexgridPanel.WinForms {
         => SystemInformation.MouseWheelScrollDelta / SystemInformation.MouseWheelScrollLines;
 
         private delegate void ScrollAction(IScrollableControl ctrl);
+
+        private static int ScrollActionIndex(ScrollEventType type, ScrollOrientation orientation, int sign)
+        => ( type.HasFlag(ScrollEventType.SmallDecrement)        ? 4 : 0 )
+        +  ( (orientation == ScrollOrientation.HorizontalScroll) ? 2 : 0 )
+        +  ( (sign == +1)                                        ? 1 : 0 );
 
         private static readonly IReadOnlyList<ScrollAction> ScrollActions = new List<ScrollAction> {
                 PageUp,   PageDown,  PageLeft, PageRight,

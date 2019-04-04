@@ -116,7 +116,7 @@ namespace PGNapoleonics.HexgridPanel {
         protected virtual Rectangle HorizontalScrollBufferedGraphics(int delta) {
           if (delta == 0)    return Rectangle.Empty;  // Combinig this with below impacts performance.
 
-          _mapBuffer.Render(_backBuffer, new Point(-delta,0));
+          _backBuffer.Render(_mapBuffer, new Point(-delta,0));
           return (delta < 0) ? new Rectangle(                     0,0, -delta,ClientSize.Height)
                              : new Rectangle(ClientSize.Width-delta,0,  delta,ClientSize.Height);
         }
@@ -126,7 +126,7 @@ namespace PGNapoleonics.HexgridPanel {
         protected virtual Rectangle VerticalScrollBufferedGraphics(int delta) {
           if (delta == 0)    return Rectangle.Empty;  // Combinig this with below impacts performance.
 
-          _mapBuffer.Render(_backBuffer, new Point(0,-delta));
+          _backBuffer.Render(_mapBuffer, new Point(0,-delta));
           return (delta < 0) ? new Rectangle(0,                      0, ClientSize.Width,-delta)
                              : new Rectangle(0,ClientSize.Height-delta, ClientSize.Width, delta);
         }
@@ -181,7 +181,7 @@ namespace PGNapoleonics.HexgridPanel {
             using(var brush = new SolidBrush(BackColor)) {
                 graphics.FillRectangle(brush,ClientRectangle);
             }
-           _mapBuffer.Render(graphics, ClientRectangle.Location, 1.0F);
+           graphics.Render(_mapBuffer, ClientRectangle.Location, 1.0F);
         }
 
          /// <summary>Present in original implementation - keep around for a bit just in case</summary>

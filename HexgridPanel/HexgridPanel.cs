@@ -37,10 +37,9 @@ using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexgridPanel.WinForms;
 
-using WpfInput = System.Windows.Input;
-
 namespace PGNapoleonics.HexgridPanel {
-    using Model = IMapDisplayWinForms<IHex>;
+    using WpfInput = System.Windows.Input;
+    using Model    = IMapDisplayWinForms<IHex>;
 
     /// <summary>Map orientation settings in 90 degree increments, CCW.</summary>
     public enum MapOrientation {
@@ -247,7 +246,7 @@ namespace PGNapoleonics.HexgridPanel {
 
         #region Painting
         /// <inheritdoc/>
-        protected override void OnPaintBackground(PaintEventArgs e) { ; }
+        protected override void OnPaintBackground(PaintEventArgs e) { base.OnPaintBackground(e); }
 
         /// <inheritdoc/>
         protected override void OnPaint(PaintEventArgs e) {
@@ -278,7 +277,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <inheritdoc/>
         protected virtual void RenderHighlight(Graphics graphics) {
             if (graphics == null) throw new ArgumentNullException("graphics");
-            DataContext.Model.PaintHighlight(graphics, true);
+            DataContext.Model.PaintHighlight(graphics);
         }
         /// <inheritdoc/>
         protected virtual void RenderMap(Graphics graphics) {
@@ -290,8 +289,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <inheritdoc/>
         protected virtual void RenderShading(Graphics graphics) {
             if (graphics == null) throw new ArgumentNullException("graphics");
-            var model = DataContext.Model;
-            model.PaintShading(graphics, model.Fov, model.ShadeBrushAlpha, model.ShadeBrushColor);
+            DataContext.Model.PaintShading(graphics);
         }
         /// <inheritdoc/>
         protected virtual void RenderUnits(Graphics graphics) {

@@ -39,31 +39,36 @@ namespace PGNapoleonics.HexgridPanel {
             set { _cacheScale = value; BufferCache = null; }
         }
         float  _cacheScale = 1.00F;
+
         private Bitmap BufferCache {
             get => _bufferCache;
             set { if (_bufferCache!=null) _bufferCache.Dispose(); _bufferCache = value; }
         }
         Bitmap _bufferCache = null;
-        private Bitmap BufferBack {
-            get => _bufferBack    ?? (_bufferBack  = AllocateBuffer(ClientSize,"Back"));
-            set { if (_bufferBack != null) _bufferBack.Dispose(); _bufferBack = value; }
-        }
-        Bitmap _bufferBack = null;
+
         private Bitmap BufferMap {
             get => _bufferMap     ?? (_bufferMap   = AllocateBuffer(ClientSize,"Map"));
             set { if (_bufferMap != null) _bufferMap.Dispose(); _bufferMap = value; }
         }
         Bitmap _bufferMap = null;
+
         private Bitmap BufferShading {
             get => _bufferShading ?? (_bufferShading = AllocateBuffer(ClientSize,"Shading"));
             set { if (_bufferShading != null) _bufferShading.Dispose(); _bufferShading = value; }
         }
         Bitmap _bufferShading = null;
+
         private Bitmap BufferUnits {
             get => _bufferUnits   ?? (_bufferUnits = AllocateBuffer(ClientSize,"Units"));
             set { if (_bufferUnits != null) _bufferUnits.Dispose(); _bufferUnits = value; }
         }
         Bitmap _bufferUnits = null;
+
+        private Bitmap BufferBack {
+            get => _bufferBack    ?? (_bufferBack  = AllocateBuffer(ClientSize,"Back"));
+            set { if (_bufferBack != null) _bufferBack.Dispose(); _bufferBack = value; }
+        }
+        Bitmap _bufferBack = null;
 
         private static Bitmap AllocateBuffer(Size size, string tag) {
           Bitmap temp = null, buffer = null;
@@ -114,30 +119,23 @@ namespace PGNapoleonics.HexgridPanel {
             if(e==null) throw new ArgumentNullException(nameof(e));
             if (DesignMode) { e.Graphics.FillRectangle(Brushes.Gray, ClientRectangle);  return; }
 
-            if (BufferCache != null) {
-                var mapScale = DataContext.Scales[ScaleIndex];
-                var location = AutoScrollPosition + Margin.OffsetSize();
-
-                BufferCache  .Render(BufferMap,   location, mapScale / CacheScale);
-                BufferMap    .Render(BufferUnits, location, mapScale, 
-                    DataContext.Model.PaintUnits
-                );
-                BufferUnits  .Render(BufferBack,  location, mapScale, g =>
-                    DataContext.Model.PaintHighlight(g, true)
-                );
-                BufferShading.Render(BufferBack, location, mapScale, g => {
-                    var model = DataContext.Model;
-                    model.PaintShading(g, model.Fov, model.ShadeBrushAlpha, model.ShadeBrushColor);
-                });
-
-                e.Graphics.DrawImageUnscaled(BufferBack, Point.Empty);
-            } else {
+            if (BufferCache == null) {
                 var isBusy = Interlocked.CompareExchange(ref _isCacheBusy, CACHE_IS_PAINTING, CACHE_IS_FREE);
                 if (isBusy == CACHE_IS_FREE) {
                     try     { BufferCache  = await PaintedCacheBufferAsync("Cache"); }
                     finally { _isCacheBusy = CACHE_IS_FREE; }
                     Refresh();
                 }
+            } else {
+                var mapScale = DataContext.Scales[ScaleIndex];
+                var location = AutoScrollPosition + Margin.OffsetSize();
+
+                BufferMap  .Render(BufferCache,location, mapScale / CacheScale);
+                BufferUnits.Render(BufferMap,  location, mapScale, DataContext.Model.PaintUnits);
+                BufferBack .Render(BufferUnits,location, mapScale, DataContext.Model.PaintShading);
+                BufferBack .Render(null,       location, mapScale, DataContext.Model.PaintHighlight);
+
+                e.Graphics.DrawImageUnscaled(BufferBack, Point.Empty);
             }
         }
         #endregion

@@ -72,8 +72,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Paint the top layer of the display, graphics that changes frequently between refreshes.</summary>
         /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
         /// <param name="graphics">Graphics object for the canvas being painted.</param>
-        public static void PaintHighlight<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics,
-                bool showRangeLine)
+        public static void PaintHighlight<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics)
         where THex:IHex {
             graphics.Contain(g => {
                 g.Transform = @this.TranslateToHex(@this.StartHex);
@@ -84,7 +83,7 @@ namespace PGNapoleonics.HexgridPanel {
                 graphics.Contain(g => { @this.PaintPath(g, @this.Path); });
             }
 
-            if (showRangeLine) {
+            if (@this.ShowRangeLine) {
                 graphics.Contain(g => {
                     var target = @this.CentreOfHex(@this.HotspotHex);
                     graphics.DrawLine(Pens.Red, @this.CentreOfHex(@this.StartHex), target);
@@ -98,13 +97,13 @@ namespace PGNapoleonics.HexgridPanel {
         /// <typeparam name="THex"></typeparam>
         /// <param name="this"></param>
         /// <param name="graphics"></param>
-        public static void PaintShading<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics,
-                IFov fov, byte shadeBrushAlpha, Color shadeBrushColor)
+        public static void PaintShading<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics)
         where THex:IHex
         =>  graphics.Contain(g => {
+            var fov = @this?.Fov;
                 if (fov != null) {
                     var clipHexes  = @this.GetClipInHexes(graphics.VisibleClipBounds);
-                    using(var shadeBrush = new SolidBrush(Color.FromArgb(shadeBrushAlpha, shadeBrushColor))) {
+                    using(var shadeBrush = new SolidBrush(Color.FromArgb(@this.ShadeBrushAlpha, @this.ShadeBrushColor))) {
                         @this.PaintForEachHex(graphics, clipHexes, coords => {
                             if ( ! fov[coords]) { graphics.FillPath(shadeBrush, @this.HexgridPath); }
                         } );

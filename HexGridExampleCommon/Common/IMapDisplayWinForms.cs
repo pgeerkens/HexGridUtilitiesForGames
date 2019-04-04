@@ -54,6 +54,8 @@ namespace PGNapoleonics.HexUtilities.Common {
         Color        ShadeBrushColor        { get; }
         /// <summary>Gets or sets whether to display direction indicators for the current path.</summary>
         bool         ShowPathArrow          { get; }
+        /// <summary>Gets or sets whether to display a range line from the selected hex to the hover hex.</summary>
+        bool         ShowRangeLine          { get; }
 
         /// <summary>Returns the "{Maybe<IHex>}" at location <c>coords</c>.</summary>
         Maybe<THex>  this[HexCoords coords] { get; }

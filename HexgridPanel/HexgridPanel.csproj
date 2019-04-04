@@ -195,6 +195,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="WinForms\ControlExtensions.cs" />
+    <Compile Include="IScrollableControl.cs" />
     <Compile Include="WinForms\Layer.cs" />
     <Compile Include="WinForms\LayerCollection.cs" />
     <Compile Include="WinForms\NativeMethodsTreeView.cs" />
