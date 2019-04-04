@@ -108,7 +108,7 @@ namespace PGNapoleonics.HexUtilities {
         }
 
         /// <inheritdoc/>
-        protected virtual void OnLandmarksReady(EventArgs<ILandmarks> e) => LandmarksReady.Raise(this,e);
+        protected virtual void OnLandmarksReady(EventArgs<ILandmarks> e) => LandmarksReady?.Invoke(this,e);
         #endregion
 
         #region Properties & Fields

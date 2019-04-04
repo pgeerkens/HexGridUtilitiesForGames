@@ -169,7 +169,7 @@ namespace PGNapoleonics.HexgridExampleWinforms2 {
 //              MapScale    = Scales[ScaleIndex];
 //              Hexgrid     = IsTransposed ? new TransposedHexgrid(Model.GridSize.Scale(MapScale)) 
 //                                         : new Hexgrid(Model.GridSize.Scale(MapScale)); 
-//              ScaleChange.Raise(this, EventArgs.Empty);
+//              ScaleChange?.Invoke(this, EventArgs.Empty);
 //            }
 //          } 
 //    } int _scaleIndex;

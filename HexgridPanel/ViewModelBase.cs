@@ -51,7 +51,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <param name="propertyName">The property that has a new value.</param>
         protected virtual void OnPropertyChanged(string propertyName) {
             VerifyPropertyName(propertyName);
-            PropertyChanged.Raise(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>Verify that propertyName exists as public instance property on this object.</summary>
@@ -166,6 +166,6 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Raised when this workspace should be removed from the UI.</summary>
         public event EventHandler RequestClose;
 
-        void OnRequestClose()  { RequestClose.Raise(this,EventArgs.Empty); }
+        void OnRequestClose()  { RequestClose?.Invoke(this,EventArgs.Empty); }
     }
 }

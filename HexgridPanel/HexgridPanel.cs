@@ -157,8 +157,8 @@ namespace PGNapoleonics.HexgridPanel {
         }
         /// <summary>Returns, as a Rectangle, the IUserCoords for the currently visible extent.</summary>
         public virtual CoordsRectangle VisibleRectangle
-            => GetClipInHexes(AutoScrollPosition.Scale(-1.0F / MapScale),
-                              ClientSize.Scale(1.0F / MapScale));
+        => GetClipInHexes(AutoScrollPosition.Scale(-1.0F / MapScale),
+                            ClientSize.Scale(1.0F / MapScale));
         #endregion
 
         #region Methods
@@ -251,7 +251,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <inheritdoc/>
         protected override void OnPaint(PaintEventArgs e) {
             if(e==null) throw new ArgumentNullException(nameof(e));
-            if (DesignMode) { e.Graphics.FillRectangle(Brushes.Gray, ClientRectangle);  return; }
+            if (DesignMode) { e.Graphics.FillRectangle(Brushes.Gray, ClientRectangle); return; }
 
             if(IsHandleCreated) e.Graphics.Contain(PaintMe);
             base.OnPaint(e);
@@ -303,73 +303,71 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <summary>TODO</summary>
         protected override void OnMarginChanged(EventArgs e) {
-          if (e == null) throw new ArgumentNullException(nameof(e));
-          base.OnMarginChanged(e);
-          DataContext.Margin = Margin;
+            if (e == null) throw new ArgumentNullException(nameof(e));
+            base.OnMarginChanged(e);
+            DataContext.Margin = Margin;
         }
 
         #region Mouse event handlers
         /// <inheritdoc/>
         protected override void OnMouseClick(MouseEventArgs e) {
-          if (e==null) throw new ArgumentNullException(nameof(e));
-          Tracing.Mouse.Trace(" - {0}.OnMouseClick - Shift: {1}; Ctl: {2}; Alt: {3}", 
-                                          Name, IsShiftKeyDown, IsCtlKeyDown, IsAltKeyDown);
+            if (e==null) throw new ArgumentNullException(nameof(e));
+            Tracing.Mouse.Trace($" - {Name}.OnMouseClick - Shift: {IsShiftKeyDown}; Ctl: {IsCtlKeyDown}; Alt: {IsAltKeyDown}");
 
-          var coords    = GetHexCoords(e.Location);
-          var eventArgs = new HexEventArgs(coords, ModifierKeys,e.Button,e.Clicks,e.X,e.Y,e.Delta);
+            var coords    = GetHexCoords(e.Location);
+            var eventArgs = new HexEventArgs(coords, ModifierKeys,e.Button,e.Clicks,e.X,e.Y,e.Delta);
 
-               if (e.Button == MouseButtons.Middle)   base.OnMouseClick(eventArgs);
-          else if (e.Button == MouseButtons.Right)    this.OnMouseRightClick(eventArgs);
-          else if (IsAltKeyDown  && !IsCtlKeyDown)    this.OnMouseAltClick(eventArgs);
-          else if (IsCtlKeyDown)                      this.OnMouseCtlClick(eventArgs);
-          else                                        this.OnMouseLeftClick(eventArgs);
+                 if (e.Button == MouseButtons.Middle) base.OnMouseClick(eventArgs);
+            else if (e.Button == MouseButtons.Right)  this.OnTargetHexSelected(eventArgs);
+            else if (IsAltKeyDown  && !IsCtlKeyDown)  this.OnMouseAltClick(eventArgs);
+            else if (IsCtlKeyDown)                    this.OnTargetHexSelected(eventArgs);
+            else                                      this.OnStartHexSelected(eventArgs);
         }
         /// <inheritdoc/>
         protected override void OnMouseMove(MouseEventArgs e) {
-          if (e==null) throw new ArgumentNullException(nameof(e));
-          OnHotspotHexChange(new HexEventArgs(GetHexCoords(e.Location - Margin.OffsetSize())));
+            if (e==null) throw new ArgumentNullException(nameof(e));
+            OnHotspotHexChange(new HexEventArgs(GetHexCoords(e.Location - Margin.OffsetSize())));
 
-          base.OnMouseMove(e);
+            base.OnMouseMove(e);
         }
 
         /// <summary>Raise the MouseAltClick event.</summary>
-        protected virtual void OnMouseAltClick(HexEventArgs e) => MouseAltClick.Raise(this,e);
+        protected virtual void OnMouseAltClick(HexEventArgs e) => MouseAltClick?.Invoke(this,e);
         /// <summary>Raise the MouseCtlClick event.</summary>
-        protected virtual void OnMouseCtlClick(HexEventArgs e) {
-          if (e==null) throw new ArgumentNullException(nameof(e));
-          DataContext.Model.GoalHex = e.Coords;
-          MouseCtlClick.Raise(this,e);
-          Refresh();
+        protected virtual void OnTargetHexSelected(HexEventArgs e) {
+            if (e==null) throw new ArgumentNullException(nameof(e));
+            DataContext.Model.GoalHex = e.Coords;
+            MouseCtlClick?.Invoke(this,e);
+            Refresh();
         }
         /// <summary>Raise the MouseLeftClick event.</summary>
-        protected virtual void OnMouseLeftClick(HexEventArgs e) {
-          if (e==null) throw new ArgumentNullException(nameof(e));
-          DataContext.Model.StartHex = e.Coords;
-          MouseLeftClick.Raise(this,e);
-          Refresh();
+        protected virtual void OnStartHexSelected(HexEventArgs e) {
+            if (e==null) throw new ArgumentNullException(nameof(e));
+            DataContext.Model.StartHex = e.Coords;
+            MouseLeftClick?.Invoke(this,e);
+            Refresh();
         }
-        /// <summary>Raise the MouseRightClick event.</summary>
-        protected virtual void OnMouseRightClick(HexEventArgs e) => MouseRightClick.Raise(this,e);
+
         /// <summary>Raise the HotspotHexChange event.</summary>
         protected virtual void OnHotspotHexChange(HexEventArgs e) {
-          if (e==null) throw new ArgumentNullException(nameof(e));
-          DataContext.Model.HotspotHex = e.Coords;
-          HotspotHexChange.Raise(this,e);
-          Refresh();
+            if (e==null) throw new ArgumentNullException(nameof(e));
+            DataContext.Model.HotspotHex = e.Coords;
+            HotspotHexChange?.Invoke(this,e);
+            Refresh();
         }
 
         /// <summary>Raise the ScaleChange event.</summary>
         protected virtual void OnScaleChange(EventArgs e) {
-          SetMapDirty();
-          OnResize(e);
-          Invalidate();
-          ScaleChange.Raise(this, e);
+            SetMapDirty();
+            OnResize(e);
+            Invalidate();
+            ScaleChange?.Invoke(this, e);
         }
 
         /// <inheritdoc/>
         protected override void OnResize(EventArgs e) {
-          SetScrollLimits(DataContext.Model);
-          base.OnResize(e);
+            SetScrollLimits(DataContext.Model);
+            base.OnResize(e);
         }
         #endregion
 

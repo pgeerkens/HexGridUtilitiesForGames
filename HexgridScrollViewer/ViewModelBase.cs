@@ -51,7 +51,7 @@ namespace PGNapoleonics.HexgridExampleWinforms2 {
     /// <param name="propertyName">The property that has a new value.</param>
     protected virtual void OnPropertyChanged(string propertyName) {
       this.VerifyPropertyName(propertyName);
-      this.PropertyChanged.Raise(this, new PropertyChangedEventArgs(propertyName));
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
     /// <summary>Verify that propertyName exists as public instance property on this object.</summary>
@@ -168,6 +168,6 @@ namespace PGNapoleonics.HexgridExampleWinforms2 {
     /// <summary>Raised when this workspace should be removed from the UI.</summary>
     public event EventHandler RequestClose;
 
-    void OnRequestClose()  { RequestClose.Raise(this,EventArgs.Empty); }
+    void OnRequestClose()  { RequestClose?.Invoke(this,EventArgs.Empty); }
   }
 }

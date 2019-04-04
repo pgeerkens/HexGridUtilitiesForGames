@@ -77,7 +77,7 @@ namespace PGNapoleonics.HexgridPanel {
             if (!AutoScroll) return;
 
             this.RollHorizontal(e.Delta * MouseHWheelStep/120);
-            MouseHWheel.Raise(this, e);
+            MouseHWheel?.Invoke(this, e);
 
             if(e is HandledMouseEventArgs eh) eh.Handled = true;
         }

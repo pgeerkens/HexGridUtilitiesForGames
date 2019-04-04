@@ -30,9 +30,6 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.HexgridPanel.WinForms;
-
 namespace PGNapoleonics.HexgridPanel.WinForms {
     /// <summary>TODO</summary>
     public partial class TiltAwareTreeView : TreeView, IScrollableControl {
@@ -61,7 +58,7 @@ namespace PGNapoleonics.HexgridPanel.WinForms {
             if (!Scrollable) return;
 
             this.RollHorizontal(e.Delta);
-            MouseHWheel.Raise(this, e);
+            MouseHWheel?.Invoke(this, e);
 
             if (e is HandledMouseEventArgs eh) eh.Handled = true;
         }

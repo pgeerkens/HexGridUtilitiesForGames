@@ -30,7 +30,6 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexgridPanel.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
@@ -83,7 +82,7 @@ namespace PGNapoleonics.HexgridPanel {
             if (!AutoScroll) return;
 
             this.RollHorizontal(e.Delta);
-            MouseHWheel.Raise(this, e);
+            MouseHWheel?.Invoke(this, e);
 
             if(e is HandledMouseEventArgs eh) eh.Handled = true;
         }

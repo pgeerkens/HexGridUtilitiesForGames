@@ -44,7 +44,7 @@ namespace PGNapoleonics.HexgridExampleWinforms2 {
         public event EventHandler<RenderingEventArgs> Render;
 
         protected override void OnRender(DrawingContext dc) {
-            Render.Raise(this, new RenderingEventArgs(dc));
+            Render?.Invoke(this, new RenderingEventArgs(dc));
         }
 
         /// <summary>TODO</summary>
@@ -344,28 +344,28 @@ namespace PGNapoleonics.HexgridExampleWinforms2 {
     //    }
 
     //    /// <summary>Raise the MouseAltClick event.</summary>
-    //    protected virtual void OnMouseAltClick(HexEventArgs e) { MouseAltClick.Raise(this,e); }
+    //    protected virtual void OnMouseAltClick(HexEventArgs e) { MouseAltClick?.Invoke(this,e); }
     //    /// <summary>Raise the MouseCtlClick event.</summary>
     //    protected virtual void OnMouseCtlClick(HexEventArgs e) {
     //      if (e==null) throw new ArgumentNullException(nameof(e));
     //      DataContext.Model.GoalHex = e.Coords;
-    //      MouseCtlClick.Raise(this,e);
+    //      MouseCtlClick?.Invoke(this,e);
     ////      Refresh();
     //    }
     //    /// <summary>Raise the MouseLeftClick event.</summary>
     //    protected virtual void OnMouseLeftClick(HexEventArgs e) {
     //      if (e==null) throw new ArgumentNullException(nameof(e));
     //      DataContext.Model.StartHex = e.Coords;
-    //      MouseLeftClick.Raise(this,e);
+    //      MouseLeftClick?.Invoke(this,e);
     ////      Refresh();
     //    }
     //    /// <summary>Raise the MouseRightClick event.</summary>
-    //    protected virtual void OnMouseRightClick(HexEventArgs e) { MouseRightClick.Raise(this,e); }
+    //    protected virtual void OnMouseRightClick(HexEventArgs e) { MouseRightClick?.Invoke(this,e); }
     //   /// <summary>Raise the HotspotHexChange event.</summary>
     //    protected virtual void OnHotspotHexChange(HexEventArgs e) {
     //      if (e==null) throw new ArgumentNullException(nameof(e));
     //      DataContext.Model.HotspotHex = e.Coords;
-    //      HotspotHexChange.Raise(this,e);
+    //      HotspotHexChange?.Invoke(this,e);
     ////      Refresh();
     //    }
 
@@ -374,7 +374,7 @@ namespace PGNapoleonics.HexgridExampleWinforms2 {
     //      SetMapDirty();
     //      OnRenderSizeChanged(new SizeChangedInfo(this,new WpfSize(),true,true));
     //      InvalidateVisual();
-    //      ScaleChange.Raise(this, e);
+    //      ScaleChange?.Invoke(this, e);
     //    }
 
     //    /// <inheritdoc/>

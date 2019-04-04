@@ -165,7 +165,7 @@ namespace PGNapoleonics.HexgridPanel {
                     _scaleIndex = newValue;
                     MapScale    = Scales[ScaleIndex];
                     Grid        = new Hexgrid(IsTransposed,Model.GridSize,MapScale);
-                    ScaleChange.Raise(this,EventArgs.Empty);
+                    ScaleChange?.Invoke(this,EventArgs.Empty);
                 }
             }
         }

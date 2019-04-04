@@ -53,7 +53,7 @@ namespace PGNapoleonics.HexgridExampleWinforms2 {
             if (CanContentScroll) {
                 ScrollToHorizontalOffset(HorizontalOffset + e.Delta);
 
-                if (MouseHWheel != null) MouseHWheel.Raise(this, e);
+                if (MouseHWheel != null) MouseHWheel?.Invoke(this, e);
             }
         }
         #endregion
