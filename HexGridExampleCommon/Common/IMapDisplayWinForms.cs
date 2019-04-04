@@ -50,8 +50,6 @@ namespace PGNapoleonics.HexUtilities.Common {
         ILandmarks   Landmarks              { get;}
         /// <summary>Gets or sets the alpha component for the shading brush used by Field-of-View display to indicate non-visible hexes.</summary>
         byte         ShadeBrushAlpha        { get; }
-        ///// <summary>Gets or sets the base color for the shading brush used by Field-of-View display to indicate non-visible hexes.</summary>
-        //Color        ShadeBrushColor        { get; }
         /// <summary>Gets or sets whether to display direction indicators for the current path.</summary>
         bool         ShowPathArrow          { get; }
         /// <summary>Gets or sets whether to display a range line from the selected hex to the hover hex.</summary>

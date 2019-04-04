@@ -100,10 +100,6 @@
       <Project>{388ad675-d18e-4dfa-abb9-55ab3ea993a2}</Project>
       <Name>HexgridPanel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HexgridScrollableExample\HexgridExampleWinforms.csproj">
-      <Project>{45429a16-9a82-41c2-9e2d-70d88b4d6d6b}</Project>
-      <Name>HexgridExampleWinforms</Name>
-    </ProjectReference>
     <ProjectReference Include="..\HexUtilities\HexUtilities.csproj">
       <Project>{013628e1-60e2-40a6-91d4-8b446f397a0a}</Project>
       <Name>HexUtilities</Name>

@@ -67,11 +67,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Signals the object that initialization is starting.</summary>
         public virtual void BeginInit() { ; }
         /// <summary>Signals the object that initialization is complete.</summary>
-        public virtual void EndInit() { 
-            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
-            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
-            SetStyle(ControlStyles.Opaque, true);
-        }
+        public virtual void EndInit() { ; }
 
         #region Events
         /// <summary>Announces that the mouse is now over a new hex.</summary>

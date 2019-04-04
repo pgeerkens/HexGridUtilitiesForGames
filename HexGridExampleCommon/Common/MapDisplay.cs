@@ -131,7 +131,6 @@ namespace PGNapoleonics.HexUtilities.Common {
             HotspotHex      =
             StartHex        = HexCoords.EmptyUser;
             ShadeBrushAlpha = 78;
-            ShadeBrushColor = Color.Black;
             ShowFov         = true;
             ShowHexgrid     = true;
             ShowPath        = true;
@@ -168,8 +167,6 @@ namespace PGNapoleonics.HexUtilities.Common {
         public          Maybe<IDirectedPath> Path => _path; Maybe<IDirectedPath> _path;
         /// <summary>Gets or sets the alpha component for the shading brush used by Field-of-View display to indicate non-visible hexes.</summary>
         public          byte         ShadeBrushAlpha { get; set; }
-        /// <summary>Gets or sets the base color for the shading brush used by Field-of-View display to indicate non-visible hexes.</summary>
-        public          Color        ShadeBrushColor { get; set; }
         /// <summary>Gets or sets whether to display the FIeld-of-View for <see cref="HotspotHex"/>.</summary>
         public          bool         ShowFov         { get; set; }
         /// <summary>Gets or sets whether to display the hexgrid.</summary>

@@ -10,8 +10,6 @@
       if (!_isDisposed) {
         if (disposing) {
           if (components !=null) { components .Dispose();  components  = null; }
-          if(_mapBuffer  !=null) { _mapBuffer .Dispose();  _mapBuffer  = null; }
-          if(_backBuffer !=null) { _backBuffer.Dispose();  _backBuffer = null; }
         }
         _isDisposed = true;
       }
