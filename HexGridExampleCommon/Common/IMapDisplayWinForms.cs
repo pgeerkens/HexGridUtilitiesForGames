@@ -30,7 +30,6 @@ using PGNapoleonics.HexUtilities.FieldOfView;
 using PGNapoleonics.HexUtilities.Pathfinding;
 
 namespace PGNapoleonics.HexUtilities.Common {
-    using Color        = System.Drawing.Color;
     using GraphicsPath = System.Drawing.Drawing2D.GraphicsPath;
     using HexPointF    = System.Drawing.PointF;
     using HexSize      = System.Drawing.Size;

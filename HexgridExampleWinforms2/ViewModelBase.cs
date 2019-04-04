@@ -31,97 +31,91 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Input;
 
-using PGNapoleonics.HexUtilities.Common;
-
 namespace PGNapoleonics.HexgridExampleWinforms2 {
-  /// <summary>TODO</summary>
-  public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable {
     /// <summary>TODO</summary>
-    protected ViewModelBase(string displayName) { DisplayName = displayName; }
+    public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable {
+        /// <summary>TODO</summary>
+        protected ViewModelBase(string displayName) { DisplayName = displayName; }
 
-    /// <summary>TODO</summary>
-    public            string DisplayName                { get; private set; }
-    /// <summary>TODO</summary>
-    protected virtual bool   ThrowOnInvalidPropertyName { get { return true; } }
+        /// <summary>TODO</summary>
+        public            string DisplayName                { get; }
+        /// <summary>TODO</summary>
+        protected virtual bool   ThrowOnInvalidPropertyName => true;
 
-    /// <summary>Raised when a property on this object has a new value.</summary>
-    public event PropertyChangedEventHandler PropertyChanged;
+        /// <summary>Raised when a property on this object has a new value.</summary>
+        public event PropertyChangedEventHandler PropertyChanged;
 
-    /// <summary>Raises this object's PropertyChanged event.</summary>
-    /// <param name="propertyName">The property that has a new value.</param>
-    protected virtual void OnPropertyChanged(string propertyName) {
-      this.VerifyPropertyName(propertyName);
-      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    /// <summary>Verify that propertyName exists as public instance property on this object.</summary>
-    [Conditional("DEBUG"), DebuggerStepThrough]
-    public void VerifyPropertyName(string propertyName) {
-      if (TypeDescriptor.GetProperties(this)[propertyName] == null) {
-        string msg = "Invalid property name: " + propertyName;
-        if (this.ThrowOnInvalidPropertyName)       throw new ArgumentOutOfRangeException("propertyName",msg);
-
-        Debug.Fail(msg);
-      }
-    }
-
-    #region IDisposable implementation with Finalizeer
-    bool _isDisposed = false;
-    /// <inheritdoc/>
-    public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
-    /// <summary>Anchors the Dispose chain for sub-classes.</summary>
-    protected virtual void Dispose(bool disposing) {
-      if (!_isDisposed) {
-        if (disposing) {
+        /// <summary>Raises this object's PropertyChanged event.</summary>
+        /// <param name="propertyName">The property that has a new value.</param>
+        protected virtual void OnPropertyChanged(string propertyName) {
+            VerifyPropertyName(propertyName);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        _isDisposed = true;
-      }
+
+        /// <summary>Verify that propertyName exists as public instance property on this object.</summary>
+        [Conditional("DEBUG"), DebuggerStepThrough]
+        public void VerifyPropertyName(string propertyName) {
+            if (TypeDescriptor.GetProperties(this)[propertyName] == null) {
+                string msg = "Invalid property name: " + propertyName;
+                if (ThrowOnInvalidPropertyName) throw new ArgumentOutOfRangeException("propertyName",msg);
+
+                Debug.Fail(msg);
+            }
+        }
+
+        #region IDisposable implementation with Finalizeer
+        bool _isDisposed = false;
+        /// <inheritdoc/>
+        public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
+        /// <summary>Anchors the Dispose chain for sub-classes.</summary>
+        protected virtual void Dispose(bool disposing) {
+          if (!_isDisposed) {
+            if (disposing) {
+            }
+            _isDisposed = true;
+          }
+        }
+        /// <summary>Finalize this instance.</summary>
+        ~ViewModelBase() { Dispose(false); }
+        #endregion
     }
-    /// <summary>Finalize this instance.</summary>
-    ~ViewModelBase() { Dispose(false); }
-    #endregion
-  }
 
     /// <summary>TODO</summary>
-  public class CommandViewModel : ViewModelBase { 
-    /// <summary>TODO</summary>
-    public CommandViewModel(string displayName, ICommand command) : base(displayName) { 
-      if (command == null) throw new ArgumentNullException("command"); 
-      this.Command = command; 
-    } 
-    /// <summary>TODO</summary>
-    public ICommand Command { get; private set; } 
-  }
+    public class CommandViewModel : ViewModelBase { 
+        /// <summary>TODO</summary>
+        public CommandViewModel(string displayName, ICommand command) : base(displayName)
+        =>  Command = command??throw new ArgumentNullException("command"); 
 
-  /// <summary>TODO</summary>
-  public class RelayCommand : ICommand { 
-    /// <summary>TODO</summary>
-    public RelayCommand(Action<object> execute) : this(execute, (o) => true) { } 
-    /// <summary>TODO</summary>
-    public RelayCommand(Action<object> execute, Predicate<object> canExecute) { 
-      if (execute == null) throw new ArgumentNullException("execute");
-      if (canExecute == null) throw new ArgumentNullException("canExecute");
-
-      _execute    = execute; 
-      _canExecute = canExecute;
-    } 
-  
-    /// <summary>TODO</summary>
-    [DebuggerStepThrough] 
-    public bool CanExecute(object parameter) { return  _canExecute(parameter); } 
-
-    /// <summary>TODO</summary>
-    public event EventHandler CanExecuteChanged { 
-      add    { CommandManager.RequerySuggested += value; } 
-      remove { CommandManager.RequerySuggested -= value; } 
+        /// <summary>TODO</summary>
+        public ICommand Command { get; } 
     }
-  
-    /// <summary>TODO</summary>
-    public void Execute(object parameter) { _execute(parameter); }
 
-    readonly Action<object>    _execute; 
-    readonly Predicate<object> _canExecute; 
-  }
+    /// <summary>TODO</summary>
+    public class RelayCommand : ICommand { 
+        /// <summary>TODO</summary>
+        public RelayCommand(Action<object> execute) : this(execute, (o) => true) { } 
+        /// <summary>TODO</summary>
+        public RelayCommand(Action<object> execute, Predicate<object> canExecute) {
+            _execute    = execute??throw new ArgumentNullException("execute"); 
+            _canExecute = canExecute??throw new ArgumentNullException("canExecute");
+        } 
+  
+        /// <summary>TODO</summary>
+        [DebuggerStepThrough] 
+        public bool CanExecute(object parameter) => _canExecute(parameter);
+
+        /// <summary>TODO</summary>
+        public event EventHandler CanExecuteChanged { 
+            add    { CommandManager.RequerySuggested += value; } 
+            remove { CommandManager.RequerySuggested -= value; } 
+        }
+  
+        /// <summary>TODO</summary>
+        public void Execute(object parameter) { _execute(parameter); }
+
+        readonly Action<object>    _execute; 
+        readonly Predicate<object> _canExecute; 
+    }
 
   ///// <summary>TODO</summary>
   //public class RelayCommand<T> : ICommand { 
@@ -153,21 +147,21 @@ namespace PGNapoleonics.HexgridExampleWinforms2 {
   //  readonly Predicate<object> _canExecute; 
   //}
 
-  /// <summary>TODO</summary>
-  public abstract class WorkspaceViewModel : ViewModelBase {
     /// <summary>TODO</summary>
-    protected WorkspaceViewModel() : this ("WorkspaceViewModel_None") { ; }
-    /// <summary>TODO</summary>
-    protected WorkspaceViewModel(string displayName) : base (displayName) {
-      _closeCommand = new RelayCommand(param => this.OnRequestClose());
+    public abstract class WorkspaceViewModel : ViewModelBase {
+        /// <summary>TODO</summary>
+        protected WorkspaceViewModel() : this ("WorkspaceViewModel_None") { ; }
+        /// <summary>TODO</summary>
+        protected WorkspaceViewModel(string displayName) : base (displayName) {
+            _closeCommand = new RelayCommand(param => OnRequestClose());
+        }
+
+        /// <summary>Returns the command to remove this workspace from the user interface.</summary>
+        public virtual ICommand CloseCommand => _closeCommand; ICommand _closeCommand;
+
+        /// <summary>Raised when this workspace should be removed from the UI.</summary>
+        public event EventHandler RequestClose;
+
+        void OnRequestClose() => RequestClose?.Invoke(this,EventArgs.Empty);
     }
-
-    /// <summary>Returns the command to remove this workspace from the user interface.</summary>
-    public virtual ICommand CloseCommand { get { return _closeCommand; } } ICommand _closeCommand;
-
-    /// <summary>Raised when this workspace should be removed from the UI.</summary>
-    public event EventHandler RequestClose;
-
-    void OnRequestClose()  { RequestClose?.Invoke(this,EventArgs.Empty); }
-  }
 }
