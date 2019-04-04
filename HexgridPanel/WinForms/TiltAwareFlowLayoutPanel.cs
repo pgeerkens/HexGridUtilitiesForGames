@@ -104,6 +104,7 @@ namespace PGNapoleonics.HexgridPanel {
             ScrollControlIntoView(nextControl);
         }
 
+        /// <summary>Gets or sets the current amount of unapplied scroll, as a <see cref="Point"/> object.</summary>
         public Point UnappliedScroll { get; set; } = new Point();
 
         public Point ScrollLargeChange => new Point (120, 120);

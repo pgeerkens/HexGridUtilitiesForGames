@@ -40,7 +40,7 @@ namespace PGNapoleonics.HexUtilities.Common {
 
     /// <summary>(Technology-dependent portion of) interface contract required of a map board to be displayed by the Hexgrid control.</summary>
     public interface IMapDisplayWinForms<THex> : IMapDisplay<THex> where THex:IHex {
-        /// <summary>Gets or sets the Field-of-View for the current <see cref="HotspotHex"/>, as an <see cref="IFov"/> object.</summary>
+        /// <summary>Gets or sets the Field-of-View for the current HotspotHex, as an <see cref="IFov"/> object.</summary>
         IFov         Fov                    { get; }
         /// <summary>.</summary>/>
         GraphicsPath HexgridPath            { get; }

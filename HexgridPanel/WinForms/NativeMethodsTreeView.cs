@@ -29,6 +29,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace PGNapoleonics.HexgridPanel.WinForms {
     /// <summary>Methods to get/set AUtoScrollPosition for a <see cref="TreeView"/> control</summary>

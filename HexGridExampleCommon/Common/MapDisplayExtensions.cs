@@ -31,7 +31,8 @@ namespace PGNapoleonics.HexUtilities.Common {
     using HexPoint = System.Drawing.Point;
     using Matrix   = System.Drawing.Drawing2D.Matrix;
 
-    public static partial class MapDisplaydExtensions {
+    /// <summary>Non-painting extension metohds for <see cref="IMapDisplayWinForms<T>"/></summary>
+    public static partial class MapDisplayExtensions {
         /// <summary>Returns the translation transform of @this for the upper-left corner of the specified hex.</summary>
         /// <typeparam name="THex"></typeparam>
         /// <param name="this"></param>

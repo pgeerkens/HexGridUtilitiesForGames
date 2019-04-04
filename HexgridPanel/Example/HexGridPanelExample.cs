@@ -41,6 +41,7 @@ using PGNapoleonics.HexgridExampleCommon;
 namespace PGNapoleonics.HexgridPanel.Example {
     using MapGridDisplay = MapDisplay<IHex>;
 
+    /// <summary>An example <see cref="Form"/> extending <see cref="HexgridPanelForm"/>.</summary>
     public sealed partial class HexgridPanelExample : HexgridPanelForm {
         private bool           _isPanelResizeSuppressed = false;
 

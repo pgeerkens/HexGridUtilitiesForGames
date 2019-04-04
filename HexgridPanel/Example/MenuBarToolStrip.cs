@@ -27,7 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Forms;
@@ -35,7 +34,7 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
 
 namespace PGNapoleonics.HexgridPanel.Example {
-    using HexSize        = System.Drawing.Size;
+    using HexSize = System.Drawing.Size;
 
     public partial class MenuBarToolStrip: UserControl {
         public MenuBarToolStrip() => InitializeComponent();

@@ -43,10 +43,10 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
         private readonly object _syncLock = new object();
 
         public ArrayFieldOfView(IFovBoard board) {
-          _mapSizeHexes = board.MapSizeHexes;
-          _fovBacking   = ( from i in Enumerable.Range(0,board.MapSizeHexes.Width)
-                            select new BitArray(board.MapSizeHexes.Height)
-                          ).ToArray();
+            _mapSizeHexes = board.MapSizeHexes;
+            _fovBacking   = ( from i in Enumerable.Range(0,board.MapSizeHexes.Width)
+                              select new BitArray(board.MapSizeHexes.Height)
+                            ).ToArray();
         }
 
         public bool this[HexCoords coords] {

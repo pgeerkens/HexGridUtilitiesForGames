@@ -70,7 +70,7 @@
     <Compile Include="Common\IHexgridExtensions.cs" />
     <Compile Include="Common\IMapDisplayWinForms.cs" />
     <Compile Include="Common\MapDisplay.cs" />
-    <Compile Include="Common\MapDisplaydExtensions.cs" />
+    <Compile Include="Common\MapDisplayExtensions.cs" />
     <Compile Include="Common\PointExtensions.cs" />
     <Compile Include="Common\SizeExtensions.cs" />
     <Compile Include="Common\UserCoordsRectangle.cs" />

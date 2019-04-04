@@ -41,6 +41,7 @@ namespace PGNapoleonics.HexgridPanel {
     using ILandmarks = ILandmarkCollection;
     using Hexes      = BoardStorage<Maybe<IHex>>;
 
+    /// <summary>Extension methods to paint an <see cref="IMapDisplayWinForms{T}"/> from a <see cref="Graphics"/>.</summary>
     public static partial class MapDisplayPainter {
         /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
         /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>

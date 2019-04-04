@@ -28,39 +28,38 @@
 #endregion
 using System.Windows.Forms;
 
-using System.Diagnostics.CodeAnalysis;
-
 using PGNapoleonics.HexUtilities;
-using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexgridPanel {
-  /// <summary></summary>
-  public class HexEventArgs : MouseEventArgs {
-    /// <summary>TODO</summary>
-    public HexCoords  Coords       { get; private set; }
+    /// <summary></summary>
+    public class HexEventArgs : MouseEventArgs {
+        /// <summary>TODO</summary>
+        public HexEventArgs(HexCoords coords) 
+        : this(coords, Keys.None, MouseButtons.None,0,0,0,0) {}
 
-    /// <summary>TODO</summary>
-    public bool     Alt          { get { return ModifierKeys.HasFlag(Keys.Alt);  } }
-    /// <summary>TODO</summary>
-    public bool     Control      { get { return ModifierKeys.HasFlag(Keys.Control); } }
-    /// <summary>TODO</summary>
-    public bool     Shift        { get { return ModifierKeys.HasFlag(Keys.Shift); } }
+        /// <summary>TODO</summary>
+        public HexEventArgs(HexCoords coords, Keys modifierKeys) 
+        : this(coords, modifierKeys, MouseButtons.None,0,0,0,0) {}
 
-    /// <summary>TODO</summary>
-    public Keys     ModifierKeys { get; private set; }
+        /// <summary>TODO</summary>
+        public HexEventArgs(HexCoords coords, Keys modifierKeys, 
+        MouseButtons buttons, int clicks, int x, int y, int delta)
+        : base(buttons,clicks,x,y,delta) {
+            Coords       = coords;
+            ModifierKeys = modifierKeys;
+        }
 
-    /// <summary>TODO</summary>
-    public HexEventArgs(HexCoords coords) 
-      : this(coords, Keys.None, MouseButtons.None,0,0,0,0) {}
-    /// <summary>TODO</summary>
-    public HexEventArgs(HexCoords coords, Keys modifierKeys) 
-      : this(coords, modifierKeys, MouseButtons.None,0,0,0,0) {}
-    /// <summary>TODO</summary>
-    public HexEventArgs(HexCoords coords, Keys modifierKeys, 
-      MouseButtons buttons, int clicks, int x, int y, int delta)
-      : base(buttons,clicks,x,y,delta) {
-      Coords       = coords;
-      ModifierKeys = modifierKeys;
+        /// <summary>TODO</summary>
+        public HexCoords  Coords   { get; }
+
+        /// <summary>TODO</summary>
+        public Keys   ModifierKeys { get; }
+
+        /// <summary>TODO</summary>
+        public bool       Alt      => ModifierKeys.HasFlag(Keys.Alt);
+        /// <summary>TODO</summary>
+        public bool       Control  => ModifierKeys.HasFlag(Keys.Control);
+        /// <summary>TODO</summary>
+        public bool       Shift    => ModifierKeys.HasFlag(Keys.Shift);
     }
-  }
 }

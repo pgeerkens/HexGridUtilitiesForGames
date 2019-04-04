@@ -119,14 +119,12 @@ namespace PGNapoleonics.HexgridPanel {
                 var location = AutoScrollPosition + Margin.OffsetSize();
 
                 BufferCache  .Render(BufferMap,   location, mapScale / CacheScale);
-                BufferMap    .Render(BufferUnits, location, mapScale, g => {
-                    var model = DataContext.Model;
-                    model.PaintUnits(g);
-                });
-                BufferUnits  .Render(BufferBack,  location, mapScale, g => {
-                    var model = DataContext.Model;
-                    model.PaintHighlight(g, true);
-                });
+                BufferMap    .Render(BufferUnits, location, mapScale, 
+                    DataContext.Model.PaintUnits
+                );
+                BufferUnits  .Render(BufferBack,  location, mapScale, g =>
+                    DataContext.Model.PaintHighlight(g, true)
+                );
                 BufferShading.Render(BufferBack, location, mapScale, g => {
                     var model = DataContext.Model;
                     model.PaintShading(g, model.Fov, model.ShadeBrushAlpha, model.ShadeBrushColor);

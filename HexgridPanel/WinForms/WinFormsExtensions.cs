@@ -47,10 +47,10 @@ namespace PGNapoleonics.HexgridPanel.WinForms {
         /// <summary>Use COMPOSITED to make a flicker-free form control.</summary>
 		/// See "http://social.msdn.microsoft.com/Forums/en-US/winforms/thread/aaed00ce-4bc9-424e-8c05-c30213171c2c"
         public static CreateParams SetCompositedStyle(this Control control, CreateParams parameters) {
-              if (control==null) throw new ArgumentNullException("control");
-              if (parameters==null) throw new ArgumentNullException("parameters");
-              parameters.ExStyle |= (int)WindowExtendedStyles.Composited;
-              return parameters;
+            if (control==null) throw new ArgumentNullException("control");
+            if (parameters==null) throw new ArgumentNullException("parameters");
+            parameters.ExStyle |= (int)WindowExtendedStyles.Composited;
+            return parameters;
         }
     }
 

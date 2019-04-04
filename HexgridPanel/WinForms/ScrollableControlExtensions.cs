@@ -53,15 +53,13 @@ namespace PGNapoleonics.HexgridPanel.WinForms {
         /// <summary>Service routine to execute a Panel scroll.</summary>
         [Obsolete("Use ScrollPanelVertical or ScrollPanelHorizontal instead.")]
         public static void ScrollPanel(this IScrollableControl @this, ScrollEventType type,
-                    ScrollOrientation orientation, int sign) {
-            ScrollActions [
-                    ( (type.HasFlag(ScrollEventType.SmallDecrement))      ? 4 : 0 )
+                    ScrollOrientation orientation, int sign)
+        =>  ScrollActions [
+                    ( type.HasFlag(ScrollEventType.SmallDecrement)        ? 4 : 0 )
                   + ( (orientation == ScrollOrientation.HorizontalScroll) ? 2 : 0 )
-                  + ( (sign == +1)                                        ? 1 : 0 ) ]
-            (@this);
-        }
+                  + ( (sign == +1)                                        ? 1 : 0 ) ] (@this);
 
-        /// <summary>Returns a new <see cref="MouseEventArgs" from the supplies <see cref="Message"./>/></summary>
+        /// <summary>Returns a new <see cref="MouseEventArgs"/> from the supplies <see cref="Message"/>.</summary>
         /// <param name="this"></param>
         public static MouseEventArgs CreateMouseEventArgs(this Message @this) 
         => new MouseEventArgs(  
@@ -146,7 +144,7 @@ namespace PGNapoleonics.HexgridPanel.WinForms {
 
         private delegate void ScrollAction(IScrollableControl ctrl);
 
-        private static IReadOnlyList<ScrollAction> ScrollActions = new List<ScrollAction> {
+        private static readonly IReadOnlyList<ScrollAction> ScrollActions = new List<ScrollAction> {
                 PageUp,   PageDown,  PageLeft, PageRight,
                 LineUp,   LineDown,  LineLeft, LineRight
             };

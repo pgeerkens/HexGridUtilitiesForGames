@@ -56,6 +56,10 @@ namespace PGNapoleonics.HexgridPanel.WinForms {
             else                        action.Invoke(args);
         }
 
+        /// <summary>.</summary>
+        /// <param name="this"></param>
+        /// <param name="g"></param>
+        /// <param name="inflation"></param>
         public static void DrawFocusRectangle(this Control @this, Graphics g, Point inflation)
         => ControlPaint.DrawFocusRectangle(g, @this.ClientRectInflated(inflation));
 
