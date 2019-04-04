@@ -27,8 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 
 namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>Extension methods for <see Cref="Hex"/>.</summary>
@@ -36,12 +34,6 @@ namespace PGNapoleonics.HexUtilities.Common {
         /// <summary>The <i>Manhattan</i> distance from this hex to that at <c>coords</c>.</summary>
         public static int Range(this IHex @this, IHex target)
         => @this.Coords.Range(target.Coords);
-
-        /// <summary>TODO</summary>
-        public static void Paint(this IHex @this, Graphics graphics, GraphicsPath path, Brush brush) {
-            if (graphics==null) throw new ArgumentNullException("graphics");
-            graphics.FillPath(brush, path);
-        }
     }
 
     /// <summary>TODO</summary>

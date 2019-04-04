@@ -52,18 +52,17 @@ namespace PGNapoleonics.HexgridPanel {
         =>  graphics.Contain( g => {
                 var clipHexes  = @this.GetClipInHexes(graphics.VisibleClipBounds);
                 graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                var font       = SystemFonts.MenuFont;
-                var brush      = Brushes.Black;
-                var textOffset = new Point((@this.GridSize.Scale(0.50F)
-                               - new SizeF(font.Size,font.Size).Scale(0.8F)).ToSize());
                 @this.PaintForEachHex(graphics, clipHexes, coords => {
                     boardHexes[coords].IfHasValueDo(h => {
                         if(h is IHex hex) hex.Paint(graphics, @this.HexgridPath, hex.GetBrush());
                     });
                     if (showHexgrid) graphics.DrawPath(Pens.Black, @this.HexgridPath);
                     if (@this.LandmarkToShow > 0) {
+                        var font       = SystemFonts.MenuFont;
+                        var textOffset = new Point((@this.GridSize.Scale(0.50F)
+                                       - new SizeF(font.Size,font.Size).Scale(0.8F)).ToSize());
                         graphics.DrawString(landmarks.DistanceFrom(coords,@this.LandmarkToShow-1),
-                                font, brush, textOffset);
+                                font, Brushes.Black, textOffset);
                     }
                 } );
             } );
@@ -103,7 +102,7 @@ namespace PGNapoleonics.HexgridPanel {
                 if (fov != null) {
                     graphics.CompositingMode = CompositingMode.SourceOver;
                     var clipHexes  = @this.GetClipInHexes(graphics.VisibleClipBounds);
-                    using(var shadeBrush = new SolidBrush(Color.FromArgb(@this.ShadeBrushAlpha, @this.ShadeBrushColor))) {
+                    using(var shadeBrush = new SolidBrush(Color.FromArgb(@this.ShadeBrushAlpha, ShadeColor))) {
                         @this.PaintForEachHex(graphics, clipHexes, coords => {
                             if ( ! fov[coords]) { graphics.FillPath(shadeBrush, @this.HexgridPath); }
                         } );
@@ -208,19 +207,34 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <summary>.</summary>
         /// <param name="hex"></param>
+        /// <remarks>
+        /// Returns clones to avoid inter-thread contention.
+        /// </remarks>
         public static Brush GetBrush(this IHex hex) {
             switch(hex.TerrainType) {
-                default:  return Brushes.SlateGray;  // Undefined
-                case '.': return Brushes.White;      // Clear
-                case '2': return Brushes.DarkGray;   // Pike
-                case '3': return Brushes.SandyBrown; // Road
-                case 'F': return Brushes.Brown;      // Ford
-                case 'H': return Brushes.Khaki;      // Hill
-                case 'M': return Brushes.DarkKhaki;  // Mountain
-                case 'R': return Brushes.DarkBlue;   // River
-                case 'W': return Brushes.Green;      // Woods
+                default:  return UndefinedBrush;
+                case '.': return ClearBrush;
+                case '2': return PikeBrush;
+                case '3': return RoadBrush;
+                case 'F': return FordBrush;
+                case 'H': return HillBrush;
+                case 'M': return MountainBrush;
+                case 'R': return RiverBrush;
+                case 'W': return WoodsBrush;
             }
         }
+
+        /// <summary>Gets the base color for the shading brush used by Field-of-View display to indicate non-visible hexes.</summary>
+        private static Color ShadeColor     = Color.Black;
+        private static Brush UndefinedBrush = (Brush)Brushes.SlateGray.Clone();
+        private static Brush ClearBrush     = (Brush)Brushes.White.Clone();
+        private static Brush PikeBrush      = (Brush)Brushes.DarkGray.Clone();
+        private static Brush RoadBrush      = (Brush)Brushes.SandyBrown.Clone();
+        private static Brush FordBrush      = (Brush)Brushes.Brown.Clone();
+        private static Brush HillBrush      = (Brush)Brushes.Khaki.Clone();
+        private static Brush MountainBrush  = (Brush)Brushes.DarkKhaki.Clone();
+        private static Brush RiverBrush     = (Brush)Brushes.DarkBlue.Clone();
+        private static Brush WoodsBrush     = (Brush)Brushes.Green.Clone();
 
         /// <summary>Performs the specified <see cref="Action{THex}"/> for each hex of <paramref name="this"/> in <paramref name="clipRectangle"/>.</summary>
         /// <typeparam name="THex"></typeparam>
@@ -232,5 +246,11 @@ namespace PGNapoleonics.HexgridPanel {
         =>  @this.BoardHexes.ForEachSerial(maybe =>
                 maybe.IfHasValueDo(hex => { if (clipRectangle.EncompassesHex(hex.Coords)) action(hex); } )
             );
+
+        /// <summary>TODO</summary>
+        public static void Paint(this IHex @this, Graphics graphics, GraphicsPath path, Brush brush) {
+            if (graphics==null) throw new ArgumentNullException("graphics");
+            lock(brush) graphics.FillPath(brush, path);
+        }
     }
 }

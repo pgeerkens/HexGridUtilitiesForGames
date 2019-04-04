@@ -158,7 +158,7 @@ namespace PGNapoleonics.HexgridPanel {
                     if (_backBuffer == null) { _backBuffer = ClientSize.AllocateBitmap(); }
 
                     Interlocked.CompareExchange(ref _cacheStatus, _NEEDS_PAINTING, _IS_PAINTING);
-                    Thread.Sleep(250);
+                    Thread.Sleep(100);
                 } finally { Interlocked.CompareExchange(ref _cacheStatus, _IS_READY, _IS_PAINTING); }
                 Refresh();
             }

@@ -246,7 +246,7 @@ namespace PGNapoleonics.HexgridPanel {
 
         #region Painting
         /// <inheritdoc/>
-        protected override void OnPaintBackground(PaintEventArgs e) { base.OnPaintBackground(e); }
+        protected override void OnPaintBackground(PaintEventArgs e) { ; }
 
         /// <inheritdoc/>
         protected override void OnPaint(PaintEventArgs e) {

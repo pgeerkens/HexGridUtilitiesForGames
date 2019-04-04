@@ -33,7 +33,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 
-using PGNapoleonics.HexgridPanel;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexgridExampleCommon;
