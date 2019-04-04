@@ -59,7 +59,7 @@ namespace PGNapoleonics.HexgridPanel {
         public HexgridPanel() {
           RefreshCmd  = new RelayCommand(o => { if (o != null) { SetMapDirty(); }  Refresh(); } );
           DataContext = new HexgridViewModel(this);
-          SetScaleList (new float[] {1.00F});
+          SetScaleList (new float[] {0.297F, 0.354F, 0.420F, 0.500F, 0.594F, 0.707F, 0.841F, 1.00F, 1.189F, 1.414F, 1.684F, 2.000F});
 
           InitializeComponent();
         }
