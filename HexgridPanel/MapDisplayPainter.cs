@@ -30,7 +30,6 @@ using System;
 
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.HexUtilities.FieldOfView;
 using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexUtilities.Storage;
 
@@ -44,8 +43,8 @@ namespace PGNapoleonics.HexgridPanel {
     /// <summary>Extension methods to paint an <see cref="IMapDisplayWinForms{T}"/> from a <see cref="Graphics"/>.</summary>
     public static partial class MapDisplayPainter {
         /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
-        /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
-        /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
+        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
+        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
         /// <remarks>For each visible hex: perform <c>paintAction</c> and then draw its hexgrid outline.</remarks>
         public static void PaintMap<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics,
                 bool showHexgrid, Hexes boardHexes, ILandmarks landmarks)
@@ -70,8 +69,8 @@ namespace PGNapoleonics.HexgridPanel {
             } );
 
         /// <summary>Paint the top layer of the display, graphics that changes frequently between refreshes.</summary>
-        /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
-        /// <param name="graphics">Graphics object for the canvas being painted.</param>
+        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
+        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
         public static void PaintHighlight<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics)
         where THex:IHex {
             graphics.Contain(g => {
@@ -95,13 +94,14 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <summary>.</summary>
         /// <typeparam name="THex"></typeparam>
-        /// <param name="this"></param>
-        /// <param name="graphics"></param>
+        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
+        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
         public static void PaintShading<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics)
         where THex:IHex
         =>  graphics.Contain(g => {
             var fov = @this?.Fov;
                 if (fov != null) {
+                    graphics.CompositingMode = CompositingMode.SourceOver;
                     var clipHexes  = @this.GetClipInHexes(graphics.VisibleClipBounds);
                     using(var shadeBrush = new SolidBrush(Color.FromArgb(@this.ShadeBrushAlpha, @this.ShadeBrushColor))) {
                         @this.PaintForEachHex(graphics, clipHexes, coords => {
@@ -113,23 +113,21 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <summary>Paints all the hexes in <paramref name="clipHexes"/> by executing <paramref name="paintAction"/>
         /// for each hex on <paramref name="graphics"/>.</summary>
-        /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
-        /// <param name="graphics">Graphics object for the canvas being painted.</param>
-        /// <param name="clipHexes">Type: CoordRectangle - 
-        /// The rectangular extent of hexes to be painted.</param>
-        /// <param name="paintAction">Type: Action {HexCoords} - 
-        /// The paint action to be performed for each hex.</param>
+        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
+        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
+        /// <param name="clipRectangle">The rectangular extent of hexes to be painted as a <see cref="CoordsRectangle"/>.</param>
+        /// <param name="paintAction">The paint action to be performed for each hex as a <see cref="Action{HexCoords}"/>.</param>
         public static void PaintForEachHex<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics, 
-                                    CoordsRectangle clipHexes, Action<HexCoords> paintAction) 
+                                    CoordsRectangle clipRectangle, Action<HexCoords> paintAction) 
         where THex:IHex
-        =>  @this.ForEachHex(clipHexes, hex => {
+        =>  @this.ForEachHex(clipRectangle, hex => {
                 graphics.Transform = @this.TranslateToHex(hex.Coords);
                 paintAction(hex.Coords);
             } );
 
         /// <summary>Paint the current shortese path.</summary>
-        /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
-        /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
+        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
+        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
         /// <param name="maybePath">Type: <see cref="IDirectedPathCollection"/> - 
         /// A directed path (ie linked-list> of hexes to be painted.</param>
         public static void PaintPath<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics, 
@@ -152,8 +150,8 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <summary>Paint the direction and destination indicators for each hex of the current shortest path.</summary>
-        /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
-        /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
+        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
+        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
         /// <param name="path">Type: <see cref="IDirectedPathCollection"/> - 
         /// A directed path (ie linked-list> of hexes to be highlighted with a direction arrow.</param>
         static void PaintPathArrow<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics, IDirectedPathCollection path)
@@ -167,8 +165,8 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <summary>Paint the direction arrow for each hex of the current shortest path.</summary>
-        /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
-        /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
+        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
+        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
         /// <param name="hexside">Type: <see cref="Hexside"/> - 
         /// Direction from this hex in which the next step is made.</param>
         /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
@@ -184,8 +182,8 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <summary>Paint the destination indicator for the current shortest path.</summary>
-        /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
-        /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
+        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
+        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
         /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
         static void PaintPathDestination<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics) 
         where THex:IHex {
@@ -198,8 +196,8 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <summary>.</summary>
         /// <typeparam name="THex"></typeparam>
-        /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
-        /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
+        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
+        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
         public static void PaintUnits<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics)
         where THex:IHex {
             if (@this    == null) throw new ArgumentNullException("this");
@@ -210,10 +208,9 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <summary>.</summary>
         /// <param name="hex"></param>
-        /// <returns></returns>
         public static Brush GetBrush(this IHex hex) {
             switch(hex.TerrainType) {
-                default:  return Brushes.DarkGray;   // Undefined
+                default:  return Brushes.SlateGray;  // Undefined
                 case '.': return Brushes.White;      // Clear
                 case '2': return Brushes.DarkGray;   // Pike
                 case '3': return Brushes.SandyBrown; // Road
@@ -225,6 +222,10 @@ namespace PGNapoleonics.HexgridPanel {
             }
         }
 
+        /// <summary>Performs the specified <see cref="Action{THex}"/> for each hex of <paramref name="this"/> in <paramref name="clipRectangle"/>.</summary>
+        /// <typeparam name="THex"></typeparam>
+        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
+        /// <param name="clipRectangle">The rectangular extent of hexes to be painted as a <see cref="CoordsRectangle"/>.</param>
         public static void ForEachHex<THex>(this IMapDisplayWinForms<THex> @this,
                 CoordsRectangle clipRectangle, Action<THex> action)
         where THex:IHex
