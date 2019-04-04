@@ -156,6 +156,12 @@
     <Compile Include="HexgridBufferedPanelForm.Designer.cs">
       <DependentUpon>HexgridBufferedPanelForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="TiltableForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TiltableForm.Designer.cs">
+      <DependentUpon>TiltableForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="HexgridPanelForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -267,6 +273,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Example\StatusBarToolStrip.resx">
       <DependentUpon>StatusBarToolStrip.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TiltableForm.resx">
+      <DependentUpon>TiltableForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="WinForms\ExceptionDialog.en-US.resx">
       <DependentUpon>ExceptionDialog.cs</DependentUpon>

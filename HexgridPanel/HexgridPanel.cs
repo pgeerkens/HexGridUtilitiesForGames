@@ -57,11 +57,15 @@ namespace PGNapoleonics.HexgridPanel {
     public partial class HexgridPanel : TiltAwareScrollableControl, ISupportInitialize {
         /// <summary>Creates a new instance of HexgridScrollable.</summary>
         public HexgridPanel() {
-          RefreshCmd  = new RelayCommand(o => { if (o != null) { SetMapDirty(); }  Refresh(); } );
-          DataContext = new HexgridViewModel(this);
-          SetScaleList (new float[] {0.297F, 0.354F, 0.420F, 0.500F, 0.594F, 0.707F, 0.841F, 1.00F, 1.189F, 1.414F, 1.684F, 2.000F});
+            RefreshCmd  = new RelayCommand(o => { if (o != null) { SetMapDirty(); }  Refresh(); } );
+            DataContext = new HexgridViewModel(this);
+            SetScaleList (new float[] {
+                0.250F, 0.297F, 0.354F, 0.420F,
+                0.500F, 0.594F, 0.707F, 0.841F,
+                1.000F, 1.189F, 1.414F, 1.684F,
+                2.000F});
 
-          InitializeComponent();
+            InitializeComponent();
         }
 
         /// <summary>Signals the object that initialization is starting.</summary>
