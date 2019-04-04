@@ -81,9 +81,8 @@ namespace PGNapoleonics.HexgridPanel.Example {
 
         }
 
-        #endregion
-
         private PGNapoleonics.HexgridPanel.Example.StatusBarToolStrip StatusBarToolStrip;
         private PGNapoleonics.HexgridPanel.Example.MenuBarToolStrip MenuBarToolStrip;
+        #endregion
     }
 }

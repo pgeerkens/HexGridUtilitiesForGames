@@ -62,6 +62,6 @@
 
         protected System.Windows.Forms.ToolStripContainer ToolStripContainer;
 
-        protected virtual HexgridPanel HexgridPanel { get; }
+        protected virtual HexgridPanel HexgridPanel { get; } = null;
     }
 }
