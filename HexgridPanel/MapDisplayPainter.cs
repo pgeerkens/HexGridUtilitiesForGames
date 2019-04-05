@@ -27,15 +27,14 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
 
 namespace PGNapoleonics.HexgridPanel {
-    using System.Drawing;
-    using System.Drawing.Drawing2D;
-
     /// <summary>Extension methods to paint an <see cref="IMapDisplayWinForms{T}"/> from a <see cref="Graphics"/>.</summary>
     public static partial class MapDisplayPainter {
         /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
@@ -47,11 +46,10 @@ namespace PGNapoleonics.HexgridPanel {
                 bool showHexgrid)
         where THex:IHex
         =>  graphics.Contain( g => {
-                var boardHexes = @this.BoardHexes;
-                var landmarks  = @this.Landmarks;
-                var clipHexes  = @this.GetClipInHexes(graphics.VisibleClipBounds);
+                var boardHexes    = @this.BoardHexes;
+                var landmarks     = @this.Landmarks;
                 graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                @this.PaintForEachHex(graphics, clipHexes, coords => {
+                @this.PaintForEachHex(graphics, coords => {
                     boardHexes[coords].IfHasValueDo(h => {
                         if(h is IHex hex) hex.Paint(graphics, @this.HexgridPath, hex.GetBrush());
                     });
@@ -77,7 +75,7 @@ namespace PGNapoleonics.HexgridPanel {
             } );
 
             if (@this.Path != null) {
-                graphics.Contain(g => { @this.PaintPath(g, @this.Path); });
+                graphics.Contain(g => { @this.PaintPath(g); });
             }
 
             if (@this.ShowRangeLine) {
@@ -100,97 +98,13 @@ namespace PGNapoleonics.HexgridPanel {
             var fov = @this?.Fov;
                 if (fov != null) {
                     graphics.CompositingMode = CompositingMode.SourceOver;
-                    var clipHexes  = @this.GetClipInHexes(graphics.VisibleClipBounds);
                     using(var shadeBrush = new SolidBrush(Color.FromArgb(@this.ShadeBrushAlpha, ShadeColor))) {
-                        @this.PaintForEachHex(graphics, clipHexes, coords => {
+                        @this.PaintForEachHex(graphics, coords => {
                             if ( ! fov[coords]) { graphics.FillPath(shadeBrush, @this.HexgridPath); }
                         } );
                     }
                 }
             } );
-
-        /// <summary>Paints all the hexes in <paramref name="clipHexes"/> by executing <paramref name="paintAction"/>
-        /// for each hex on <paramref name="graphics"/>.</summary>
-        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
-        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
-        /// <param name="clipRectangle">The rectangular extent of hexes to be painted as a <see cref="CoordsRectangle"/>.</param>
-        /// <param name="paintAction">The paint action to be performed for each hex as a <see cref="Action{HexCoords}"/>.</param>
-        public static void PaintForEachHex<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics, 
-                                    CoordsRectangle clipRectangle, Action<HexCoords> paintAction) 
-        where THex:IHex
-        =>  @this.ForEachHex(clipRectangle, hex => {
-                graphics.Transform = @this.TranslateToHex(hex.Coords);
-                paintAction(hex.Coords);
-            } );
-
-        /// <summary>Paint the current shortese path.</summary>
-        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
-        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
-        /// <param name="maybePath">Type: <see cref="IDirectedPathCollection"/> - 
-        /// A directed path (ie linked-list> of hexes to be painted.</param>
-        public static void PaintPath<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics, 
-                                           Maybe<IDirectedPathCollection> maybePath) 
-        where THex:IHex {
-            if (graphics==null) throw new ArgumentNullException("graphics");
-
-            var path = maybePath.ElseDefault();
-            using(var brush = new SolidBrush(Color.FromArgb(78, Color.PaleGoldenrod))) {
-                while (path != null) {
-                    var coords = path.PathStep.Coords;
-                    graphics.Transform = @this.TranslateToHex(coords);
-                    graphics.FillPath(brush, @this.HexgridPath);
-
-                    if (@this.ShowPathArrow) @this.PaintPathArrow(graphics, path);
-
-                    path = path.PathSoFar;
-                }
-            }
-        }
-
-        /// <summary>Paint the direction and destination indicators for each hex of the current shortest path.</summary>
-        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
-        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
-        /// <param name="path">Type: <see cref="IDirectedPathCollection"/> - 
-        /// A directed path (ie linked-list> of hexes to be highlighted with a direction arrow.</param>
-        static void PaintPathArrow<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics, IDirectedPathCollection path)
-        where THex:IHex {
-            if (graphics==null) throw new ArgumentNullException("graphics");
-            if (path==null) throw new ArgumentNullException("path");
-
-            graphics.TranslateTransform(@this.HexCentreOffset.Width, @this.HexCentreOffset.Height);
-            if (path.PathSoFar == null) @this.PaintPathDestination(graphics);
-            else                        @this.PaintPathArrow(graphics, path.PathStep.HexsideExit);
-        }
-
-        /// <summary>Paint the direction arrow for each hex of the current shortest path.</summary>
-        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
-        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
-        /// <param name="hexside">Type: <see cref="Hexside"/> - 
-        /// Direction from this hex in which the next step is made.</param>
-        /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
-        static void PaintPathArrow<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics, Hexside hexside) 
-        where THex:IHex {
-            if (graphics==null) throw new ArgumentNullException("graphics");
-
-            var unit = @this.GridSize.Height/8.0F;
-            graphics.RotateTransform(60 * hexside);
-            graphics.DrawLine(Pens.Black, 0,unit*4,       0,  -unit);
-            graphics.DrawLine(Pens.Black, 0,unit*4, -unit*3/2, unit*2);
-            graphics.DrawLine(Pens.Black, 0,unit*4,  unit*3/2, unit*2);
-        }
-
-        /// <summary>Paint the destination indicator for the current shortest path.</summary>
-        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
-        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
-        /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
-        static void PaintPathDestination<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics) 
-        where THex:IHex {
-            if (graphics==null) throw new ArgumentNullException("graphics");
-
-            var unit = @this.GridSize.Height/8.0F;
-            graphics.DrawLine(Pens.Black, -unit*2,-unit*2, unit*2, unit*2);
-            graphics.DrawLine(Pens.Black, -unit*2, unit*2, unit*2,-unit*2);
-        }
 
         /// <summary>.</summary>
         /// <typeparam name="THex"></typeparam>
@@ -204,12 +118,89 @@ namespace PGNapoleonics.HexgridPanel {
             /* NO-OP - Not implemented in examples. */
         }
 
+        /// <summary>Paints all the hexes in <paramref name="clipHexes"/> by executing <paramref name="paintAction"/>
+        /// for each hex on <paramref name="graphics"/>.</summary>
+        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
+        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
+        /// <param name="clipRectangle">The rectangular extent of hexes to be painted as a <see cref="CoordsRectangle"/>.</param>
+        /// <param name="paintAction">The paint action to be performed for each hex as a <see cref="Action{HexCoords}"/>.</param>
+        private static void PaintForEachHex<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics, 
+                                    Action<HexCoords> paintAction) 
+        where THex:IHex {
+            var clipRectangle = @this.GetClipInHexes(graphics.VisibleClipBounds);
+            @this.ForEachHex(clipRectangle, hex => {
+                graphics.Transform = @this.TranslateToHex(hex.Coords);
+                paintAction(hex.Coords);
+            } );
+        }
+
+        /// <summary>Paint the current shortese path.</summary>
+        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
+        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
+        /// <param name="maybePath">Type: <see cref="IDirectedPathCollection"/> - 
+        /// A directed path (ie linked-list> of hexes to be painted.</param>
+        private static void PaintPath<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics) 
+        where THex:IHex {
+            if (graphics==null) throw new ArgumentNullException("graphics");
+
+            var path = @this.Path.ElseDefault();
+            using(var brush = new SolidBrush(Color.FromArgb(78, Color.PaleGoldenrod))) {
+                while (path != null) {
+                    var coords = path.PathStep.Coords;
+                    graphics.Transform = @this.TranslateToHex(coords);
+                    graphics.FillPath(brush, @this.HexgridPath);
+
+                    if (@this.ShowPathArrow) @this.PaintPathDetail(graphics, path);
+
+                    path = path.PathSoFar;
+                }
+            }
+        }
+
+        /// <summary>Paint the direction and destination indicators for each hex of the current shortest path.</summary>
+        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
+        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
+        /// <param name="path">Type: <see cref="IDirectedPathCollection"/> - 
+        /// A directed path (ie linked-list> of hexes to be highlighted with a direction arrow.</param>
+        static void PaintPathDetail<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics, IDirectedPathCollection path)
+        where THex:IHex {
+            graphics.TranslateTransform(@this.HexCentreOffset.Width, @this.HexCentreOffset.Height);
+            if (path.PathSoFar == null) @this.PaintPathDestination(graphics);
+            else                        @this.PaintPathArrow(graphics, path.PathStep.HexsideExit);
+        }
+
+        /// <summary>Paint the direction arrow for each hex of the current shortest path.</summary>
+        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
+        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
+        /// <param name="hexside">Type: <see cref="Hexside"/> - 
+        /// Direction from this hex in which the next step is made.</param>
+        /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
+        static void PaintPathArrow<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics, Hexside hexside) 
+        where THex:IHex {
+            var unit = @this.GridSize.Height/8.0F;
+            graphics.RotateTransform(60 * hexside);
+            graphics.DrawLine(Pens.Black, 0,unit*4,       0,  -unit);
+            graphics.DrawLine(Pens.Black, 0,unit*4, -unit*3/2, unit*2);
+            graphics.DrawLine(Pens.Black, 0,unit*4,  unit*3/2, unit*2);
+        }
+
+        /// <summary>Paint the destination indicator for the current shortest path.</summary>
+        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
+        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
+        /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
+        static void PaintPathDestination<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics) 
+        where THex:IHex {
+            var unit = @this.GridSize.Height/8.0F;
+            graphics.DrawLine(Pens.Black, -unit*2,-unit*2, unit*2, unit*2);
+            graphics.DrawLine(Pens.Black, -unit*2, unit*2, unit*2,-unit*2);
+        }
+
         /// <summary>.</summary>
         /// <param name="hex"></param>
         /// <remarks>
         /// Returns clones to avoid inter-thread contention.
         /// </remarks>
-        public static Brush GetBrush(this IHex hex) {
+        private static Brush GetBrush(this IHex hex) {
             switch(hex.TerrainType) {
                 default:  return UndefinedBrush;
                 case '.': return ClearBrush;
