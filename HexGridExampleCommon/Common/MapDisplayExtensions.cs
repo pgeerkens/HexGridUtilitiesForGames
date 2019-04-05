@@ -44,6 +44,7 @@ namespace PGNapoleonics.HexUtilities.Common {
         }
 
         /// <summary>Returns pixel coordinates of upper-left corner of specified hex.</summary>
+        /// <param name="this"></param>
         /// <param name="coords"></param>
         /// <returns>A Point structure containing pixel coordinates for the (upper-left corner of the) specified hex.</returns>
         public static HexPoint UpperLeftOfHex<THex>(this IMapDisplayWinForms<THex> @this, HexCoords coords)
@@ -54,6 +55,7 @@ namespace PGNapoleonics.HexUtilities.Common {
         );
 
         /// <summary>Returns pixel coordinates of centre of specified hex.</summary>
+        /// <param name="this"></param>
         /// <param name="coords"></param>
         /// <returns>A Point structure containing pixel coordinates for the (centre of the) specified hex.</returns>
         public static HexPoint CentreOfHex<THex>(this IMapDisplayWinForms<THex> @this, HexCoords coords)

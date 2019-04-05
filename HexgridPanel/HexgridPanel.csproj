@@ -156,6 +156,7 @@
     <Compile Include="HexgridBufferedPanelForm.Designer.cs">
       <DependentUpon>HexgridBufferedPanelForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MapOrientation.cs" />
     <Compile Include="TiltableForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -41,17 +41,6 @@ namespace PGNapoleonics.HexgridPanel {
     using WpfInput = System.Windows.Input;
     using Model    = IMapDisplayWinForms<IHex>;
 
-    /// <summary>Map orientation settings in 90 degree increments, CCW.</summary>
-    public enum MapOrientation {
-        /// <summary>Map orientation with no rotation.</summary>
-        ZeroDegrees, 
-        /// <summary>Map orientation rotated 90 degrees CCW.</summary>
-        NinetyDegreesCCW, 
-        /// <summary>Map orientation rotated 180 degrees CCW.</summary>
-        Reversed, 
-        /// <summary>Map orientation rotated 270 degrees CCW.</summary>
-        NinetyDegreesCW
-    }
     /// <summary>Sub-class implementation of a <b>WinForms</b> Panel with integrated <see cref="TransposableHexgrid"/> support.</summary>
     [Docking(DockingBehavior.AutoDock)]
     public partial class HexgridPanel : TiltAwareScrollableControl, ISupportInitialize {
@@ -150,11 +139,11 @@ namespace PGNapoleonics.HexgridPanel {
                 var CenterHex           = PanelCenterHex;
                 DataContext.ScaleIndex = newValue;
 
-                //            SetScrollLimits(DataContext.Model);
                 SetScroll(CenterHex);
                 OnScaleChange(EventArgs.Empty);
             }
         }
+
         /// <summary>Returns, as a Rectangle, the IUserCoords for the currently visible extent.</summary>
         public virtual CoordsRectangle VisibleRectangle
         => GetClipInHexes(AutoScrollPosition.Scale(-1.0F / MapScale),
