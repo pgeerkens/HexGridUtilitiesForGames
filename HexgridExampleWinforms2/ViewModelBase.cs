@@ -35,7 +35,7 @@ namespace PGNapoleonics.HexgridExampleWinforms2 {
     /// <summary>TODO</summary>
     public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable {
         /// <summary>TODO</summary>
-        protected ViewModelBase(string displayName) { DisplayName = displayName; }
+        protected ViewModelBase(string displayName) => DisplayName = displayName;
 
         /// <summary>TODO</summary>
         public            string DisplayName                { get; }
@@ -109,9 +109,9 @@ namespace PGNapoleonics.HexgridExampleWinforms2 {
             add    { CommandManager.RequerySuggested += value; } 
             remove { CommandManager.RequerySuggested -= value; } 
         }
-  
+
         /// <summary>TODO</summary>
-        public void Execute(object parameter) { _execute(parameter); }
+        public void Execute(object parameter) => _execute(parameter);
 
         readonly Action<object>    _execute; 
         readonly Predicate<object> _canExecute; 
@@ -152,12 +152,11 @@ namespace PGNapoleonics.HexgridExampleWinforms2 {
         /// <summary>TODO</summary>
         protected WorkspaceViewModel() : this ("WorkspaceViewModel_None") { ; }
         /// <summary>TODO</summary>
-        protected WorkspaceViewModel(string displayName) : base (displayName) {
-            _closeCommand = new RelayCommand(param => OnRequestClose());
-        }
+        protected WorkspaceViewModel(string displayName) : base(displayName)
+        => CloseCommand = new RelayCommand(param => OnRequestClose());
 
         /// <summary>Returns the command to remove this workspace from the user interface.</summary>
-        public virtual ICommand CloseCommand => _closeCommand; ICommand _closeCommand;
+        public virtual ICommand CloseCommand { get; }
 
         /// <summary>Raised when this workspace should be removed from the UI.</summary>
         public event EventHandler RequestClose;

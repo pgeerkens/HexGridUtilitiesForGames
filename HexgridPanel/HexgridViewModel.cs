@@ -28,7 +28,9 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
+
 using PGNapoleonics.HexgridExampleCommon;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
@@ -43,13 +45,11 @@ namespace PGNapoleonics.HexgridPanel {
     using HexSizeF  = System.Drawing.SizeF;
     using HexPointF = System.Drawing.PointF;
 
-    /// <summary>TODO</summary>
+    /// <summary>.</summary>
     public class HexgridViewModel {
         /// <summary>TODO</summary>
         public HexgridViewModel(HexgridPanel panel) {
-            HotspotHex    = HexCoords.EmptyUser;
-
-            Panel         = panel;
+            Panel      = panel;
 
             Panel.HotspotHexChange  += HotspotHexChange;
             Panel.MarginChanged     += MarginChanged;
@@ -58,9 +58,11 @@ namespace PGNapoleonics.HexgridPanel {
     //      Panel.MouseRightClick   += MouseRightClick;
     //      Panel.ScaleChange       += ScaleChange;
 
-            Scales    = new List<float>() {1.000F}.AsReadOnly();
-            Model     = EmptyBoard.TheOne;
-            Grid   = GetHexgrid();
+            SetScales( new List<float>() { 0.250F, 0.297F, 0.354F, 0.420F,
+                                           0.500F, 0.594F, 0.707F, 0.841F,
+                                           1.000F, 1.189F, 1.414F, 1.684F,
+                                           2.000F }.AsReadOnly());
+            Grid  = GetHexgrid();
         }
 
         HexgridPanel Panel { get; set; }
@@ -86,20 +88,18 @@ namespace PGNapoleonics.HexgridPanel {
         //  );
         //}
 
-        IHexgrid GetHexgrid() { 
-            var margin          = Margin.OffsetSize();
-            return new Hexgrid(IsTransposed,Model.GridSize,MapScale,margin);
-        }
+        IHexgrid GetHexgrid()
+        => new Hexgrid(IsTransposed,Model.GridSize,MapScale,Margin.OffsetSize());
 
         #region Properties
         /// <summary>MapBoard hosting this panel.</summary>
         public Model Model           {
             get => _model;
             set { if(_model is IDisposable model) model.Dispose(); _model = value; }
-        } Model _model;
+        } Model _model = EmptyBoard.TheOne;
 
         /// <summary>Gets or sets the coordinates of the hex currently underneath the mouse.</summary>
-        public HexCoords   HotspotHex      { get; set; }
+        public HexCoords   HotspotHex      { get; set; } = HexCoords.EmptyUser;
 
         /// <summary>Gets whether the <b>Alt</b> <i>shift</i> key is depressed.</summary>
         protected static bool IsAltKeyDown   => HexgridPanel.IsAltKeyDown;
@@ -155,7 +155,8 @@ namespace PGNapoleonics.HexgridPanel {
         bool _isUnitsDirty;
 
         /// <summary>Array of supported map scales  as IList {float}.</summary>
-        public IReadOnlyList<float> Scales         { get; private set; }
+        public IReadOnlyList<float> Scales { get; private set; }
+
         /// <summary>Index into <code>Scales</code> of current map scale.</summary>
         public virtual int ScaleIndex {
             get => _scaleIndex;
@@ -173,7 +174,10 @@ namespace PGNapoleonics.HexgridPanel {
         #endregion
 
         /// <summary>TODO</summary>
-        public void SetScales(IReadOnlyList<float> scales) => Scales = scales;
+        public void SetScales(IReadOnlyList<float> scales) {
+            Scales = scales;
+            ScaleIndex = Scales.Where((o,i) => Math.Abs(o-1.00F) < 0.01F).Select((o,i)=>i).FirstOrDefault();
+        }
         #region Events
         /// <summary>TODO</summary>
         void MarginChanged(object sender,EventArgs e) => Margin = Panel.Margin;

@@ -62,7 +62,7 @@ namespace PGNapoleonics.HexgridExampleWpf {
                                                     .Select((f,i) => new {value=f, index=i})
                                                     .Where(s => s.value==1.0F)
                                                     .Select(s => s.index).FirstOrDefault(); 
-            HexgridPanel.MouseMove   += hexgridPanel_MouseMove;
+            HexgridPanel.MouseMove   += HexgridPanel_MouseMove;
 
             if(sender is IKeyboardInputSink sink) {
                 ((IKeyboardInputSink)sender).TabInto(new TraversalRequest(FocusNavigationDirection.First));
@@ -71,7 +71,7 @@ namespace PGNapoleonics.HexgridExampleWpf {
         }
 
         /// <summary>TODO</summary>
-        public   HexgridPanel HexgridPanel { get; private set; }
+        public   HexgridPanel      HexgridPanel { get; private set; }
 
         /// <summary>TODO</summary>
         public   MapGridDisplay    Model        => HexgridPanel.DataContext.Model;
@@ -119,7 +119,7 @@ namespace PGNapoleonics.HexgridExampleWpf {
             HexgridPanel.SetMapDirty();
         }
 
-        void hexgridPanel_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e) {
+        void HexgridPanel_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e) {
             var hotHex = Model.HotspotHex;
             var vector = Model.StartHex - hotHex;
             var cost = Model.Path.ElseDefault()?.TotalCost ?? -1;

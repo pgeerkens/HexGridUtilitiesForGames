@@ -194,7 +194,7 @@ namespace PGNapoleonics.HexgridPanel {
             }
             graphics.Paint(Point.Empty, 1.0F, g => {
                 var model = DataContext.Model;
-                model.PaintMap(g, true, model.BoardHexes, model.Landmarks);
+                model.PaintMap(g, true);
             });
         }
 

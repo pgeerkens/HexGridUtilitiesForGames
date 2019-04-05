@@ -31,25 +31,24 @@ using System;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
-using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexgridPanel {
     using System.Drawing;
     using System.Drawing.Drawing2D;
-
-    using ILandmarks = ILandmarkCollection;
-    using Hexes      = BoardStorage<Maybe<IHex>>;
 
     /// <summary>Extension methods to paint an <see cref="IMapDisplayWinForms{T}"/> from a <see cref="Graphics"/>.</summary>
     public static partial class MapDisplayPainter {
         /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
         /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
         /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
+        /// <param name="showHexgrid">.</param>
         /// <remarks>For each visible hex: perform <c>paintAction</c> and then draw its hexgrid outline.</remarks>
         public static void PaintMap<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics,
-                bool showHexgrid, Hexes boardHexes, ILandmarks landmarks)
+                bool showHexgrid)
         where THex:IHex
         =>  graphics.Contain( g => {
+                var boardHexes = @this.BoardHexes;
+                var landmarks  = @this.Landmarks;
                 var clipHexes  = @this.GetClipInHexes(graphics.VisibleClipBounds);
                 graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 @this.PaintForEachHex(graphics, clipHexes, coords => {
@@ -238,18 +237,22 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <summary>Performs the specified <see cref="Action{THex}"/> for each hex of <paramref name="this"/> in <paramref name="clipRectangle"/>.</summary>
         /// <typeparam name="THex"></typeparam>
-        /// <param name="this">The map to be painted as a <see cref="MapDisplay{THex}"/>.</param>
+        /// <param name="this">The map to be painted as a <see cref="IMapDisplayWinForms{THex}"/>.</param>
         /// <param name="clipRectangle">The rectangular extent of hexes to be painted as a <see cref="CoordsRectangle"/>.</param>
-        public static void ForEachHex<THex>(this IMapDisplayWinForms<THex> @this,
-                CoordsRectangle clipRectangle, Action<THex> action)
+        /// <param name="action">The <see cref="Action{THex}"/> to be performed with each hex.</param>
+        private static void ForEachHex<THex>(this IMapDisplayWinForms<THex> @this, CoordsRectangle clipRectangle,
+                Action<THex> action)
         where THex:IHex
         =>  @this.BoardHexes.ForEachSerial(maybe =>
                 maybe.IfHasValueDo(hex => { if (clipRectangle.EncompassesHex(hex.Coords)) action(hex); } )
             );
 
         /// <summary>TODO</summary>
-        public static void Paint(this IHex @this, Graphics graphics, GraphicsPath path, Brush brush) {
-            if (graphics==null) throw new ArgumentNullException("graphics");
+        /// <param name="this">The <see cref="IHex"/> to be painted</param>
+        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
+        /// <param name="path">The closed <see cref="GraphicsPath"/> outlining the hex to be painted.</param>
+        /// <param name="brush">The <see cref="Brush"/> to be used in filling this hex.</param>
+        private static void Paint(this IHex @this, Graphics graphics, GraphicsPath path, Brush brush) {
             lock(brush) graphics.FillPath(brush, path);
         }
     }

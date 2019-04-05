@@ -39,20 +39,14 @@ using PGNapoleonics.HexgridPanel.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
     using WpfInput = System.Windows.Input;
-    using Model    = IMapDisplayWinForms<IHex>;
+    using Model = IMapDisplayWinForms<IHex>;
 
     /// <summary>Sub-class implementation of a <b>WinForms</b> Panel with integrated <see cref="TransposableHexgrid"/> support.</summary>
     [Docking(DockingBehavior.AutoDock)]
     public partial class HexgridPanel : TiltAwareScrollableControl, ISupportInitialize {
         /// <summary>Creates a new instance of HexgridScrollable.</summary>
         public HexgridPanel() {
-            RefreshCmd  = new RelayCommand(o => { if (o != null) { SetMapDirty(); }  Refresh(); } );
             DataContext = new HexgridViewModel(this);
-            SetScaleList (new float[] {
-                0.250F, 0.297F, 0.354F, 0.420F,
-                0.500F, 0.594F, 0.707F, 0.841F,
-                1.000F, 1.189F, 1.414F, 1.684F,
-                2.000F});
 
             InitializeComponent();
         }
@@ -128,7 +122,8 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Returns <code>HexCoords</code> of the hex closest to the center of the current viewport.</summary>
         public HexCoords PanelCenterHex => GetHexCoords(Location + Size.Round(ClientSize.Scale(0.50F)));
         /// <summary>TODO</summary>
-        public WpfInput.ICommand     RefreshCmd        { get; }
+        public WpfInput.ICommand     RefreshCmd        => new RelayCommand(_refeshCmd);
+        void _refeshCmd(object obj ) { if (obj != null) { SetMapDirty(); }  Refresh(); }
 
         /// <summary>Index into <code>Scales</code> of current map scale.</summary>
         [Browsable(false)]
@@ -143,6 +138,9 @@ namespace PGNapoleonics.HexgridPanel {
                 OnScaleChange(EventArgs.Empty);
             }
         }
+
+        /// <summary>Array of supported map scales  as IList {float}.</summary>
+        public IReadOnlyList<float>  Scales => DataContext.Scales;
 
         /// <summary>Returns, as a Rectangle, the IUserCoords for the currently visible extent.</summary>
         public virtual CoordsRectangle VisibleRectangle
@@ -273,7 +271,7 @@ namespace PGNapoleonics.HexgridPanel {
             if (graphics == null) throw new ArgumentNullException(nameof(graphics));
             using(var brush = new SolidBrush(BackColor)) graphics.FillRectangle(brush, graphics.VisibleClipBounds);
             var model = DataContext.Model;
-            model.PaintMap(graphics, true, model.BoardHexes, model.Landmarks);
+            model.PaintMap(graphics, true);
         }
         /// <inheritdoc/>
         protected virtual void RenderShading(Graphics graphics) {
@@ -391,14 +389,5 @@ namespace PGNapoleonics.HexgridPanel {
                 type.HasFlag(ScrollEventType.LargeDecrement) ? scroll.LargeChange : scroll.SmallChange);
         }
         #endregion
-
-        /// <summary>Array of supported map scales  as IList {float}.</summary>
-        public IReadOnlyList<float>     Scales {
-            get => DataContext.Scales;
-            private set => DataContext.SetScales(value);
-        }
-
-        /// <summary>TODO</summary>
-        public void SetScaleList (IReadOnlyList<float> scales) => Scales = scales;
     }
 }

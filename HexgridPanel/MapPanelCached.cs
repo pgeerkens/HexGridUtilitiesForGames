@@ -7,19 +7,18 @@
 #endregion
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using System.Diagnostics.CodeAnalysis;
 
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexgridPanel.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
     /// <summary>TODO</summary>
-    public sealed partial class CachedMapPanel : HexgridPanel {
+    public sealed partial class CachedMapPanel : HexgridBufferedPanel {
         /// <summary>TODO</summary>/>
         public CachedMapPanel() => InitializeComponent();
 
@@ -99,7 +98,7 @@ namespace PGNapoleonics.HexgridPanel {
                 temp = new Bitmap(width, height) { Tag = tag };
                 temp.Paint(Point.Empty, CacheScale, g => {
                     var model = DataContext.Model;
-                    model.PaintMap(g, true, model.BoardHexes, model.Landmarks);
+                    model.PaintMap(g, true);
                 });
                 bitmap = temp;
                 temp   = null;
