@@ -20,6 +20,7 @@
 
 ## Documentation files ##
 
+- docs.zip
 - (^|/)CHANGE(S|LOG)?(\.|$)
 - (^|/)CONTRIBUTING(\.|$)
 - (^|/)COPYING(\.|$)
