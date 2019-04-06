@@ -216,6 +216,7 @@
     <Compile Include="Common\ValueChangedEventArgs.cs" />
     <Compile Include="Common\EventArgs.cs" />
     <Compile Include="FieldOfView\FovBoardExtensions.cs" />
+    <Compile Include="Common\IShadingMask.cs" />
     <Compile Include="IMapDisplay.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -280,7 +281,7 @@
     <Compile Include="Pathfinding\PathfinderExtensions.cs" />
     <Compile Include="Pathfinding\StandardPathfinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FieldOfView\FieldOfView.cs" />
+    <Compile Include="FieldOfView\ArrayFieldOfView.cs" />
     <Compile Include="FieldOfView\FovFactory.cs" />
     <Compile Include="FieldOfView\FovCone.cs" />
     <Compile Include="FieldOfView\FovQueue.cs" />

@@ -141,10 +141,10 @@ namespace PGNapoleonics.HexUtilities.Common {
 
         #region Properties
         /// <summary>Gets or sets the Field-of-View for the current <see cref="HotspotHex"/>, as an <see cref="IFov"/> object.</summary>
-        public virtual  IFov         Fov {
+        public virtual  IShadingMask Fov {
             get           => _fov ?? (_fov = this.GetFieldOfView(ShowRangeLine ? StartHex : HotspotHex, FovRadius));
             protected set => _fov = value;
-        } IFov _fov;
+        } IShadingMask _fov;
         /// <inheritdoc/>
         public override int          FovRadius { set { RangeCutoff = base.FovRadius = value; Fov = null; } }
         /// <inheritdoc/>

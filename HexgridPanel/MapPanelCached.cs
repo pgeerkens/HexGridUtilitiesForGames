@@ -118,6 +118,9 @@ namespace PGNapoleonics.HexgridPanel {
             if(e==null) throw new ArgumentNullException(nameof(e));
             if (DesignMode) { e.Graphics.FillRectangle(Brushes.Gray, ClientRectangle);  return; }
 
+            void PaintFov(Graphics graphics)
+            => DataContext.Model.PaintShading(graphics,DataContext.Model?.Fov);
+
             if (BufferCache == null) {
                 var isBusy = Interlocked.CompareExchange(ref _isCacheBusy, CACHE_IS_PAINTING, CACHE_IS_FREE);
                 if (isBusy == CACHE_IS_FREE) {
@@ -131,7 +134,7 @@ namespace PGNapoleonics.HexgridPanel {
 
                 BufferMap  .Render(BufferCache,location, mapScale / CacheScale);
                 BufferUnits.Render(BufferMap,  location, mapScale, DataContext.Model.PaintUnits);
-                BufferBack .Render(BufferUnits,location, mapScale, DataContext.Model.PaintShading);
+                BufferBack .Render(BufferUnits,location, mapScale, PaintFov);
                 BufferBack .Render(null,       location, mapScale, DataContext.Model.PaintHighlight);
 
                 e.Graphics.DrawImageUnscaled(BufferBack, Point.Empty);

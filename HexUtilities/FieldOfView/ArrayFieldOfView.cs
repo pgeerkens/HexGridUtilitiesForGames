@@ -26,39 +26,39 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System.Diagnostics.CodeAnalysis;
+using System.Collections;
+using System.Linq;
+
 using PGNapoleonics.HexUtilities.Common;
 
+#pragma warning disable 1587
+/// <summary>Fast efficient <b>Shadow-Casting</b> 
+/// implementation of 3D Field-of-View on a <see cref="Hexgrid"/> map.</summary>
+#pragma warning restore 1587
 namespace PGNapoleonics.HexUtilities.FieldOfView {
     using HexSize = System.Drawing.Size;
 
-    /// <summary>Enumeration of line-of-sight modes</summary>
-    public enum FovTargetMode {
-        /// <summary>Target height and observer height both set to the same constant value 
-        /// (ShadowCasting.DefaultHeight) above ground eleevation</summary>
-        EqualHeights,
-        /// <summary>Use actual observer height and ground level as target height.</summary>
-        TargetHeightEqualZero,
-        /// <summary>Use actual observer and target height.</summary>
-        TargetHeightEqualActual
-    }
+    /// <summary>Implementation of <see cref="IShadingMask"/> using a backing array of BitArray.</summary>
+    internal class ArrayFieldOfView : IShadingMask {
+        private readonly object _syncLock = new object();
 
-    /// <summary>Interface required to make use of ShadowCasting Field-of-View calculation.</summary>
-    public interface IFovBoard {
-        /// <summary>Height in units of elevation level 0 (zero).</summary>
-        int     ElevationBase { get; }
+        public ArrayFieldOfView(IFovBoard board) {
+            _mapSizeHexes = board.MapSizeHexes;
+            _fovBacking   = ( from i in Enumerable.Range(0,board.MapSizeHexes.Width)
+                              select new BitArray(board.MapSizeHexes.Height)
+                            ).ToArray();
+        }
 
-        /// <summary>Height increase in units of each elevation level.</summary>
-        int     ElevationStep { get; }
+        public bool this[HexCoords coords] {
+            get => _mapSizeHexes.IsOnboard(coords) && _fovBacking[coords.User.X][coords.User.Y];
+            internal set {
+                lock (_syncLock) {
+                    if (_mapSizeHexes.IsOnboard(coords)) { _fovBacking[coords.User.X][coords.User.Y] = value; }
+                }
+            }
+        }
+        readonly BitArray[] _fovBacking;
 
-        /// <summary>Height in metres.</summary>
-        int     HeightOfMan   { get; }
-
-        /// <summary>The rectangular extent of the board's hexagonal grid, in hexes.</summary>
-        HexSize MapSizeHexes  { get; }
-
-        /// <summary>Returns the <c>IHex</c> at location <c>coords</c>.</summary>
-        [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
-        Maybe<IHex> this[HexCoords coords] { get; }
+        private readonly HexSize _mapSizeHexes;
     }
 }

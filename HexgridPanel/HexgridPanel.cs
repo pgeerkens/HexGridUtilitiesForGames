@@ -276,7 +276,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <inheritdoc/>
         protected virtual void RenderShading(Graphics graphics) {
             if (graphics == null) throw new ArgumentNullException("graphics");
-            DataContext.Model.PaintShading(graphics);
+            DataContext.Model.PaintShading(graphics,DataContext.Model?.Fov);
         }
         /// <inheritdoc/>
         protected virtual void RenderUnits(Graphics graphics) {

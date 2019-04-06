@@ -26,39 +26,13 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System.Collections;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 
-using PGNapoleonics.HexUtilities.Common;
-
-#pragma warning disable 1587
-/// <summary>Fast efficient <b>Shadow-Casting</b> 
-/// implementation of 3D Field-of-View on a <see cref="Hexgrid"/> map.</summary>
-#pragma warning restore 1587
-namespace PGNapoleonics.HexUtilities.FieldOfView {
-    using HexSize = System.Drawing.Size;
-
-    /// <summary>Implementation of IFov using a backing array of BitArray.</summary>
-    internal class ArrayFieldOfView : IFov {
-        private readonly object _syncLock = new object();
-
-        public ArrayFieldOfView(IFovBoard board) {
-            _mapSizeHexes = board.MapSizeHexes;
-            _fovBacking   = ( from i in Enumerable.Range(0,board.MapSizeHexes.Width)
-                              select new BitArray(board.MapSizeHexes.Height)
-                            ).ToArray();
-        }
-
-        public bool this[HexCoords coords] {
-            get => _mapSizeHexes.IsOnboard(coords) && _fovBacking[coords.User.X][coords.User.Y];
-            internal set {
-                lock (_syncLock) {
-                    if (_mapSizeHexes.IsOnboard(coords)) { _fovBacking[coords.User.X][coords.User.Y] = value; }
-                }
-            }
-        }
-        readonly BitArray[] _fovBacking;
-
-        private readonly HexSize _mapSizeHexes;
+namespace PGNapoleonics.HexUtilities.Common {
+    /// <summary>Structure returned by the Field-of-View factory.</summary>
+    public interface IShadingMask {
+        /// <summary>True if the hex at location <c>coords</c>c> is visible in this field-of-view.</summary>
+        [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
+        bool this[HexCoords coords] { get; }
     }
 }

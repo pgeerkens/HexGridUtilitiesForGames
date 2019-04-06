@@ -34,6 +34,7 @@ using System.Windows.Forms;
 
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexgridPanel.WinForms;
+using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridPanel {
     /// <summary>TODO</summary>
@@ -196,8 +197,12 @@ namespace PGNapoleonics.HexgridPanel {
             graphics.Paint(Point.Empty, 1.0F, g => {
                 var model = DataContext.Model;
                 model.PaintMap(g, true);
+                if (model.LandmarkToShow > 0) model.PaintLabels(g, LandmarkText);
             });
         }
+
+        private string LandmarkText(HexCoords coords)
+        => DataContext.Model.Landmarks.DistanceFrom(coords,DataContext.Model.LandmarkToShow-1);
 
         /// <summary>TODO</summary>
         void ResizeBuffer() { _cacheStatus = _NEEDS_PAINTING; }

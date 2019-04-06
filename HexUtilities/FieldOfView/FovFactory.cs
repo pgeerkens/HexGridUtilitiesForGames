@@ -36,40 +36,38 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     public static class FovFactory {
         /// <summary>Returns the field-of-view on <c>board</c> from the hex specified by coordinates <c>coords</c>.</summary>
         [Obsolete("Use GetFieldOfView(HexCoords origin, int fovRadius) instead.")]
-        public static IFov GetFov(this IFovBoard @this, HexCoords origin, int fovRadius) {
-            return @this.GetFieldOfView(origin, fovRadius, FovTargetMode.EqualHeights, 1, 0);
-        }
+        public static IShadingMask GetFov(this IFovBoard @this, HexCoords origin, int fovRadius)
+        =>  @this.GetFieldOfView(origin, fovRadius, FovTargetMode.EqualHeights, 1, 0);
 
         /// <summary>Gets a Field-of-View for this board asynchronously, assuming a flat earth.</summary>
-        public static Task<IFov> GetFieldOfViewAsync(this IFovBoard @this, HexCoords origin, int fovRadius) =>
+        public static Task<IShadingMask> GetFieldOfViewAsync(this IFovBoard @this, HexCoords origin, int fovRadius)
             //@this.GetFieldOfViewAsync(origin, fovRadius, 1);
-            Task.Run(() => @this.GetFieldOfView(origin, fovRadius, FovTargetMode.EqualHeights, 1, 0));
+        =>  Task.Run(() => @this.GetFieldOfView(origin, fovRadius, FovTargetMode.EqualHeights, 1, 0));
 
         /// <summary>Gets a Field-of-View for this board asynchronously, assuming a flat earth.</summary>
-        public static Task<IFov> GetFieldOfViewAsync(this IFovBoard @this, HexCoords origin, int fovRadius, int height) =>
+        public static Task<IShadingMask> GetFieldOfViewAsync(this IFovBoard @this, HexCoords origin, int fovRadius, int height)
             //@this.GetFieldOfViewAsync(origin, fovRadius, FovTargetMode.EqualHeights, height);
-            Task.Run(() => @this.GetFieldOfView(origin, fovRadius, FovTargetMode.EqualHeights, 1, 0));
+        =>  Task.Run(() => @this.GetFieldOfView(origin, fovRadius, FovTargetMode.EqualHeights, 1, 0));
 
         /// <summary>Gets a Field-of-View for this board asynchronously, assuming a flat earth.</summary>
-        public static Task<IFov> GetFieldOfViewAsync(this IFovBoard @this, HexCoords origin, int fovRadius, FovTargetMode targetMode) =>
+        public static Task<IShadingMask> GetFieldOfViewAsync(this IFovBoard @this, HexCoords origin, int fovRadius, FovTargetMode targetMode)
             //@this.GetFieldOfViewAsync(origin, fovRadius, targetMode, 1);
-            Task.Run(() => @this.GetFieldOfView(origin, fovRadius, targetMode, 1, 0));
+        =>  Task.Run(() => @this.GetFieldOfView(origin, fovRadius, targetMode, 1, 0));
 
         /// <summary>Gets a Field-of-View for this board asynchronously, assuming a flat earth.</summary>
-        public static Task<IFov> GetFieldOfViewAsync(this IFovBoard @this, HexCoords origin, int fovRadius, FovTargetMode targetMode, int height) =>
-            Task.Run(() => @this.GetFieldOfView(origin, fovRadius, targetMode, height, 0));
+        public static Task<IShadingMask> GetFieldOfViewAsync(this IFovBoard @this, HexCoords origin, int fovRadius, FovTargetMode targetMode, int height)
+        =>  Task.Run(() => @this.GetFieldOfView(origin, fovRadius, targetMode, height, 0));
 
         /// <summary>Gets a Field-of-View for this board asynchronously.</summary>
-        public static Task<IFov> GetFieldOfViewAsync(this IFovBoard @this, HexCoords origin, int fovRadius, FovTargetMode targetMode, int height, int hexesPerMile) =>
-            Task.Run(() => @this.GetFieldOfView(origin, fovRadius, targetMode, height, hexesPerMile));
+        public static Task<IShadingMask> GetFieldOfViewAsync(this IFovBoard @this, HexCoords origin, int fovRadius, FovTargetMode targetMode, int height, int hexesPerMile)
+        =>  Task.Run(() => @this.GetFieldOfView(origin, fovRadius, targetMode, height, hexesPerMile));
 
         /// <summary>Gets a Field-of-View for this board synchronously, assuming a flat earth.</summary>
-        public static IFov GetFieldOfView(this IFovBoard @this, HexCoords origin, int fovRadius) {
+        public static IShadingMask GetFieldOfView(this IFovBoard @this, HexCoords origin, int fovRadius)
+        =>  @this.GetFieldOfView(origin, fovRadius, FovTargetMode.EqualHeights, 1, 0);
 
-            return @this.GetFieldOfView(origin, fovRadius, FovTargetMode.EqualHeights, 1, 0);
-        }
         /// <summary>Gets a Field-of-View for this board synchronously.</summary>
-        public static IFov GetFieldOfView(this IFovBoard @this, HexCoords origin, int fovRadius, FovTargetMode targetMode, int heightOfMan, int hexesPerMile) {
+        public static IShadingMask GetFieldOfView(this IFovBoard @this, HexCoords origin, int fovRadius, FovTargetMode targetMode, int heightOfMan, int hexesPerMile) {
             Tracing.FieldOfView.Trace("GetFieldOfView");
             var fov = new ArrayFieldOfView(@this);
             if (@this.IsOverseeable(origin))
