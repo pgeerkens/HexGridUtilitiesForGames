@@ -24,7 +24,7 @@
 
 - **HexUtilitites:** The core library with all functionality not dependent on either WinForms or WPF. THis library is moderatey to extremely stable at the present time.
 
-- **HexgridPanel*:* All core functionality depending on either WinForms or WPF. THis library is undergoing revision currently that may include breaking changes.
+- **HexgridPanel:** All core functionality depending on either WinForms or WPF. THis library is undergoing revision currently that may include breaking changes.
 
 - **HexgridExamplesCommon:** Common structures used by the example libraries below.
 
