@@ -17,9 +17,11 @@
 - ^[Ee]xamples/
 - ^[Dd]emos?/
 - (^|/)inst/doc/
+- */html/
 
 ## Documentation files ##
 
+- docs.zip
 - (^|/)CHANGE(S|LOG)?(\.|$)
 - (^|/)CONTRIBUTING(\.|$)
 - (^|/)COPYING(\.|$)
