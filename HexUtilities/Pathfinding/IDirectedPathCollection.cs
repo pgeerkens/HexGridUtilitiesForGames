@@ -26,12 +26,11 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System.Collections;
 using System.Collections.Generic;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <summary>Structure returned by the A* Path Finding utility.</summary>
-    public interface IDirectedPathCollection : IEnumerable<IDirectedPathCollection>, IEnumerable { 
+    public interface IDirectedPathCollection : IEnumerable<IDirectedPathCollection> { 
         /// <summary>The <see cref="Hexside"/> through which an agent must move in taking the first step of this path.</summary>
         Hexside                 HexsideExit     { get; }
         /// <summary>The coordinates of the first step on this path.</summary>

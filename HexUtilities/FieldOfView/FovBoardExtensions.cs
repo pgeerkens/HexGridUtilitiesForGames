@@ -28,8 +28,6 @@
 #endregion
 using System;
 
-using PGNapoleonics.HexUtilities.Common;
-
 namespace PGNapoleonics.HexUtilities.FieldOfView {
     /// <summary>.</summary>
     public static partial class FovBoardExtensions {

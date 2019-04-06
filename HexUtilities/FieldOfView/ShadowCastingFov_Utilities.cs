@@ -29,8 +29,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-using PGNapoleonics.HexUtilities.Common;
-
 namespace PGNapoleonics.HexUtilities.FieldOfView {
   public static partial class ShadowCasting {
     [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "code")]

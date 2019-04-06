@@ -28,10 +28,7 @@
 #endregion
 using System;
 
-#pragma warning disable 1587
-/// <summary>Shared technoloiges across the library, and useful gadgets.</summary>
-#pragma warning restore 1587
-namespace PGNapoleonics.HexUtilities.Common {
+namespace PGNapoleonics.HexUtilities {
     using HexSize = System.Drawing.Size;
 
     /// <summary>TODO</summary>
@@ -90,6 +87,10 @@ namespace PGNapoleonics.HexUtilities.Common {
         /// <param name="height">Height of the range.</param>
         public static bool InRange(this int value, int lower, int height) =>
             lower <= value && value < lower+height;
+
+        /// <summary>The <i>Manhattan</i> distance from this hex to that at <c>coords</c>.</summary>
+        public static int Range(this IHex @this, IHex target)
+        => @this.Coords.Range(target.Coords);
     }
 }
 

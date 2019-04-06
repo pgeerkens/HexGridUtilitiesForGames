@@ -59,7 +59,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// behaviour on a hexgrid.
     /// </para><para>
     /// See also: <a href="http://www.cs.trincoll.edu/~ram/cpsc352/notes/astar.html">Notes - A-star Algorithm</a>
-    /// <seealso cref="PGNapoleonics.HexUtilities.Pathfinding.BidirectionalAltPathfinder"/>
+    /// <seealso cref="BidirectionalAltPathfinder"/>
     /// </para>
     /// </remarks>
     /// <see cref="BidirectionalAltPathfinder"/>

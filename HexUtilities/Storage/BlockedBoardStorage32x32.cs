@@ -28,8 +28,6 @@
 #endregion
 using System;
 
-using PGNapoleonics.HexUtilities.Common;
-
 namespace PGNapoleonics.HexUtilities.Storage {
     using HexSize     = System.Drawing.Size;
 

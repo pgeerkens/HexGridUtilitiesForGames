@@ -28,10 +28,9 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-
-using System.Diagnostics.CodeAnalysis;
 
 namespace PGNapoleonics.HexUtilities.Common {
   /// <summary>Extension methods for enums that avoid boxing.</summary>

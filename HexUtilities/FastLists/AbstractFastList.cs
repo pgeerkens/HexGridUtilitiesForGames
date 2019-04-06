@@ -32,8 +32,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-using PGNapoleonics.HexUtilities.Common;
-
 namespace PGNapoleonics.HexUtilities.FastLists {
     /// <summary>Adapted implementation of Joe Duffy's Simple (Fast) List enumerator.</summary>
     /// <remarks>

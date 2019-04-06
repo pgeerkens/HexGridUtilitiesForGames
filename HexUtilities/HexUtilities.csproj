@@ -214,7 +214,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Storage\HexBoardExtensions.cs" />
-    <Compile Include="Common\HexExtensions.cs" />
     <Compile Include="HexPickingExtensions.cs" />
     <Compile Include="IHexgridExtensions.cs" />
     <Compile Include="Storage\IMapDisplayWinForms.cs" />
@@ -247,7 +246,7 @@
     <Compile Include="Common\Tracing.cs" />
     <Compile Include="Common\EnumExtensions.cs" />
     <Compile Include="Common\EnumHelper.cs" />
-    <Compile Include="Common\Extensions.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="FastLists\FastEnumerable.cs" />
     <Compile Include="FastLists\FastIteratorFunctor.cs" />
     <Compile Include="FastLists\FastList.cs" />

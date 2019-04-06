@@ -30,8 +30,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-using PGNapoleonics.HexUtilities.Common;
-
 namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <summary>Function that returns a new IPriorityQueue&lt;int,IHex>.</summary>
     public delegate IPriorityQueue<int,IHex> QueueFactory();

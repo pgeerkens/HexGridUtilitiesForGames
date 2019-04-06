@@ -29,7 +29,6 @@
 using System;
 using System.Collections.Generic;
 
-using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.FastLists;
 
 namespace PGNapoleonics.HexUtilities.FieldOfView {
@@ -46,16 +45,21 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
         };
         #endregion
 
-        //           Sextant map
-        //                    X-axis
-        //         \     |     /
-        //           \ 3 | 2 /
-        //             \ | / 
-        //          4    +    1     
-        //             / | \
-        //           / 5 | 0 \  
-        //         /     |     \
-        //             Y-axis
+        /// <summary>The dodecant (30 degree arcs) transformations.</summary>
+        /// <remarks>
+        /// These transformations 
+        /// 
+        ///           Sextant map
+        ///                    X-axis
+        ///         \     |     /
+        ///           \ 3 | 2 /
+        ///             \ | / 
+        ///          4    +    1     
+        ///             / | \
+        ///           / 5 | 0 \  
+        ///         /     |     \
+        ///             Y-axis
+        /// </remarks>
         public static IFastList<Dodecant> Dodecants = ( new Dodecant[] {
             new Dodecant( 0, new IntMatrix2D( 1, 0,  0, 1)), //  CW  from Hexside.North
             new Dodecant( 1, new IntMatrix2D( 0,-1,  1, 1)), //  CW  from Hexside.Northwest

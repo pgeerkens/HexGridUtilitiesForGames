@@ -28,7 +28,6 @@
 #endregion
 using System;
 
-using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {

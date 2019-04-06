@@ -30,8 +30,6 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 
-using PGNapoleonics.HexUtilities.Common;
-
 namespace PGNapoleonics.HexUtilities.FieldOfView {
   /// <summary>Field-of-View cone for shadow-casting implementation.</summary>
   [DebuggerDisplay("{RiseRun} at {Range}; VTop: {VectorTop}; VBot: {VectorBottom}")]

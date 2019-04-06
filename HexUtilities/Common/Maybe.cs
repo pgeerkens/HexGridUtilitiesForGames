@@ -29,6 +29,9 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
+#pragma warning disable 1587
+/// <summary>Shared technoloiges across the library, and useful gadgets.</summary>
+#pragma warning restore 1587
 namespace PGNapoleonics.HexUtilities.Common {
     /// <summary>A Maybe monad wrapping an instance of type <typeparamref name="T"/>.</summary>
     public struct Maybe<T> : IEquatable<Maybe<T>> {

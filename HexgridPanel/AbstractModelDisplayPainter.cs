@@ -112,9 +112,7 @@ namespace PGNapoleonics.HexgridPanel {
 
         /// <summary>Paints all the hexes in <paramref name="clipHexes"/> by executing <paramref name="paintAction"/>
         /// for each hex on <paramref name="graphics"/>.</summary>
-        /// <param name="this">The map to be painted, as a <see cref="MapDisplay{THex}"/>.</param>
         /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
-        /// <param name="clipRectangle">The rectangular extent of hexes to be painted as a <see cref="CoordsRectangle"/>.</param>
         /// <param name="paintAction">The paint action to be performed for each hex as a <see cref="Action{HexCoords}"/>.</param>
         public virtual void PaintForEachHex(Graphics graphics, Action<HexCoords> paintAction) {
             var clipRectangle = Model.GetClipInHexes(graphics.VisibleClipBounds);
@@ -125,9 +123,7 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <summary>Paint the current shortese path.</summary>
-        /// <param name="this">The map to be painted, as a <see cref="MapDisplay{THex}"/>.</param>
         /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
-        /// <param name="maybePath">Type: <see cref="IDirectedPathCollection"/> - 
         /// A directed path (ie linked-list> of hexes to be painted.</param>
         public virtual void PaintPath(Graphics graphics) {
             if (graphics==null) throw new ArgumentNullException("graphics");
@@ -147,7 +143,6 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <summary>Paint the direction and destination indicators for each hex of the current shortest path.</summary>
-        /// <param name="this">The map to be painted, as a <see cref="MapDisplay{THex}"/>.</param>
         /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
         /// <param name="path">Type: <see cref="IDirectedPathCollection"/> - 
         /// A directed path (ie linked-list> of hexes to be highlighted with a direction arrow.</param>
@@ -158,7 +153,6 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <summary>Paint the direction arrow for each hex of the current shortest path.</summary>
-        /// <param name="this">The map to be painted, as a <see cref="MapDisplay{THex}"/>.</param>
         /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
         /// <param name="hexside">Type: <see cref="Hexside"/> - 
         /// Direction from this hex in which the next step is made.</param>
@@ -172,7 +166,6 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <summary>Paint the destination indicator for the current shortest path.</summary>
-        /// <param name="this">The map to be painted, as a <see cref="MapDisplay{THex}"/>.</param>
         /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
         /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
         protected void PaintPathDestination(Graphics graphics) {
@@ -182,8 +175,6 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <summary>Performs the specified <see cref="Action{THex}"/> for each hex of <paramref name="this"/> in <paramref name="clipRectangle"/>.</summary>
-        /// <typeparam name="THex"></typeparam>
-        /// <param name="this">The map to be painted, as a <see cref="IMapDisplayWinForms{THex}"/>.</param>
         /// <param name="clipRectangle">The rectangular extent of hexes to be painted as a <see cref="CoordsRectangle"/>.</param>
         /// <param name="action">The <see cref="Action{THex}"/> to be performed with each hex.</param>
         protected void ForEachHex(CoordsRectangle clipRectangle, Action<THex> action)
@@ -192,11 +183,10 @@ namespace PGNapoleonics.HexgridPanel {
             );
 
         /// <summary>TODO</summary>
-        /// <param name="this">The <see cref="IHex"/> to be painted</param>
         /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
         /// <param name="path">The closed <see cref="GraphicsPath"/> outlining the hex to be painted.</param>
         /// <param name="brush">The <see cref="Brush"/> to be used in filling this hex.</param>
-        protected void Paint(IHex @this, Graphics graphics, GraphicsPath path, Brush brush)
+        protected void Paint(Graphics graphics, GraphicsPath path, Brush brush)
         =>  graphics.FillPath(brush, path);
 
         /// <summary>.</summary>

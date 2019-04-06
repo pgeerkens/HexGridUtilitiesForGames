@@ -35,7 +35,6 @@ using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.FastLists;
 using PGNapoleonics.HexUtilities.FieldOfView;
 using PGNapoleonics.HexUtilities.Pathfinding;
-using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexUtilities.Storage {
     using HexPoint = System.Drawing.Point;

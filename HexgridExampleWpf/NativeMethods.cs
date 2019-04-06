@@ -39,7 +39,7 @@ namespace PGNapoleonics.HexgridExampleWpf.WinForms {
     internal static partial class NativeMethods {
         /// <summary>P/Invoke declaration for user32.dll.WindowFromPoint</summary>
         /// <remarks><a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms633558(v=vs.85).aspx"></a></remarks>
-        /// <param name="pt">(Sign-extended) screen coordinates as a Point structure.</param>
+        /// <param name="point">(Sign-extended) screen coordinates as a Point structure.</param>
         /// <returns>Window handle (hWnd).</returns>
         [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "0",
             Justification="Research suggests the Code Analysis message is incorrect.")]
