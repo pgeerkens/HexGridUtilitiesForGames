@@ -84,7 +84,6 @@ namespace PGNapoleonics.HexUtilities.Common {
     private static bool IsFlagsEnum(IList<CustomAttributeData> attributes) {
       return (from attribute in attributes select IsFlagsAttribute(attribute)
              ).FirstOrDefault(); //b => b);
-    //  return attributes.Select(a => IsFlagsAttribute(a)).FirstOrDefault(b => b);
     }
     private static bool IsFlagsAttribute(CustomAttributeData attribute) {
       return attribute.AttributeType.FullName == "System.FlagsAttribute";

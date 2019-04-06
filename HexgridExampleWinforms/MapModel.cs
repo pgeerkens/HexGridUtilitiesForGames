@@ -30,8 +30,10 @@ using System;
 using System.Windows.Forms;
 
 using PGNapoleonics.HexUtilities;
-using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Storage;
+
 using PGNapoleonics.HexgridPanel;
+
 namespace PGNapoleonics.HexgridExampleWinforms {
     using HexSize = System.Drawing.Size;
 

@@ -35,6 +35,8 @@ using System.Windows.Interop;
 
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Storage;
+
 using PGNapoleonics.HexgridExampleCommon;
 
 namespace PGNapoleonics.HexgridExampleWpf {

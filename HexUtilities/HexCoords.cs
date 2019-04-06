@@ -31,8 +31,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 
-using PGNapoleonics.HexUtilities.Common;
-
 namespace PGNapoleonics.HexUtilities {
     using HexPoint = System.Drawing.Point;
     using HexSize  = System.Drawing.Size;

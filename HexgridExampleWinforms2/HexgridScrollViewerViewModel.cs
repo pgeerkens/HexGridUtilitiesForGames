@@ -31,8 +31,11 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Storage;
+
 using PGNapoleonics.HexgridExampleCommon;
 
 namespace PGNapoleonics.HexgridExampleWinforms2 {

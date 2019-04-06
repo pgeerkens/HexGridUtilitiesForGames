@@ -35,10 +35,4 @@ namespace PGNapoleonics.HexUtilities.Common {
         public static int Range(this IHex @this, IHex target)
         => @this.Coords.Range(target.Coords);
     }
-
-    /// <summary>TODO</summary>
-    public interface IPaintableHex<TSurface,TPath> {
-        /// <summary>TODO</summary>
-        void Paint(TSurface graphics, TPath path);
-    }
 }

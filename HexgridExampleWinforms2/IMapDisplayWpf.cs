@@ -31,6 +31,7 @@ using System.Windows.Media;
 
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexgridExampleWinforms2 {
   using HexRectF  = System.Drawing.RectangleF;

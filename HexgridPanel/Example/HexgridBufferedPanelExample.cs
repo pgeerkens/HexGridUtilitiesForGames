@@ -34,6 +34,7 @@ using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.FieldOfView;
 using PGNapoleonics.HexUtilities.Pathfinding;
+using PGNapoleonics.HexUtilities.Storage;
 
 using PGNapoleonics.HexgridPanel.WinForms;
 using PGNapoleonics.HexgridExampleCommon;

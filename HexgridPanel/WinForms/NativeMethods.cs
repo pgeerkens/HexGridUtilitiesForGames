@@ -39,14 +39,23 @@ namespace PGNapoleonics.HexgridPanel.WinForms {
     /// <summary>Extern declarations from the Win32 API.</summary>
     internal static class NativeMethods {
         /// <summary>P/Invoke declaration for user32.dll.WindowFromPoint</summary>
-		    /// <remarks><a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms633558(vector=vs.85).aspx"></a></remarks>
-		    /// <param name="point">(Sign-extended) screen coordinates as a Point structure.</param>
-		    /// <returns>Window handle (hWnd).</returns>
+		/// <remarks><a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms633558(vector=vs.85).aspx"></a></remarks>
+		/// <param name="point">(Sign-extended) screen coordinates as a Point structure.</param>
+		/// <returns>Window handle (hWnd).</returns>
         [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "0",
-          Justification="Research suggests the Code Analysis message is incorrect.")]
+            Justification="Research suggests the Code Analysis message is incorrect.")]
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("user32.dll")]
         public static extern IntPtr WindowFromPoint(System.Drawing.Point point);
+
+        /// <summary>P/Invoke declaration for user32.dll.SendMessage</summary>
+        /// <param name="hWnd">Window handle</param>
+        /// <param name="msg">Windows message</param>
+        /// <param name="wParam">WParam</param>
+        /// <param name="lParam">LParam</param>
+        /// <returns></returns>
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 
         /// <summary>Performs A Bit-Block-Transfer (ie BitBlt) of the color data corresponding to a rectangle 
         /// of pixels from the specified source device context into a destination device context.</summary>
@@ -76,14 +85,5 @@ namespace PGNapoleonics.HexgridPanel.WinForms {
         /// <returns>Least significant 16 bits of <c>ptr</c> as Int32.</returns>
         public static int LoWord(this IntPtr ptr)
         =>  unchecked((short)(int)((ulong)ptr & 0xFFFFUL));
-
-        /// <summary>P/Invoke declaration for user32.dll.SendMessage</summary>
-        /// <param name="hWnd">Window handle</param>
-        /// <param name="msg">Windows message</param>
-        /// <param name="wParam">WParam</param>
-        /// <param name="lParam">LParam</param>
-        /// <returns></returns>
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
     }
 }

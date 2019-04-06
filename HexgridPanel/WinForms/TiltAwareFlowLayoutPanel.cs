@@ -31,7 +31,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Forms;
 
-using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexgridPanel.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
@@ -70,8 +69,14 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Occurs when the mouse tilt-wheel moves while the control has focus.</summary>
         public event EventHandler<MouseEventArgs> MouseHWheel;
 
-        /// <summary>Raises the MouseHWheel event.</summary>
-        /// <param name="e">A <c>MouseEventArgs</c> that contains the event data. </param>
+        /// <inheritdoc/>
+        public Point UnappliedScroll { get; set; } = new Point();
+
+        /// <inheritdoc/>
+        public Point ScrollLargeChange => new Point (120, 120);
+
+        /// <summary>Raise a <see cref="MouseHWheel"/> event.</summary>
+        /// <param name="e">A <see cref="MouseEventArgs"/> that contains the event data. </param>
         protected virtual void OnMouseHWheel(MouseEventArgs e) {
             if (e == null) throw new ArgumentNullException(nameof(e));
             if (!AutoScroll) return;
@@ -103,11 +108,6 @@ namespace PGNapoleonics.HexgridPanel {
             var nextControl = GetNextControl(control,forward);
             ScrollControlIntoView(nextControl);
         }
-
-        /// <summary>Gets or sets the current amount of unapplied scroll, as a <see cref="Point"/> object.</summary>
-        public Point UnappliedScroll { get; set; } = new Point();
-
-        public Point ScrollLargeChange => new Point (120, 120);
 
         /// <summary>Extend Windows Message Loop to receive MouseHWheel messages.</summary>
         protected override void WndProc(ref Message m) {

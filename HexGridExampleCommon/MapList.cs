@@ -29,7 +29,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexgridExampleCommon {
     public static class MapList {

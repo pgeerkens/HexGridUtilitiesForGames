@@ -31,10 +31,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-using PGNapoleonics.HexgridExampleCommon;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Storage;
+
 using PGNapoleonics.HexgridPanel.WinForms;
+
+using PGNapoleonics.HexgridExampleCommon;
 
 #pragma warning disable 1587
 /// <summary>Implementations of a scrollable tiltable Winforms Panel.</summary>

@@ -28,11 +28,10 @@
 #endregion
 using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.HexUtilities.Pathfinding;
+using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexgridPanel {
     /// <summary>Extension methods to paint an <see cref="IMapDisplayWinForms{T}"/> from a <see cref="Graphics"/>.</summary>

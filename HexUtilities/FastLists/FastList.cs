@@ -1,74 +1,40 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-
-using System.Diagnostics;
+﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
+/////////////////////////////////////////////////////////////////////////////////////////
+//                PG Software Solutions - Hex-Grid Utilities
+/////////////////////////////////////////////////////////////////////////////////////////
+// The MIT License:
+// ----------------
+// 
+// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, 
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+// permit persons to whom the Software is furnished to do so, subject to the following 
+// conditions:
+//     The above copyright notice and this permission notice shall be 
+//     included in all copies or substantial portions of the Software.
+// 
+//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+//     OTHER DEALINGS IN THE SOFTWARE.
+/////////////////////////////////////////////////////////////////////////////////////////
+#endregion
 using System.Diagnostics.CodeAnalysis;
 
-using PGNapoleonics.HexUtilities.Common;
-
 namespace PGNapoleonics.HexUtilities.FastLists {
-  /// <summary>Default concrete implementation of <see cref="AbstractFastList{TItem}"/>.</summary>
-  /// <typeparam name="TItem">The Type of the Item to be stored and iterated over.</typeparam>
-  [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
-    Justification="The suffix has an unambiguous meaning in the application domain.")]
-  internal sealed class FastList<TItem> : AbstractFastList<TItem> {
-    /// <summary>Constructs a new instance from <paramref name="array"/>.</summary>
-    internal FastList(TItem[] array) : base(array) { }
-  }
-
-  /// <summary>Adapted implementation of Joe Duffy's Simple (Fast) List enumerator.</summary>
-  /// <remarks>
-  /// <a href="http://www.bluebytesoftware.com/blog/2008/09/21/TheCostOfEnumeratingInNET.aspx">
-  /// The Cost of Enumeration in DotNet</a>
-  /// </remarks>
-  /// <typeparam name="TItem">The Type of the Item to be stored and iterated over.</typeparam>
-  [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
-    Justification="The suffix has an unambiguous meaning in the application domain.")]
-  [DebuggerDisplay("Count={Count}")]
-  public abstract partial class AbstractFastList<TItem> : IFastList<TItem>, IFastListX<TItem> {
-    /// <inheritdoc/>>
-    public IEnumerator<TItem>                     GetEnumerator(){
-      return Extensions.InitializeDisposable( () =>
-        new ClassicEnumerable<TItem>(_array) );
+    /// <summary>Default concrete implementation of <see cref="AbstractFastList{TItem}"/>.</summary>
+    /// <typeparam name="TItem">The Type of the Item to be stored and iterated over.</typeparam>
+    [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
+        Justification="The suffix has an unambiguous meaning in the application domain.")]
+    internal sealed class FastList<TItem> : AbstractFastList<TItem> {
+        /// <summary>Constructs a new instance from <paramref name="array"/>.</summary>
+        internal FastList(TItem[] array) : base(array) { }
     }
-    IEnumerator                       IEnumerable.GetEnumerator() { return GetEnumerator(); }
-    
-    IFastEnumerator<TItem> IFastEnumerable<TItem>.GetEnumerator(){
-      return new FastEnumerable<TItem>(_array);
-    }
-
-    /// <summary>IForEachable{TItem} implementation.</summary>
-    public   void  ForEach(Action<TItem> action) {
-      TItem[] array = _array;
-      for (int i = 0; i < array.Length; i++)    action(array[i]);
-    }
-    /// <inheritsdoc/>
-    void IForEachable<TItem>.ForEach(Action<TItem> action) { ForEach(action); }
-
-    /// <summary>IForEachable2{TItem} implementation</summary>
-    public   void  ForEach(FastIteratorFunctor<TItem> functor) {
-      TItem[] array = _array;
-      for (int i = 0; i < array.Length; i++)    functor.Invoke(array[i]);
-    }
-    /// <inheritsdoc/>
-    void IForEachable2<TItem>.ForEach(FastIteratorFunctor<TItem> functor) { ForEach(functor); }
-
-    /// <inheritdoc/>
-    public   int   Count               { get {return _array.Length;} }
-    /// <inheritdoc/>
-    public   TItem this[int index]     { get {
-      return _array[index];
-    } }
-    /// <inheritdoc/>
-    public   int   IndexOf(TItem item) {
-      return Array.IndexOf(_array, item, 0, _array.Length);
-    }
-
-    /// <summary>Use carefully - must not interfere with iterators.</summary>
-    void  IFastListX<TItem>.SetItem(int index, TItem value) { _array[index] = value; }
-
-    /// <summary>TODO</summary>
-    private readonly TItem[] _array;
-  }
 }

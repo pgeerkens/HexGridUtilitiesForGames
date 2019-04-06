@@ -44,7 +44,6 @@ namespace PGNapoleonics.HexgridPanel.WinForms {
 		}
 		/// <summary>Make a truly transparent Panel control.</summary>
 		/// <remarks>Change the behaviour of the window by giving it a TRANSPARENT style.
-		/// See "http://www.bobpowell.net/transcontrols.htm"</remarks>
 		protected override CreateParams CreateParams { 
 			get { 
 				var cp=base.CreateParams; 
@@ -57,7 +56,6 @@ namespace PGNapoleonics.HexgridPanel.WinForms {
         /// <remarks>Invalidate the parent of the control, not the control itself, whenever 
         /// we need to update the graphics. This ensures that whatever is behind the control 
         /// gets painted before we need to do our own graphics output.
-        /// See "http://www.bobpowell.net/transcontrols.htm"</remarks>
         public virtual void Invalidate2() => Invalidate2(new Rectangle(Location,Size));
         /// <summary>Invalidates the entire surface of the control and causes the control to be redrawn.</summary>
         /// <param name="rectangle">Clipping <c>Rectangle</c> to be invalidated.</param>

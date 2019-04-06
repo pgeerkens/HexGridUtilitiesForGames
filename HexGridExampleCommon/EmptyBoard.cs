@@ -27,7 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using PGNapoleonics.HexUtilities;
-using PGNapoleonics.HexUtilities.Common;
+using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexgridExampleCommon {
     using MapHex = IHex;

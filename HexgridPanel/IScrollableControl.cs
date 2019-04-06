@@ -42,6 +42,7 @@ namespace PGNapoleonics.HexgridPanel.WinForms {
         Point ScrollLargeChange  { get; }
 
         /// <summary>Reserved for internal use by <see cref="ScrollableControlExtensions"/>.</summary>
+        /// <remarks>Gets or sets the current amount of unapplied scroll, as a <see cref="Point"/> object.</remarks>
         Point UnappliedScroll    { get; set; }
     }
 }

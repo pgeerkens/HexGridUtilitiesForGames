@@ -15,6 +15,7 @@ using System.Windows.Forms;
 
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexgridPanel.WinForms;
+using PGNapoleonics.HexUtilities;
 
 namespace PGNapoleonics.HexgridPanel {
     /// <summary>TODO</summary>

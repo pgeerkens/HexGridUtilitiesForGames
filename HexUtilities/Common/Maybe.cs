@@ -34,17 +34,14 @@ namespace PGNapoleonics.HexUtilities.Common {
     public struct Maybe<T> : IEquatable<Maybe<T>> {
         /// <summary>TODO</summary>
         [SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
-        public static Maybe<T> NoValue() => default(Maybe<T>);
+        public static Maybe<T> NoValue() => default;
 
         /// <summary>TODO</summary>
-        public Maybe(T value) : this() {
-            Value    = value;
-            HasValue = typeof(ValueType).IsAssignableFrom(typeof(T)) || value != null;
-        }
+        public Maybe(T value) : this() => Value    = value;
 
         /// <summary>TODO</summary>
-        public  bool HasValue { get; }
-        private T    Value    { get;}
+        public  bool HasValue => Value != null;
+        private T    Value    { get; }
 
         /// <summary>TODO</summary>
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]

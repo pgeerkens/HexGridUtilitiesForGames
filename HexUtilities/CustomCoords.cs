@@ -30,8 +30,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
-using PGNapoleonics.HexUtilities.Common;
-
 namespace PGNapoleonics.HexUtilities {
     /// <summary>TODO</summary>
     public class CustomCoords : IFormatProvider, ICustomFormatter {
@@ -64,7 +62,7 @@ namespace PGNapoleonics.HexUtilities {
 
         /// <summary>TODO</summary>
         [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames", MessageId = "0#",
-                                                Justification="Agrees with interface specification.")]
+                                    Justification="Agrees with interface specification.")]
         public string Format(string format, HexCoords coords, IFormatProvider formatProvider) {
             if (format==null || format.Length==0) format = "U";
             switch(format[0]) {
@@ -78,11 +76,13 @@ namespace PGNapoleonics.HexUtilities {
 
         object IFormatProvider.GetFormat(Type formatType) => GetFormat(formatType);
  
-        string ICustomFormatter.Format(string format, object arg, IFormatProvider formatProvider) {
-            var coords = arg as HexCoords?;
-            return coords.HasValue ? Format(format, coords.Value, formatProvider)
-                                   : HandleOtherFormats(format, arg);
-        }
+        string ICustomFormatter.Format(string format, object arg, IFormatProvider formatProvider)
+        => Format(format, arg as HexCoords?, formatProvider);
+
+        string Format(string format, HexCoords? coords, IFormatProvider formatProvider)
+        => coords.HasValue ? Format(format, coords.Value, formatProvider)
+                           : HandleOtherFormats(format, coords);
+
         private static string HandleOtherFormats(string format, object obj)
         => (obj is IFormattable f) ? f.ToString(format, CultureInfo.CurrentCulture)
                                    : obj?.ToString() ?? string.Empty;
