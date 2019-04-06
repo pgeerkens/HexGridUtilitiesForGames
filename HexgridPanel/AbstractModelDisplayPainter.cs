@@ -53,7 +53,7 @@ namespace PGNapoleonics.HexgridPanel {
                 graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 PaintForEachHex(graphics, coords => {
                     boardHexes[coords].IfHasValueDo(h => {
-                        if(h is THex hex) Paint(hex, graphics, Model.HexgridPath, GetHexBrush(hex));
+                        if(h is THex hex) Paint(graphics, Model.HexgridPath, GetHexBrush(hex));
                     });
                     if (showHexgrid) graphics.DrawPath(Pens.Black, Model.HexgridPath);
                 } );
