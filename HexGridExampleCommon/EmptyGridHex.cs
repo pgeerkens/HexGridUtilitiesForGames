@@ -32,9 +32,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
     /// <summary>TODO</summary>
     public sealed class EmptyGridHex : Hex {
         /// <summary>TODO</summary>
-        public EmptyGridHex(HexCoords coords) : base(coords,0) {
-            TerrainType = 'Z';  // Expression body causes a Doxygen warning
-        }
+        public EmptyGridHex(HexCoords coords) : base(coords,0) => TerrainType = default(char); 
 
         ///  <inheritdoc/>
         public override char   TerrainType   { get; }

@@ -215,6 +215,8 @@
     <Compile Include="Common\HexPickingExtensions.cs" />
     <Compile Include="Common\IHexgridExtensions.cs" />
     <Compile Include="Common\IMapDisplayWinForms.cs" />
+    <Compile Include="Common\Map.cs" />
+    <Compile Include="Common\MapDisplay.cs" />
     <Compile Include="Common\MapDisplayExtensions.cs" />
     <Compile Include="Common\Maybe.cs" />
     <Compile Include="Common\MaybeExtensions.cs" />

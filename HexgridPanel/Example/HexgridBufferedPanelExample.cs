@@ -48,7 +48,7 @@ namespace PGNapoleonics.HexgridPanel.Example {
             InitializeComponent();
 
             MenuBarToolStrip.LoadTraceMenu();
-            MenuBarToolStrip.LoadMapList(Map.MapList.Select(item => item.MapName).ToArray());
+            MenuBarToolStrip.LoadMapList(MapList.Maps.Select(item => item.MapName).ToArray());
         }
         protected override CreateParams CreateParams => this.SetCompositedStyle(base.CreateParams);
 
@@ -117,7 +117,7 @@ namespace PGNapoleonics.HexgridPanel.Example {
         }
 
         private static MapGridDisplay ParseMapName(string mapName)
-        =>  Map.MapList.First(item => item.MapName == mapName).MapBoard;
+        =>  MapList.Maps.First(item => item.MapName == mapName).MapBoard;
 
         private void SetMapBoard(MapGridDisplay mapBoard) {
             HexgridPanel.SetModel( MapBoard = mapBoard);

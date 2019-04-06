@@ -65,7 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EmptyBoard.cs" />
-    <Compile Include="Common\MapDisplay.cs" />
     <Compile Include="DocMainPage.cs" />
     <Compile Include="EmptyGridHex.cs" />
     <Compile Include="GlobalSuppressions.cs" />

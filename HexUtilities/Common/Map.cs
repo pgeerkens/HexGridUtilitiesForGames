@@ -26,18 +26,43 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
-using PGNapoleonics.HexUtilities.Common;
+namespace PGNapoleonics.HexUtilities.Common {
+    using MapGridHex = IHex;
 
-namespace PGNapoleonics.HexgridExampleCommon {
-    public static class MapList {
-        public static IReadOnlyList<Map> Maps { get; } = new ReadOnlyCollection<Map>(
-            new Map[] {
-                new Map("Terrain Map", () => new TerrainMap()),
-                new Map("Maze Map",    () => new MazeMap()),
-                new Map("A* Bug Map",  () => new AStarBugMap())
-            } );
+    /// <summary>TODO</summary>
+    public delegate MapDisplay<MapGridHex> MapExtractor();
+
+    /// <summary>TODO</summary>
+    public class Map {
+        /// <summary>TODO</summary>
+        public Map(string mapName, MapExtractor mapSource) {
+            MapName   = mapName;
+            MapSource = mapSource;
+        }
+
+        /// <summary>TODO</summary>
+        public  string                 MapName   { get; }
+        /// <summary>TODO</summary>
+        public  MapDisplay<MapGridHex> MapBoard  => MapSource(); 
+        
+        private MapExtractor           MapSource { get; }
+
+        #region Value Equality with IEquatable<T>
+        /// <inheritdoc/>
+        public override bool Equals(object obj) => (obj is Map other) && this.Equals(other);
+
+        /// <inheritdoc/>
+        public bool Equals(Map other) => MapName == other.MapName;
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => MapName.GetHashCode();
+
+        /// <summary>Tests value-inequality.</summary>
+        public static bool operator !=(Map lhs, Map rhs) => ! lhs.Equals(rhs);
+
+        /// <summary>Tests value-equality.</summary>
+        public static bool operator ==(Map lhs, Map rhs) => lhs.Equals(rhs);
+        #endregion
     }
 }

@@ -69,9 +69,7 @@ namespace PGNapoleonics.HexgridPanel {
                 } );
             } );
 
-        /// <summary>Paint the top layer of the display, graphics that changes frequently between refreshes.</summary>
-        /// <param name="this">The map to be painted, as a <see cref="MapDisplay{THex}"/>.</param>
-        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
+        /// <inheritdoc/>
         public virtual void PaintHighlight(Graphics graphics) {
             graphics?.Contain(g => {
                 g.Transform = Model.TranslateToHex(Model.StartHex);
@@ -104,10 +102,7 @@ namespace PGNapoleonics.HexgridPanel {
                 }
             } );
 
-        /// <summary>.</summary>
-        /// <typeparam name="THex"></typeparam>
-        /// <param name="this">The map to be painted, as a <see cref="MapDisplay{THex}"/>.</param>
-        /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
+        /// <inheritdoc/>
         public virtual void PaintUnits(Graphics graphics) {
             if (graphics == null) throw new ArgumentNullException("graphics");
 
