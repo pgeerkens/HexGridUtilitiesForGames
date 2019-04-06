@@ -1,8 +1,8 @@
-# HexGridUtilitiesForGames
+## HexGridUtilitiesForGames
 
-## Hex Grid Utilities for Board-Game Development in C#
+### Hex Grid Utilities for Board-Game Development in C#
 
-### A tool-kit of utilities for building board- and strategy-games on a hexagonal grid, providing these features:
+#### A tool-kit of utilities for building board- and strategy-games on a hexagonal grid, providing these features:
 
 - Lightning-fast **ALT Bidirectional Path-Finding** implementation;
   - Default landmarks are the 4 corners and 4 side midpoints of the map
