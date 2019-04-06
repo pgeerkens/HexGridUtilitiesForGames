@@ -65,19 +65,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EmptyBoard.cs" />
-    <Compile Include="Common\HexBoardExtensions.cs" />
-    <Compile Include="Common\HexExtensions.cs" />
-    <Compile Include="Common\IHexgridExtensions.cs" />
-    <Compile Include="Common\IMapDisplayWinForms.cs" />
     <Compile Include="Common\MapDisplay.cs" />
-    <Compile Include="Common\MapDisplayExtensions.cs" />
-    <Compile Include="Common\PointExtensions.cs" />
-    <Compile Include="Common\SizeExtensions.cs" />
-    <Compile Include="Common\UserCoordsRectangle.cs" />
     <Compile Include="DocMainPage.cs" />
     <Compile Include="EmptyGridHex.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Common\HexPickingExtensions.cs" />
     <Compile Include="MapDefs.cs" />
     <Compile Include="MapList.cs" />
     <Compile Include="MazeMap.cs" />

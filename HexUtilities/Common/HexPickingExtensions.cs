@@ -29,10 +29,10 @@
 using System;
 
 namespace PGNapoleonics.HexUtilities.Common {
-    using HexPoint = System.Drawing.Point;
+    using HexPoint  = System.Drawing.Point;
     using HexPointF = System.Drawing.PointF;
-    using HexSize = System.Drawing.Size;
-    using HexSizeF = System.Drawing.SizeF;
+    using HexSize   = System.Drawing.Size;
+    using HexSizeF  = System.Drawing.SizeF;
     using HexMatrix = System.Drawing.Drawing2D.Matrix;
 
     /// <summary>.</summary>

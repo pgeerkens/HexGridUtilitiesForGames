@@ -39,7 +39,6 @@ namespace PGNapoleonics.HexUtilities.Common {
     using HexSize       = System.Drawing.Size;
     using HexSizeF      = System.Drawing.SizeF;
     using RectangleF    = System.Drawing.RectangleF;
-    using Color         = System.Drawing.Color;
     using GraphicsPath  = System.Drawing.Drawing2D.GraphicsPath;
     using IDirectedPath = IDirectedPathCollection;
     using Int32ValueEventArgs = EventArgs<int>;
