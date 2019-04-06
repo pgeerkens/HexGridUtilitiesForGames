@@ -44,6 +44,7 @@
     <CodeAnalysisRuleSet>AllRulesLessCA1303.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1587,1607</NoWarn>
     <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -56,6 +57,7 @@
     <NoWarn>1587,1607</NoWarn>
     <DocumentationFile>bin\Release\PGNapoleonics.HexgridExampleWinforms.xml</DocumentationFile>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>PGNapoleonics.HexgridExampleWinforms.Program</StartupObject>
@@ -79,6 +81,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

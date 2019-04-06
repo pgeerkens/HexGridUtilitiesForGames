@@ -32,7 +32,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
     /// <summary>TODO</summary>
     public sealed class EmptyGridHex : Hex {
         /// <summary>TODO</summary>
-        public EmptyGridHex(HexCoords coords) : base(coords,0) => TerrainType = default(char); 
+        public EmptyGridHex(HexCoords coords) : base(coords,0) => TerrainType = default; 
 
         ///  <inheritdoc/>
         public override char   TerrainType   { get; }
@@ -41,6 +41,6 @@ namespace PGNapoleonics.HexgridExampleCommon {
         public override int    HeightTerrain => 0;
 
         ///  <inheritdoc/>
-        public override short? TryStepCost(Hexside hexsideExit) => default(short?);
+        public override short? TryStepCost(Hexside hexsideExit) => default;
     }
 }

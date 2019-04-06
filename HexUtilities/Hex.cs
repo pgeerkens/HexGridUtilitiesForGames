@@ -66,7 +66,7 @@ namespace PGNapoleonics.HexUtilities {
         public abstract short?    TryStepCost(Hexside hexsideExit);
 
         /// <summary>Default implementation, assuming no blocking hexside terrain.</summary>
-        public virtual  int   HeightHexside(Hexside hexside) => HeightTerrain;
+        public virtual  int       HeightHexside(Hexside hexside) => HeightTerrain;
 
         #region Value Equality with IEquatable<T>
         /// <inheritdoc/>

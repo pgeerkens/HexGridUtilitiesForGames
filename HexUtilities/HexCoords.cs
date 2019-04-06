@@ -84,20 +84,20 @@ namespace PGNapoleonics.HexUtilities {
 
         #region Public static members
         /// <summary>Create a new instance located at the specified i and j offsets as interpreted in the Canon(ical) frame.</summary>
-        public static HexCoords NewCanonCoords (int x, int y) {
-            return NewCanonCoords(IntVector2D.New(x,y));
-        }
+        public static HexCoords NewCanonCoords (int x, int y)
+        => NewCanonCoords(IntVector2D.New(x,y));
+
         /// <summary>Create a new instance located at the specified i and j offsets as interpreted in the ectangular (User) frame.</summary>
-        public static HexCoords NewUserCoords  (int x, int y) {
-            return NewUserCoords(IntVector2D.New(x,y));
-        }
+        public static HexCoords NewUserCoords  (int x, int y)
+        => NewUserCoords(IntVector2D.New(x,y));
+
         /// <summary>Create a new instance located at the specified vector offset as interpreted in the Canon(ical) frame.</summary>
-        public static HexCoords NewCanonCoords (IntVector2D vector){
-            return new HexCoords(vector, vector * _matrixCanonToUser);
-        }
+        public static HexCoords NewCanonCoords (IntVector2D vector)
+        => new HexCoords(vector, vector * _matrixCanonToUser);
+
         /// <summary>Create a new instance located at the specified vector offset as interpreted in the Rectangular (User) frame.</summary>
-        public static HexCoords NewUserCoords  (IntVector2D vector) =>
-            new HexCoords(vector * _matrixUserToCanon, vector);
+        public static HexCoords NewUserCoords  (IntVector2D vector)
+        => new HexCoords(vector * _matrixUserToCanon, vector);
 
         /// <summary>Origin of the Canon(ical) coordinate frame.</summary>
         public static HexCoords EmptyCanon { get; }  = NewCanonCoords(0,0);
@@ -127,7 +127,7 @@ namespace PGNapoleonics.HexUtilities {
         public  IntVector2D User  { get; }
 
         /// <summary>Modified <i>Manhattan</i> distance of supplied coordinate from the origin.</summary>
-        public  int         RangeFromOrigin { get { return EmptyCanon.Range(this);} }
+        public  int         RangeFromOrigin => EmptyCanon.Range(this);
         #endregion
 
         #region Methods

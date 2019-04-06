@@ -44,7 +44,8 @@ namespace PGNapoleonics.HexUtilities {
 
         /// <summary>Height ASL in <i>game units</i> of any blocking terrian in this hex.</summary>
         int       HeightTerrain  { get; }
-        /// <inheritdoc/>
+
+        /// <summary>Char code for the tYpe of the terrain in this hex.</summary>
         char      TerrainType    { get; }
 
         /// <summary>Returns the cost (> 0) to extend the path across <paramref name="hexsideExit"/>; or null.</summary>

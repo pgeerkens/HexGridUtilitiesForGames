@@ -205,7 +205,7 @@ namespace PGNapoleonics.HexgridPanel {
         => DataContext.Model.Landmarks.DistanceFrom(coords,DataContext.Model.LandmarkToShow-1);
 
         /// <summary>TODO</summary>
-        void ResizeBuffer() { _cacheStatus = _NEEDS_PAINTING; }
+        void ResizeBuffer() => _cacheStatus = _NEEDS_PAINTING;
         #endregion
 
         #region Painting

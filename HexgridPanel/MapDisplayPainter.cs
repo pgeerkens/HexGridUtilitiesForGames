@@ -39,69 +39,6 @@ namespace PGNapoleonics.HexgridPanel {
         /// <param name="model">The map to be painted, as a <see cref="IMapDisplayWinForms{THex}"/>.</param>
         public MapDisplayPainter(IMapDisplayWinForms<THex> model) : base(model) { }
 
-        ///// <inheritdoc/>
-        //public override void PaintMap(Graphics graphics, bool showHexgrid)
-        //=>  graphics.Contain( g => {
-        //        var boardHexes    = Model.BoardHexes;
-        //        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-        //        PaintForEachHex(graphics, coords => {
-        //            boardHexes[coords].IfHasValueDo(h => {
-        //                if(h is THex hex) Paint(hex,graphics, Model.HexgridPath, GetHexBrush(hex));
-        //            });
-        //            if (showHexgrid) graphics.DrawPath(Pens.Black, Model.HexgridPath);
-        //        } );
-        //    } );
-
-        ///// <inheritdoc/>
-        //public override void PaintLabels(Graphics graphics, Func<HexCoords,string> hexText)
-        //=>  graphics.Contain( g => {
-        //        PaintForEachHex(graphics, coords => {
-        //            var font       = SystemFonts.MenuFont;
-        //            var textOffset = new Point((Model.GridSize.Scale(0.50F)
-        //                           - new SizeF(font.Size,font.Size).Scale(0.8F)).ToSize());
-        //            graphics.DrawString(hexText(coords), font, TextBrush, textOffset);
-        //        } );
-        //    } );
-
-        ///// <inheritdoc/>
-        //public override void PaintHighlight(Graphics graphics) {
-        //    graphics.Contain(g => {
-        //        g.Transform = Model.TranslateToHex(Model.StartHex);
-        //        g.DrawPath(Pens.Red, Model.HexgridPath);
-        //    } );
-
-        //    if (Model.Path != null) {
-        //        graphics.Contain(g => { PaintPath(g); });
-        //    }
-
-        //    if (Model.ShowRangeLine) {
-        //        graphics.Contain(g => {
-        //            var target = Model.CentreOfHex(Model.HotspotHex);
-        //            graphics.DrawLine(Pens.Red, Model.CentreOfHex(Model.StartHex), target);
-        //            graphics.DrawLine(Pens.Red, target.X-8,target.Y-8, target.X+8,target.Y+8);
-        //            graphics.DrawLine(Pens.Red, target.X-8,target.Y+8, target.X+8,target.Y-8);
-        //        } );
-        //    }
-        //}
-
-        ///// <inheritdoc/>
-        //public override void PaintShading(Graphics graphics, IShadingMask isShaded)
-        //=>  graphics.Contain(g => {
-        //        graphics.CompositingMode = CompositingMode.SourceOver;
-        //        using (var shadeBrush = new SolidBrush(Color.FromArgb(Model.ShadeBrushAlpha,ShadeColor))) {
-        //            PaintForEachHex(graphics,coords => {
-        //                if (isShaded[coords]) { graphics.FillPath(shadeBrush,Model.HexgridPath); }
-        //            });
-        //        }
-        //    } );
-
-        ///// <inheritdoc/>
-        //public override void PaintUnits(Graphics graphics) {
-        //    if (graphics == null) throw new ArgumentNullException("graphics");
-
-        //    /* NO-OP - Not implemented in examples. */
-        //}
-
         /// <summary>Returns a <see cref="Brush"/> suitable for painting the specified <see cref="THex"/>.</summary>
         /// <param name="hex">The <see cref="THex"/> being queried.</param>
         /// <remarks>
