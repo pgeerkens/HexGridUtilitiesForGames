@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace PGNapoleonics.HexUtilities.FastLists {
+namespace PGNapoleonics.HexUtilities.FastList {
     /// <summary>Adapted implementation of Joe Duffy's Simple (Fast) List enumerator.</summary>
     /// <remarks>
     /// This entire namespace is adapted from 
@@ -50,6 +50,9 @@ namespace PGNapoleonics.HexUtilities.FastLists {
         Justification="The suffix has an unambiguous meaning in the application domain.")]
     [DebuggerDisplay("Count={Count}")]
     public abstract partial class AbstractFastList<TItem> : IFastList<TItem>, IFastListX<TItem> {
+        /// <summary>Constructs a new instance from <paramref name="array"/>.</summary>
+        protected AbstractFastList(TItem[] array) => _array = array;
+
         /// <inheritdoc/>>
         public IEnumerator<TItem> GetEnumerator()
         => Extensions.InitializeDisposable( () => new ClassicEnumerable<TItem>(_array) );
@@ -95,15 +98,19 @@ namespace PGNapoleonics.HexUtilities.FastLists {
         /// <summary>Implements IEnumerable{TItem} in the <i>standard</i> way:</summary>
         /// <typeparam name="TItem2">Type of the objects being enumerated.</typeparam>
         [DebuggerDisplay("Count={Count}")]
-        private sealed partial class ClassicEnumerable<TItem2> : IEnumerator<TItem2> {
+        private sealed class ClassicEnumerable<TItem2> : IEnumerator<TItem2> {
+            /// <summary>Construct a new instance from array <c>a</c>.</summary>
+            /// <param name="array">The array of type <c>TItem</c> to make enumerable.</param>
+            internal ClassicEnumerable(TItem2[] array) => _array = array;
+
             private readonly TItem2[] _array;       //!< Array being enumerated..
             private          int      _index = -1;  //!< Index of the currently-enumerated element.
 
             /// <inheritdoc/>
-            public TItem2      Current   => _array[_index];
+            public TItem2      Current    => _array[_index];
 
             /// <inheritdoc/>
-            object IEnumerator.Current   => Current;
+            object IEnumerator.Current    => Current;
 
             /// <inheritdoc/>
             public bool        MoveNext() => ++_index < _array.Length;

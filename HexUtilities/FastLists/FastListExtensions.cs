@@ -27,7 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 
-namespace PGNapoleonics.HexUtilities.FastLists {
+namespace PGNapoleonics.HexUtilities.FastList {
   /// <summary>Contract-enforcing wrapper for FastList{T} constructors.</summary>
   public static class FastList {
     /// <summary>Contract-enforcing wrapper for FastList{T} constructor returning an IFastList{TItem}.</summary>

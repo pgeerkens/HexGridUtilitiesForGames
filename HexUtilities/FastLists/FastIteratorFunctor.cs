@@ -28,7 +28,7 @@
 #endregion
 using System.Diagnostics;
 
-namespace PGNapoleonics.HexUtilities.FastLists {
+namespace PGNapoleonics.HexUtilities.FastList {
     /// <summary>Abstract base class for a <c>FastList</c> functor.</summary>
     /// <typeparam name="TItem">The type of object being iterated.</typeparam>
     [DebuggerDisplay("Count={Count}")]

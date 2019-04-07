@@ -28,7 +28,7 @@
 #endregion
 using System.Diagnostics.CodeAnalysis;
 
-namespace PGNapoleonics.HexUtilities.FastLists {
+namespace PGNapoleonics.HexUtilities.FastList {
     /// <summary>Default concrete implementation of <see cref="AbstractFastList{TItem}"/>.</summary>
     /// <typeparam name="TItem">The Type of the Item to be stored and iterated over.</typeparam>
     [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",

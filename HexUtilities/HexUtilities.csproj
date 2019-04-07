@@ -250,7 +250,6 @@
     <Compile Include="FastLists\FastEnumerable.cs" />
     <Compile Include="FastLists\FastIteratorFunctor.cs" />
     <Compile Include="FastLists\FastList.cs" />
-    <Compile Include="FastLists\FastListContracts.cs" />
     <Compile Include="FastLists\FastListExtensions.cs" />
     <Compile Include="FastLists\Interfaces.cs" />
     <Compile Include="Common\ImmutableStack.cs" />

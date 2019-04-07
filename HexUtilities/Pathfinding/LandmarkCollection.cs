@@ -36,7 +36,7 @@ using System.Globalization;
 using System.Linq;
 
 using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.HexUtilities.FastLists;
+using PGNapoleonics.HexUtilities.FastList;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <summary>A <b>ReadOnlyCollection</b> of defined <see cref="Landmark"/> locations.</summary>

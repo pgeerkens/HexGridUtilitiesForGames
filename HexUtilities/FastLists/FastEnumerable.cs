@@ -27,15 +27,17 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
-namespace PGNapoleonics.HexUtilities.FastLists {
+namespace PGNapoleonics.HexUtilities.FastList {
     public abstract partial class AbstractFastList<TItem> {
         /// <summary>Implements IEnumerable{TItem} in the <i><b>fast</b></i> way:</summary>
         /// <typeparam name="TItem2">Type of the objects being enumerated.</typeparam>
         [DebuggerDisplay("Count={Count}")]
-        [SuppressMessage("Microsoft.Contracts", "Ensures-!Contract.Result<bool>()  ||  (Contract.ValueAtReturn<TItem>(out item) != null)")]
-        internal sealed partial class FastEnumerable<TItem2> : IFastEnumerator<TItem2> {
+        internal sealed class FastEnumerable<TItem2> : IFastEnumerator<TItem2> {
+            /// <summary>Construct a new instance from array <c>a</c>.</summary>
+            /// <param name="array">The array of type <c>TItem</c> to make enumerable.</param>
+            internal FastEnumerable(TItem2[] array) => _array = array;
+
             private readonly TItem2[] _array;       //!< Array being enumerated..
             private          int      _index = -1;  //!< Index of the currently-enumerated element.
 

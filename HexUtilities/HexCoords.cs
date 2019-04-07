@@ -52,30 +52,30 @@ namespace PGNapoleonics.HexUtilities {
         static readonly IntMatrix2D _matrixCanonToUser = new IntMatrix2D(2,-1,  0,2,  0,1,  2);
 
         static readonly IList<IntVector2D> _hexsideVectorsCanon = new List<IntVector2D>() {
-            IntVector2D.New( 0,-1),   // HexSide.North
-            IntVector2D.New( 1, 0),   // HexSide.NorthEast
-            IntVector2D.New( 1, 1),   // HexSide.SouthEast
-            IntVector2D.New( 0, 1),   // HexSide.South
-            IntVector2D.New(-1, 0),   // HexSide.SouthWest
-            IntVector2D.New(-1,-1)    // HexSide.NorthWest
+            new IntVector2D( 0,-1),   // HexSide.North
+            new IntVector2D( 1, 0),   // HexSide.NorthEast
+            new IntVector2D( 1, 1),   // HexSide.SouthEast
+            new IntVector2D( 0, 1),   // HexSide.South
+            new IntVector2D(-1, 0),   // HexSide.SouthWest
+            new IntVector2D(-1,-1)    // HexSide.NorthWest
         }.AsReadOnly();
 
         static readonly IList<IList<IntVector2D>> _hexsideVectorsUser = new List<IList<IntVector2D>>() {
             new List<IntVector2D>() {
-                IntVector2D.New( 0,-1),    // even x HexSide.North
-                IntVector2D.New( 1, 0),    // even x HexSide.NorthEast
-                IntVector2D.New( 1, 1),    // even x HexSide.SouthEast
-                IntVector2D.New( 0, 1),    // even x HexSide.South
-                IntVector2D.New(-1, 1),    // even x HexSide.SouthWest
-                IntVector2D.New(-1, 0)     // even x HexSide.NorthWest
+                new IntVector2D( 0,-1),    // even x HexSide.North
+                new IntVector2D( 1, 0),    // even x HexSide.NorthEast
+                new IntVector2D( 1, 1),    // even x HexSide.SouthEast
+                new IntVector2D( 0, 1),    // even x HexSide.South
+                new IntVector2D(-1, 1),    // even x HexSide.SouthWest
+                new IntVector2D(-1, 0)     // even x HexSide.NorthWest
             }.AsReadOnly(),
             new List<IntVector2D>() {
-                IntVector2D.New( 0,-1),    // odd x HexSide.North
-                IntVector2D.New( 1,-1),    // odd x HexSide.NorthEast
-                IntVector2D.New( 1, 0),    // odd x HexSide.SouthEast
-                IntVector2D.New( 0, 1),    // odd x HexSide.South
-                IntVector2D.New(-1, 0),    // odd x HexSide.South West
-                IntVector2D.New(-1,-1)     // odd x HexSide.NorthWest
+                new IntVector2D( 0,-1),    // odd x HexSide.North
+                new IntVector2D( 1,-1),    // odd x HexSide.NorthEast
+                new IntVector2D( 1, 0),    // odd x HexSide.SouthEast
+                new IntVector2D( 0, 1),    // odd x HexSide.South
+                new IntVector2D(-1, 0),    // odd x HexSide.South West
+                new IntVector2D(-1,-1)     // odd x HexSide.NorthWest
             }.AsReadOnly()
         }.AsReadOnly();
         #endregion
@@ -83,11 +83,11 @@ namespace PGNapoleonics.HexUtilities {
         #region Public static members
         /// <summary>Create a new instance located at the specified i and j offsets as interpreted in the Canon(ical) frame.</summary>
         public static HexCoords NewCanonCoords (int x, int y)
-        => NewCanonCoords(IntVector2D.New(x,y));
+        => NewCanonCoords(new IntVector2D(x,y));
 
         /// <summary>Create a new instance located at the specified i and j offsets as interpreted in the ectangular (User) frame.</summary>
         public static HexCoords NewUserCoords  (int x, int y)
-        => NewUserCoords(IntVector2D.New(x,y));
+        => NewUserCoords(new IntVector2D(x,y));
 
         /// <summary>Create a new instance located at the specified vector offset as interpreted in the Canon(ical) frame.</summary>
         public static HexCoords NewCanonCoords (IntVector2D vector)
@@ -103,7 +103,7 @@ namespace PGNapoleonics.HexUtilities {
         public static HexCoords EmptyUser  { get; }  = NewUserCoords(0,0);
 
         /// <summary>Returns the drawing origin (upper-left) for the hex with specified user components.</summary>
-        public  HexPoint HexOrigin(HexSize gridSize, int i, int j) =>
+        public static HexPoint HexOrigin(HexSize gridSize, int i, int j) =>
             new HexPoint(
                 checked(i * gridSize.Width),
                 checked(j * gridSize.Height + (i+1)%2 * (gridSize.Height)/2));
@@ -130,7 +130,6 @@ namespace PGNapoleonics.HexUtilities {
 
         #region Methods
         /// <summary>Returns an <c>HexCoords</c> for the hex in direction <c>hexside</c> from this one.</summary>
-        
         public HexCoords GetNeighbour(Hexside hexside) {
             var i = User.X & 1; 
             return new HexCoords(Canon + _hexsideVectorsCanon  [hexside]
@@ -138,12 +137,9 @@ namespace PGNapoleonics.HexUtilities {
         }
 
         /// <summary>Returns the drawing origin (upper-left) for the specified hex.</summary>
-        
-        public HexPoint HexOrigin(HexSize gridSize) =>
-            HexOrigin(gridSize, User.X, User.Y); 
+        public HexPoint HexOrigin(HexSize gridSize) => HexOrigin(gridSize, User.X, User.Y); 
 
         /// <summary>Modified <i>Manhattan</i> distance of supplied coordinate from this one.</summary>
-        
         public short     Range(HexCoords coords) {
             var deltaX = coords.Canon.X - Canon.X;
             var deltaY = coords.Canon.Y - Canon.Y;

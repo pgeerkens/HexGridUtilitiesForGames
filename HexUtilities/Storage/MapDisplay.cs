@@ -29,7 +29,7 @@
 using System.Diagnostics.CodeAnalysis;
 
 using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.HexUtilities.FastLists;
+using PGNapoleonics.HexUtilities.FastList;
 using PGNapoleonics.HexUtilities.FieldOfView;
 using PGNapoleonics.HexUtilities.Pathfinding;
 
@@ -47,16 +47,6 @@ namespace PGNapoleonics.HexUtilities.Storage {
 
     /// <summary>.</summary>
     /// <typeparam name="THex"></typeparam>
-    /// <remarks>
-    /// Abstract members that require definition include:
-    ///     public abstract int ElevationBase { get; }
-    ///     public abstract int ElevationStep { get; }
-    /// 
-    ///     public abstract void PaintHighlight(Graphics graphics);
-    ///     public abstract void PaintMap(Graphics graphics);
-    ///     public abstract void PaintShading(Graphics graphics);
-    ///     public abstract void PaintUnits(Graphics graphics);
-    /// </remarks>
     public abstract class MapDisplayFlat<THex> : MapDisplay<THex>
     where THex:IHex {
         /// <summary>Creates a new instance of the MapDisplay class.</summary>
@@ -67,16 +57,6 @@ namespace PGNapoleonics.HexUtilities.Storage {
 
     /// <summary>.</summary>
     /// <typeparam name="THex"></typeparam>
-    /// <remarks>
-    /// Abstract members that require definition include:
-    ///     public abstract int ElevationBase { get; }
-    ///     public abstract int ElevationStep { get; }
-    /// 
-    ///     public abstract void PaintHighlight(Graphics graphics);
-    ///     public abstract void PaintMap(Graphics graphics);
-    ///     public abstract void PaintShading(Graphics graphics);
-    ///     public abstract void PaintUnits(Graphics graphics);
-    /// </remarks>
     public abstract class MapDisplayBlocked<THex> : MapDisplay<THex>
     where THex:IHex {
         /// <summary>Creates a new instance of the MapDisplay class.</summary>
@@ -87,16 +67,6 @@ namespace PGNapoleonics.HexUtilities.Storage {
 
     /// <summary>Abstract class representing the basic game board.</summary>
     /// <typeparam name="THex">Type of the hex for which a game board is desired.</typeparam>
-    /// <remarks>
-    /// Abstract members that require definition include:
-    ///     public abstract int ElevationBase { get; }
-    ///     public abstract int ElevationStep { get; }
-    /// 
-    ///     public abstract void PaintHighlight(Graphics graphics);
-    ///     public abstract void PaintMap(Graphics graphics);
-    ///     public abstract void PaintShading(Graphics graphics);
-    ///     public abstract void PaintUnits(Graphics graphics);
-    /// </remarks>
     public abstract class MapDisplay<THex> : HexBoard<THex>, IMapDisplayWinForms<THex>, IFovBoard
     where THex:IHex {
 

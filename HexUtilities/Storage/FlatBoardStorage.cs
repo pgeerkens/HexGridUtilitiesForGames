@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using PGNapoleonics.HexUtilities.Common;
-using PGNapoleonics.HexUtilities.FastLists;
+using PGNapoleonics.HexUtilities.FastList;
 
 namespace PGNapoleonics.HexUtilities.Storage {
     using HexSize     = System.Drawing.Size;

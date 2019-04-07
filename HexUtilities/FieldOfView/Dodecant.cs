@@ -29,7 +29,7 @@
 using System;
 using System.Collections.Generic;
 
-using PGNapoleonics.HexUtilities.FastLists;
+using PGNapoleonics.HexUtilities.FastList;
 
 namespace PGNapoleonics.HexUtilities.FieldOfView {
     /// <summary>Extension methods to support the identification of and translation between Dodecants.</summary>

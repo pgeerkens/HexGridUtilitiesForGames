@@ -30,7 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace PGNapoleonics.HexUtilities.FastLists {
+namespace PGNapoleonics.HexUtilities.FastList {
     /// <summary>Optimized ForEach.</summary>
     /// <typeparam name="TItem"></typeparam>
     public interface IFastEnumerable<TItem> {

@@ -229,8 +229,8 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
             var queue   = new FovConeQueue();
             var current = new FovCone(
                     2,
-                    IntVector2D.New(1,2), 
-                    IntVector2D.New(0,1), 
+                    new IntVector2D(1,2), 
+                    new IntVector2D(0,1), 
                     new RiseRun(2 * (heightTerrain(currentCoords,Hexside.North) - heightObserver), 1) );
             while (current.Range <= radius) {
                 current = ComputeFoVForRange(heightObserver, isOnboard, heightTarget, heightTerrain, setFieldOfView, queue, current);

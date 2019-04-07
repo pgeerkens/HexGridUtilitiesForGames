@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-using PGNapoleonics.HexUtilities.FastLists;
+using PGNapoleonics.HexUtilities.FastList;
 
 namespace PGNapoleonics.HexUtilities {
     /// <summary>Enumeration of the six hexagonal directions.</summary>

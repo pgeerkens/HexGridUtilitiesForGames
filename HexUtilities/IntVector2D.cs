@@ -38,14 +38,14 @@ namespace PGNapoleonics.HexUtilities {
     [DebuggerDisplay("({X},{Y},{W})")]
     public struct IntVector2D : IEquatable<IntVector2D>, IFormattable {
         /// <summary>Returns the origin vector.</summary>
-        public static readonly IntVector2D Empty = New(0,0);
-
-        /// <summary>Construct a new instance at offset (x,y) from the origin.</summary>
-        public static IntVector2D New(int x, int y) {
-            return new IntVector2D(x, y, 1);
-        }
+        public static readonly IntVector2D Empty = new IntVector2D(0,0);
 
         #region Constructors
+        /// <summary>Construct a new augmented affine at offset (x,y) from the origin with norm of 1.</summary>
+        /// <param name="x">The horizontal coordinate of the offset for this displacement.</param>
+        /// <param name="y">The vertical coordinate of the offset for this displacement.</param>
+        internal IntVector2D(int x, int y) : this(x,y,1) { }
+
         /// <summary>Construct a new augmented affine at offset (x,y) from the origin with norm <paramref name="norm"/>.</summary>
         /// <param name="x">The horizontal coordinate of the offset for this displacement.</param>
         /// <param name="y">The vertical coordinate of the offset for this displacement.</param>
@@ -70,13 +70,13 @@ namespace PGNapoleonics.HexUtilities {
         public IntVector2D Normalize() {
             switch (W) {
                 case 1:   return this;
-                case 2:   return New(X / 2, Y / 2);
-                case 4:   return New(X / 4, Y / 4);
-                case 8:   return New(X / 8, Y / 8);
+                case 2:   return new IntVector2D(X / 2, Y / 2);
+                case 4:   return new IntVector2D(X / 4, Y / 4);
+                case 8:   return new IntVector2D(X / 8, Y / 8);
 
                     // Wow! All this because integer division wasn't defined to be a field operator.
-                default:  return New(Math.Sign(X)*Math.Sign(W)*Math.Abs(X)/Math.Abs(W),
-                                     Math.Sign(Y)*Math.Sign(W)*Math.Abs(Y)/Math.Abs(W));
+                default:  return new IntVector2D(Math.Sign(X)*Math.Sign(W)*Math.Abs(X)/Math.Abs(W),
+                                                 Math.Sign(Y)*Math.Sign(W)*Math.Abs(Y)/Math.Abs(W));
             }
         }
 
@@ -87,7 +87,7 @@ namespace PGNapoleonics.HexUtilities {
         }
         /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
         public static IntVector2D operator * (IntVector2D v, int s) {
-            return New(v.X*s, v.Y*s);
+            return new IntVector2D(v.X*s, v.Y*s);
         }
         /// <summary>Scalar Division into a new IntegerVector2D.</summary>
         public static IntVector2D operator / (IntVector2D v, int s) {
@@ -107,7 +107,7 @@ namespace PGNapoleonics.HexUtilities {
         }
 
         private static IntVector2D DivideInner(IntVector2D v, int s) {
-            return New(v.X/s, v.Y/s);
+            return new IntVector2D(v.X/s, v.Y/s);
         }
         #endregion
 
@@ -121,11 +121,11 @@ namespace PGNapoleonics.HexUtilities {
         }
         /// <summary>Vector Addition of two <code>IntVector2D</code> as a new <code>IntVector2D</code>.</summary>
         public static IntVector2D operator + (IntVector2D v1, IntVector2D v2) {
-            return New(v1.X+v2.X, v1.Y+v2.Y);
+            return new IntVector2D(v1.X+v2.X, v1.Y+v2.Y);
         }
         /// <summary>Vector Subtraction of two <code>IntVector2D</code> as a new <code>IntVector2D</code></summary>
         public static IntVector2D operator - (IntVector2D v1, IntVector2D v2) {
-            return New(v1.X-v2.X, v1.Y-v2.Y);
+            return new IntVector2D(v1.X-v2.X, v1.Y-v2.Y);
         }
         /// <summary>Vector Addition of two <code>IntVector2D</code> as a new <code>IntVector2D</code>.</summary>
         public static IntVector2D Add  (IntVector2D v1, IntVector2D v2) {
@@ -151,11 +151,11 @@ namespace PGNapoleonics.HexUtilities {
         #region Casts
         /// <summary>Returns a new instance initialized from point.</summary>
         public static implicit operator IntVector2D (HexPoint point)  {
-            return New(point.X, point.Y);
+            return new IntVector2D(point.X, point.Y);
         }
         /// <summary>Returns a new instance initialized from size.</summary>
         public static implicit operator IntVector2D (HexSize size)    { 
-            return New(size.Width, size.Height);
+            return new IntVector2D(size.Width, size.Height);
         }
         /// <summary>Returns a new Point instance initialized from vector.</summary>
         public static implicit operator HexPoint (IntVector2D vector) =>
