@@ -78,7 +78,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
             var top    = Math.Max((int)visibleClipBounds.Top    / @this.GridSize.Height - 1, 0);
             var right  = Math.Min((int)visibleClipBounds.Right  / @this.GridSize.Width  + 1, boardSizeHexes.Width);
             var bottom = Math.Min((int)visibleClipBounds.Bottom / @this.GridSize.Height + 1, boardSizeHexes.Height); 
-            return CoordsRect.New(left, top, right-left, bottom-top);
+            return new CoordsRect(left, top, right-left, bottom-top);
         }
 
         /// <summary>Rectangular extent in pixels of the defined mapboard.</summary>

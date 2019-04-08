@@ -1,30 +1,7 @@
-﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
-/////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions - Hex-Grid Utilities
-/////////////////////////////////////////////////////////////////////////////////////////
-// The MIT License:
-// ----------------
-// 
-// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this
-// software and associated documentation files (the "Software"), to deal in the Software
-// without restriction, including without limitation the rights to use, copy, modify, 
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
-// permit persons to whom the Software is furnished to do so, subject to the following 
-// conditions:
-//     The above copyright notice and this permission notice shall be 
-//     included in all copies or substantial portions of the Software.
-// 
-//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
-//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
-//     OTHER DEALINGS IN THE SOFTWARE.
-/////////////////////////////////////////////////////////////////////////////////////////
+﻿#region Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
+///////////////////////////////////////////////////////////////////////////////////////////
+// THis software may be used under the terms of attached file License.md (The MIT License).
+///////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
 using System.Diagnostics;
@@ -34,7 +11,6 @@ using System.Threading.Tasks;
 using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.FieldOfView {
-
     /// <summary>Credit: Eric Lippert</summary>
     /// <a href="http://blogs.msdn.com/b/ericlippert/archive/2011/12/29/shadowcasting-in-c-part-six.aspx">Shadow Casting in C# Part Six</a>
     /// <remarks>
@@ -60,11 +36,11 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
         /// <param name="targetMode">TargetMode value for determining target visibility.</param>
         /// <param name="setFieldOfView">Sets a hex as visible in the Field-of-View.</param>
         public static void ComputeFieldOfView(
-          IFovBoard         board,
-          HexCoords         coordsObserver,
-          int               fovRadius,
-          FovTargetMode     targetMode, 
-          Action<HexCoords> setFieldOfView
+            IFovBoard         board,
+            HexCoords         coordsObserver,
+            int               fovRadius,
+            FovTargetMode     targetMode, 
+            Action<HexCoords> setFieldOfView
         )
         => ComputeFieldOfView(board, coordsObserver, fovRadius, targetMode, setFieldOfView, 1, 0);
 
@@ -76,12 +52,12 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
         /// <param name="setFieldOfView">Sets a hex as visible in the Field-of-View.</param>
         /// <param name="defaultHeight">Height used for observer and target when targetMode = EqualHeights/</param>
         public static void ComputeFieldOfView(
-          IFovBoard         board,
-          HexCoords         coordsObserver,
-          int               fovRadius,
-          FovTargetMode     targetMode, 
-          Action<HexCoords> setFieldOfView,
-          int               defaultHeight
+            IFovBoard         board,
+            HexCoords         coordsObserver,
+            int               fovRadius,
+            FovTargetMode     targetMode, 
+            Action<HexCoords> setFieldOfView,
+            int               defaultHeight
         )
         => ComputeFieldOfView(board, coordsObserver, fovRadius, targetMode, setFieldOfView, defaultHeight, 0);
 
@@ -100,15 +76,15 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
         /// </remarks>
         /// <a href="http://mathcentral.uregina.ca/qq/database/QQ.09.02/shirley3.html">Hidden by the Curvature of the Earth</a>
         public static void ComputeFieldOfView(
-          IFovBoard         board, 
-          HexCoords         coordsObserver, 
-          int               fovRadius,
-          FovTargetMode     targetMode, 
-          Action<HexCoords> setFieldOfView, 
-          int               defaultHeight, 
-          int               hexesPerMile
+            IFovBoard         board, 
+            HexCoords         coordsObserver, 
+            int               fovRadius,
+            FovTargetMode     targetMode, 
+            Action<HexCoords> setFieldOfView, 
+            int               defaultHeight, 
+            int               hexesPerMile
         ) {
-            if (fovRadius > Int32.MinValue) fovRadius = fovRadius - 1;
+            if (fovRadius > int.MinValue) fovRadius = fovRadius - 1;
             int CalculationHeightUnits = UseMetric ?   5  // convert metres to  cm  for greater precision
                                                    :  12; // convert feet to inches for greater precision
 
@@ -146,9 +122,9 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
         }
 
         private static Func<HexCoords,int> GetDeltaHeight(
-              HexCoords coordsObserver,
-              int       hexesPerMile,
-              int       calculationHeightUnits
+            HexCoords coordsObserver,
+            int       hexesPerMile,
+            int       calculationHeightUnits
         ) {
             if (hexesPerMile == 0) {
                 return coords => 0;

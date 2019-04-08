@@ -1,30 +1,7 @@
-﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
-/////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions - Hex-Grid Utilities
-/////////////////////////////////////////////////////////////////////////////////////////
-// The MIT License:
-// ----------------
-// 
-// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this
-// software and associated documentation files (the "Software"), to deal in the Software
-// without restriction, including without limitation the rights to use, copy, modify, 
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
-// permit persons to whom the Software is furnished to do so, subject to the following 
-// conditions:
-//     The above copyright notice and this permission notice shall be 
-//     included in all copies or substantial portions of the Software.
-// 
-//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
-//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
-//     OTHER DEALINGS IN THE SOFTWARE.
-/////////////////////////////////////////////////////////////////////////////////////////
+﻿#region Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
+///////////////////////////////////////////////////////////////////////////////////////////
+// THis software may be used under the terms of attached file License.md (The MIT License).
+///////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
 using System.Diagnostics;
@@ -32,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace PGNapoleonics.HexUtilities {
-    /// <summary>Row-major order implementation of an immutable augmented 2D affine matrix.</summary>
+    /// <summary>Row-major order integer implementation of an immutable 2D affine transformation matrix.</summary>
     /// <remarks> 
     /// Represents Points as row vectors and planes as column vectors.
     /// This representation is standard for computer graphics, though opposite 
@@ -41,7 +18,8 @@ namespace PGNapoleonics.HexUtilities {
     /// </remarks>
     [DebuggerDisplay("(({M11},{M12}), ({M21},{M22}), ({M31},{M32}), {M33}))")]
     public struct IntMatrix2D : IEquatable<IntMatrix2D>, IFormattable {
-        static IntMatrix2D TransposeMatrix = new IntMatrix2D(0,1, 1,0);
+        static IntMatrix2D TransposeMatrix => new IntMatrix2D(0,1, 1,0);
+
         /// <summary>Returns the transpose of the supplied matrix.</summary>
         public static IntMatrix2D Transpose(IntMatrix2D matrix) => matrix * TransposeMatrix;
 
@@ -81,6 +59,7 @@ namespace PGNapoleonics.HexUtilities {
         /// <param name="dy">Y-translate component</param>
         /// <param name="norm">Normalization component</param>
         public IntMatrix2D(int m11, int m12, int m21, int m22, int dx, int dy, int norm) : this() {
+            if (norm == 0) throw new ArgumentNullException(nameof(norm));
             M11 = m11;  M12 = m12;
             M21 = m21;  M22 = m22;
             M31 = dx;   M32 = dy;   M33 = norm;
@@ -111,15 +90,16 @@ namespace PGNapoleonics.HexUtilities {
 
         /// <summary>Get the identity @this.</summary>
         public static readonly IntMatrix2D Identity = new IntMatrix2D(1,0,0,1,0,0, 1);
+
         /// <summary>todo</summary>
         public int Determinant => M11*M22 - M21*M12;
         #endregion
 
-        #region operators
+        #region Operators
         /// <summary>(Contravariant) Vector transformation by a matrix.</summary>
         /// <param name="v">IntVector2D to be transformed.</param>
         /// <param name="m">IntMatrix2D to be applied.</param>
-        /// <returns>New IntVector2D resulting from application of vector <c>v</c> to matrix <c>m</c>.</returns>
+        /// <returns>New IntVector2D resulting from application of matrix <paramref name="m"/> to vector <paramref name="v"/>.</returns>
         public static IntVector2D operator * (IntVector2D v, IntMatrix2D m)
         => new IntVector2D (
                 v.X * m.M11 + v.Y * m.M21 + m.M31,   v.X * m.M12 + v.Y * m.M22 + m.M32,  v.W * m.M33
@@ -146,18 +126,12 @@ namespace PGNapoleonics.HexUtilities {
                 m1.M31*m2.M11 + m1.M32*m2.M21 + m2.M31,  m1.M31*m2.M12 + m1.M32*m2.M22 + m2.M32,  m1.M33 * m2.M33
            );
         
-        /// <summary>Returns the result of applying the (row) vector <c>vector</c> to the @this <c>m</c>.</summary>
+        /// <summary>(Contravariant) Vector transformation by a matrix.</summary>
         public static IntVector2D Multiply(IntVector2D v, IntMatrix2D m) => v * m;
         
-        /// <summary>Returns the <c>IntMatrix2D</c> representing the transformation <c>m1</c> composed with <c>m2</c>.</summary>
+        /// <summary>(Covariant) Vector transformation by a matrix.</summary>
         public static IntMatrix2D Multiply(IntMatrix2D m1, IntMatrix2D m2) => m1 * m2;
-        
         #endregion
-
-        /// <summary>Returns the rotation/shear component of this matrix, without any translation.</summary>
-        public IntMatrix2D ExtractRotation()    => new IntMatrix2D(M11,M12,M21,M22);
-        /// <summary>Returns the translation component of this matrix, without any rotation/shear.</summary>
-        public IntMatrix2D ExtractTranslation() => new IntMatrix2D(  1,  0,  0,  1, M31,M32);
 
         #region Value Equality with IEquatable<T>
         /// <inheritdoc/>
@@ -165,17 +139,19 @@ namespace PGNapoleonics.HexUtilities {
        
         /// <inheritdoc/>
         public bool Equals(IntMatrix2D other)
-        => M11== other.M11 && M12 == other.M12
-        && M21== other.M21 && M22 == other.M22
-        && M31== other.M31 && M32 == other.M32 && M33 == other.M33;
+        => other.M33*M11 == M33*other.M11  &&  other.M33*M12 == M33*other.M12
+        && other.M33*M21 == M33*other.M21  &&  other.M33*M22 == M33*other.M22
+        && other.M33*M31 == M33*other.M31  &&  other.M33*M32 == M33*other.M32;
 
         /// <inheritdoc/>
-        public override int GetHashCode() => M11 ^ M12 ^ M21 ^ M22 ^ M31 ^ M32 ^ M33;
+        public override int GetHashCode() => ((2*M11/M33)<<13) + (2*M12/M33)
+                                           ^ ((2*M21/M33)<<14) + ((2*M22/M33)<<1)
+                                           ^ ((2*M31/M33)<<15) + ((2*M32/M33)<<2);
 
-            /// <inheritdoc/>
+        /// <summary>Tests value-inequality.</summary>
         public static bool operator != (IntMatrix2D lhs, IntMatrix2D rhs) => ! lhs.Equals(rhs);
 
-            /// <inheritdoc/>
+        /// <summary>Tests value-equality.</summary>
         public static bool operator == (IntMatrix2D lhs, IntMatrix2D rhs) => lhs.Equals(rhs);
         #endregion
 

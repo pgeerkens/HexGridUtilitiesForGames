@@ -1,30 +1,7 @@
-﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
-/////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions - Hex-Grid Utilities
-/////////////////////////////////////////////////////////////////////////////////////////
-// The MIT License:
-// ----------------
-// 
-// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this
-// software and associated documentation files (the "Software"), to deal in the Software
-// without restriction, including without limitation the rights to use, copy, modify, 
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
-// permit persons to whom the Software is furnished to do so, subject to the following 
-// conditions:
-//     The above copyright notice and this permission notice shall be 
-//     included in all copies or substantial portions of the Software.
-// 
-//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
-//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
-//     OTHER DEALINGS IN THE SOFTWARE.
-/////////////////////////////////////////////////////////////////////////////////////////
+﻿#region Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
+///////////////////////////////////////////////////////////////////////////////////////////
+// THis software may be used under the terms of attached file License.md (The MIT License).
+///////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
 using System.Diagnostics;
@@ -38,15 +15,15 @@ namespace PGNapoleonics.HexUtilities {
     [DebuggerDisplay("({X},{Y},{W})")]
     public struct IntVector2D : IEquatable<IntVector2D>, IFormattable {
         /// <summary>Returns the origin vector.</summary>
-        public static readonly IntVector2D Empty = new IntVector2D(0,0);
+        public static IntVector2D Empty => new IntVector2D(0,0);
 
         #region Constructors
-        /// <summary>Construct a new augmented affine at offset (x,y) from the origin with norm of 1.</summary>
+        /// <summary>Construct a new instance at offset (x,y) from the origin with norm of 1.</summary>
         /// <param name="x">The horizontal coordinate of the offset for this displacement.</param>
         /// <param name="y">The vertical coordinate of the offset for this displacement.</param>
-        internal IntVector2D(int x, int y) : this(x,y,1) { }
+        public IntVector2D(int x, int y) : this(x,y,1) { }
 
-        /// <summary>Construct a new augmented affine at offset (x,y) from the origin with norm <paramref name="norm"/>.</summary>
+        /// <summary>Construct a new instance at offset (x,y) from the origin with norm <paramref name="norm"/>.</summary>
         /// <param name="x">The horizontal coordinate of the offset for this displacement.</param>
         /// <param name="y">The vertical coordinate of the offset for this displacement.</param>
         /// <param name="norm">The 'norm' of this augmented affine vector.</param>
@@ -82,87 +59,73 @@ namespace PGNapoleonics.HexUtilities {
 
         #region Scalar operators
         /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
-        public static IntVector2D operator * (int s, IntVector2D v) {
-            return v * s;
-        }
-        /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
-        public static IntVector2D operator * (IntVector2D v, int s) {
-            return new IntVector2D(v.X*s, v.Y*s);
-        }
-        /// <summary>Scalar Division into a new IntegerVector2D.</summary>
-        public static IntVector2D operator / (IntVector2D v, int s) {
-            return DivideInner(v,s);;
-        }
-        /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
-        public static IntVector2D Multiply (int s, IntVector2D v) {
-            return v * s;
-        }
-        /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
-        public static IntVector2D Multiply (IntVector2D v, int s) {
-            return v * s;
-        }
-        /// <summary>Scalar Division into a new IntegerVector2D.</summary>
-        public static IntVector2D Divide (IntVector2D v, int s)   {
-            return DivideInner(v,s);
-        }
+        public static IntVector2D operator *(int s,IntVector2D v) => v * s;
 
-        private static IntVector2D DivideInner(IntVector2D v, int s) {
-            return new IntVector2D(v.X/s, v.Y/s);
-        }
+        /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
+        public static IntVector2D operator *(IntVector2D v,int s) => new IntVector2D(v.X*s,v.Y*s);
+
+        /// <summary>Scalar Division into a new IntegerVector2D.</summary>
+        public static IntVector2D operator /(IntVector2D v,int s) => DivideInner(v,s);
+
+        /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
+        public static IntVector2D Multiply(int s,IntVector2D v) => v * s;
+
+        /// <summary>Scalar Multiplication into a new IntegerVector2D.</summary>
+        public static IntVector2D Multiply(IntVector2D v,int s) => v * s;
+
+        /// <summary>Scalar Division into a new IntegerVector2D.</summary>
+        public static IntVector2D Divide(IntVector2D v,int s) => DivideInner(v,s);
+
+        private static IntVector2D DivideInner(IntVector2D v,int s) => new IntVector2D(v.X/s,v.Y/s);
         #endregion
 
         #region Vector operators
         /// <summary>Scalar (Inner, or Dot) Product of two <code>IntVector2D</code> as an Int32.</summary>
         public static int operator * (IntVector2D v1, IntVector2D v2) => v1.X*v2.X + v1.Y*v2.Y;
+
         /// <summary>Z component of the 'Vector'- or Cross-Product of two <code>IntVector2D</code>s</summary>
         /// <returns>A pseudo-scalar (it reverses sign on exchange of its arguments).</returns>
-        public static int operator ^ (IntVector2D v1, IntVector2D v2) {
-            return v1.X*v2.Y - v1.Y*v2.X;
-        }
+        public static int operator ^(IntVector2D v1,IntVector2D v2) => v1.X*v2.Y - v1.Y*v2.X;
+
         /// <summary>Vector Addition of two <code>IntVector2D</code> as a new <code>IntVector2D</code>.</summary>
-        public static IntVector2D operator + (IntVector2D v1, IntVector2D v2) {
-            return new IntVector2D(v1.X+v2.X, v1.Y+v2.Y);
-        }
+        public static IntVector2D operator +(IntVector2D v1,IntVector2D v2) => new IntVector2D(v1.X+v2.X,v1.Y+v2.Y);
+
         /// <summary>Vector Subtraction of two <code>IntVector2D</code> as a new <code>IntVector2D</code></summary>
-        public static IntVector2D operator - (IntVector2D v1, IntVector2D v2) {
-            return new IntVector2D(v1.X-v2.X, v1.Y-v2.Y);
-        }
+        public static IntVector2D operator -(IntVector2D v1,IntVector2D v2) => new IntVector2D(v1.X-v2.X,v1.Y-v2.Y);
+
         /// <summary>Vector Addition of two <code>IntVector2D</code> as a new <code>IntVector2D</code>.</summary>
-        public static IntVector2D Add  (IntVector2D v1, IntVector2D v2) {
-            return v1 + v2;
-        }
+        public static IntVector2D Add(IntVector2D v1,IntVector2D v2) => v1 + v2;
+
         /// <summary>Vector Subtraction of two <code>IntVector2D</code> as a new <code>IntVector2D</code></summary>
-        public static IntVector2D Subtract (IntVector2D v1, IntVector2D v2) {
-            return v1 - v2;
-        }
+        public static IntVector2D Subtract(IntVector2D v1,IntVector2D v2) => v1 - v2;
 
         /// <summary>Returns the vector cross-product of v1 and v2.</summary>
-        public static int CrossProduct (IntVector2D v1, IntVector2D v2) {
-            return v1 ^ v2;
-        }
+        public static int CrossProduct(IntVector2D v1,IntVector2D v2) => v1 ^ v2;
+
         /// <summary>Returns the inner- / scalar / dot-product of v1 and v2.</summary>
-        public static int InnerProduct (IntVector2D v1, IntVector2D v2) => v1 * v2;
+        public static int InnerProduct(IntVector2D v1,IntVector2D v2) => v1 * v2;
+
         /// <summary>Obsolete - use InnerProduct operator instead.</summary>
         [Obsolete("Deprecated (as really confusing) - use InnerProduct instead.",true)]
         public static int Xor (IntVector2D v1, IntVector2D v2) => InnerProduct(v1, v2);
-
         #endregion
 
         #region Casts
         /// <summary>Returns a new instance initialized from point.</summary>
-        public static implicit operator IntVector2D (HexPoint point)  {
-            return new IntVector2D(point.X, point.Y);
-        }
+        public static implicit operator IntVector2D(HexPoint point)
+        => new IntVector2D(point.X,point.Y);
+
         /// <summary>Returns a new instance initialized from size.</summary>
-        public static implicit operator IntVector2D (HexSize size)    { 
-            return new IntVector2D(size.Width, size.Height);
-        }
+        public static implicit operator IntVector2D (HexSize size)
+        => new IntVector2D(size.Width, size.Height);
+
         /// <summary>Returns a new Point instance initialized from vector.</summary>
-        public static implicit operator HexPoint (IntVector2D vector) =>
-            new HexPoint(vector.X, vector.Y);
+        public static implicit operator HexPoint (IntVector2D vector)
+        => new HexPoint(vector.X, vector.Y);
+
         /// <summary>Returns a new Size instance initialized from vector.</summary>
-        public static implicit operator HexSize (IntVector2D vector)  =>
-            new HexSize(vector.X, vector.Y);
+        public static implicit operator HexSize (IntVector2D vector)
+        => new HexSize(vector.X, vector.Y);
         #endregion
 
         #region Value Equality with IEquatable<T>
@@ -171,14 +134,15 @@ namespace PGNapoleonics.HexUtilities {
 
         /// <inheritdoc/>
         public bool Equals(IntVector2D other) 
-        => (X == other.X)  &&  (Y == other.Y)  &&  (W == other.W);
+        => (other.W*X == W*other.X)  &&  (other.W*Y == W*other.Y);
 
         /// <inheritdoc/>
         /// <remarks>
-        /// Maps the components into 32 bits as "wwww-xxxx xxxx-xxxx xxyy-yyyy yyyy-yyyy" 
-        /// without any overlap if -8 &lt;= w &lt;= 7 and -8192 &lt;= x(y) &lt;= 8191.
+        /// Maps the components into 32 bits as "00xx-xxxx xxxx-xxxx xyyy-yyyy yyyy-yyyy"
+        /// for expected ranges of X and Y.
+        /// Doubling X and Y ensures that adjacent hexes get different hashcodes.
         /// </remarks>
-        public override int GetHashCode() => W<<28  ^  X<<14  ^  Y;
+        public override int GetHashCode() => ( (2*X/W) <<15 ) + (2*Y/W) ;
 
         /// <summary>Tests value-inequality.</summary>
         public static bool operator !=(IntVector2D lhs, IntVector2D rhs) => ! lhs.Equals(rhs);

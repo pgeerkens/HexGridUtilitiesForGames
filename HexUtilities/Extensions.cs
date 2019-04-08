@@ -32,7 +32,7 @@ namespace PGNapoleonics.HexUtilities {
     using HexSize = System.Drawing.Size;
 
     /// <summary>TODO</summary>
-    public static class Extensions {
+    public static partial class Extensions {
         /// <summary><b>True</b>b> <i>modulo</i> operation returning <paramref name="dividend"/> mod <paramref name="divisor"/>.</summary>
         /// <param name="dividend"></param>
         /// <param name="divisor"></param>

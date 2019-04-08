@@ -133,7 +133,7 @@ namespace PGNapoleonics.HexgridPanel.Example {
             HexgridPanel.Focus();
        }
 
-        private void LandmarksReady(object sender,HexUtilities.Common.EventArgs<ILandmarkCollection> e) {
+        private void LandmarksReady(object sender,EventArgs<ILandmarkCollection> e) {
             if (InvokeRequired) {
                 Invoke ((Action) delegate { MenuBarToolStrip.LoadLandmarkMenu(e.Value); });
             } else {

@@ -297,7 +297,7 @@
     <Compile Include="FieldOfView\ShadowCastingFov_Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="license.txt">
+    <None Include="License.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
