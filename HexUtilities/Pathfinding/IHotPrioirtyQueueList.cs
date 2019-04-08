@@ -31,16 +31,14 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
-  /// <summary>TODO</summary>
-  /// <typeparam name="TKey"></typeparam>
-  /// <typeparam name="TValue"></typeparam>
-  [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
-    Justification="The suffix 'List' has an unambiguous meaning in the application domain.")]
-  public interface IHotPriorityQueueList<TKey, TValue> : IEnumerable<HexKeyValuePair<TKey, TValue>>
-    where TKey : struct, IEquatable<TKey>, IComparable<TKey>
-//    where TValue : class
-  {
     /// <summary>TODO</summary>
-    void Add(HexKeyValuePair<TKey,TValue> item);
-  }
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
+        Justification="The suffix 'List' has an unambiguous meaning in the application domain.")]
+    public interface IHotPriorityQueueList<TKey, TValue> : IEnumerable<HexKeyValuePair<TKey, TValue>>
+    where TKey : struct, IEquatable<TKey>, IComparable<TKey> {
+        /// <summary>TODO</summary>
+        void Add(HexKeyValuePair<TKey,TValue> item);
+    }
 }

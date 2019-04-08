@@ -39,7 +39,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
 
     /// <summary>(Technology-dependent portion of) interface contract required of a map board to be displayed by the Hexgrid control.</summary>
     public interface IMapDisplayWinForms<THex> : IMapDisplay<THex> where THex:IHex {
-        /// <summary>Gets or sets the Field-of-View for the current HotspotHex, as an <see cref="IFov"/> object.</summary>
+        /// <summary>Gets or sets the Field-of-View for the current HotspotHex, as an <see cref="IShadingMask"/> object.</summary>
         IShadingMask Fov                    { get; }
         /// <summary>.</summary>/>
         GraphicsPath HexgridPath            { get; }
@@ -54,7 +54,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
         /// <summary>Gets or sets whether to display a range line from the selected hex to the hover hex.</summary>
         bool         ShowRangeLine          { get; }
 
-        /// <summary>Returns the "{Maybe<IHex>}" at location <c>coords</c>.</summary>
+        /// <summary>Returns the <see cref="Maybe{IHex}"/> at location <c>coords</c>.</summary>
         Maybe<THex>  this[HexCoords coords] { get; }
 
         /// <summary>Gets the CoordsRectangle description of the clipping region.</summary>

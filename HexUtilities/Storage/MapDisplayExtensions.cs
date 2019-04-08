@@ -32,7 +32,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
     using HexSize  = System.Drawing.Size;
     using Matrix   = System.Drawing.Drawing2D.Matrix;
 
-    /// <summary>Non-painting extension metohds for <see cref="IMapDisplayWinForms<T>"/></summary>
+    /// <summary>Non-painting extension metohds for <see cref="IMapDisplayWinForms{T}"/></summary>
     public static partial class MapDisplayExtensions {
         /// <summary>Returns the translation transform of @this for the upper-left corner of the specified hex.</summary>
         /// <typeparam name="THex"></typeparam>

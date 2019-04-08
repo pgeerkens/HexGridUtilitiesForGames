@@ -28,65 +28,44 @@
 #endregion
 using System;
 using System.Diagnostics;
-using System.Globalization;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
-  /// <summary>A <see cref="DirectedPathCollection"/>Step with a board location and travel direction.</summary>
-  [DebuggerDisplay("NeighbourHex: {Hex.Coords} enters from {HexsideEntry}")]
-  public struct DirectedPathStepHex : IEquatable<DirectedPathStepHex> {
-    #region Constructors
-    /// <summary>Creates a new <see cref="DirectedPathStepHex"/> instance at <paramref name="coords"/> exiting through <paramref name="hexsideExit"/>.</summary>
-    public DirectedPathStepHex(HexCoords coords, Hexside hexsideExit) : this() {
-     // Hex          = hex;
-      _coords      = coords;
-      _hexsideExit = hexsideExit;
-    }
-    #endregion
+    /// <summary>A <see cref="DirectedPathCollection"/>Step with a board location and travel direction.</summary>
+    [DebuggerDisplay("NeighbourHex: {Hex.Coords} enters from {HexsideEntry}")]
+    public struct DirectedPathStepHex : IEquatable<DirectedPathStepHex> {
+        /// <summary>Creates a new <see cref="DirectedPathStepHex"/> instance at <paramref name="coords"/> exiting through <paramref name="hexsideExit"/>.</summary>
+        public DirectedPathStepHex(HexCoords coords, Hexside hexsideExit) : this() {
+            Coords      = coords;
+            HexsideExit = hexsideExit;
+        }
 
-    #region Properties
-    /// <summary>The hex of the <see cref="DirectedPathCollection"/>Step.</summary>
-    public HexCoords  Coords       { get {return _coords; } } readonly HexCoords _coords;
+        /// <summary>The hex of the <see cref="DirectedPathCollection"/>Step.</summary>
+        public HexCoords Coords { get; }
 
-    ///// <summary>The hex of the <see cref="DirectedPathCollection"/>Step.</summary>
-    //public IHex       Hex          { get; private set; }
+        /// <summary>The hexside of the neighbour through which the agent enters from this hex.</summary>
+        public Hexside HexsideEntry => HexsideExit.Reversed;
 
-    /// <summary>The hexside of the neighbour through which the agent enters from this hex.</summary>
-    public Hexside    HexsideEntry { get {
-      return HexsideExit.Reversed;
-    } }
+        /// <summary>The hexside of this hex through which the agent exits to the neighbour.</summary>
+        public Hexside HexsideExit { get; }
 
-    /// <summary>The hexside of this hex through which the agent exits to the neighbour.</summary>
-    public Hexside    HexsideExit  { get { return _hexsideExit;} } readonly Hexside _hexsideExit;
-    #endregion
+        #region Value Equality - on Hex field only
+        /// <inheritdoc/>
+        public override bool Equals(object obj) => (obj is DirectedPathStepHex other) && this.Equals(other);
 
-    /// <inheritdoc/>
-    public override string ToString() { 
-      return string.Format(CultureInfo.InvariantCulture,
-        "NeighbourHex: {0} enters from {1}", Coords, HexsideEntry);
-    }
+        /// <inheritdoc/>
+        public bool Equals(DirectedPathStepHex other) => Coords == other.Coords;
 
-    #region Value Equality - on Hex field only
-    /// <inheritdoc/>
-    public override bool Equals(object obj) {
-      var other = obj as DirectedPathStepHex?;
-      return other.HasValue  &&  this == other.Value;
-    }
+        /// <inheritdoc/>
+        public override int GetHashCode() => Coords.GetHashCode();
 
-    /// <inheritdoc/>
-    public override int GetHashCode() { return Coords.GetHashCode(); }
+        /// <summary>Tests value-inequality.</summary>
+        public static bool operator !=(DirectedPathStepHex lhs, DirectedPathStepHex rhs) => ! lhs.Equals(rhs);
 
-    /// <inheritdoc/>
-    public bool Equals(DirectedPathStepHex other) { return this == other; }
+        /// <summary>Tests value-equality.</summary>
+        public static bool operator ==(DirectedPathStepHex lhs, DirectedPathStepHex rhs) =>  lhs.Equals(rhs);
+        #endregion
 
-    /// <summary>Tests value-inequality.</summary>
-    public static bool operator != (DirectedPathStepHex lhs, DirectedPathStepHex rhs) {
-      return ! (lhs == rhs);
-    }
-
-    /// <summary>Tests value-equality.</summary>
-    public static bool operator == (DirectedPathStepHex lhs, DirectedPathStepHex rhs) {
-      return lhs.Coords == rhs.Coords;
-    }
-    #endregion
+        /// <inheritdoc/>
+        public override string ToString() => $"NeighbourHex: {Coords} enters from {HexsideEntry}";
   }
 }

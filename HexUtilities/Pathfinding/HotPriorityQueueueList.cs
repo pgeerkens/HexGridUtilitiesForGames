@@ -1,30 +1,7 @@
-﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
-/////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions - Hex-Grid Utilities
-/////////////////////////////////////////////////////////////////////////////////////////
-// The MIT License:
-// ----------------
-// 
-// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this
-// software and associated documentation files (the "Software"), to deal in the Software
-// without restriction, including without limitation the rights to use, copy, modify, 
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
-// permit persons to whom the Software is furnished to do so, subject to the following 
-// conditions:
-//     The above copyright notice and this permission notice shall be 
-//     included in all copies or substantial portions of the Software.
-// 
-//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
-//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
-//     OTHER DEALINGS IN THE SOFTWARE.
-/////////////////////////////////////////////////////////////////////////////////////////
+﻿#region Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
+///////////////////////////////////////////////////////////////////////////////////////////
+// THis software may be used under the terms of attached file License.md (The MIT License).
+///////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
 using System.Collections;
@@ -33,38 +10,33 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
-  /// <summary>Heap-On-Top (HOT) Priority Queue implementation.</summary>
-  /// <typeparam name="TKey">Struct type for the keys used to prioritize values..</typeparam>
-  /// <typeparam name="TValue">Type of the queue elements.</typeparam>
-  /// <remarks>
-  /// 
-  /// </remarks>
-  /// <a href="http://en.wikipedia.org/wiki/Heapsort">Wikepedia - Heapsort</a>/>
-  [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
-    Justification="The suffix 'List' has an unambiguous meaning in the application domain.")]
-  [DebuggerDisplay("Count={Count}")]
-  public sealed class HotPriorityQueueList<TKey,TValue> : IHotPriorityQueueList<TKey, TValue>
-  where TKey : struct, IEquatable<TKey>, IComparable<TKey>
-//  where TValue : class
-  {
-    /// <summary>Create a new instance with a capacity of 1024 elements.</summary>
-    public HotPriorityQueueList() : this(1024) {}
+    /// <summary>Heap-On-Top (HOT) Priority Queue implementation.</summary>
+    /// <typeparam name="TKey">Struct type for the keys used to prioritize values..</typeparam>
+    /// <typeparam name="TValue">Type of the queue elements.</typeparam>
+    /// <remarks>
+    /// See: <a href="http://en.wikipedia.org/wiki/Heapsort">Wikepedia - Heapsort</a>/>
+    /// </remarks>
+    [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
+        Justification="The suffix 'List' has an unambiguous meaning in the application domain.")]
+    [DebuggerDisplay("Count={Count}")]
+    public sealed class HotPriorityQueueList<TKey,TValue>: IHotPriorityQueueList<TKey, TValue>
+    where TKey : struct, IEquatable<TKey>, IComparable<TKey> {
+        /// <summary>Create a new instance with a capacity of 1024 elements.</summary>
+        public HotPriorityQueueList() : this(1024) {}
 
-    /// <summary>Create a new instance with the specified capacity.</summary>
-    public HotPriorityQueueList(int capacity) {
-      _list = new List<HexKeyValuePair<TKey,TValue>>(capacity);
+        /// <summary>Create a new instance with the specified capacity.</summary>
+        public HotPriorityQueueList(int capacity)
+        => List = new List<HexKeyValuePair<TKey,TValue>>(capacity);
+
+        /// <inheritdoc/>
+        public void Add(HexKeyValuePair<TKey,TValue> item) => List.Add(item);
+
+        private IList<HexKeyValuePair<TKey,TValue>> List { get; }  // < backing store
+
+        /// <inheritdoc/>
+        public IEnumerator<HexKeyValuePair<TKey,TValue>> GetEnumerator() => List.GetEnumerator();
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator() => List.GetEnumerator();
     }
-
-    /// <inheritdoc/>
-    public void Add(HexKeyValuePair<TKey,TValue> item) { _list.Add(item); }
-
-    /// <inheritdoc/>
-    public IEnumerator<HexKeyValuePair<TKey,TValue>> GetEnumerator() {
-      return _list.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator() { return _list.GetEnumerator(); }
-
-    IList<HexKeyValuePair<TKey,TValue>> _list;  // < backing store
-  }
 }

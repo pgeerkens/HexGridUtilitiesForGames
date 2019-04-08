@@ -1,30 +1,7 @@
-﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
-/////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions - Hex-Grid Utilities
-/////////////////////////////////////////////////////////////////////////////////////////
-// The MIT License:
-// ----------------
-// 
-// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this
-// software and associated documentation files (the "Software"), to deal in the Software
-// without restriction, including without limitation the rights to use, copy, modify, 
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
-// permit persons to whom the Software is furnished to do so, subject to the following 
-// conditions:
-//     The above copyright notice and this permission notice shall be 
-//     included in all copies or substantial portions of the Software.
-// 
-//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
-//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
-//     OTHER DEALINGS IN THE SOFTWARE.
-/////////////////////////////////////////////////////////////////////////////////////////
+﻿#region Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
+///////////////////////////////////////////////////////////////////////////////////////////
+// THis software may be used under the terms of attached file License.md (The MIT License).
+///////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
 using System.Collections.Generic;
@@ -116,20 +93,20 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         }
 
         /// <summary>Returns whether any elements exist in the heap.</summary>
-        bool IPriorityQueue<int,TValue>.Any()    { return this.Any; }
+        bool IPriorityQueue<int,TValue>.Any() => this.Any;
 
         /// <summary>Returns whether any elements exist in the heap.</summary>
-        public bool Any      { get { return _queue.Count > 0  ||  _lists.Count > 0; } }
+        public bool Any => _queue.Count > 0  ||  _lists.Count > 0;
 
         /// <summary>Returns the number of elements in the heap.</summary>
-        public int  Count    { get { return _queue.Count; } }
+        public int Count => _queue.Count;
 
         /// <summary>The number of elements which are handled by a straight HeapPriorityQueue.</summary>
         /// <remarks>
         /// When the number of elements exceeds this value, additional lists are created 
         /// to handle the overflow elements of lower priority (higher <c>TKey</c> values.
         /// </remarks>
-        public int  PoolSize { get; set; }
+        public int  PoolSize { get; }
 
         /// <inheritdoc/>
         public void Enqueue(int priority, TValue value) => Enqueue(HexKeyValuePair.New(priority,value));
@@ -167,11 +144,11 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
         /// <summary>TODO</summary>
         private IPriorityQueue<int,TValue> GetNextQueue() {
-              var list   = _lists.First();
+            var list   = _lists.First();
 
-              _lists.Remove(list.Key);
-              _baseIndex = list.Key;
-              return new MinListHeap<int,TValue>(list.Value.ToList());
+            _lists.Remove(list.Key);
+            _baseIndex = list.Key;
+            return new MinListHeap<int,TValue>(list.Value);
         }
     }
 }
