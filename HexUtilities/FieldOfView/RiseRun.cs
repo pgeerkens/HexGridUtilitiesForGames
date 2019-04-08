@@ -33,7 +33,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     /// <summary>TODO</summary>
     [DebuggerDisplay("RiseRun: ({Rise} over {Run})")]
     public struct RiseRun : IEquatable<RiseRun>, IComparable<RiseRun> {
-        #region Constructors
         /// <summary>Creates a new instance of the RiseRUn struct.</summary>
         /// <param name="rise"></param>
         /// <param name="run"></param>
@@ -41,17 +40,29 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
             Rise = rise;
             Run  = run;
         }
-        #endregion
 
-        #region Properties
-        /// <summary>Delta-height in units of elevation: meters.</summary>
+        /// <summary>Delta-height in units of elevation: feet.</summary>
         public int Rise { get; }
         /// <summary>Delta-width in units of distance:  hexes.</summary>
         public int Run  { get; }
-        #endregion
 
-        /// <inheritdoc/>
-        public override string ToString() => $"Rise={Rise}; Run={Run}";
+        #region Operators and  IComparable<RiseRun> implementations: 
+        /// <summary>Less Than operator</summary>
+        public static bool operator <  (RiseRun lhs, RiseRun rhs) => lhs.CompareTo(rhs) <  0;
+
+        /// <summary>Less Than or Equals operator</summary>
+        public static bool operator <= (RiseRun lhs, RiseRun rhs) => lhs.CompareTo(rhs) <= 0;
+
+        /// <summary>Greater Thanoperator</summary>
+        public static bool operator >  (RiseRun lhs, RiseRun rhs) => lhs.CompareTo(rhs) >  0;
+
+        /// <summary>Greater Than or Equals operator</summary>
+        public static bool operator >= (RiseRun lhs, RiseRun rhs) => lhs.CompareTo(rhs) >= 0;
+
+        /// <summary>Less-Than comparaator.</summary>
+        public int CompareTo(RiseRun other) => (Rise * other.Run).CompareTo(other.Rise * Run);
+        
+        #endregion
 
         #region Value Equality with IEquatable<T>
         /// <inheritdoc/>
@@ -71,22 +82,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
         public static bool operator == (RiseRun lhs, RiseRun rhs) => lhs.CompareTo(rhs) == 0;
         #endregion
 
-        #region Operators and  IComparable<RiseRun> implementations: 
-        /// <summary>Less Than operator</summary>
-        public static bool operator <  (RiseRun lhs, RiseRun rhs) => lhs.CompareTo(rhs) <  0;
-
-        /// <summary>Less Than or Equals operator</summary>
-        public static bool operator <= (RiseRun lhs, RiseRun rhs) => lhs.CompareTo(rhs) <= 0;
-
-        /// <summary>Greater Thanoperator</summary>
-        public static bool operator >  (RiseRun lhs, RiseRun rhs) => lhs.CompareTo(rhs) >  0;
-
-        /// <summary>Greater Than or Equals operator</summary>
-        public static bool operator >= (RiseRun lhs, RiseRun rhs) => lhs.CompareTo(rhs) >= 0;
-
-        /// <summary>Less-Than comparaator.</summary>
-        public int CompareTo(RiseRun other) => (Rise * other.Run).CompareTo(other.Rise * Run);
-        
-        #endregion
+        /// <inheritdoc/>
+        public override string ToString() => $"Rise={Rise}; Run={Run}";
     }
 }

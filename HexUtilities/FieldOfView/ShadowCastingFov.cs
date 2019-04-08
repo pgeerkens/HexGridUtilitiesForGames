@@ -12,7 +12,6 @@ using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.FieldOfView {
     /// <summary>Credit: Eric Lippert</summary>
-    /// <a href="http://blogs.msdn.com/b/ericlippert/archive/2011/12/29/shadowcasting-in-c-part-six.aspx">Shadow Casting in C# Part Six</a>
     /// <remarks>
     /// It is important for realiism that observerHeight > board[observerCoords].ElevationASL, 
     /// or no parallax over the current ground elevation will be observed. TerrainHeight is the 
@@ -20,6 +19,9 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     /// but sometimes occuppying units will block vision as well. Control this in the implementation 
     /// of IFovBoard {IHex} with the definition of the observerHeight, targetHeight, and 
     /// terrainHeight delegates.
+    /// 
+    /// See: <a href="http://blogs.msdn.com/b/ericlippert/archive/2011/12/29/shadowcasting-in-c-part-six.aspx">
+    /// Shadow Casting in C# Part Six</a>
     /// </remarks>
     public static partial class ShadowCasting {
         /// <summary>Get or set whether to force serial execution of FOV calculation.</summary>
@@ -129,11 +131,11 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
             if (hexesPerMile == 0) {
                 return coords => 0;
             } else if(UseMetric) {
-                return ( coords => (coordsObserver.Range(coords) * coordsObserver.Range(coords))
-                                 * calculationHeightUnits * 2 / (9 * hexesPerMile * hexesPerMile) );
+                return coords => coordsObserver.Range(coords) * coordsObserver.Range(coords)
+                               * calculationHeightUnits * 2 / (9 * hexesPerMile * hexesPerMile);
             } else {
-                return ( coords => (coordsObserver.Range(coords) * coordsObserver.Range(coords))
-                                 * calculationHeightUnits * 2 / (3 * hexesPerMile * hexesPerMile) );
+                return coords => coordsObserver.Range(coords) * coordsObserver.Range(coords)
+                               * calculationHeightUnits * 2 / (3 * hexesPerMile * hexesPerMile);
             }
         }
 
@@ -154,14 +156,14 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
             Func<HexCoords,Hexside,int> heightTerrain,
             Action<HexCoords>           setFieldOfView
         ) {
-            FieldOfViewTrace(true, " - Coords = " + coordsObserver.User.ToString());
+            FieldOfViewTrace(true, $" - Coords = {coordsObserver.User.ToString()}");
             var matrixOrigin = new IntMatrix2D(coordsObserver.Canon);
 
             if (radius >= 0) setFieldOfView(coordsObserver);    // Always visible to self!
 
-            Action<Dodecant> dodecantFov = d => {
+            void dodecantFov(Dodecant d) {
                 var dodecant = new Dodecant(d,matrixOrigin);
-                _mapCoordsDodecant = hex => dodecant.TranslateDodecant<HexCoords>(v=>v)(hex);
+                _mapCoordsDodecant = hex => dodecant.TranslateDodecant<HexCoords>(v => v)(hex);
 
                 ComputeFieldOfViewInDodecantZero(
                     radius,
@@ -171,7 +173,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
                     dodecant.TranslateDodecant(heightTerrain),
                     dodecant.TranslateDodecant(setFieldOfView)
                 );
-            };
+            }
             #if DEBUG
                 InSerial = true;
             #endif
@@ -258,7 +260,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
             // track the overlap-cone between adjacent hexes as we move down.
             var overlapVector = cone.VectorTop;
             var hexX          = XFromVector(range, topVector);
-            FieldOfViewTrace(false, "DQ:   ({0}) from {1}", cone, hexX);
+            FieldOfViewTrace(false, $"DQ:   ({cone}) from {hexX}");
 
             do {
                 while (overlapVector.GT(bottomVector)) {
@@ -278,8 +280,8 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
                         && bottomVector.LE(coordsCurrent.Canon) && coordsCurrent.Canon.LE(topVector)  
                         ) {
                             setFieldOfView(coordsCurrent);
-                            FieldOfViewTrace(false,"    Set visible: {0} / {1}; {2} >= {3}", 
-                                    _mapCoordsDodecant(coordsCurrent), coordsCurrent.ToString(), riseRun, cone.RiseRun);
+                            FieldOfViewTrace(false,
+                                $"    Set visible: {_mapCoordsDodecant(coordsCurrent)} / {coordsCurrent.ToString()}; {riseRun} >= {cone.RiseRun}");
                         }
                         #endregion
 
@@ -312,7 +314,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
                         topVector = LogAndEnqueue(enqueue, range, topVector, bottomVector, topRiseRun, 4);
                         break;
                     }
-                    FieldOfViewTrace(false, "DQ:   ({0}) from {1}", cone, hexX);
+                    FieldOfViewTrace(false, $"DQ:   ({cone}) from {hexX}");
                 }
                 #endregion
 
@@ -343,7 +345,9 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
         static Func<HexCoords, HexCoords> _mapCoordsDodecant;
 
         static partial void FieldOfViewTrace(string format, params object[] paramArgs);
+
         static partial void FieldOfViewTrace(bool newline, string format, params object[] paramArgs);
+
         [Conditional("TRACE")]
         static partial void FieldOfViewTrace(string format, params object[] paramArgs)
         =>  Tracing.FieldOfView.Trace(format, paramArgs);
@@ -351,7 +355,6 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
         [Conditional("TRACE")]
         static partial void FieldOfViewTrace(bool newline, string format, params object[] paramArgs)
         =>  Tracing.FieldOfView.Trace(newline, format, paramArgs);
-       
         #endregion
     }
 }
