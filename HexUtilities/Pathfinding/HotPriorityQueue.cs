@@ -5,10 +5,9 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Linq;
-
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <summary>Factory class for <see cref="HotPriorityQueue{TValue}"/></summary>
@@ -68,12 +67,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
             Justification="The suffix 'PriorityQueue' has an unambiguous meaning in the application domain.")]
     [DebuggerDisplay("Count={Count}")]
-    internal sealed class HotPriorityQueue<TValue> : IPriorityQueue<int,TValue> {
-        int                                                          _baseIndex;
-        readonly IDictionary<int, IHotPriorityQueueList<int,TValue>> _lists;
-        readonly int                                                 _preferenceWidth;
-        IPriorityQueue<int, TValue>                                  _queue;
-
+    public sealed class HotPriorityQueue<TValue> : IPriorityQueue<int,TValue> {
         /// <summary>returns a new instance with a preferenceWidth of shift bits.</summary>
         /// <remarks></remarks>
         /// <param name="preferenceWidth">the number of low-order bits on 
@@ -85,18 +79,15 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         public HotPriorityQueue(int preferenceWidth, int initialSize,
             Func<IDictionary<int, IHotPriorityQueueList<int, TValue>>> factory
         ) {
-            PoolSize         = initialSize * 7 / 8;
-            _baseIndex       = 0;
-            _preferenceWidth = preferenceWidth; 
-            _queue           = new MinListHeap<int,TValue>(initialSize);
-            _lists           = factory();
+            PoolSize        = initialSize * 7 / 8;
+            PreferenceWidth = preferenceWidth; 
+            Lists           = factory();
+            _baseIndex      = 0;
+            _queue          = new MinListHeap<int,TValue>(initialSize);
         }
 
         /// <summary>Returns whether any elements exist in the heap.</summary>
-        bool IPriorityQueue<int,TValue>.Any() => this.Any;
-
-        /// <summary>Returns whether any elements exist in the heap.</summary>
-        public bool Any => _queue.Count > 0  ||  _lists.Count > 0;
+        public bool Any => _queue.Count > 0  ||  Lists.Count > 0;
 
         /// <summary>Returns the number of elements in the heap.</summary>
         public int Count => _queue.Count;
@@ -108,21 +99,31 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// </remarks>
         public int  PoolSize { get; }
 
+        IDictionary<int,IHotPriorityQueueList<int,TValue>> Lists { get; }
+
+        int                        PreferenceWidth { get; }
+
+        int                        _baseIndex;
+        IPriorityQueue<int,TValue> _queue;
+
+        /// <summary>Returns whether any elements exist in the heap.</summary>
+        bool IPriorityQueue<int,TValue>.Any() => Any;
+
         /// <inheritdoc/>
         public void Enqueue(int priority, TValue value) => Enqueue(HexKeyValuePair.New(priority,value));
 
         /// <inheritdoc/>
         public void Enqueue(HexKeyValuePair<int,TValue> item) {
-            var index = item.Key >> _preferenceWidth;
+            var index = item.Key >> PreferenceWidth;
             if (index <= _baseIndex) {
                 _queue.Enqueue(item);
-            } else if (_lists.Count == 0  &&  _queue.Count < PoolSize) {
+            } else if (Lists.Count == 0  &&  _queue.Count < PoolSize) {
                 _baseIndex = index;
                 _queue.Enqueue(item);
             } else {
-                if(!_lists.TryGetValue(index, out var list)) {
+                if(!Lists.TryGetValue(index, out var list)) {
                     list = new HotPriorityQueueList<int, TValue>();
-                    _lists.Add(index, list);
+                    Lists.Add(index, list);
                 }
                 list.Add(item);
             }
@@ -130,23 +131,22 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
         /// <inheritdoc/>
         public bool TryDequeue(out HexKeyValuePair<int,TValue> result) {
-            if (_queue.TryDequeue(out result))  return true;
-            else if (_lists.Count > 0)          return (_queue = GetNextQueue()).TryDequeue(out result);
-            else                                return false;
+            if (_queue.TryDequeue(out result)) return true;
+            else if (Lists.Count > 0)          return (_queue = GetNextQueue()).TryDequeue(out result);
+            else                               return false;
         }
 
         /// <inheritdoc/>
         public bool TryPeek(out HexKeyValuePair<int,TValue> result) {
-            if (_queue.TryPeek(out result))     return true;
-            else if (_lists.Count > 0)          return (_queue = GetNextQueue()).TryPeek(out result);
-            else                                return false;
+            if (_queue.TryPeek(out result)) return true;
+            else if (Lists.Count > 0)       return (_queue = GetNextQueue()).TryPeek(out result);
+            else                            return false;
         }
 
         /// <summary>TODO</summary>
         private IPriorityQueue<int,TValue> GetNextQueue() {
-            var list   = _lists.First();
-
-            _lists.Remove(list.Key);
+            var list   = Lists.First();
+            Lists.Remove(list.Key);
             _baseIndex = list.Key;
             return new MinListHeap<int,TValue>(list.Value);
         }

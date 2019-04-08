@@ -34,47 +34,44 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     using HexSize = System.Drawing.Size;
 
     internal sealed partial class DirectedLandmark : IDirectedLandmark, IDisposable {
-        public static DirectedLandmark New(HexCoords hexCoords, HexSize mapSizeHexes, 
+        public static DirectedLandmark New(HexCoords hexCoords,HexSize mapSizeHexes,
             Func<IPriorityQueue<int,HexCoords>> queueFactory,
             TryDirectedCost tryDirectedCosts
-        ) {
-            return Extensions.InitializeDisposable( () =>
-                new DirectedLandmark(hexCoords, mapSizeHexes, queueFactory, tryDirectedCosts) );
-        }
+        ) => Extensions.InitializeDisposable(() =>
+                new DirectedLandmark(hexCoords,mapSizeHexes,queueFactory,tryDirectedCosts));
 
         /// <summary>Populates and returns a new landmark at the specified board coordinates.</summary>
         /// <param name="hexCoords"><see cref="HexCoords"/> for the landmark to be created.</param>
         /// <param name="mapSizeHexes">Hex dimensions of the IBoard{IHex} on which the landmark is to be created.</param>
         /// <param name="queueFactory">Factory that creates empty instances of <c>IPriorityQueue</c>.</param>
         /// <param name="tryDirectedCosts">TODO</param>
-        private DirectedLandmark(HexCoords hexCoords, HexSize mapSizeHexes, 
+        private DirectedLandmark(HexCoords hexCoords,HexSize mapSizeHexes,
             Func<IPriorityQueue<int,HexCoords>> queueFactory,
             TryDirectedCost tryDirectedCosts
-        ) {
-        //  _hex          = hex;
-            _backingStore = new LandmarkPopulatorFunctor(hexCoords, mapSizeHexes, queueFactory, tryDirectedCosts).Fill();
-        }
+        ) => _backingStore = new LandmarkPopulatorFunctor(hexCoords,mapSizeHexes,queueFactory,tryDirectedCosts).Fill();
 
         ///// <summary>Board coordinates for the landmark location.</summary>
         //public  HexCoords Coords      { get {return _hex.Coords;} } 
         ///// <summary>Board coordinates for the landmark location.</summary>
         //public  IHex      Hex         { get {return _hex;} } readonly IHex _hex;
         /// <inheritdoc/>
-        public  short? Distance(HexCoords coords)     { return _backingStore[coords]; }
+        public short? Distance(HexCoords coords) => _backingStore[coords];
 
         internal readonly BoardStorage<short?>     _backingStore;
 
         #region IDisposable implementation w/o finalizer; as no unmanageed resources used by sealed class.
         /// <summary>Clean up any resources being used.</summary>
-        public void Dispose() => Dispose(true);
+        public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
+
         /// <summary>True if already Disposed.</summary>
         private bool _isDisposed = false;
+
         /// <summary>Clean up any resources being used.</summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         private void Dispose(bool disposing) {
             if (!_isDisposed) {
                 if (disposing) {
-                    if (_backingStore != null) _backingStore.Dispose();
+                    _backingStore?.Dispose();
                 }
                 _isDisposed = true;
             }

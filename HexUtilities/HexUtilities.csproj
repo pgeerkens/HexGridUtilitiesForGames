@@ -278,7 +278,7 @@
     <Compile Include="Pathfinding\IDirectedPathCollection.cs" />
     <Compile Include="Pathfinding\IHotPrioirtyQueueList.cs" />
     <Compile Include="Pathfinding\NavigableBoard.cs" />
-    <Compile Include="Pathfinding\PathfinderInterfaces.cs" />
+    <Compile Include="Pathfinding\Interfaces.cs" />
     <Compile Include="Pathfinding\IPriorityQueue.cs" />
     <Compile Include="Pathfinding\Landmark.cs" />
     <Compile Include="Pathfinding\DirectedPathCollection.cs" />

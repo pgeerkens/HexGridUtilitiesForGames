@@ -15,7 +15,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     internal sealed class DirectedPathCollection : IDirectedPath {
         /// <summary>Returns a DirectedPath composed by extending this DirectedPath by one hex.</summary>
         public DirectedPathCollection(HexCoords start)
-        : this(null, new DirectedPathStepHex(start, Hexside.North), 0) { }
+        : this(null, new DirectedPathStepHex(start), 0) { }
 
         /// <summary>Returns a DirectedPath composed by extending this DirectedPath by one hex.</summary>
         public DirectedPathCollection(IDirectedPath pathSoFar, DirectedPathStepHex pathStep, int totalCost) {

@@ -83,15 +83,15 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>TODO</summary>
         public HexgridViewModel      DataContext    { get; }
         /// <summary>Gets a SizeF struct for the hex GridSize under the current scaling.</summary>
-        public SizeF                 GridSizeF       => DataContext.Model.GridSize.Scale(MapScale);
+        public SizeF                 GridSizeF      => DataContext.Model.GridSize.Scale(MapScale);
         /// <summary>Gets or sets the coordinates of the hex currently underneath the mouse.</summary>
-        public HexCoords             HotspotHex      => DataContext.HotspotHex;
+        public HexCoords             HotspotHex     => DataContext.HotspotHex;
         /// <summary>Gets whether the <b>Alt</b> <i>shift</i> key is depressed.</summary>
-        public static bool           IsAltKeyDown    => ModifierKeys.HasFlag(Keys.Alt);
+        public static bool           IsAltKeyDown   => ModifierKeys.HasFlag(Keys.Alt);
         /// <summary>Gets whether the <b>Ctl</b> <i>shift</i> key is depressed.</summary>
-        public static bool           IsCtlKeyDown    => ModifierKeys.HasFlag(Keys.Control);
+        public static bool           IsCtlKeyDown   => ModifierKeys.HasFlag(Keys.Control);
         /// <summary>Gets whether the <b>Shift</b> <i>shift</i> key is depressed.</summary>
-        public static bool           IsShiftKeyDown  => ModifierKeys.HasFlag(Keys.Shift);
+        public static bool           IsShiftKeyDown => ModifierKeys.HasFlag(Keys.Shift);
         /// <summary>TODO</summary>
         public         bool          IsMapDirty {
             get => _isMapDirty;
