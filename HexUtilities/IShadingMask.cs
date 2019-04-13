@@ -5,7 +5,7 @@
 #endregion
 using System.Diagnostics.CodeAnalysis;
 
-namespace PGNapoleonics.HexUtilities.Common {
+namespace PGNapoleonics.HexUtilities {
     /// <summary>Structure returned by the Field-of-View factory.</summary>
     public interface IShadingMask {
         /// <summary>True if the hex at location <c>coords</c>c> is visible in this field-of-view.</summary>

@@ -40,7 +40,7 @@ using PGNapoleonics.HexgridPanel.WinForms;
 using PGNapoleonics.HexgridExampleCommon;
 
 namespace PGNapoleonics.HexgridPanel.Example {
-    using MapGridDisplay = MapDisplay<IHex>;
+    using MapGridDisplay = Map<TerrainGridHex>;
 
     public sealed partial class HexgridBufferedPanelExample : HexgridBufferedPanelForm {
         private bool           _isPanelResizeSuppressed = false;
@@ -117,10 +117,10 @@ namespace PGNapoleonics.HexgridPanel.Example {
     //      helpProvider1.SetShowHelp(this,true);
         }
 
-        private static MapGridDisplay ParseMapName(string mapName)
+        private static IPanelModel ParseMapName(string mapName)
         =>  MapList.Maps.First(item => item.MapName == mapName).MapBoard;
 
-        private void SetMapBoard(MapGridDisplay mapBoard) {
+        private void SetMapBoard(IPanelModel mapBoard) {
             HexgridPanel.SetModel( MapBoard = mapBoard);
             MapBoard.ShowPathArrow = MenuBarToolStrip.ShowPathArrow;
             MapBoard.ShowFov       = MenuBarToolStrip.ShowFieldOfView;

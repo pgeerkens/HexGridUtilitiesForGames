@@ -52,16 +52,44 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <summary>An <see cref="IList"/> of defined <see cref="ILandmark"/> locations.</summary>
     public interface ILandmarkCollection : IFastList<ILandmark> {
-        /// <summary>Calculated distance from the specified landmark to the specified hex</summary>
-        /// <param name="coords"></param>
-        /// <param name="landmarkToShow"></param>
-        /// <returns></returns>
-        string DistanceFrom(HexCoords coords, int landmarkToShow);
-        /// <summary>Calculated distance to the specified landmark from the specified hex</summary>
-        /// <param name="coords"></param>
-        /// <param name="landmarkToShow"></param>
-        /// <returns></returns>
-        string DistanceTo(HexCoords coords, int landmarkToShow);
+    }
+
+    public static partial class LandmarkExtensions {
+        ///// <summary>TODO</summary>
+        //public static ILandmark DictionaryPriorityQueueLandmark(this INavigableBoard board, HexCoords coords) {
+        //    var backingStore = BackingStore(board, coords, PriorityQueueFactory.NewDictionaryQueue<int,HexCoords>);
+        //    return new Landmark(coords, backingStore);
+        //}
+
+        ///// <summary>TODO</summary>
+        //public static ILandmark HotPriorityQueueLandmark(this INavigableBoard board, HexCoords coords) {
+        //    var backingStore = BackingStore(board, coords, PriorityQueueFactory.NewHotPriorityQueue<HexCoords>);
+        //    return new Landmark(coords, backingStore);
+        //}
+
+        ///// <param name="coords">The <see cref="HexCoords"/> for this landmark.</param>
+        ///// <param name="board">IBoard{IHex} on which the landmark is to be created.</param>
+        ///// <param name="queueFactory">Function that returns a new <see cref="IPriorityQueue{TPriority,TValue}"</param>
+        //private static IList<DirectedLandmark> BackingStore(this INavigableBoard board, HexCoords coords,
+        //    Func<IPriorityQueue<int,HexCoords>> queueFactory)
+        //=> new List<DirectedLandmark> {
+        //        DirectedLandmark.New(coords, board.MapSizeHexes, queueFactory, board.TryEntryCost),
+        //        DirectedLandmark.New(coords, board.MapSizeHexes, queueFactory, board.TryExitCost)
+        //}.AsReadOnly();
+
+        /// <summary>String representation of the distance from a given landmark to a specified hex</summary>
+        /// <param name="this"></param>
+        /// <param name="coords">Type HexCoords - Hex for which to return Landmark distanace.</param>
+        /// <param name="landmarkToShow">Type int - Index of the Landmark from which to display distances.</param>
+        public static string DistanceFrom(this ILandmarks @this,HexCoords coords, int landmarkToShow)
+        => $"{@this?[landmarkToShow]?.DistanceFrom(coords),3}";
+
+        /// <summary>String representation of the distance from a given landmark to a specified hex</summary>
+        /// <param name="this"></param>
+        /// <param name="coords">Type HexCoords - Hex for which to return Landmark distanace.</param>
+        /// <param name="landmarkToShow">Type int - Index of the Landmark from which to display distances.</param>
+        public static string DistanceTo(this ILandmarks @this,HexCoords coords, int landmarkToShow)
+        => $"{@this?[landmarkToShow]?.DistanceTo(coords),3}";
     }
 
     /// <summary>Interface required to make use of A* Path Finding utility.</summary>
@@ -77,10 +105,10 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// </remarks>
         int?  Heuristic(IHex source, IHex target);
 
-        /// <summary>TODO</summary>
-        int  TryExitCost(HexCoords hex, Hexside hexside);
-        /// <summary>TODO</summary>
-        int  TryEntryCost(HexCoords hex, Hexside hexside);
+        ///// <summary>TODO</summary>
+        //int  TryExitCost(HexCoords hex, Hexside hexside);
+        ///// <summary>TODO</summary>
+        //int  TryEntryCost(HexCoords hex, Hexside hexside);
     }
 
     /// <summary>Interface required to make use of A* Path Finding utility with Landmark heuristic.</summary>
@@ -126,4 +154,10 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <typeparam name="THex"></typeparam>
     public interface ILandmarkBoard<THex>: ILandmarkBoard, INavigableBoard<THex> where THex: IHex {
     }
+
+    ///// <summary>TODO</summary>
+    //public interface ILandmarkPopulator {
+    //    /// <summary>TODO</summary>
+    //    BoardStorage<int> Fill();
+    //}
 }

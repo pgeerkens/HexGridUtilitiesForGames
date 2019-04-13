@@ -1,30 +1,7 @@
-﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
-/////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions - Hex-Grid Utilities
-/////////////////////////////////////////////////////////////////////////////////////////
-// The MIT License:
-// ----------------
-// 
-// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this
-// software and associated documentation files (the "Software"), to deal in the Software
-// without restriction, including without limitation the rights to use, copy, modify, 
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
-// permit persons to whom the Software is furnished to do so, subject to the following 
-// conditions:
-//     The above copyright notice and this permission notice shall be 
-//     included in all copies or substantial portions of the Software.
-// 
-//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
-//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
-//     OTHER DEALINGS IN THE SOFTWARE.
-/////////////////////////////////////////////////////////////////////////////////////////
+﻿#region Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
+///////////////////////////////////////////////////////////////////////////////////////////
+// THis software may be used under the terms of attached file License.md (The MIT License).
+///////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -37,11 +14,9 @@ using PGNapoleonics.HexUtilities.FieldOfView;
 using PGNapoleonics.HexUtilities.Pathfinding;
 
 namespace PGNapoleonics.HexUtilities.Storage {
-    using HexPoint = System.Drawing.Point;
-    using HexSize = System.Drawing.Size;
-
+    using HexPoint   = System.Drawing.Point;
+    using HexSize    = System.Drawing.Size;
     using ILandmarks = ILandmarkCollection;
-    using IBoardStorage = IBoardStorage<Maybe<HexsideCosts>>;
 
     /// <summary>Abstract implementation of a hexgrid map-board.</summary>
     /// <typeparam name="THex">TODO</typeparam>
@@ -84,11 +59,6 @@ namespace PGNapoleonics.HexUtilities.Storage {
             GridSizePixels  = new IntMatrix2D(GridSize.Width,                0, 
                                                            0,   GridSize.Height, 
                                             GridSize.Width/3, GridSize.Height/2);
-
-            EntryCosts = new BlockedBoardStorage32x32<Maybe<HexsideCosts>>(sizeHexes, 
-                                    hexCoords => HexsideCosts.EntryCosts(boardHexes,hexCoords), 1);
-            ExitCosts  = new BlockedBoardStorage32x32<Maybe<HexsideCosts>>(sizeHexes, 
-                                    hexCoords => HexsideCosts.ExitCosts(boardHexes,hexCoords), 1);
         }
 
         /// <inheritdoc/>
@@ -104,7 +74,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
         protected Exception ResetLandmarks(IFastList<HexCoords> landmarkCoords) {
             try {
                 #if true
-                Landmarks = LandmarkCollection.New2(this, landmarkCoords);
+                Landmarks = (this as IBoard<IHex>).CreateLandmarksHotQueue(landmarkCoords);
                 #else
                 Landmarks = LandmarkCollection.New(this, landmarkCoords);
                 #endif
@@ -154,12 +124,8 @@ namespace PGNapoleonics.HexUtilities.Storage {
 
         /// <summary>TODO</summary>
         protected virtual  int         MinimumStepCost => 2;
-        /// <summary>TODO</summary>
-        protected        IBoardStorage EntryCosts      { get; }
-        /// <summary>TODO</summary>
-        protected        IBoardStorage ExitCosts       { get; }
 
-        THex INavigableBoard<THex>.this[HexCoords coords] => BoardHexes[coords].ElseDefault();
+        Maybe<IHex> IBoard<IHex>.this[HexCoords coords] => this[coords].Bind<IHex>(h=>h);
 
         /// <summary>Returns the <c>IHex</c> at location <c>coords</c>.</summary>
         [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
@@ -186,14 +152,6 @@ namespace PGNapoleonics.HexUtilities.Storage {
         /// <inheritdoc/>
         public Maybe<IHex> Neighbour(IHex hex, Hexside hexside)
         => Neighbour(hex.Coords,hexside).Bind(h => (h as IHex).ToMaybe());
-
-        /// <summary>TODO</summary>
-        public int TryExitCost(HexCoords hexCoords, Hexside hexside)
-        =>  (from x in ExitCosts[hexCoords] select x[hexside]).ElseDefault() ?? -1;
-
-        /// <summary>TODO</summary>
-        public int TryEntryCost(HexCoords hexCoords, Hexside hexside)
-        => (from x in EntryCosts[hexCoords] select x[hexside]).ElseDefault() ?? -1;
         #endregion
 
         /// <inheritdoc/>
@@ -205,13 +163,8 @@ namespace PGNapoleonics.HexUtilities.Storage {
         /// <inheritdoc/>
         public void ForAllNeighbours(HexCoords coords,Action<THex,Hexside> action)
             => ForAllNeighbours(coords,(maybe,hexside) => maybe.IfHasValueDo(hex=>action(hex,hexside)));
-        /// <inheritdoc/>
-        public int  EntryCost(IHex hex,Hexside hexsideExit) => TryEntryCost(hex.Coords,hexsideExit);
-        /// <inheritdoc/>
-        public int  ExitCost(IHex hex,Hexside hexsideExit)  => TryExitCost(hex.Coords,hexsideExit);
-        /// <inheritdoc/>
-        public int  TryExitCost(IHex hex,Hexside hexside)  => TryExitCost(hex.Coords,hexside);
-        /// <inheritdoc/>
-        public int  TryEntryCost(IHex hex,Hexside hexside) => TryEntryCost(hex.Coords,hexside);
+
+        void IBoard<IHex>.ForAllNeighbours(HexCoords coords,Action<IHex,Hexside> action)
+        => BoardHexes.ForAllNeighbours(coords, (hex,hexside) => action(hex as IHex, hexside));
     }
 }

@@ -35,15 +35,17 @@ namespace PGNapoleonics.HexgridExampleCommon {
     using HexSize = System.Drawing.Size;
 
     /// <summary>TODO</summary>
-    public sealed class AStarBugMap : MapDisplayBlocked<IHex> {
+    public sealed class AStarBugMap : MapDisplayBlocked<TerrainGridHex> {
         public async static Task<AStarBugMap> NewAsync() {
             var map = new AStarBugMap();
+            map.ForEachHex<TerrainGridHex,AStarBugMap>(hex => hex.IfHasValueDo(h=> h.SetCosts<TerrainGridHex>(c => map[c])));
             await map.ResetLandmarksAsync();
             return map;
         }
 
         public static AStarBugMap New() {
             var map = new AStarBugMap();
+            map.ForEachHex<TerrainGridHex,AStarBugMap>(hex => hex.IfHasValueDo(h=> h.SetCosts<TerrainGridHex>(c => map[c])));
             map.ResetLandmarks();
             return map;
         }

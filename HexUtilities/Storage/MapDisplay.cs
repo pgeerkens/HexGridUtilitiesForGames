@@ -1,30 +1,7 @@
-﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
-/////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions - Hex-Grid Utilities
-/////////////////////////////////////////////////////////////////////////////////////////
-// The MIT License:
-// ----------------
-// 
-// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this
-// software and associated documentation files (the "Software"), to deal in the Software
-// without restriction, including without limitation the rights to use, copy, modify, 
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
-// permit persons to whom the Software is furnished to do so, subject to the following 
-// conditions:
-//     The above copyright notice and this permission notice shall be 
-//     included in all copies or substantial portions of the Software.
-// 
-//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
-//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
-//     OTHER DEALINGS IN THE SOFTWARE.
-/////////////////////////////////////////////////////////////////////////////////////////
+﻿#region Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
+///////////////////////////////////////////////////////////////////////////////////////////
+// THis software may be used under the terms of attached file License.md (The MIT License).
+///////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -39,6 +16,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
     using HexPointF     = System.Drawing.PointF;
     using HexSize       = System.Drawing.Size;
     using HexSizeF      = System.Drawing.SizeF;
+    using Matrix        = System.Drawing.Drawing2D.Matrix;
     using RectangleF    = System.Drawing.RectangleF;
     using GraphicsPath  = System.Drawing.Drawing2D.GraphicsPath;
     using IDirectedPath = IDirectedPathCollection;
@@ -68,7 +46,8 @@ namespace PGNapoleonics.HexUtilities.Storage {
 
     /// <summary>Abstract class representing the basic game board.</summary>
     /// <typeparam name="THex">Type of the hex for which a game board is desired.</typeparam>
-    public abstract class MapDisplay<THex> : HexBoard<THex>, IMapDisplayWinForms<THex>, IFovBoard
+    public abstract class MapDisplay<THex> : HexBoard<THex>, IMapDisplayWinForms<THex>,
+        IFovBoard, IPanelModel
     where THex: class,IHex {
 
         /// <summary>TODO</summary>
@@ -159,7 +138,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
             set { if (MapSizeHexes.IsOnboard(value)) _startHex = value; PathSet(); ; if (ShowRangeLine) _fov = null; }
         } HexCoords _startHex = HexCoords.EmptyUser;
 
-        BoardStorage<Maybe<THex>> IMapDisplay<THex>.BoardHexes => BoardHexes;
+        Maybe<IHex> IPanelModel.this[HexCoords coords] => BoardHexes[coords].Bind<IHex>(hex => hex);
         #endregion
 
         /// <summary>TODO</summary>
@@ -202,6 +181,10 @@ namespace PGNapoleonics.HexUtilities.Storage {
         [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
         Maybe<THex> IMapDisplayWinForms<THex>.this[HexCoords coords]
         => BoardHexes[coords];
+
+        /// <inheritdoc/>
+        void IPanelModel.ForEachHexSerial<THex>(Action<Maybe<THex>> action)
+        => BoardHexes.ForEachSerial(hex => action(hex.Bind<THex>(h => h as THex)));
 
         #region Derived IDisposable implementation
         public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }

@@ -30,21 +30,20 @@ using System;
 using System.Drawing;
 
 using PGNapoleonics.HexUtilities;
-using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexgridPanel {
     /// <summary>Extension methods to paint an <see cref="IMapDisplayWinForms{T}"/> from a <see cref="Graphics"/>.</summary>
     public static partial class MapDisplayPainterExtensions {
-        private static IMapDisplayPainter Painter<THex>(this IMapDisplayWinForms<THex> @this) where THex:IHex
-        => new MapDisplayPainter<THex>(@this);
+        private static IMapDisplayPainter Painter(this IPanelModel @this)
+        => new MapDisplayPainter<IHex>(@this);
 
         /// <summary>Paint the base layer of the display, graphics that changes rarely between refreshes.</summary>
         /// <param name="this">The map to be painted, as a <see cref="MapDisplay{THex}"/>.</param>
         /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
         /// <param name="showHexgrid">.</param>
         /// <remarks>For each visible hex: perform <c>paintAction</c> and then draw its hexgrid outline.</remarks>
-        public static void PaintMap<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics,
+        public static void PaintMap<THex>(this IPanelModel @this, Graphics graphics,
                 bool showHexgrid)
         where THex:IHex
         => @this.Painter().PaintMap(graphics,showHexgrid);
@@ -54,7 +53,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
         /// <param name="hexText">.</param>
         /// <remarks>For each visible hex: perform <c>paintAction</c> and then draw its hexgrid outline.</remarks>
-        public static void PaintLabels<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics,
+        public static void PaintLabels<THex>(this IPanelModel @this, Graphics graphics,
                 Func<HexCoords,string> hexText)
         where THex:IHex
         => @this.Painter().PaintLabels(graphics,hexText);
@@ -62,7 +61,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Paint the top layer of the display, graphics that changes frequently between refreshes.</summary>
         /// <param name="this">The map to be painted, as a <see cref="MapDisplay{THex}"/>.</param>
         /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
-        public static void PaintHighlight<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics)
+        public static void PaintHighlight<THex>(this IPanelModel @this, Graphics graphics)
         where THex:IHex
         => @this.Painter().PaintHighlight(graphics);
 
@@ -71,7 +70,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <param name="this">The map to be painted, as a <see cref="MapDisplay{THex}"/>.</param>
         /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
         /// <param name="isNotShaded">The <see cref="IShadingMask"/> object for the canvas being painted.</param>
-        public static void PaintShading<THex>(this IMapDisplayWinForms<THex> @this, Graphics graphics, IShadingMask isNotShaded)
+        public static void PaintShading<THex>(this IPanelModel @this, Graphics graphics, IShadingMask isNotShaded)
         where THex: IHex
         => @this.Painter().PaintShading(graphics,isNotShaded);
 
@@ -79,7 +78,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <typeparam name="THex"></typeparam>
         /// <param name="this">The map to be painted, as a <see cref="MapDisplay{THex}"/>.</param>
         /// <param name="graphics">The <see cref="Graphics"/> object for the canvas being painted.</param>
-        public static void PaintUnits<THex>(this IMapDisplayWinForms<THex> @this,Graphics graphics)
+        public static void PaintUnits<THex>(this IPanelModel @this,Graphics graphics)
         where THex : IHex
         => @this.Painter().PaintUnits(graphics);
     }

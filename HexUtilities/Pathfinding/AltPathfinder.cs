@@ -62,12 +62,15 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// <param name="pathHalves"></param>
         /// <param name="isForward"></param>
         public AltPathfinder(IPathHalves<THex> pathHalves, bool isForward) {
+            int exitCost (IHex hex, Hexside hexside) => hex.ExitCost(hexside);
+            int entryCost(IHex hex, Hexside hexside) => hex.EntryCost(hexside);
+
             PathHalves   = pathHalves;
             Board        = pathHalves.Board;
             ClosedSet    = pathHalves.ClosedSet;
             Start        = isForward ? pathHalves.Source : pathHalves.Target;
             Goal         = isForward ? pathHalves.Target : pathHalves.Source;
-            StepCost     = isForward ? (StepCost)Board.ExitCost : Board.EntryCost;
+            StepCost     = isForward ? (StepCost)exitCost : entryCost;
             Potential    = isForward ? (Potential)((l,c) => l.DistanceFrom(c))
                                                 : ((l,c) => l.DistanceTo(c));
             SetBestSoFar = isForward ? (SetBest)((s,p) => PathHalves.SetBestSoFar(p,s))
@@ -137,9 +140,14 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
                 Queue.Enqueue (0, path);
         }
         private  void          ExpandHex(IDirectedPath path, Hexside hexside) {
-            var here  = Board[path.PathStep.Coords];
-            var there = Board[here.Coords.GetNeighbour(hexside)];
-            if (there != null  &&  ! ClosedSet.Contains(there.Coords) ) {
+            ( from here in Board[path.PathStep.Coords]
+              from there in Board[here.Coords.GetNeighbour(hexside)]
+              where here != null  &&  there != null
+              select new {here, there}
+            ).IfHasValueDo( tuple => ExpandHex(path, hexside, tuple.here, tuple.there) );
+        }
+        private  void          ExpandHex(IDirectedPath path, Hexside hexside, IHex here, IHex there) {
+            if ( ! ClosedSet.Contains(there.Coords) ) {
                 var cost = StepCost(here, hexside);
                 if( (cost > 0)
                 &&  (path.TotalCost+cost < BestSoFar  ||  ! OpenSet.ContainsKey(there.Coords))

@@ -1,54 +1,31 @@
-﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
-/////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions - Hex-Grid Utilities
-/////////////////////////////////////////////////////////////////////////////////////////
-// The MIT License:
-// ----------------
-// 
-// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this
-// software and associated documentation files (the "Software"), to deal in the Software
-// without restriction, including without limitation the rights to use, copy, modify, 
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
-// permit persons to whom the Software is furnished to do so, subject to the following 
-// conditions:
-//     The above copyright notice and this permission notice shall be 
-//     included in all copies or substantial portions of the Software.
-// 
-//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
-//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
-//     OTHER DEALINGS IN THE SOFTWARE.
-/////////////////////////////////////////////////////////////////////////////////////////
+﻿#region Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
+///////////////////////////////////////////////////////////////////////////////////////////
+// THis software may be used under the terms of attached file License.md (The MIT License).
+///////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Storage;
 
-#pragma warning disable 1587
-/// <summary>TODO</summary>
-#pragma warning restore 1587
 namespace PGNapoleonics.HexgridExampleCommon {
-    using HexSize    = System.Drawing.Size;
-    using MapDef     = IReadOnlyList<string>;
+    using HexSize = System.Drawing.Size;
+    using IMapDef = IReadOnlyList<string>;
 
     /// <summary>Example of <see cref="HexUtilities"/> usage to implement a terrain map.</summary>
-    public sealed class TerrainMap : MapDisplayBlocked<IHex> {
+    public sealed class TerrainMap : MapDisplayBlocked<TerrainGridHex> {
         public async static Task<TerrainMap> NewAsync() {
             var map = new TerrainMap();
+            map.ForEachHex<TerrainGridHex,TerrainMap>(hex => hex.IfHasValueDo(h=> h.SetCosts<TerrainGridHex>(c => map[c])));
             await map.ResetLandmarksAsync();
             return map;
         }
 
         public static TerrainMap New() {
             var map = new TerrainMap();
+            map.ForEachHex<TerrainGridHex,TerrainMap>(hex => hex.IfHasValueDo(h=> h.SetCosts<TerrainGridHex>(c => map[c])));
             map.ResetLandmarks();
             return map;
         }
@@ -57,19 +34,24 @@ namespace PGNapoleonics.HexgridExampleCommon {
         private TerrainMap() : base(_sizeHexes, new HexSize(26,30), InitializeHex) {}
 
         /// <inheritdoc/>
-        public override int    ElevationBase =>  0;
-        /// <inheritdoc/>
-        public override int    ElevationStep => 10;
+        public override int  ElevationBase =>  0;
 
         /// <inheritdoc/>
-        [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "2*range",
-            Justification="No map is big enough to overflow,")]
+        public override int  ElevationStep => 10;
+
+        /// <inheritdoc/>
         public override int? Heuristic(HexCoords source, HexCoords target) => 2 * source.Range(target);
 
-        static MapDef        _board     = MapDefinitions.TerrainMapDefinition;
+        /// <inheritdoc/>
+        public override int? Heuristic(IHex source, IHex target) => Heuristic(source.Coords, target.Coords);
+
+        /// <inheritdoc/>
+        public override int? Heuristic(int range) => range;
+
+        static IMapDef       _board     = MapDefinitions.TerrainMapDefinition;
         static HexSize       _sizeHexes = new HexSize(_board[0].Length, _board.Count);
 
-        public new static IHex InitializeHex(HexCoords coords) {
+        public new static TerrainGridHex InitializeHex(HexCoords coords) {
             char value = _board[coords.User.Y][coords.User.X];
             switch(value) {
                 case '.': return TerrainGridHex.NewPassable(coords, 0,0,value, 4); // Clear
@@ -83,11 +65,5 @@ namespace PGNapoleonics.HexgridExampleCommon {
                 case 'R': return TerrainGridHex.NewImpassable(coords, 0,0,value);    // River
             }
         }
-
-        /// <inheritdoc/>
-        public override int? Heuristic(IHex source, IHex target) => Heuristic(source.Coords, target.Coords);
-
-        /// <inheritdoc/>
-        public override int? Heuristic(int range) => range;
     }
 }

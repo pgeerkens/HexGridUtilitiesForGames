@@ -6,8 +6,6 @@
 using System;
 using System.Collections.Generic;
 
-using PGNapoleonics.HexUtilities.Common;
-
 namespace PGNapoleonics.HexUtilities.Pathfinding {
     using DirectedPath   = DirectedPathCollection;
     using IDirectedPath  = IDirectedPathCollection;
@@ -87,9 +85,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
                 closedSet.Add(step.Coords);
 
                 Hexside.HexsideList.ForEach(hexside => {
-                    var neighbour = board[step.Coords.GetNeighbour(hexside)];
-                    if (neighbour != null) {
-                        board.TryDirectedCost(step.Hex, hexside).IfHasValueDo( cost => {
+                    board[step.Coords.GetNeighbour(hexside)].IfHasValueDo(neighbour => {
+                        var cost = step.Hex.TryDirectedCost(hexside);
+                        if (cost > 0 ) {
                             var newPath = path.AddStep(neighbour, hexside.Reversed, cost);
                             board.Estimate(vectorGoal, source, neighbour, newPath.TotalCost)
                                  .IfHasValueDo(key => {
@@ -97,8 +95,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
                                      queue.Enqueue(key, newPath);
                                  } );
-                        } );
-                    }
+                        }
+                    });
                 } );
             }
 
@@ -111,9 +109,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         => from heuristic in board.Heuristic(start,hex) as int? select ((heuristic + totalCost) << 16)
         + Preference(vectorGoal, start.Coords.Canon - hex.Coords.Canon);
 
-        static int? TryDirectedCost<THex>(this INavigableBoard<THex> board, IHex hex, Hexside hexside)
-        where THex: IHex
-        => ((int?)board.EntryCost(hex, hexside)).Match(c => c>0 ? c : (int?)null, ()=>null);
+        static int TryDirectedCost(this IHex hex, Hexside hexside) => hex.EntryCost(hexside);
 
         static int Preference(IntVector2D vectorGoal, IntVector2D vectorHex)
         => (0xFFFF & Math.Abs(vectorGoal ^ vectorHex));

@@ -98,7 +98,7 @@ namespace PGNapoleonics.HexgridPanel {
                 temp = new Bitmap(width, height) { Tag = tag };
                 temp.Paint(Point.Empty, CacheScale, g => {
                     var model = DataContext.Model;
-                    model.PaintMap(g, true);
+                    model.PaintMap<IHex>(g, true);
                 });
                 bitmap = temp;
                 temp   = null;
@@ -119,7 +119,7 @@ namespace PGNapoleonics.HexgridPanel {
             if (DesignMode) { e.Graphics.FillRectangle(Brushes.Gray, ClientRectangle);  return; }
 
             void PaintFov(Graphics graphics)
-            => DataContext.Model.PaintShading(graphics,DataContext.Model?.Fov);
+            => DataContext.Model.PaintShading<IHex>(graphics,DataContext.Model?.Fov);
 
             if (BufferCache == null) {
                 var isBusy = Interlocked.CompareExchange(ref _isCacheBusy, CACHE_IS_PAINTING, CACHE_IS_FREE);
@@ -133,9 +133,9 @@ namespace PGNapoleonics.HexgridPanel {
                 var location = AutoScrollPosition + Margin.OffsetSize();
 
                 BufferMap  .Render(BufferCache,location, mapScale / CacheScale);
-                BufferUnits.Render(BufferMap,  location, mapScale, DataContext.Model.PaintUnits);
+                BufferUnits.Render(BufferMap,  location, mapScale, DataContext.Model.PaintUnits<IHex>);
                 BufferBack .Render(BufferUnits,location, mapScale, PaintFov);
-                BufferBack .Render(null,       location, mapScale, DataContext.Model.PaintHighlight);
+                BufferBack .Render(null,       location, mapScale, DataContext.Model.PaintHighlight<IHex>);
 
                 e.Graphics.DrawImageUnscaled(BufferBack, Point.Empty);
             }

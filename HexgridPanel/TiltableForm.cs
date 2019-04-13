@@ -38,7 +38,6 @@ using PGNapoleonics.HexgridPanel.WinForms;
 
 namespace PGNapoleonics.HexgridPanel {
     using HexSize        = System.Drawing.Size;
-    using MapGridDisplay = MapDisplay<IHex>;
 
     public partial class TiltableForm: Form, IMessageFilter {
         public TiltableForm() {
@@ -46,7 +45,7 @@ namespace PGNapoleonics.HexgridPanel {
             Application.AddMessageFilter(this);
         }
 
-        protected MapGridDisplay MapBoard;
+        protected IPanelModel    MapBoard;
         protected CustomCoords   CustomCoords;
 
         #region Event handlers

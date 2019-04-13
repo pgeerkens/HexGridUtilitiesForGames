@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
@@ -27,7 +26,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// <summary>TODO</summary>
         public static int? DirectedCost<THex>(BoardStorage<Maybe<THex>> boardHexes,HexCoords hexCoords,Hexside hexside)
         where THex : IHex
-        => boardHexes[hexCoords].Bind(hex => hex.StepCost(hexside).ToMaybe()).ToNullable();
+        => boardHexes[hexCoords].Bind<int?>(hex => hex.EntryCost(hexside)).ToNullable();
 
         private HexsideCosts(Func<Hexside,int?> directedCostToExit) : base(Generator(directedCostToExit)) { }
 

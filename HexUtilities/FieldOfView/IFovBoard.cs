@@ -4,7 +4,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System.Diagnostics.CodeAnalysis;
-using PGNapoleonics.HexUtilities.Common;
 
 namespace PGNapoleonics.HexUtilities.FieldOfView {
     using HexSize = System.Drawing.Size;

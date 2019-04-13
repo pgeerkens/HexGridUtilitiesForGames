@@ -33,29 +33,29 @@ using PGNapoleonics.HexUtilities.Storage;
 namespace PGNapoleonics.HexUtilities.Pathfinding {
     using HexSize = System.Drawing.Size;
 
-    internal sealed partial class DirectedLandmark : IDirectedLandmark {
-        public static DirectedLandmark New(HexCoords hexCoords,HexSize mapSizeHexes,
-            Func<IPriorityQueue<int,HexCoords>> queueFactory,
-            TryDirectedCost tryDirectedCosts
-        ) =>  new DirectedLandmark(hexCoords,mapSizeHexes,queueFactory,tryDirectedCosts);
+    //internal sealed partial class DirectedLandmark : IDirectedLandmark {
+    //    public static DirectedLandmark New(HexCoords hexCoords,HexSize mapSizeHexes,
+    //        Func<IPriorityQueue<int,HexCoords>> queueFactory,
+    //        TryDirectedCost tryDirectedCosts
+    //    ) =>  new DirectedLandmark(hexCoords,mapSizeHexes,queueFactory,tryDirectedCosts);
 
-        /// <summary>Populates and returns a new landmark at the specified board coordinates.</summary>
-        /// <param name="hexCoords"><see cref="HexCoords"/> for the landmark to be created.</param>
-        /// <param name="mapSizeHexes">Hex dimensions of the IBoard{IHex} on which the landmark is to be created.</param>
-        /// <param name="queueFactory">Factory that creates empty instances of <c>IPriorityQueue</c>.</param>
-        /// <param name="tryDirectedCosts">TODO</param>
-        private DirectedLandmark(HexCoords hexCoords,HexSize mapSizeHexes,
-            Func<IPriorityQueue<int,HexCoords>> queueFactory,
-            TryDirectedCost tryDirectedCosts
-        ) => _backingStore = new LandmarkPopulatorFunctor(hexCoords,mapSizeHexes,queueFactory,tryDirectedCosts).Fill();
+    //    /// <summary>Populates and returns a new landmark at the specified board coordinates.</summary>
+    //    /// <param name="hexCoords"><see cref="HexCoords"/> for the landmark to be created.</param>
+    //    /// <param name="mapSizeHexes">Hex dimensions of the IBoard{IHex} on which the landmark is to be created.</param>
+    //    /// <param name="queueFactory">Factory that creates empty instances of <c>IPriorityQueue</c>.</param>
+    //    /// <param name="tryDirectedCosts">TODO</param>
+    //    private DirectedLandmark(HexCoords hexCoords,HexSize mapSizeHexes,
+    //        Func<IPriorityQueue<int,HexCoords>> queueFactory,
+    //        TryDirectedCost tryDirectedCosts
+    //    ) => _backingStore = new LandmarkPopulatorFunctor(hexCoords,mapSizeHexes,queueFactory,tryDirectedCosts).Fill();
 
-        ///// <summary>Board coordinates for the landmark location.</summary>
-        //public  HexCoords Coords      { get {return _hex.Coords;} } 
-        ///// <summary>Board coordinates for the landmark location.</summary>
-        //public  IHex      Hex         { get {return _hex;} } readonly IHex _hex;
-        /// <inheritdoc/>
-        public int Distance(HexCoords coords) => _backingStore[coords];
+    //    ///// <summary>Board coordinates for the landmark location.</summary>
+    //    //public  HexCoords Coords      { get {return _hex.Coords;} } 
+    //    ///// <summary>Board coordinates for the landmark location.</summary>
+    //    //public  IHex      Hex         { get {return _hex;} } readonly IHex _hex;
+    //    /// <inheritdoc/>
+    //    public int Distance(HexCoords coords) => _backingStore[coords];
 
-        internal readonly BoardStorage<int>     _backingStore;
-    }
+    //    internal readonly BoardStorage<int>     _backingStore;
+    //}
 }

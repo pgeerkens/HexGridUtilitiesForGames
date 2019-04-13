@@ -213,6 +213,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IBoard.cs" />
     <Compile Include="Pathfinding\INavigableBoard.cs" />
     <Compile Include="Pathfinding\PathTracingExtensions.cs" />
     <Compile Include="Storage\HexBoardExtensions.cs" />
@@ -222,9 +223,9 @@
     <Compile Include="Storage\Map.cs" />
     <Compile Include="Storage\MapDisplay.cs" />
     <Compile Include="Storage\MapDisplayExtensions.cs" />
-    <Compile Include="Common\Maybe.cs" />
-    <Compile Include="Common\MaybeExtensions.cs" />
-    <Compile Include="Common\NullableExtensions.cs" />
+    <Compile Include="Maybe.cs" />
+    <Compile Include="MaybeExtensions.cs" />
+    <Compile Include="NullableExtensions.cs" />
     <Compile Include="PointExtensions.cs" />
     <Compile Include="SizeExtensions.cs" />
     <Compile Include="UserCoordsRectangle.cs" />
@@ -232,7 +233,7 @@
     <Compile Include="Common\EventArgs.cs" />
     <Compile Include="FastLists\AbstractFastList.cs" />
     <Compile Include="FieldOfView\FovBoardExtensions.cs" />
-    <Compile Include="Common\IShadingMask.cs" />
+    <Compile Include="IShadingMask.cs" />
     <Compile Include="Storage\IMapDisplay.cs">
       <SubType>Code</SubType>
     </Compile>

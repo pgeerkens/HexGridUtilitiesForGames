@@ -170,7 +170,7 @@ namespace PGNapoleonics.HexgridPanel {
         public virtual void SetMapDirty() => Invalidate(ClientRectangle);
 
         /// <summary>TODO</summary>
-        public         void SetModel(Model model) {
+        public         void SetModel(IPanelModel model) {
             SetScrollLimits(DataContext.Model);   
             DataContext.Model = model;
             SetMapDirty();
@@ -194,7 +194,7 @@ namespace PGNapoleonics.HexgridPanel {
         }
 
         /// <summary>Set ScrollBar increments and bounds from map dimensions.</summary>
-        public virtual void SetScrollLimits(Model model) {
+        public virtual void SetScrollLimits(IPanelModel model) {
             if (model == null  ||  !AutoScroll) return;
             var smallChange              = Size.Ceiling(model.GridSize.Scale(MapScale));
             HorizontalScroll.SmallChange = smallChange.Width;
@@ -266,24 +266,24 @@ namespace PGNapoleonics.HexgridPanel {
         /// <inheritdoc/>
         protected virtual void RenderHighlight(Graphics graphics) {
             if (graphics == null) throw new ArgumentNullException("graphics");
-            DataContext.Model.PaintHighlight(graphics);
+            DataContext.Model.PaintHighlight<IHex>(graphics);
         }
         /// <inheritdoc/>
         protected virtual void RenderMap(Graphics graphics) {
             if (graphics == null) throw new ArgumentNullException(nameof(graphics));
             using(var brush = new SolidBrush(BackColor)) graphics.FillRectangle(brush, graphics.VisibleClipBounds);
             var model = DataContext.Model;
-            model.PaintMap(graphics, true);
+            model.PaintMap<IHex>(graphics, true);
         }
         /// <inheritdoc/>
         protected virtual void RenderShading(Graphics graphics) {
             if (graphics == null) throw new ArgumentNullException("graphics");
-            DataContext.Model.PaintShading(graphics,DataContext.Model?.Fov);
+            DataContext.Model.PaintShading<IHex>(graphics,DataContext.Model?.Fov);
         }
         /// <inheritdoc/>
         protected virtual void RenderUnits(Graphics graphics) {
             if (graphics == null) throw new ArgumentNullException("graphics");
-            DataContext.Model.PaintUnits(graphics);
+            DataContext.Model.PaintUnits<IHex>(graphics);
         }
 
         /// <summary>TODO</summary>

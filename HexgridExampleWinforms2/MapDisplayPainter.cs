@@ -29,7 +29,6 @@
 using System.Windows.Media;
 
 using PGNapoleonics.HexUtilities;
-using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexUtilities.Storage;
 

@@ -37,7 +37,7 @@ namespace PGNapoleonics.HexgridPanel {
     public class MapDisplayPainter<THex>: AbstractModelDisplayPainter<THex> where THex:IHex {
         /// <summary></summary>
         /// <param name="model">The map to be painted, as a <see cref="IMapDisplayWinForms{THex}"/>.</param>
-        public MapDisplayPainter(IMapDisplayWinForms<THex> model) : base(model) { }
+        public MapDisplayPainter(IPanelModel model) : base(model) { }
 
         /// <summary>Returns a <see cref="Brush"/> suitable for painting the specified <see cref="THex"/>.</summary>
         /// <param name="hex">The <see cref="THex"/> being queried.</param>

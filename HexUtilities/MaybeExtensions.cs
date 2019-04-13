@@ -29,7 +29,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace PGNapoleonics.HexUtilities.Common {
+namespace PGNapoleonics.HexUtilities {
     /// <summary>TODO</summary>
     public static class MaybeExtensions {
         /// <summary>Returns the value of <paramref name="this">this</paramref> it it has one; otherwise returns <paramref name="alternate"/>().</summary>

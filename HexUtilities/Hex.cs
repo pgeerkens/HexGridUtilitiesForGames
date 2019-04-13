@@ -45,14 +45,11 @@ namespace PGNapoleonics.HexUtilities {
         /// <inheritdoc/>
         public abstract char      TerrainType    { get; }
 
-        /// <summary>Cost to extend the path with the hex located across the <c>Hexside</c> at <c>direction</c>.</summary>
+        /// <inheritdoc/>
         public abstract int       EntryCost(Hexside hexsideExit);
 
-        /// <summary>Cost to extend the path with the hex located across the <c>Hexside</c> at <c>direction</c>.</summary>
-        public abstract int       ExitCost(Hexside hexsideExit);
-
         /// <inheritdoc/>
-        public abstract int?      StepCost(Hexside hexsideExit);
+        public abstract int       ExitCost(Hexside hexsideExit);
 
         #region Value Equality with IEquatable<T>
         /// <inheritdoc/>

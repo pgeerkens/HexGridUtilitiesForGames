@@ -36,23 +36,24 @@ using PGNapoleonics.HexUtilities.Pathfinding;
 using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexgridPanel {
+    using HexPoint   = System.Drawing.Point;
+
     /// <summary></summary>
     /// <typeparam name="THex"></typeparam>
     public abstract class AbstractModelDisplayPainter<THex>: IMapDisplayPainter where THex:IHex {
         /// <summary></summary>
         /// <param name="model">The map to be painted, as a <see cref="IMapDisplayWinForms{THex}"/>.</param>
-        public AbstractModelDisplayPainter(IMapDisplayWinForms<THex> model)
+        public AbstractModelDisplayPainter(IPanelModel model)
         =>  Model = model??throw new ArgumentNullException(nameof(model));
 
-        protected IMapDisplayWinForms<THex> Model { get; }
+        protected IPanelModel Model { get; }
 
         /// <inheritdoc/>
         public virtual void PaintMap(Graphics graphics, bool showHexgrid)
         =>  graphics?.Contain( g => {
-                var boardHexes = Model.BoardHexes;
                 graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 PaintForEachHex(graphics, coords => {
-                    boardHexes[coords].IfHasValueDo(h => {
+                    Model[coords].IfHasValueDo(h => {
                         if(h is THex hex) Paint(graphics, Model.HexgridPath, GetHexBrush(hex));
                     });
                     if (showHexgrid) graphics.DrawPath(Pens.Black, Model.HexgridPath);
@@ -177,8 +178,8 @@ namespace PGNapoleonics.HexgridPanel {
         /// <summary>Performs the specified <see cref="Action{THex}"/> for each hex of <paramref name="this"/> in <paramref name="clipRectangle"/>.</summary>
         /// <param name="clipRectangle">The rectangular extent of hexes to be painted as a <see cref="CoordsRectangle"/>.</param>
         /// <param name="action">The <see cref="Action{THex}"/> to be performed with each hex.</param>
-        protected void ForEachHex(CoordsRectangle clipRectangle, Action<THex> action)
-        =>  Model.BoardHexes.ForEachSerial(maybe =>
+        protected void ForEachHex(CoordsRectangle clipRectangle, Action<IHex> action)
+        =>  Model.ForEachHexSerial<IHex>(maybe =>
                 maybe.IfHasValueDo(hex => { if (clipRectangle.EncompassesHex(hex.Coords)) action(hex); } )
             );
 
