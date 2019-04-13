@@ -1,30 +1,7 @@
-﻿#region The MIT License - Copyright (C) 2012-2019 Pieter Geerkens
-/////////////////////////////////////////////////////////////////////////////////////////
-//                PG Software Solutions - Hex-Grid Utilities
-/////////////////////////////////////////////////////////////////////////////////////////
-// The MIT License:
-// ----------------
-// 
-// Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this
-// software and associated documentation files (the "Software"), to deal in the Software
-// without restriction, including without limitation the rights to use, copy, modify, 
-// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
-// permit persons to whom the Software is furnished to do so, subject to the following 
-// conditions:
-//     The above copyright notice and this permission notice shall be 
-//     included in all copies or substantial portions of the Software.
-// 
-//     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-//     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-//     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
-//     NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-//     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-//     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-//     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
-//     OTHER DEALINGS IN THE SOFTWARE.
-/////////////////////////////////////////////////////////////////////////////////////////
+﻿#region Copyright (c) 2012-2019 Pieter Geerkens (email: pgeerkens@users.noreply.github.com)
+///////////////////////////////////////////////////////////////////////////////////////////
+// THis software may be used under the terms of attached file License.md (The MIT License).
+///////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System;
 using System.Diagnostics;
@@ -50,6 +27,9 @@ namespace PGNapoleonics.HexUtilities {
         /// <inheritdoc/>
         public          int       ElevationLevel { get; }
 
+        /// <summary>Default implementation, assuming no blocking hexside terrain.</summary>
+        public virtual  int       HeightHexside(Hexside hexside) => HeightTerrain;
+
         /// <inheritdoc/>
         public virtual  int       HeightObserver => 1;
 
@@ -60,13 +40,19 @@ namespace PGNapoleonics.HexUtilities {
         public abstract int       HeightTerrain  { get; }
 
         /// <inheritdoc/>
-        public abstract char      TerrainType    { get; }
+        public abstract bool      IsPassable     { get; }
 
         /// <inheritdoc/>
-        public abstract short?    TryStepCost(Hexside hexsideExit);
+        public abstract char      TerrainType    { get; }
 
-        /// <summary>Default implementation, assuming no blocking hexside terrain.</summary>
-        public virtual  int       HeightHexside(Hexside hexside) => HeightTerrain;
+        /// <summary>Cost to extend the path with the hex located across the <c>Hexside</c> at <c>direction</c>.</summary>
+        public abstract int       EntryCost(Hexside hexsideExit);
+
+        /// <summary>Cost to extend the path with the hex located across the <c>Hexside</c> at <c>direction</c>.</summary>
+        public abstract int       ExitCost(Hexside hexsideExit);
+
+        /// <inheritdoc/>
+        public abstract int?      StepCost(Hexside hexsideExit);
 
         #region Value Equality with IEquatable<T>
         /// <inheritdoc/>

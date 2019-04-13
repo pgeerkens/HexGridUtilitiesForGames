@@ -159,7 +159,7 @@ namespace PGNapoleonics.HexgridPanel {
         /// <remarks>The current graphics origin must be the centre of the current hex.</remarks>
         protected void PaintPathArrow(Graphics graphics, Hexside hexside) {
             var unit = Model.GridSize.Height/8.0F;
-            graphics.RotateTransform(60 * hexside);
+            graphics.RotateTransform(60 * hexside.Reversed);
             graphics.DrawLine(Pens.Black, 0,unit*4,       0,  -unit);
             graphics.DrawLine(Pens.Black, 0,unit*4, -unit*3/2, unit*2);
             graphics.DrawLine(Pens.Black, 0,unit*4,  unit*3/2, unit*2);

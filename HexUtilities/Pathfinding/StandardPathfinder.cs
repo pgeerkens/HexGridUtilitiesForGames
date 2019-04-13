@@ -30,7 +30,9 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// </para><para>
     /// "Unfortunately, the space complexity of this algorithm can be really quite high on complicated 
     /// graphs. There are more complex versions of this algorithm which can deal with the space complexity."
-    /// <a href="http://blogs.msdn.com/b/ericlippert/archive/2007/10/10/path-finding-using-a-in-c-3-0-part-four.aspx"></a>
+    /// <a href="http://blogs.msdn.com/b/ericlippert/archive/2007/10/10/path-finding-using-a-in-c-3-0-part-four.aspx">
+    /// Eric Lippert's A* path-finding agorithm
+    /// </a>
     /// </para><para>
     /// Adapted to hex-grids, and to weight the most direct path favourably for better (visual) 
     /// behaviour on a hexgrid.
@@ -39,68 +41,80 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <seealso cref="BidirectionalAltPathfinder"/>
     /// </para>
     /// </remarks>
-    /// <see cref="BidirectionalAltPathfinder"/>
-    public sealed class StandardPathfinder : IPathfinder {
-        /// <summary>Creates a new <see cref="IPathfinder"/> instance implementing a unidirectional A*.</summary>
+    public static class StandardPathfinderExtensions {
+        /// <summary>Returns an <see cref="IPath{THex}"/> for the optimal path using a standard A* algorithm.</summary>
         /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
+        /// <param name="source">Coordinates for the <c>first</c> step on the desired path.</param>
+        /// <param name="target">Coordinates for the <c>last</c> step on the desired path.</param>
+        /// <returns>A <see cref="IPath{THex}"/> for the shortest path found, or null if no path was found.</returns>
         /// <remarks>
-        /// <para>Note that the Heuristic provided by <paramref name="board"/> <b>must</b> be monotonic 
-        /// in order for the algorithm to perform properly.</para>
+        /// <para>Note that the Heuristic provided by <paramref name="board"/> <b>must</b> be monotonic in order for the algorithm to perform properly.</para>
         /// </remarks>
-        public StandardPathfinder(INavigableBoard board) => Board = board;
+        public static IPath<THex> GetPathStandardAStar<THex>(this INavigableBoard<THex> board,
+                THex source, THex target)
+        where THex: IHex
+        => board.GetPath(source,target,new DictionaryPriorityQueue<int, IDirectedPath>(),new HashSet<HexCoords>());
 
-        private INavigableBoard Board { get; }
+        /// <summary>Returns an <see cref="IPath{THex}"/> for the optimal path using a standard A* algorithm.</summary>
+        /// <param name="board">An object satisfying the interface <see cref="INavigableBoard{THex}"/>.</param>
+        /// <param name="source">Coordinates for the <c>first</c> step on the desired path.</param>
+        /// <param name="target">Coordinates for the <c>last</c> step on the desired path.</param>
+        /// <param name="queue"></param>
+        /// <param name="closedSet"></param>
+        /// <returns>A <see cref="IPath{THex}"/> for the shortest path found, or null if no path was found.</returns>
+        /// <remarks>
+        /// <para>Note that the Heuristic provided by <paramref name="board"/> <b>must</b> be monotonic in order for the algorithm to perform properly.</para>
+        /// </remarks>
+        public static IPath<THex> GetPath<THex>(this INavigableBoard<THex> board, THex source, THex target,
+                IPriorityQueue<int,IDirectedPath> queue, ISet<HexCoords> closedSet)
+        where THex: IHex {
+            source.TraceFindPathDetailInit(target);
 
-        /// <inheritdoc/>
-        public Maybe<IDirectedPath> GetPath(HexCoords source, HexCoords target) {
-            PathfinderExtensions.TraceFindPathDetailInit(source, target);
-
-            // Minimize field references by putting these on the stack now
-            var vectorGoal   = target.Canon - source.Canon;
-            var openSet      = new HashSet<HexCoords>();
-            var closedSet    = new HashSet<HexCoords>();
-            var queue        = new DictionaryPriorityQueue<int, IDirectedPath>();;
-
+            var vectorGoal = target.Coords.Canon - source.Coords.Canon;
             queue.Enqueue (0, new DirectedPath(target));
 
             while (queue.TryDequeue(out var item)) {
                 var path = item.Value;
-                var step = path.PathStep.Coords;
+                var step = path.PathStep;
 
-                openSet.Add(step);
-                if (closedSet.Contains(step)) continue;
+                if (closedSet.Contains(step.Coords)) continue;
 
-                PathfinderExtensions.TraceFindPathDequeue("Rev",step, path, item.Key>>16, (int)(item.Key & 0xFFFFu) - 0x7FFF);
+                step.Hex.TraceFindPathDequeue("A* Rev", path, item.Key>>16, (int)(item.Key & 0xFFFFu) - 0x7FFF);
 
-                if(step == source)     return path.ToMaybe();
+                if(step.Hex == (IHex)source)
+                    return new Path<THex>(path.ToMaybe(),source,target,closedSet,null);
 
-                closedSet.Add(step);
+                closedSet.Add(step.Coords);
 
                 Hexside.HexsideList.ForEach(hexside => {
-                    var neighbourCoords = step.GetNeighbour(hexside);
-                    TryDirectedCost(step, hexside).IfHasValueDo( cost => {
-                        var newPath = path.AddStep(neighbourCoords, hexside, cost);
-                        Estimate(vectorGoal, source, neighbourCoords, newPath.TotalCost).IfHasValueDo(key => {
-                            PathfinderExtensions.TraceFindPathEnqueue(neighbourCoords, key>>16, (int)(key & 0xFFFFu));
+                    var neighbour = board[step.Coords.GetNeighbour(hexside)];
+                    if (neighbour != null) {
+                        board.TryDirectedCost(step.Hex, hexside).IfHasValueDo( cost => {
+                            var newPath = path.AddStep(neighbour, hexside.Reversed, cost);
+                            board.Estimate(vectorGoal, source, neighbour, newPath.TotalCost)
+                                 .IfHasValueDo(key => {
+                                     neighbour.Coords.TraceFindPathEnqueue(key>>16, (int)(key & 0xFFFFu));
 
-                            queue.Enqueue(key, newPath);
+                                     queue.Enqueue(key, newPath);
+                                 } );
                         } );
-                    } );
+                    }
                 } );
             }
 
             return null;
         }
-    
-        private int?   Estimate(IntVector2D vectorGoal, HexCoords start, HexCoords hex, int totalCost)
-        => from heuristic in Heuristic(start,hex)
-           select ((heuristic + totalCost) << 16)
-                + Preference(vectorGoal, start.Canon - hex.Canon);
 
-        private short? Heuristic(HexCoords source, HexCoords target) => Board.Heuristic(source,target);
+        static int? Estimate<THex>(this INavigableBoard<THex> board, IntVector2D vectorGoal,
+                IHex start, IHex hex, int totalCost)
+        where THex: IHex
+        => from heuristic in board.Heuristic(start,hex) as int? select ((heuristic + totalCost) << 16)
+        + Preference(vectorGoal, start.Coords.Canon - hex.Coords.Canon);
 
-        private short? TryDirectedCost(HexCoords coords, Hexside hexside) => Board.TryExitCost(coords, hexside);
-    
+        static int? TryDirectedCost<THex>(this INavigableBoard<THex> board, IHex hex, Hexside hexside)
+        where THex: IHex
+        => ((int?)board.EntryCost(hex, hexside)).Match(c => c>0 ? c : (int?)null, ()=>null);
+
         static int Preference(IntVector2D vectorGoal, IntVector2D vectorHex)
         => (0xFFFF & Math.Abs(vectorGoal ^ vectorHex));
     }

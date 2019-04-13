@@ -12,11 +12,11 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         Justification="The suffix has an unambiguous meaning in the application domain.")]
     public interface IPriorityQueue<TPriority,TValue> 
     where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority> {
-        /// <summary>Returns whether any elements exist in the heap.</summary>
-        bool Any();
-
         /// <summary>The number of items in the queue.</summary>
         int  Count { get; }
+
+        /// <summary>Returns whether any elements exist in the heap.</summary>
+        bool Any();
 
         /// <summary>Creates and adds an entry with the specified <c>priority</c> and <c>value</c> to the queue.></summary>
         /// <param name="priority">The <c>TPriority</c> value for the new entry.</param>
@@ -31,7 +31,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// and removed from the queue.</summary>
         bool TryDequeue(out HexKeyValuePair<TPriority,TValue> result);
 
-        /// <summary>Returns whether the top queue entry has been successfully stored in <paramref name="result"/>.</summary>
+        /// <summary>Returns whether the top queue entry has been successfully stored in <c>result</c>.</summary>
         bool TryPeek(out HexKeyValuePair<TPriority,TValue> result);
     }
 }

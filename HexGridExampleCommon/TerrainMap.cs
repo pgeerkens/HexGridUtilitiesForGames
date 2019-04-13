@@ -28,7 +28,7 @@
 #endregion
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-
+using System.Threading.Tasks;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Storage;
 
@@ -37,13 +37,24 @@ using PGNapoleonics.HexUtilities.Storage;
 #pragma warning restore 1587
 namespace PGNapoleonics.HexgridExampleCommon {
     using HexSize    = System.Drawing.Size;
-    using MapGridHex = IHex;
     using MapDef     = IReadOnlyList<string>;
 
     /// <summary>Example of <see cref="HexUtilities"/> usage to implement a terrain map.</summary>
-    public sealed class TerrainMap : MapDisplayBlocked<MapGridHex> {
+    public sealed class TerrainMap : MapDisplayBlocked<IHex> {
+        public async static Task<TerrainMap> NewAsync() {
+            var map = new TerrainMap();
+            await map.ResetLandmarksAsync();
+            return map;
+        }
+
+        public static TerrainMap New() {
+            var map = new TerrainMap();
+            map.ResetLandmarks();
+            return map;
+        }
+
         /// <summary>TODO</summary>
-        public TerrainMap() : base(_sizeHexes, new HexSize(26,30), InitializeHex) {}
+        private TerrainMap() : base(_sizeHexes, new HexSize(26,30), InitializeHex) {}
 
         /// <inheritdoc/>
         public override int    ElevationBase =>  0;
@@ -51,13 +62,14 @@ namespace PGNapoleonics.HexgridExampleCommon {
         public override int    ElevationStep => 10;
 
         /// <inheritdoc/>
-        [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "2*range", Justification="No map is big enough to overflow,")]
-        public override short? Heuristic(HexCoords source, HexCoords target) => (short)(2 * source.Range(target));
+        [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "2*range",
+            Justification="No map is big enough to overflow,")]
+        public override int? Heuristic(HexCoords source, HexCoords target) => 2 * source.Range(target);
 
-        static MapDef          _board     = MapDefinitions.TerrainMapDefinition;
-        static HexSize         _sizeHexes = new HexSize(_board[0].Length, _board.Count);
+        static MapDef        _board     = MapDefinitions.TerrainMapDefinition;
+        static HexSize       _sizeHexes = new HexSize(_board[0].Length, _board.Count);
 
-        public new static MapGridHex InitializeHex(HexCoords coords) {
+        public new static IHex InitializeHex(HexCoords coords) {
             char value = _board[coords.User.Y][coords.User.X];
             switch(value) {
                 case '.': return TerrainGridHex.NewPassable(coords, 0,0,value, 4); // Clear
@@ -71,5 +83,11 @@ namespace PGNapoleonics.HexgridExampleCommon {
                 case 'R': return TerrainGridHex.NewImpassable(coords, 0,0,value);    // River
             }
         }
+
+        /// <inheritdoc/>
+        public override int? Heuristic(IHex source, IHex target) => Heuristic(source.Coords, target.Coords);
+
+        /// <inheritdoc/>
+        public override int? Heuristic(int range) => range;
     }
 }

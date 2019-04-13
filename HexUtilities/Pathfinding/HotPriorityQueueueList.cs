@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
-    /// <summary>Heap-On-Top (HOT) Priority Queue implementation.</summary>
+    /// <summary>_heap-On-Top (HOT) Priority _heap implementation.</summary>
     /// <typeparam name="TKey">Struct type for the keys used to prioritize values..</typeparam>
     /// <typeparam name="TValue">Type of the queue elements.</typeparam>
     /// <remarks>
@@ -19,19 +19,23 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
         Justification="The suffix 'List' has an unambiguous meaning in the application domain.")]
     [DebuggerDisplay("Count={Count}")]
-    public sealed class HotPriorityQueueList<TKey,TValue>: IHotPriorityQueueList<TKey, TValue>
+    internal sealed class HotPriorityQueueList<TKey, TValue>: IHotPriorityQueueList<TKey, TValue>
     where TKey : struct, IEquatable<TKey>, IComparable<TKey> {
-        /// <summary>Create a new instance with a capacity of 1024 elements.</summary>
+       /// <summary>Create a new instance with a capacity of 1024.</summary>
         public HotPriorityQueueList() : this(1024) {}
 
-        /// <summary>Create a new instance with the specified capacity.</summary>
+       /// <summary>Create a new instance with the specified capacity.</summary>
+       /// <param name="capacity"></param>
         public HotPriorityQueueList(int capacity)
         => List = new List<HexKeyValuePair<TKey,TValue>>(capacity);
 
         /// <inheritdoc/>
-        public void Add(HexKeyValuePair<TKey,TValue> item) => List.Add(item);
+        public int Count => List.Count;
 
-        private IList<HexKeyValuePair<TKey,TValue>> List { get; }  // < backing store
+        List<HexKeyValuePair<TKey,TValue>> List { get; }  // < backing store
+
+        /// <inheritdoc/>
+        public void Add(HexKeyValuePair<TKey,TValue> item) => List.Add(item);
 
         /// <inheritdoc/>
         public IEnumerator<HexKeyValuePair<TKey,TValue>> GetEnumerator() => List.GetEnumerator();

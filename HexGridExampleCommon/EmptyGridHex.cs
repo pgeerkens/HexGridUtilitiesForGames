@@ -41,6 +41,15 @@ namespace PGNapoleonics.HexgridExampleCommon {
         public override int    HeightTerrain => 0;
 
         ///  <inheritdoc/>
-        public override short? TryStepCost(Hexside hexsideExit) => default;
+        public override bool   IsPassable => false;
+
+        ///  <inheritdoc/>
+        public override int    EntryCost(Hexside hexsideExit) => -1;
+
+        ///  <inheritdoc/>
+        public override int    ExitCost(Hexside hexsideExit) => -1;
+
+        ///  <inheritdoc/>
+        public override int?   StepCost(Hexside hexsideExit) => default;
     }
 }

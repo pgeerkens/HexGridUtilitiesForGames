@@ -33,7 +33,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
     using HexSize  = System.Drawing.Size;
 
     /// <summary>TODO</summary>
-    /// <typeparam name="T">The <c>Type</c> being stored.</typeparam>
+    /// <typeparam name="T">The Type being stored.</typeparam>
     public interface IBoardStorage<out T> {
         /// <summary>The rectangular extent of the board's hexagonal grid, in hexes.</summary>
         HexSize MapSizeHexes     { get; }
@@ -41,9 +41,19 @@ namespace PGNapoleonics.HexUtilities.Storage {
         /// <summary>Returns the <c>THex</c> instance at the specified coordinates.</summary>
         [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
         T this[HexCoords coords] { get; }
+        /// <summary>Returns the <c>THex</c> instance at the specified user coordinates.</summary>
+        [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
+        T this[IntVector2D userCoords] { get; }
 
         /// <summary>Perform <paramref name="action"/> for all neighbours of <paramref name="coords"/>.</summary>
         void ForAllNeighbours(HexCoords coords, Action<T,Hexside> action);
+
+        /// <summary>Perform the specified <c>action</c> serially on all hexes.</summary>
+        void ForEach(Action<T> action);
+
+        ///// <summary>Returns whether the hex with <see cref="HexCoords"/> <c>coords</c> is 
+        ///// within the extent of the board.</summary>
+        //bool IsOnboard(HexCoords coords);
 
         /// <summary>TODO</summary>
         /// <param name="coords"></param>

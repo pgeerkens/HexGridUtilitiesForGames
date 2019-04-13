@@ -39,7 +39,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
     /// <typeparam name="T">The type of the information being stored. 
     /// If {T} implements IDisposable then the Dispose() method will dispose all elements.
     /// </typeparam>
-    public abstract class BoardStorage<T> : IBoardStorage<T>, IForEachable<T>, IForEachable2<T>, IDisposable {
+    public abstract class BoardStorage<T> : IBoardStorage<T>, IForEachable<T>, IForEachable2<T> {
         /// <summary>Initializes a new instance with the specified hex extent.</summary>
         /// <param name="sizeHexes"></param>
         protected BoardStorage(HexSize sizeHexes) {
@@ -63,6 +63,12 @@ namespace PGNapoleonics.HexUtilities.Storage {
         /// <param name="x"></param>
         /// <param name="y"></param>
         protected abstract T ItemInner(int x, int y);
+
+        /// <summary>TOTO</summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="value"></param>
+        protected abstract void SetItemInner(int x, int y, T value);
         #pragma warning restore 3008
 
         /// <inheritdoc/>
@@ -94,27 +100,29 @@ namespace PGNapoleonics.HexUtilities.Storage {
 
         /// <summary>Sets the location to the specified value.</summary>
         /// <remarks>Use carefully - can interfere with iterators.</remarks>
-        internal abstract void SetItem(HexCoords coords, T value);
-
-        #region IDisposable implementation with Finalizeer
-        /// <summary>Clean up any resources being used, and suppress finalization.</summary>
-        public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
-        /// <summary>True if already Disposed.</summary>
-        private bool _isDisposed = false;
-        /// <summary>Clean up any resources being used.</summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected virtual void Dispose(bool disposing) {
-            if (!_isDisposed) {
-                if (disposing) {
-                    if (typeof(T).GetInterfaces().Contains(typeof(IDisposable))) {
-                        ForEach(i => { var item = i as IDisposable; if(item != null) item.Dispose(); i = default(T);} );
-                    }
-                }
-                _isDisposed = true;
-            }
+        internal virtual void SetItem(HexCoords coords, T value) {
+            if(MapSizeHexes.IsOnboard(coords)) SetItemInner(coords.User.X, coords.User.Y, value);
         }
-        /// <summary>Finalize this instance.</summary>
-        ~BoardStorage() { Dispose(false); }
-        #endregion
+
+        //#region IDisposable implementation with Finalizeer
+        ///// <summary>Clean up any resources being used, and suppress finalization.</summary>
+        //public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
+        ///// <summary>True if already Disposed.</summary>
+        //private bool _isDisposed = false;
+        ///// <summary>Clean up any resources being used.</summary>
+        ///// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        //protected virtual void Dispose(bool disposing) {
+        //    if (!_isDisposed) {
+        //        if (disposing) {
+        //            if (typeof(T).GetInterfaces().Contains(typeof(IDisposable))) {
+        //                ForEach(i => { var item = i as IDisposable; if(item != null) item.Dispose(); i = default(T);} );
+        //            }
+        //        }
+        //        _isDisposed = true;
+        //    }
+        //}
+        ///// <summary>Finalize this instance.</summary>
+        //~BoardStorage() { Dispose(false); }
+        //#endregion
     }
 }

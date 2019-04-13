@@ -27,22 +27,33 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexgridExampleCommon {
-    using MapHex  = IHex;
     using HexSize = System.Drawing.Size;
 
     /// <summary>TODO</summary>
-    public sealed class AStarBugMap : MapDisplayBlocked<MapHex> {
+    public sealed class AStarBugMap : MapDisplayBlocked<IHex> {
+        public async static Task<AStarBugMap> NewAsync() {
+            var map = new AStarBugMap();
+            await map.ResetLandmarksAsync();
+            return map;
+        }
+
+        public static AStarBugMap New() {
+            var map = new AStarBugMap();
+            map.ResetLandmarks();
+            return map;
+        }
+
          /// <summary>TODO</summary>
-         public AStarBugMap() : base(_sizeHexes, new HexSize(26,30), TerrainMap.InitializeHex) { }
+         private AStarBugMap() : base(_sizeHexes, new HexSize(26,30), TerrainMap.InitializeHex) { }
 
         /// <inheritdoc/>
-        public override short?  Heuristic(HexCoords source, HexCoords target)
-        => (short)(MinimumStepCost * source.Range(target));
+        public override int?   Heuristic(HexCoords source, HexCoords target)
+        => MinimumStepCost * source.Range(target);
 
         /// <inheritdoc/>
         public override int    ElevationBase   =>  0;
@@ -52,6 +63,12 @@ namespace PGNapoleonics.HexgridExampleCommon {
 
         /// <summary>TODO</summary>
         protected override int MinimumStepCost => 2;
+
+        /// <inheritdoc/>
+        public override int? Heuristic(IHex source, IHex target) => Heuristic(source.Coords, target.Coords);
+
+        /// <inheritdoc/>
+        public override int? Heuristic(int range) => range;
 
         #region static Board definition
         static IReadOnlyList<string> _board     = MapDefinitions.AStarBugMapDefinition;

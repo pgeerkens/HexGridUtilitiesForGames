@@ -44,8 +44,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
 
         /// <summary>TODO</summary>
         public static BoardStorage<T> New32x32<T>(HexSize sizeHexes, Func<HexCoords, T> factory)
-        => Extensions.InitializeDisposable( () =>
-            new BlockedBoardStorage32x32<T>(sizeHexes, factory, DefaultProcessorsToUse) );
+        =>  new BlockedBoardStorage32x32<T>(sizeHexes, factory, DefaultProcessorsToUse);
     }
 
     /// <summary>A <c>BoardStorage</c> implementation optimized for large maps by blocking 
@@ -58,6 +57,8 @@ namespace PGNapoleonics.HexUtilities.Storage {
         const int _blockSide     = 1 << _blockExponent;
         const int _blockMask     = _blockSide - 1;
 
+        /// <summary>TODO</summary>
+        protected override int BlockExponent => _blockExponent;
         /// <inheritdoc/>
         protected override int BlockMask => _blockMask;
         /// <inheritdoc/>
@@ -78,18 +79,19 @@ namespace PGNapoleonics.HexUtilities.Storage {
             var index = (y & _blockMask) * _blockSide  +  (x & _blockMask);
             var block = BackingStore[y >> _blockExponent][x >> _blockExponent];
         #endif
-    return block[index];
+        return block[index];
         }
 
-        /// <summary>Overwrites the value at <see cref="HexCoords"/> <paramref name="coords"/>.</summary>
-        /// <param name="coords">Grid location to be overwritten.</param>
-        /// <param name="value">The new value.</param>
-        /// <remarks>Use carefully - can interfere with iterators.</remarks>
-        internal override void SetItem(HexCoords coords, T value) {
-            var v = coords.User;
-            BackingStore [v.Y / BlockSide]
-                         [v.X / BlockSide]
-                         .SetItem((v.Y % BlockSide) * BlockSide + v.X % BlockSide, value);
+        /// <inheritdoc/>>
+        protected override void SetItemInner(int x, int y, T value) {
+        #if DIVIDE
+            var index = (y & _blockMask) * _blockSide  +  (x & _blockMask);
+            var block = BackingStore[y/_blockSide][x/_blockSide];
+        #else
+            var index = (y & _blockMask) * _blockSide  +  (x & _blockMask);
+            var block = BackingStore[y >> _blockExponent][x >> _blockExponent];
+        #endif
+            block.SetItem(index, value);
         }
     }
 }

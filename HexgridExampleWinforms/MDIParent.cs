@@ -52,7 +52,7 @@ namespace PGNapoleonics.HexgridExampleWinforms {
         [System.CodeDom.Compiler.GeneratedCode("","")]
         private void CreateDefaultChildren() {
             ShowChild(new HexgridBufferedPanelExample());
-            ShowChild(new HexgridPanelExample());
+//            ShowChild(new HexgridPanelExample());
         }
 
         [System.CodeDom.Compiler.GeneratedCode("","")]

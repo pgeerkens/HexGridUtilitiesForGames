@@ -6,7 +6,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using PGNapoleonics.HexUtilities.Common;
 using PGNapoleonics.HexUtilities.FastList;
 
@@ -25,33 +25,33 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
     /// <summary>TODO</summary>
     public interface IPathfinder {
-        /// <summary>Returns an <c>IDirectedPath</c> for the optimal path from 
-        /// <paramref name="source"/> to <paramref name="target"/>.</summary>
+        /// <summary>Returns an <c>IDirectedPath</c> for the optimal path from <paramref name="source"/> to <paramref name="target"/>.</summary>
+        /// <param name="board">An object satisfying the interface <c>INavigableBoardFwd</c>.</param>
         /// <param name="source">Coordinates for the <c>first</c> step on the desired path.</param>
         /// <param name="target">Coordinates for the <c>last</c> step on the desired path.</param>
         /// <returns>A <c>IDirectedPathCollection</c>  for the shortest path found, or null if no path was found.</returns>
-        Maybe<IDirectedPath> GetPath(HexCoords source, HexCoords target);
+        Maybe<IDirectedPath> GetPath(ILandmarkBoard board, IHex source, IHex target);
     }
 
     /// <summary>TODO</summary>
-    public interface ILandmark : IDisposable {
+    public interface ILandmark {
         /// <summary>Board coordinates for the landmark location.</summary>
         HexCoords Coords { get; }
 
         /// <summary>Returns the shortest-path directed-distance from the specified hex to the landmark.</summary>
-        short? DistanceFrom(HexCoords coords);
+        int  DistanceFrom(HexCoords coords);
         /// <summary>Returns the shortest-path directed-distance to the specified hex from the landmark.</summary>
-        short? DistanceTo  (HexCoords coords);
+        int  DistanceTo  (HexCoords coords);
     }
 
     /// <summary>TODO</summary>
-    public interface IDirectedLandmark : IDisposable {
+    public interface IDirectedLandmark {
         /// <summary>Returns the shortest-path directed-distance from the specified hex to the landmark.</summary>
-        short? Distance(HexCoords coords);
+        int  Distance(HexCoords coords);
     }
 
     /// <summary>An <see cref="IList"/> of defined <see cref="ILandmark"/> locations.</summary>
-    public interface ILandmarkCollection : IFastList<ILandmark>, IDisposable {
+    public interface ILandmarkCollection : IFastList<ILandmark> {
         /// <summary>Calculated distance from the specified landmark to the specified hex</summary>
         /// <param name="coords"></param>
         /// <param name="landmarkToShow"></param>
@@ -75,40 +75,55 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// is usually suffficient. Note that <c>heuristic</c> <b>must</b> be monotonic in order 
         /// for the algorithm to perform properly and reliably return an optimum path.
         /// </remarks>
-        short?  Heuristic(HexCoords source, HexCoords target);
+        int?  Heuristic(IHex source, IHex target);
 
         /// <summary>TODO</summary>
-        short? TryExitCost(HexCoords hexCoords, Hexside hexside);
+        int  TryExitCost(HexCoords hex, Hexside hexside);
         /// <summary>TODO</summary>
-        short? TryEntryCost(HexCoords hexCoords, Hexside hexside);
+        int  TryEntryCost(HexCoords hex, Hexside hexside);
     }
 
     /// <summary>Interface required to make use of A* Path Finding utility with Landmark heuristic.</summary>
     public interface ILandmarkBoard : INavigableBoard {
         /// <summary>TODO</summary>
         ILandmarks Landmarks { get; }
+
+        /// <summary>TODO</summary>
+        Maybe<IHex> Neighbour(IHex hex, Hexside hexside);
+
+        /// <summary>TODO</summary>
+        Task<Exception> ResetLandmarksAsync();
+
+        /// <summary>TODO</summary>
+        void ResetLandmarks();
     }
   
-    /// <summary>Interface of common data structures exposed to <see cref="AltPathfinder"/>s.</summary>
-    internal interface IPathHalves {
+    /// <summary>Interface of common data structures exposed by <see cref="BidirectionalAltPathfinder"/> to <see cref="AltPathfinder"/>s.</summary>
+    public interface IPathHalves<THex> where THex: class,IHex {
         /// <summary>Retrieves the cost of the shortest path found so far.</summary>
-        int             BestSoFar { get; }
+        int              BestSoFar { get; }
+
+         /// <summary>.</summary>
+       ILandmarkBoard<THex>  Board { get; }
 
         /// <summary>.</summary>
-        ILandmarkBoard  Board     { get; }
+        ISet<HexCoords>  ClosedSet { get; }
 
         /// <summary>.</summary>
-        HexCoords       Start     { get; }
+        THex             Source    { get; }
 
         /// <summary>.</summary>
-        HexCoords       Goal      { get; }
+        THex             Target    { get; }
 
-        /// <summary>The <see cref="ISet{HexCoords}"/> of all hexes expanded in finding the shortest-path.</summary>
-        ISet<HexCoords> ClosedSet { get; }
+        /// <summary>.</summary>
+        Maybe<IDirectedPath> PathFwd   { get; }
 
-        /// <summary>Updates the record of the shortest path found so far.</summary>
-        /// <param name="pathFwd">The half-path obtained by searching backward from the target (so stacked forwards).</param>
-        /// <param name="pathRev">The half-path obtained by searching forward from the source (so stacked backwards).</param>
-        void            SetBestSoFar(IDirectedPath pathRev, IDirectedPath pathFwd);
+        /// <summary>.</summary>
+        void             SetBestSoFar(IDirectedPath pathRev, IDirectedPath pathFwd);
+    }
+
+    /// <summary>.</summary>
+    /// <typeparam name="THex"></typeparam>
+    public interface ILandmarkBoard<THex>: ILandmarkBoard, INavigableBoard<THex> where THex: IHex {
     }
 }

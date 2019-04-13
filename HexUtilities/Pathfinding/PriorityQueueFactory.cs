@@ -13,11 +13,11 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority>
         => new DictionaryPriorityQueue<TPriority,TValue>();
 
-        /// <summary>TODO</summary>
+        /// <summary>Returns a new <see cref="HotPriorityQueue"/> with size 256.</summary>
         internal static IPriorityQueue<int,TValue> NewHotPriorityQueue<TValue>()
         => NewHotPriorityQueue<TValue>(256);
 
-        /// <summary>TODO</summary>
+        /// <summary>Returns a new <see cref="HotPriorityQueue"/> with size <paramref name="initialSize"/>.</summary>
         internal static IPriorityQueue<int,TValue> NewHotPriorityQueue<TValue>(int initialSize)
         => HotPriorityQueue.New<TValue>(0,initialSize);
     }

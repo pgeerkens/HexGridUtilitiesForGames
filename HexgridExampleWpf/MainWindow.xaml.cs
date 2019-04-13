@@ -85,9 +85,9 @@ namespace PGNapoleonics.HexgridExampleWpf {
                 _selectedMapIndex = value;
                 var mapName = ((ListBoxItem)comboBoxMapSelection.Items[_selectedMapIndex]).Name;
                 switch (mapName) {
-                    case "MazeMap":    HexgridPanel.SetModel(SetMapBoard(new MazeMap(),     Model.FovRadius)); break;
-                    case "TerrainMap": HexgridPanel.SetModel(SetMapBoard(new TerrainMap(),  Model.FovRadius)); break;
-                    case "A* Bug Map": HexgridPanel.SetModel(SetMapBoard(new AStarBugMap(), Model.FovRadius)); break;
+                    case "MazeMap":    HexgridPanel.SetModel(SetMapBoard(HexgridExampleCommon.MazeMap.New(),     Model.FovRadius)); break;
+                    case "TerrainMap": HexgridPanel.SetModel(SetMapBoard(HexgridExampleCommon.TerrainMap.New(),  Model.FovRadius)); break;
+                    case "A* Bug Map": HexgridPanel.SetModel(SetMapBoard(HexgridExampleCommon.AStarBugMap.New(), Model.FovRadius)); break;
                     default:           break;
                 }
                 sliderFovRadius.Value = Model.FovRadius;

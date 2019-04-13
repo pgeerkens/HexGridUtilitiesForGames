@@ -84,10 +84,9 @@ namespace PGNapoleonics.HexUtilities.Storage {
 
         /// <summary>TODO</summary>
         /// <remarks>Use carefully - can interfere with iterators.</remarks>
-        internal override void SetItem(HexCoords coords, T value) 
-        //=>  BackingStore[coords.User.Y].SetItem(coords.User.X, value);
-        =>  BackingStore[coords.User.Y].SetItem(coords.User.X, value);
-        
+        protected override void SetItemInner(int x,int y,T value) 
+        =>  BackingStore[y].SetItem(x, value);
+
         private IFastList<IFastListX<T>> BackingStore { get; }
     }
 }

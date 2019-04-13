@@ -13,7 +13,7 @@ using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <summary>TODO</summary>
-    public class HexsideCosts : ReadOnlyCollection<short?> {
+    public class HexsideCosts : ReadOnlyCollection<int?> {
         /// <summary>TODO</summary>
         public static HexsideCosts ExitCosts<THex>(BoardStorage<Maybe<THex>> boardHexes,HexCoords hexCoords)
         where THex : IHex
@@ -25,13 +25,13 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         => new HexsideCosts(hexside => DirectedCost(boardHexes,hexCoords.GetNeighbour(hexside),hexside.Reversed));
 
         /// <summary>TODO</summary>
-        public static short? DirectedCost<THex>(BoardStorage<Maybe<THex>> boardHexes,HexCoords hexCoords,Hexside hexside)
+        public static int? DirectedCost<THex>(BoardStorage<Maybe<THex>> boardHexes,HexCoords hexCoords,Hexside hexside)
         where THex : IHex
-        => boardHexes[hexCoords].Bind(hex => hex.TryStepCost(hexside).ToMaybe()).ToNullable();
+        => boardHexes[hexCoords].Bind(hex => hex.StepCost(hexside).ToMaybe()).ToNullable();
 
-        private HexsideCosts(Func<Hexside,short?> directedCostToExit) : base(Generator(directedCostToExit)) { }
+        private HexsideCosts(Func<Hexside,int?> directedCostToExit) : base(Generator(directedCostToExit)) { }
 
-        static List<short?> Generator(Func<Hexside,short?> directedCostToExit)
+        static List<int?> Generator(Func<Hexside,int?> directedCostToExit)
         => ( from hexsideExit in Hexside.HexsideList
              select directedCostToExit(hexsideExit)
            ).ToList();

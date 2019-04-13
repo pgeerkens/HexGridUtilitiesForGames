@@ -10,110 +10,113 @@ using PGNapoleonics.HexUtilities.FastList;
 using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
-  using HexSize = System.Drawing.Size;
+    using HexSize = System.Drawing.Size;
 
-  /// <summary>TODO</summary>
-  public interface ILandmarkPopulator {
     /// <summary>TODO</summary>
-    BoardStorage<short?> Fill();
-  }
+    /// <param name="here"></param>
+    /// <param name="hexside"></param>
+    /// <returns></returns>
+    public delegate int TryDirectedCost(HexCoords here, Hexside hexside);
 
-  /// <summary>The default implementation of <see cref="ILandmarkPopulator"/>.</summary>
-  internal sealed partial class LandmarkPopulator : LandmarkPopulatorFunctor {
-    public LandmarkPopulator(
-      HexCoords                            hex, 
-      HexSize                              mapSizeHexes, 
-      Func<IPriorityQueue<int, HexCoords>> queueFactory, 
-      TryDirectedCost                      tryDirectedStepCost
-    ) : base(hex, mapSizeHexes, queueFactory, tryDirectedStepCost) {
+    /// <summary>TODO</summary>
+    public interface ILandmarkPopulator {
+        /// <summary>TODO</summary>
+        BoardStorage<int> Fill();
     }
 
-    public override BoardStorage<short?> Fill() {
+    /// <summary>The default implementation of <see cref="ILandmarkPopulator"/>.</summary>
+    internal sealed partial class LandmarkPopulator : LandmarkPopulatorFunctor {
+        public LandmarkPopulator(
+            HexCoords                            hex, 
+            HexSize                              mapSizeHexes, 
+            Func<IPriorityQueue<int, HexCoords>> queueFactory, 
+            TryDirectedCost                      tryDirectedStepCost
+        ) : base(hex, mapSizeHexes, queueFactory, tryDirectedStepCost) { }
 
-      // Reduce field references by keeping all these on stack.
-      var queue = _queue;
-      var store = _store;
-      var tryDirectedStepCost = _tryDirectedStepCost;
+        public override BoardStorage<int> Fill() {
 
-      HexKeyValuePair<int,HexCoords> item;
-      while (queue.TryDequeue(out item)) {
-        var here = item.Value;
-        var key  = item.Key;
-        Tracing.FindPathDetail.Trace("Dequeue Path at {0} w/ cost={1,4}.", here, key);
+            // Reduce field references by keeping all these on stack.
+            var queue = _queue;
+            var store = _store;
+            var tryDirectedStepCost = _tryDirectedStepCost;
 
-        Hexside.ForEach( hexside => Action(queue,store,tryDirectedStepCost,here,key,hexside) );
-      }
-      return store;
+            while (queue.TryDequeue(out var item)) {
+                var here = item.Value;
+                var key  = item.Key;
+                Tracing.FindPathDetail.Trace("Dequeue Path at {0} w/ cost={1,4}.",here,key);
+
+                Hexside.ForEach(hexside => Action(queue,store,tryDirectedStepCost,here,key,hexside));
+            }
+            return store;
+        }
+
+        private void Action(
+            IPriorityQueue<int,HexCoords> queue, 
+            BoardStorage<int>    store,
+            TryDirectedCost       tryDirectedStepCost,
+            HexCoords here, int key, Hexside hexside
+        ) {
+            var neighbour = here.GetNeighbour(hexside);
+            var stepCost = tryDirectedStepCost(here, hexside);
+            if (stepCost > 0) {
+                Enqueue(key+stepCost,neighbour,_store);
+            }
+        }
     }
 
-    private void Action(
-      IPriorityQueue<int,HexCoords> queue, 
-      BoardStorage<short?>    store,
-      TryDirectedCost               tryDirectedStepCost,
-      HexCoords here, int key, Hexside hexside
-    ) {
-      var neighbour = here.GetNeighbour(hexside);
-      tryDirectedStepCost(here, hexside).IfHasValueDo( stepCost => {
-        store[neighbour].ElseDo(() => Enqueue((short)(key+stepCost),neighbour,store));
-      } );
+    /// <summary>The default implementation of <see cref="ILandmarkPopulator"/>.</summary>
+    internal partial class LandmarkPopulatorFunctor : FastIteratorFunctor<Hexside>, ILandmarkPopulator {
+        public LandmarkPopulatorFunctor(
+          HexCoords                            hexCoords, 
+          HexSize                              mapSizeHexes, 
+          Func<IPriorityQueue<int, HexCoords>> queueFactory, 
+          TryDirectedCost                      tryDirectedStepCost
+        ) {
+            Tracing.FindPathDetail.Trace("Find distances from {0}", hexCoords);
+
+            _queue               = queueFactory();
+            _store               = BlockedBoardStorage.New32x32(mapSizeHexes, c=>-1);
+            _tryDirectedStepCost = tryDirectedStepCost;
+
+            Enqueue(0,hexCoords,_store);
+        }
+
+        protected readonly IPriorityQueue<int,HexCoords> _queue;
+        protected readonly BoardStorage<int>             _store;
+        protected readonly TryDirectedCost               _tryDirectedStepCost;
+        private            HexCoords                     _here;
+        private            int                           _key;
+
+        public virtual BoardStorage<int> Fill() {
+
+            var queue = _queue; //!< Reduce field references by keeping on stack.
+
+            while (queue.TryDequeue(out var item)) {
+                _here = item.Value;
+                _key  = item.Key;
+                Tracing.FindPathDetail.Trace("Dequeue Path at {0} w/ cost={1,4}.", _here, _key);
+
+                Hexside.ForEach(this);
+            }
+            return _store;
+        }
+
+        public sealed override void Invoke(Hexside hexside) {
+            var stepCost = _tryDirectedStepCost(_here, hexside);
+            if (stepCost > 0) { InvokeInner(hexside, _here, _key+stepCost); }
+        }
+
+        private void InvokeInner(Hexside hexside, HexCoords here, int cost) {
+            var neighbour = here.GetNeighbour(hexside);
+            if (_store.MapSizeHexes.IsOnboard(neighbour)) {
+                if (_store[neighbour] > 0) { Enqueue(cost,neighbour,_store); }
+            }
+        }
+
+        protected void Enqueue(int cost, HexCoords neighbour, BoardStorage<int> store) {
+            Tracing.FindPathDetail.Trace("   Enqueue {0}: {1,4}", neighbour, cost);
+            store.SetItem(neighbour, cost);
+            _queue.Enqueue(cost, neighbour);
+        }
     }
-  }
-
-  /// <summary>The default implementation of <see cref="ILandmarkPopulator"/>.</summary>
-  internal partial class LandmarkPopulatorFunctor : FastIteratorFunctor<Hexside>, ILandmarkPopulator {
-    public LandmarkPopulatorFunctor(
-      HexCoords                            hexCoords, 
-      HexSize                              mapSizeHexes, 
-      Func<IPriorityQueue<int, HexCoords>> queueFactory, 
-      TryDirectedCost                      tryDirectedStepCost
-    ) {
-      Tracing.FindPathDetail.Trace("Find distances from {0}", hexCoords);
-
-      _queue               = queueFactory();
-      _store               = BlockedBoardStorage.New32x32(mapSizeHexes, c=>default(short?));
-      _tryDirectedStepCost = tryDirectedStepCost;
-
-      Enqueue(0,hexCoords,_store);
-    }
-
-    protected readonly IPriorityQueue<int,HexCoords> _queue;
-    protected readonly BoardStorage<short?>          _store;
-    protected readonly TryDirectedCost               _tryDirectedStepCost;
-    private            HexCoords                     _here;
-    private            short                         _key;
-
-    public virtual BoardStorage<short?> Fill() {
-      HexKeyValuePair<int,HexCoords> item;
-
-      var queue = _queue; //!< Reduce field references by keeping on stack.
-
-      while (queue.TryDequeue(out item)) {
-        _here = item.Value;
-        _key  = (short)item.Key;
-        Tracing.FindPathDetail.Trace("Dequeue Path at {0} w/ cost={1,4}.", _here, _key);
-
-        Hexside.ForEach(this);
-      }
-      return _store;
-    }
-
-    public sealed override void Invoke(Hexside hexside) {
-      var here = _here;
-      _tryDirectedStepCost(here, hexside).IfHasValueDo(stepCost => InvokeInner(hexside,here,(short)(_key+stepCost)) );
-    }
-
-    private void InvokeInner(Hexside hexside, HexCoords here, short cost) {
-      //!< Reduce field references by keeping these on stack.
-      var neighbour = here.GetNeighbour(hexside);
-      var store     = _store;
-      if (store.MapSizeHexes.IsOnboard(neighbour))
-        store[neighbour].ElseDo(() => Enqueue(cost,neighbour,store));
-    }
-
-    protected void Enqueue(short cost, HexCoords neighbour, BoardStorage<short?> store) {
-      Tracing.FindPathDetail.Trace("   Enqueue {0}: {1,4}", neighbour, cost);
-      store.SetItem(neighbour, cost);
-      _queue.Enqueue(cost, neighbour);
-    }
-  }
 }

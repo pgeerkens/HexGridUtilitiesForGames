@@ -30,24 +30,41 @@ using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexgridExampleCommon {
-    using MapHex = IHex;
     using HexSize = System.Drawing.Size;
 
     /// <summary>TODO</summary>
-    public sealed class EmptyBoard : MapDisplayBlocked<MapHex> {
-        public static EmptyBoard TheOne { get; } = new EmptyBoard();
+    public sealed class EmptyBoard : MapDisplayBlocked<IHex> {
+        public static EmptyBoard TheOne { get; } = New();
+
+        private static EmptyBoard NewAsync() {
+            var map = new EmptyBoard();
+            map.ResetLandmarksAsync();
+            return map;
+        }
+
+        private static EmptyBoard New() {
+            var map = new EmptyBoard();
+            map.ResetLandmarks();
+            return map;
+        }
 
         /// <summary>TODO</summary>
         private EmptyBoard() : base(new HexSize(1,1),new HexSize(26,30),c => new EmptyGridHex(c))
         => FovRadius = 20;
 
         /// <inheritdoc/>
-        public override int      ElevationBase     => 0;
+        public override int  ElevationBase     => 0;
 
         /// <inheritdoc/>
-        public override int      ElevationStep     => 10;
+        public override int  ElevationStep     => 10;
 
         /// <inheritdoc/>
-        public override short?   Heuristic(HexCoords source, HexCoords target) => source.Range(target);
+        public override int? Heuristic(HexCoords source, HexCoords target) => source.Range(target);
+
+        /// <inheritdoc/>
+        public override int? Heuristic(IHex source, IHex target) => Heuristic(source.Coords, target.Coords);
+
+        /// <inheritdoc/>
+        public override int? Heuristic(int range) => range;
     }
 }

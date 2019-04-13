@@ -140,10 +140,10 @@ namespace PGNapoleonics.HexUtilities {
         public HexPoint HexOrigin(HexSize gridSize) => HexOrigin(gridSize, User.X, User.Y); 
 
         /// <summary>Modified <i>Manhattan</i> distance of supplied coordinate from this one.</summary>
-        public short     Range(HexCoords coords) {
+        public int       Range(HexCoords coords) {
             var deltaX = coords.Canon.X - Canon.X;
             var deltaY = coords.Canon.Y - Canon.Y;
-            return (short) ( ( Math.Abs(deltaX) + Math.Abs(deltaY) + Math.Abs(deltaX-deltaY) ) / 2 );
+            return ( Math.Abs(deltaX) + Math.Abs(deltaY) + Math.Abs(deltaX-deltaY) ) / 2;
         }
 
         /// <summary>Culture-invariant string representation of this instance's value.</summary>

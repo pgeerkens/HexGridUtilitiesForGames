@@ -55,18 +55,18 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// <summary>TODO</summary>
         [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow",
                 MessageId = "2*range", Justification="No map is big enough to overflow,")]
-        public short? Heuristic(HexCoords here, HexCoords target) =>
-            MapSizeHexes.IsOnboard(target)  &&  MapSizeHexes.IsOnboard(here)
-                ? (short)(here.Range(target) * _minimumCost)
-                : default(short?);
+        public int? Heuristic(IHex here, IHex target) =>
+            MapSizeHexes.IsOnboard(target.Coords)  &&  MapSizeHexes.IsOnboard(here.Coords)
+                ? here.Range(target) * _minimumCost
+                : default;
 
         /// <summary>TODO</summary>
-        public short? TryExitCost(HexCoords hexCoords, Hexside hexside) =>
-            (from x in _exitCosts[hexCoords] from c in x[hexside].ToMaybe() select c).ToNullable();
+        public int TryExitCost(HexCoords hexCoords, Hexside hexside) =>
+            (from x in _exitCosts[hexCoords] select x[hexside]).ElseDefault() ?? -1;
 
         /// <summary>TODO</summary>
-        public short? TryEntryCost(HexCoords hexCoords, Hexside hexside) =>
-            (from x in _entryCosts[hexCoords] from c in x[hexside].ToMaybe() select c).ToNullable();
+        public int TryEntryCost(HexCoords hexCoords, Hexside hexside) =>
+            (from x in _entryCosts[hexCoords] select x[hexside]).ElseDefault() ?? -1;
 
         readonly StepCosts _entryCosts;
         readonly StepCosts _exitCosts;

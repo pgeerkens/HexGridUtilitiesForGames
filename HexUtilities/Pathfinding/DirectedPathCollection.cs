@@ -7,6 +7,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
+using PGNapoleonics.HexUtilities.Common;
+
 namespace PGNapoleonics.HexUtilities.Pathfinding {
     using IDirectedPath = IDirectedPathCollection;
 
@@ -14,15 +16,15 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [DebuggerDisplay("TotalCost={TotalCost} / TotalSteps={TotalSteps}")]
     internal sealed class DirectedPathCollection : IDirectedPath {
         /// <summary>Returns a DirectedPath composed by extending this DirectedPath by one hex.</summary>
-        public DirectedPathCollection(HexCoords start)
-        : this(null, new DirectedPathStepHex(start), 0) { }
+        public DirectedPathCollection(IHex start)
+        : this(null, new DirectedPathStepHex(start, Hexside.North), 0) { }
 
         /// <summary>Returns a DirectedPath composed by extending this DirectedPath by one hex.</summary>
-        public DirectedPathCollection(IDirectedPath pathSoFar, DirectedPathStepHex pathStep, int totalCost) {
+        public DirectedPathCollection(IDirectedPath pathSoFar, DirectedPathStepHex pathStep, int stepCost) {
             PathStep   = pathStep;
             PathSoFar  = pathSoFar;
-            TotalCost  = totalCost;
-            TotalSteps = pathSoFar==null ? 0 : pathSoFar.TotalSteps+1;
+            TotalCost  = (pathSoFar?.TotalCost ?? 0) + stepCost;
+            TotalSteps = (pathSoFar?.TotalSteps??-1) + 1;
         }
 
         /// <inheritdoc/>
@@ -41,14 +43,6 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         public int                  TotalSteps  { get; }
 
         /// <inheritdoc/>
-        public IDirectedPath AddStep(HexCoords coords, Hexside hexsideExit, int stepCost)
-        => AddStep(new DirectedPathStepHex(coords,hexsideExit),stepCost);
-        
-        /// <inheritdoc/>
-        public IDirectedPath AddStep(DirectedPathStepHex neighbour, int stepCost)
-        => new DirectedPathCollection(this,neighbour,TotalCost + stepCost);
-
-        /// <inheritdoc/>
         public override string ToString()
         => PathSoFar == null
             ? $"Hex: {PathStep.Coords} arrives with TotalCost={TotalCost}"
@@ -63,5 +57,64 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    /// <summary>.</summary>
+    internal static partial class PathExtensions {
+        /// <summary>Returns a new instance composed by extending this DirectedPath by one hex.</summary>
+        /// <param name="this"></param>
+        /// <param name="hex"></param>
+        /// <param name="hexsideExit"></param>
+        /// <param name="stepCost"></param>
+        public static IDirectedPath AddStep(this IDirectedPath @this, IHex hex, Hexside hexsideExit, int stepCost)
+        => @this.AddStep(new DirectedPathStepHex(hex,hexsideExit),stepCost);
+
+        /// <summary>Returns a new instance composed by extending this DirectedPath by one hex.</summary>
+        /// <param name="this"></param>
+        /// <param name="stepHex"></param>
+        /// <param name="stepCost"></param>
+        public static IDirectedPath AddStep(this IDirectedPath @this, DirectedPathStepHex stepHex, int stepCost)
+        => new DirectedPathCollection(@this,stepHex,stepCost);
+    }
+
+    /// <summary>.</summary>
+    internal class Path<THex>: IPath<THex> where THex: IHex {
+        /// <summary>.</summary>
+        public Path(Maybe<IDirectedPath> path, THex source, THex target, ISet<HexCoords> closedSet, ISet<HexCoords> openSet) {
+            DirectedPath = path;
+            Source       = source;
+            Target       = target;
+            ClosedSet    = closedSet;
+            OpenSet      = openSet;
+        }
+
+        /// <inheritdoc/>
+        public Maybe<IDirectedPath> DirectedPath { get; }
+
+        /// <inheritdoc/>
+        public THex Source { get; }
+        /// <inheritdoc/>
+        public THex Target { get; }
+
+        /// <inheritdoc/>
+        public ISet<HexCoords> OpenSet   { get; }
+        /// <inheritdoc/>
+        public ISet<HexCoords> ClosedSet { get; }
+    }
+
+    /// <summary>.</summary>
+    public interface IPath<THex>where THex: IHex {
+        /// <summary>.</summary>
+        Maybe<IDirectedPath> DirectedPath { get; }
+
+        /// <summary>.</summary>
+        THex Source { get; }
+        /// <summary>.</summary>
+        THex Target { get; }
+
+        /// <summary>.</summary>
+        ISet<HexCoords> OpenSet   { get; }
+        /// <summary>.</summary>
+        ISet<HexCoords> ClosedSet { get; }
     }
 }

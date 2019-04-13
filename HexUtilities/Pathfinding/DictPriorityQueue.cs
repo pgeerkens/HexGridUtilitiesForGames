@@ -19,7 +19,7 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
     [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
         Justification="The suffix has an unambiguous meaning in the application domain.")]
     [DebuggerDisplay("Count={Count}")]
-    internal sealed class DictionaryPriorityQueue<TPriority,TValue> : IPriorityQueue<TPriority,TValue>
+    public sealed class DictionaryPriorityQueue<TPriority,TValue> : IPriorityQueue<TPriority,TValue>
     where TPriority : struct, IEquatable<TPriority>, IComparable<TPriority> {
         IDictionary<TPriority,Queue<TValue>> _dictionary = new SortedDictionary<TPriority,Queue<TValue>>();
 

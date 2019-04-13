@@ -35,9 +35,9 @@ namespace PGNapoleonics.HexgridExampleCommon {
     public static class MapList {
         public static IReadOnlyList<Map> Maps { get; } = new ReadOnlyCollection<Map>(
             new Map[] {
-                new Map("Terrain Map", () => new TerrainMap()),
-                new Map("Maze Map",    () => new MazeMap()),
-                new Map("A* Bug Map",  () => new AStarBugMap())
+                new Map("Terrain Map", () => TerrainMap.New()),
+                new Map("Maze Map",    () => MazeMap.New()),
+                new Map("A* Bug Map",  () => AStarBugMap.New())
             } );
     }
 }

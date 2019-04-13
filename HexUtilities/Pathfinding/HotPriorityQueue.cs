@@ -11,40 +11,40 @@ using System.Linq;
 
 namespace PGNapoleonics.HexUtilities.Pathfinding {
     /// <summary>Factory class for <see cref="HotPriorityQueue{TValue}"/></summary>
-    [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
-            Justification="The suffix 'PriorityQueue' has an unambiguous meaning in the application domain.")]
+    [SuppressMessage("Microsoft.Naming","CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
+            Justification = "The suffix 'PriorityQueue' has an unambiguous meaning in the application domain.")]
     public static class HotPriorityQueue {
-        private static IDictionary<int, IHotPriorityQueueList<int, TValue>> _factory<TValue>()
-        => new SortedList<int, IHotPriorityQueueList<int, TValue>>();
+        private static IDictionary<int,IHotPriorityQueueList<int,TValue>> _factory<TValue>()
+        => new SortedList<int,IHotPriorityQueueList<int,TValue>>();
 
         /// <summary>Constructs a new instance with a preferenceWidth of 0 bits and initialSize of 32 elements.</summary>
         /// <remarks>PreferenceWidth is the number of low-order bits on the key that are for 
         /// alignment, the remainder being the actual left-shifted distance estimate.</remarks>
-        public static IPriorityQueue<int, TValue> New<TValue>()
-        => New<TValue>(0, 32);
+        public static IPriorityQueue<int,TValue> New<TValue>()
+        => New<TValue>(0,32);
 
         /// <summary>returns a new instance with a preferenceWidth of 0 bits and initialSize as specified.</summary>
         /// <remarks></remarks>
-        /// <param name="initialSize">Maximum size of the Heap-On-Top; initial Pool size will be set
+        /// <param name="initialSize">Maximum size of the _heap-On-Top; initial Pool size will be set
         /// at 7/8 of this value. Powers of 2 work best for a value; the value must be at least 32.</param>
-        public static IPriorityQueue<int, TValue> New<TValue>(int initialSize)
-        => New<TValue>(0, initialSize);
+        public static IPriorityQueue<int,TValue> New<TValue>(int initialSize)
+        => New<TValue>(0,initialSize);
 
         /// <summary>returns a new instance with a preferenceWidth of shift bits.</summary>
         /// <remarks></remarks>
         /// <param name="preferenceWidth">the number of low-order bits on 
         /// the key that are for alignment, the remainder being the actual left-shifted distance 
         /// estimate.</param>
-        /// <param name="initialSize">Maximum size of the Heap-On-Top; initial Pool size will be 
+        /// <param name="initialSize">Maximum size of the _heap-On-Top; initial Pool size will be 
         /// set at 7/8 of this value. Powers of 2 work best for a value.</param>
-        public static IPriorityQueue<int, TValue> New<TValue>(int preferenceWidth, int initialSize)
-        => New(preferenceWidth, initialSize, _factory<TValue>);
+        public static IPriorityQueue<int,TValue> New<TValue>(int preferenceWidth,int initialSize)
+        => New(preferenceWidth,initialSize,_factory<TValue>);
 
         /// <summary>returns a new instance with a preferenceWidth of shift bits.</summary>
         /// <param name="preferenceWidth">the number of low-order bits on 
         /// the key that are for alignment, the remainder being the actual left-shifted distance 
         /// estimate.</param>
-        /// <param name="initialSize">Maximum size of the Heap-On-Top; initial Pool size will be set
+        /// <param name="initialSize">Maximum size of the _heap-On-Top; initial Pool size will be set
         /// at 7/8 of this value. Powers of 2 work best for a value; the value must be at least 32.</param>
         /// <param name="factory"></param>
         /// <remarks>
@@ -52,13 +52,13 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         ///   - () => new SortedList{int, IHotPriorityQueueList{int,TValue}}()
         ///   - () => new SortedDictionary{int, IHotPriorityQueueList{int,TValue}}()
         /// </remarks>
-        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        public static IPriorityQueue<int, TValue> New<TValue>(int preferenceWidth, int initialSize,
-            Func<IDictionary<int, IHotPriorityQueueList<int, TValue>>> factory)
-        => new HotPriorityQueue<TValue>(preferenceWidth, initialSize, factory);
+        [SuppressMessage("Microsoft.Design","CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        public static IPriorityQueue<int,TValue> New<TValue>(int preferenceWidth,int initialSize,
+            Func<IDictionary<int,IHotPriorityQueueList<int,TValue>>> factory)
+        => new HotPriorityQueue<TValue>(preferenceWidth,initialSize,factory);
     }
 
-    /// <summary>Heap-On-Top (HOT) Priority Queue implementation with a key of type <c>int</c>.</summary>
+    /// <summary>_heap-On-Top (HOT) Priority _heap implementation with a key of type <c>int</c>.</summary>
     /// <typeparam name="TValue">Type of the queue-item value.</typeparam>
     /// <remarks>
     /// 
@@ -73,24 +73,53 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// <param name="preferenceWidth">the number of low-order bits on 
         /// the key that are for alignment, the remainder being the actual left-shifted distance 
         /// estimate.</param>
-        /// <param name="initialSize">Maximum size of the Heap-On-Top; initial Pool size will be 
+        /// <param name="initialSize">Maximum size of the _heap-On-Top; initial Pool size will be 
         /// set at 7/8 of this value. Powers of 2 work best for a value.</param>
         /// <param name="factory"></param>
         public HotPriorityQueue(int preferenceWidth, int initialSize,
             Func<IDictionary<int, IHotPriorityQueueList<int, TValue>>> factory
         ) {
-            PoolSize        = initialSize * 7 / 8;
+            PoolSize         = initialSize * 7 / 8;
+            _baseIndex       = 0;
             PreferenceWidth = preferenceWidth; 
-            Lists           = factory();
-            _baseIndex      = 0;
-            _queue          = new MinListHeap<int,TValue>(initialSize);
+            _heap           = new MinListHeap<int,TValue>(initialSize);
+            _lists           = factory();
         }
 
-        /// <summary>Returns whether any elements exist in the heap.</summary>
-        public bool Any => _queue.Count > 0  ||  Lists.Count > 0;
+        ///// <summary>Constructs a new instance with a preferenceWidth of 0 bits.</summary>
+        ///// <remarks>PreferenceWidth is the number of low-order bits on the key that are for 
+        ///// alignment, the remainder being the actual left-shifted distance estimate.</remarks>
+        //public HotPriorityQueue() : this(0) {}
+        ///// <summary>returns a new instance with a preferenceWidth of shift bits.</summary>
+        ///// <remarks></remarks>
+        ///// <paramref name="preferenceWidth">the number of low-order bits on 
+        ///// the key that are for alignment, the remainder being the actual left-shifted distance 
+        ///// estimate.</paramref>
+        //public HotPriorityQueue(int preferenceWidth) : this(preferenceWidth, 2048) {}
+        ///// <summary>returns a new instance with a preferenceWidth of shift bits.</summary>
+        ///// <remarks></remarks>
+        ///// <param name="preferenceWidth">the number of low-order bits on 
+        ///// the key that are for alignment, the remainder being the actual left-shifted distance 
+        ///// estimate.</param>
+        ///// <param name="initialSize">Maximum size of the _heap-On-Top; initial Pool size will be 
+        ///// set at 7/8 of this value. Powers of 2 work best for a value.</param>
+        //public HotPriorityQueue(int preferenceWidth, int initialSize) { 
+        //    PoolSize         = initialSize >> 3 * 7;
+        //    _baseIndex       = 0;
+        //    PreferenceWidth = preferenceWidth; 
+        //    _heap           = new HotPriorityQueueList<int,TValue>(initialSize).PriorityQueue;
+        //#if UseSortedDictionary
+        //    _lists = new SortedDictionary<int, HotPriorityQueueList<int, TValue>>();
+        //#else
+        //    _lists = new SortedList<int, HotPriorityQueueList<int,TValue>>();
+        //#endif
+        //}
 
-        /// <summary>Returns the number of elements in the heap.</summary>
-        public int Count => _queue.Count;
+        /// <summary>Returns whether any elements exist in the heap.</summary>
+        public bool Any => _heap.Count > 0  ||  _lists.Count > 0;
+
+        /// <summary>Returns the number of elements in the (on-top) heap.</summary>
+        public int Count => _heap.Count;
 
         /// <summary>The number of elements which are handled by a straight HeapPriorityQueue.</summary>
         /// <remarks>
@@ -99,31 +128,29 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         /// </remarks>
         public int  PoolSize { get; }
 
-        IDictionary<int,IHotPriorityQueueList<int,TValue>> Lists { get; }
+        /// <summary>.</summary>
+        public int  PreferenceWidth { get; }
 
-        int                        PreferenceWidth { get; }
-
-        int                        _baseIndex;
-        IPriorityQueue<int,TValue> _queue;
-
-        /// <summary>Returns whether any elements exist in the heap.</summary>
+        /// <inheritdoc/>
         bool IPriorityQueue<int,TValue>.Any() => Any;
 
         /// <inheritdoc/>
-        public void Enqueue(int priority, TValue value) => Enqueue(HexKeyValuePair.New(priority,value));
+        public void Enqueue(int priority,TValue value)
+        => Enqueue(new HexKeyValuePair<int,TValue>(priority,value));
 
         /// <inheritdoc/>
         public void Enqueue(HexKeyValuePair<int,TValue> item) {
             var index = item.Key >> PreferenceWidth;
             if (index <= _baseIndex) {
-                _queue.Enqueue(item);
-            } else if (Lists.Count == 0  &&  _queue.Count < PoolSize) {
+                _heap.Enqueue(item);
+            } else if (_lists.Count == 0  &&  _heap.Count < PoolSize) {
                 _baseIndex = index;
-                _queue.Enqueue(item);
+                _heap.Enqueue(item);
             } else {
-                if(!Lists.TryGetValue(index, out var list)) {
-                    list = new HotPriorityQueueList<int, TValue>();
-                    Lists.Add(index, list);
+                //HotPriorityQueueList<int,TValue> list;
+                if( ! _lists.TryGetValue(index, out var list) ) {
+                  list = new HotPriorityQueueList<int,TValue>();
+                  _lists.Add(index, list);
                 }
                 list.Add(item);
             }
@@ -131,24 +158,29 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
 
         /// <inheritdoc/>
         public bool TryDequeue(out HexKeyValuePair<int,TValue> result) {
-            if (_queue.TryDequeue(out result)) return true;
-            else if (Lists.Count > 0)          return (_queue = GetNextQueue()).TryDequeue(out result);
+            if (_heap.TryDequeue(out result)) return true;
+            else if (_lists.Count > 0)         return (_heap = GetNextQueue()).TryDequeue(out result);
             else                               return false;
         }
 
         /// <inheritdoc/>
         public bool TryPeek(out HexKeyValuePair<int,TValue> result) {
-            if (_queue.TryPeek(out result)) return true;
-            else if (Lists.Count > 0)       return (_queue = GetNextQueue()).TryPeek(out result);
+            if (_heap.TryPeek(out result)) return true;
+            else if (_lists.Count > 0)      return (_heap = GetNextQueue()).TryPeek(out result);
             else                            return false;
         }
 
         /// <summary>TODO</summary>
         private IPriorityQueue<int,TValue> GetNextQueue() {
-            var list   = Lists.First();
-            Lists.Remove(list.Key);
+            var list   = _lists.First();
+            _lists.Remove(list.Key);
             _baseIndex = list.Key;
+
             return new MinListHeap<int,TValue>(list.Value);
         }
+
+        int _baseIndex;
+        IPriorityQueue<int,TValue> _heap { get; set; }
+        IDictionary<int,IHotPriorityQueueList<int,TValue>> _lists { get; }
     }
 }

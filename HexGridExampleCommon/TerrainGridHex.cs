@@ -39,7 +39,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
         /// <param name="terrainType"></param>
         /// <param name="stepCost"></param>
         public static TerrainGridHex NewPassable(HexCoords coords, int elevationLevel,
-                                            int heightTerrain, char terrainType, short stepCost)
+                                            int heightTerrain, char terrainType, int stepCost)
         => new TerrainGridHex(coords, elevationLevel, heightTerrain, terrainType, stepCost);
 
         /// <summary>Returns a new impassable <see cref="TerrainGridHex"/>.</summary>
@@ -58,7 +58,7 @@ namespace PGNapoleonics.HexgridExampleCommon {
         /// <param name="terrainType">Type of the terrain in this hex.</param>
         /// <param name="stepCost">Cost to enter this hex.</param>
         private TerrainGridHex(HexCoords coords, int elevationLevel, int heightTerrain,
-                        char terrainType, short? stepCost)
+                        char terrainType, int? stepCost)
         : base(coords,elevationLevel) {
             HeightTerrain = heightTerrain;
             TerrainType   = terrainType;
@@ -69,9 +69,18 @@ namespace PGNapoleonics.HexgridExampleCommon {
         public  override int   HeightTerrain { get; }
 
         ///  <inheritdoc/>
+        public override bool   IsPassable => _stepCost != null;
+
+        ///  <inheritdoc/>
         public override char   TerrainType   { get; }
    
         ///  <inheritdoc/>
-        public override short? TryStepCost(Hexside direction) => _stepCost; readonly short? _stepCost;
+        public override int    EntryCost(Hexside hexsideExit) => -1;
+
+        ///  <inheritdoc/>
+        public override int    ExitCost(Hexside hexsideExit) => -1;
+
+        ///  <inheritdoc/>
+        public override int?   StepCost(Hexside direction) => _stepCost; readonly int? _stepCost;
     }
 }

@@ -27,22 +27,33 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using PGNapoleonics.HexUtilities;
 using PGNapoleonics.HexUtilities.Storage;
 
 namespace PGNapoleonics.HexgridExampleCommon {
-    using MapHex  = IHex;
     using HexSize = System.Drawing.Size;
 
     /// <summary>Example of <see cref="HexUtilities"/> usage to implement a maze map.</summary>
-    public sealed class MazeMap : MapDisplayBlocked<MapHex> {
+    public sealed class MazeMap : MapDisplayBlocked<IHex> {
+        public async static Task<MazeMap> NewAsync() {
+            var map = new MazeMap();
+            await map.ResetLandmarksAsync();
+            return map;
+        }
+
+        public static MazeMap New() {
+            var map = new MazeMap();
+            map.ResetLandmarks();
+            return map;
+        }
+
         /// <summary>TODO</summary>
-        public MazeMap() : base(_sizeHexes, new HexSize(26,30), InitializeHex) {}
+        private MazeMap() : base(_sizeHexes, new HexSize(26,30), InitializeHex) {}
 
         /// <inheritdoc/>
-        public override short?  Heuristic(HexCoords source, HexCoords target)
-        => (short)(MinimumStepCost * source.Range(target));
+        public override int?   Heuristic(HexCoords source, HexCoords target)
+        => MinimumStepCost * source.Range(target);
 
         /// <inheritdoc/>
         public override int    ElevationBase   =>  0;
@@ -65,5 +76,11 @@ namespace PGNapoleonics.HexgridExampleCommon {
                 default:  return TerrainGridHex.NewImpassable (coords,1,10, value);    // Wall
             }
         }
+
+        /// <inheritdoc/>
+        public override int? Heuristic(IHex source, IHex target) => Heuristic(source.Coords, target.Coords);
+
+        /// <inheritdoc/>
+        public override int? Heuristic(int range) => range;
     }
 }

@@ -33,12 +33,11 @@ using PGNapoleonics.HexUtilities.Storage;
 namespace PGNapoleonics.HexUtilities.Pathfinding {
     using HexSize = System.Drawing.Size;
 
-    internal sealed partial class DirectedLandmark : IDirectedLandmark, IDisposable {
+    internal sealed partial class DirectedLandmark : IDirectedLandmark {
         public static DirectedLandmark New(HexCoords hexCoords,HexSize mapSizeHexes,
             Func<IPriorityQueue<int,HexCoords>> queueFactory,
             TryDirectedCost tryDirectedCosts
-        ) => Extensions.InitializeDisposable(() =>
-                new DirectedLandmark(hexCoords,mapSizeHexes,queueFactory,tryDirectedCosts));
+        ) =>  new DirectedLandmark(hexCoords,mapSizeHexes,queueFactory,tryDirectedCosts);
 
         /// <summary>Populates and returns a new landmark at the specified board coordinates.</summary>
         /// <param name="hexCoords"><see cref="HexCoords"/> for the landmark to be created.</param>
@@ -55,27 +54,8 @@ namespace PGNapoleonics.HexUtilities.Pathfinding {
         ///// <summary>Board coordinates for the landmark location.</summary>
         //public  IHex      Hex         { get {return _hex;} } readonly IHex _hex;
         /// <inheritdoc/>
-        public short? Distance(HexCoords coords) => _backingStore[coords];
+        public int Distance(HexCoords coords) => _backingStore[coords];
 
-        internal readonly BoardStorage<short?>     _backingStore;
-
-        #region IDisposable implementation w/o finalizer; as no unmanageed resources used by sealed class.
-        /// <summary>Clean up any resources being used.</summary>
-        public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
-
-        /// <summary>True if already Disposed.</summary>
-        private bool _isDisposed = false;
-
-        /// <summary>Clean up any resources being used.</summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        private void Dispose(bool disposing) {
-            if (!_isDisposed) {
-                if (disposing) {
-                    _backingStore?.Dispose();
-                }
-                _isDisposed = true;
-            }
-        }
-        #endregion
+        internal readonly BoardStorage<int>     _backingStore;
     }
 }

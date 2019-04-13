@@ -213,6 +213,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Pathfinding\INavigableBoard.cs" />
+    <Compile Include="Pathfinding\PathTracingExtensions.cs" />
     <Compile Include="Storage\HexBoardExtensions.cs" />
     <Compile Include="HexPickingExtensions.cs" />
     <Compile Include="IHexgridExtensions.cs" />

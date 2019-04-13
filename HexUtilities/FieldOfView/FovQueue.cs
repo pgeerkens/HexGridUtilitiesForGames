@@ -51,7 +51,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     public new FovCone Dequeue() {
       if ( base.Count > 0 ) { return base.Dequeue(); }
       if (Pending.HasValue) { var cache = Pending.Value; Pending = null; return cache; }
-      throw new InvalidOperationException("Queue empty.");
+      throw new InvalidOperationException("_heap empty.");
     }
 
     /// <summary>Adds a new item to the queue.</summary>
@@ -99,7 +99,7 @@ namespace PGNapoleonics.HexUtilities.FieldOfView {
     //public new FovCone Peek() {
     //  if ( base.Count > 0 ) { return base.Peek(); }
     //  if (Pending.HasValue) { return Pending.Value; }
-    //  throw new InvalidOperationException("Queue empty.");
+    //  throw new InvalidOperationException("_heap empty.");
     //}
 
     ///// <inheritdoc/>

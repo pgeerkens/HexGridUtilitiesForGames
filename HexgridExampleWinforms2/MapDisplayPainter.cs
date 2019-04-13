@@ -44,7 +44,7 @@ namespace PGNapoleonics.HexgridExampleWinforms2 {
         /// <remarks>For each visible hex: perform <c>paintAction</c> and then draw its hexgrid outline.</remarks>
         public static void PaintMap<THex>(this MapDisplay<THex> @this, DrawingContext dc,
                 bool showHexgrid, Hexes boardHexes, ILandmarks landmarks)
-        where THex:IHex {
+        where THex:class,IHex {
             ;
         }
 
@@ -53,7 +53,7 @@ namespace PGNapoleonics.HexgridExampleWinforms2 {
         /// <param name="graphics">Graphics object for the canvas being painted.</param>
         public static void PaintHighlight<THex>(this MapDisplay<THex> @this, DrawingContext dc,
                 bool showRangeLine)
-        where THex:IHex {
+        where THex:class,IHex {
             ;
         }
 
@@ -62,7 +62,7 @@ namespace PGNapoleonics.HexgridExampleWinforms2 {
         /// <param name="this">Type: MapDisplay{THex} - The map to be painted.</param>
         /// <param name="graphics">Type: Graphics - Object representing the canvas being painted.</param>
         public static void PaintUnits<THex>(this MapDisplay<THex> @this, DrawingContext dc)
-        where THex:IHex {
+        where THex:class,IHex {
             ;
         }
     }

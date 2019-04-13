@@ -26,6 +26,7 @@
 //     OTHER DEALINGS IN THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////////////
 #endregion
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 using PGNapoleonics.HexUtilities.Common;
@@ -47,8 +48,8 @@ namespace PGNapoleonics.HexUtilities.Storage {
 
     /// <summary>.</summary>
     /// <typeparam name="THex"></typeparam>
-    public abstract class MapDisplayFlat<THex> : MapDisplay<THex>
-    where THex:IHex {
+    public abstract class MapDisplayFlat<THex> : MapDisplay<THex>, IDisposable
+    where THex:class,IHex {
         /// <summary>Creates a new instance of the MapDisplay class.</summary>
         protected MapDisplayFlat(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex)
         : base(sizeHexes, gridSize, initializeHex, DefaultLandmarks(sizeHexes),
@@ -58,7 +59,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
     /// <summary>.</summary>
     /// <typeparam name="THex"></typeparam>
     public abstract class MapDisplayBlocked<THex> : MapDisplay<THex>
-    where THex:IHex {
+    where THex:class,IHex {
         /// <summary>Creates a new instance of the MapDisplay class.</summary>
         protected MapDisplayBlocked(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex)
         : base(sizeHexes, gridSize, initializeHex, DefaultLandmarks(sizeHexes),
@@ -68,7 +69,7 @@ namespace PGNapoleonics.HexUtilities.Storage {
     /// <summary>Abstract class representing the basic game board.</summary>
     /// <typeparam name="THex">Type of the hex for which a game board is desired.</typeparam>
     public abstract class MapDisplay<THex> : HexBoard<THex>, IMapDisplayWinForms<THex>, IFovBoard
-    where THex:IHex {
+    where THex: class,IHex {
 
         /// <summary>TODO</summary>
         protected delegate THex InitializeHex(HexCoords coords);
@@ -94,8 +95,6 @@ namespace PGNapoleonics.HexUtilities.Storage {
         protected MapDisplay(HexSize sizeHexes, HexSize gridSize, InitializeHex initializeHex,
                 IFastList<HexCoords> landmarkCoords, BoardStorage<Maybe<THex>> storage)
         : base(sizeHexes, gridSize, storage) {
-            ResetLandmarksAsync(landmarkCoords);
-
             GoalHex         =
             HotspotHex      =
             StartHex        = HexCoords.EmptyUser;
@@ -106,7 +105,12 @@ namespace PGNapoleonics.HexUtilities.Storage {
             ShowPathArrow   = true;
             HexgridPath     = Extensions.InitializeDisposable(() =>
                      new GraphicsPath(HexgridPathPoints(gridSize), _hexgridPathPointTypes));
+
+            LandmarkCoords  = landmarkCoords;
         }
+
+        /// <inheritdoc/>
+        protected override IFastList<HexCoords> LandmarkCoords { get; }
 
         #region Properties
         /// <summary>Gets or sets the Field-of-View for the current <see cref="HotspotHex"/>, as an <see cref="IFov"/> object.</summary>
@@ -161,10 +165,12 @@ namespace PGNapoleonics.HexUtilities.Storage {
         /// <summary>TODO</summary>
         public void PathSet()
         => _path = this[StartHex].Bind(source =>
-                   this[GoalHex].Bind(target => source.Range(target) <= RangeCutoff
-                        ? new StandardPathfinder(this).GetPath(source,target)
-                        : new BidirectionalAltPathfinder(this).GetPath(source,target)
-                   ));
+                   this[GoalHex].Bind(target => {
+                       if(! source.IsPassable || ! target.IsPassable) return null;
+                       return source.Range(target) <= RangeCutoff
+                            ? this.GetPathStandardAStar(source, target).DirectedPath
+                            : this.GetPathBiDiAlt(source,target).DirectedPath;
+                   } ));
 
         /// <summary>TODO</summary>
         public void PathClear() => _path = Maybe<IDirectedPath>.NoValue();
@@ -181,8 +187,8 @@ namespace PGNapoleonics.HexUtilities.Storage {
 
         /// <inheritdoc/>
         [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "2*range")]
-        public override short? Heuristic(HexCoords source, HexCoords target)
-        => (short)(2 * source.Range(target));
+        public override int? Heuristic(HexCoords source, HexCoords target)
+        => 2 * source.Range(target);
 
         /// <summary>TODO</summary>
         private void Host_FovRadiusChanged(object sender, Int32ValueEventArgs e)
@@ -198,18 +204,18 @@ namespace PGNapoleonics.HexUtilities.Storage {
         => BoardHexes[coords];
 
         #region Derived IDisposable implementation
+        public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
         /// <summary>True if already Disposed.</summary>
         private bool _isDisposed = false;
         /// <summary>Clean up any resources being used.</summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing) {
+        protected virtual void Dispose(bool disposing) {
             if (!_isDisposed) {
                 if (disposing) {
                     HexgridPath?.Dispose();
                 }
                 _isDisposed = true;
             }
-            base.Dispose(disposing);
         }
         #endregion
     }

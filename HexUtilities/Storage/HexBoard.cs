@@ -38,15 +38,15 @@ using PGNapoleonics.HexUtilities.Pathfinding;
 
 namespace PGNapoleonics.HexUtilities.Storage {
     using HexPoint = System.Drawing.Point;
-    using HexSize  = System.Drawing.Size;
+    using HexSize = System.Drawing.Size;
 
-    using ILandmarks    = ILandmarkCollection;
+    using ILandmarks = ILandmarkCollection;
     using IBoardStorage = IBoardStorage<Maybe<HexsideCosts>>;
 
     /// <summary>Abstract implementation of a hexgrid map-board.</summary>
     /// <typeparam name="THex">TODO</typeparam>
     /// <remarks>No Finalizer is implemented as the class possesses no unmanaged resources.</remarks>
-    public abstract class HexBoard<THex> : ILandmarkBoard, IFovBoard, IDisposable
+    public abstract class HexBoard<THex> : ILandmarkBoard, ILandmarkBoard<THex>, IFovBoard
     where THex:IHex {
         /// <summary>By default, landmark all four corners and midpoints of all 4 sides.</summary>
         /// <remarks>Pre-processing time on start-up can be reduced by decreasing the number of landmarks,
@@ -91,24 +91,35 @@ namespace PGNapoleonics.HexUtilities.Storage {
                                     hexCoords => HexsideCosts.ExitCosts(boardHexes,hexCoords), 1);
         }
 
-        /// <summary>TODO</summary>
-        /// <param name="landmarkCoords"><see cref="IFastList{HexCoords}"/> of the hexes to be used as Path-Finding landmarks.</param>
-        /// <returns></returns>
-        protected async   Task<bool> ResetLandmarksAsync(IFastList<HexCoords> landmarkCoords)
-        => await Task.Run(() => ResetLandmarks(landmarkCoords));
+        /// <inheritdoc/>
+        public async Task<Exception> ResetLandmarksAsync()
+        => await Task.Run(() => ResetLandmarks(LandmarkCoords));
+
+        /// <inheritdoc/>
+        public void  ResetLandmarks() => ResetLandmarks(LandmarkCoords);
 
         /// <summary>TODO</summary>
         /// <param name="landmarkCoords"><see cref="IFastList{HexCoords}"/> of the hexes to be used as Path-Finding landmarks.</param>
         /// <returns></returns>
-        protected         bool       ResetLandmarks(IFastList<HexCoords> landmarkCoords) { 
-            Landmarks = LandmarkCollection.New(this, landmarkCoords);
-            OnLandmarksReady(new EventArgs<ILandmarks>(Landmarks));
-            return true;
+        protected Exception ResetLandmarks(IFastList<HexCoords> landmarkCoords) {
+            try {
+                #if true
+                Landmarks = LandmarkCollection.New2(this, landmarkCoords);
+                #else
+                Landmarks = LandmarkCollection.New(this, landmarkCoords);
+                #endif
+                OnLandmarksReady(new EventArgs<ILandmarks>(Landmarks));
+                return null;
+            } 
+            catch (Exception ex) { return ex; }
         }
 
         /// <inheritdoc/>
         protected virtual void OnLandmarksReady(EventArgs<ILandmarks> e) => LandmarksReady?.Invoke(this,e);
         #endregion
+
+        /// <inheritdoc/>
+        protected virtual IFastList<HexCoords> LandmarkCoords { get; }
 
         #region Properties & Fields
         /// <summary>TODO</summary>
@@ -148,6 +159,8 @@ namespace PGNapoleonics.HexUtilities.Storage {
         /// <summary>TODO</summary>
         protected        IBoardStorage ExitCosts       { get; }
 
+        THex INavigableBoard<THex>.this[HexCoords coords] => BoardHexes[coords].ElseDefault();
+
         /// <summary>Returns the <c>IHex</c> at location <c>coords</c>.</summary>
         [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
         public             Maybe<THex> this[HexCoords coords] => BoardHexes[coords];
@@ -164,41 +177,41 @@ namespace PGNapoleonics.HexUtilities.Storage {
         => BoardHexes.ForAllNeighbours(coords,action);
 
         /// <inheritdoc/>
-        public abstract  short? Heuristic(HexCoords source, HexCoords target);
+        public abstract  int? Heuristic(HexCoords source, HexCoords target);
 
         /// <inheritdoc/>
         public           Maybe<THex> Neighbour(HexCoords coords, Hexside hexside)
         => BoardHexes.Neighbour(coords,hexside);
 
-        /// <summary>TODO</summary>
-        public short? TryExitCost(HexCoords hexCoords, Hexside hexside)
-        => (from x in ExitCosts[hexCoords] from c in x[hexside].ToMaybe() select c).ToNullable();
+        /// <inheritdoc/>
+        public Maybe<IHex> Neighbour(IHex hex, Hexside hexside)
+        => Neighbour(hex.Coords,hexside).Bind(h => (h as IHex).ToMaybe());
 
         /// <summary>TODO</summary>
-        public short? TryEntryCost(HexCoords hexCoords, Hexside hexside)
-        => (from x in EntryCosts[hexCoords] from c in x[hexside].ToMaybe() select c).ToNullable();
+        public int TryExitCost(HexCoords hexCoords, Hexside hexside)
+        =>  (from x in ExitCosts[hexCoords] select x[hexside]).ElseDefault() ?? -1;
+
+        /// <summary>TODO</summary>
+        public int TryEntryCost(HexCoords hexCoords, Hexside hexside)
+        => (from x in EntryCosts[hexCoords] select x[hexside]).ElseDefault() ?? -1;
         #endregion
 
-        #region IDisposable implementation (w/ Finalizer as the class possesses unmanaged resources.)
-        /// <summary>Clean up any resources being used, and suppress finalization.</summary>
-        public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
-
-        /// <summary>True if already Disposed.</summary>
-        private bool _isDisposed = false;
-        /// <summary>Clean up any resources being used.</summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected virtual void Dispose(bool disposing) {
-            if (! _isDisposed) {
-                if (disposing) { // Free any managed objects here
-                    Landmarks?.Dispose(); Landmarks = null;
-                    BoardHexes.Dispose();
-                }
-
-                // Free any unmanaged objects here
-
-                _isDisposed = true;
-            }
-        }
-        #endregion
+        /// <inheritdoc/>
+        public abstract int? Heuristic(int range);
+        /// <inheritdoc/>
+        public abstract int? Heuristic(IHex source,IHex target);
+        /// <inheritdoc/>
+        public bool IsOnboard(HexCoords coords) => this[coords].HasValue;
+        /// <inheritdoc/>
+        public void ForAllNeighbours(HexCoords coords,Action<THex,Hexside> action)
+            => ForAllNeighbours(coords,(maybe,hexside) => maybe.IfHasValueDo(hex=>action(hex,hexside)));
+        /// <inheritdoc/>
+        public int  EntryCost(IHex hex,Hexside hexsideExit) => TryEntryCost(hex.Coords,hexsideExit);
+        /// <inheritdoc/>
+        public int  ExitCost(IHex hex,Hexside hexsideExit)  => TryExitCost(hex.Coords,hexsideExit);
+        /// <inheritdoc/>
+        public int  TryExitCost(IHex hex,Hexside hexside)  => TryExitCost(hex.Coords,hexside);
+        /// <inheritdoc/>
+        public int  TryEntryCost(IHex hex,Hexside hexside) => TryEntryCost(hex.Coords,hexside);
     }
 }
