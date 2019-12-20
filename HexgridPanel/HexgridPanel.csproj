@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PGNapoleonics.HexgridPanel</RootNamespace>
     <AssemblyName>PGNapoleonics.HexgridPanel</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <HighEntropyVA>False</HighEntropyVA>
     <DynamicBase>False</DynamicBase>
